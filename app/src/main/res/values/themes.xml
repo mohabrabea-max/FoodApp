@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.MySplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/lightBackgroundForCards</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/chickenpng</item>
+        <item name="postSplashScreenTheme">@style/Theme.ApplicationHome</item>
+    </style>
+
+    <style name="Theme.ApplicationHome" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/lightBackgroundForCards</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>
