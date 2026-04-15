@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.applicationhome.LearnTopAppBar
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.CategoriesImage
 import com.example.applicationhome.data.models.FoodItem
@@ -67,8 +66,6 @@ fun HomeScreen(){
             columns = GridCells.Fixed(2),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ){
-            item(span = { GridItemSpan(2) }){ LearnTopAppBar() }
-
             item(span = { GridItemSpan(2) }){ LazyRow(
                 modifier = Modifier.height(150.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
