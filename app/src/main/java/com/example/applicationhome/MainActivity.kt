@@ -39,15 +39,20 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         setContent {
             val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-            Scaffold(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                topBar = {
-                    LearnTopAppBar(scrollBehavior)
-                }
-            ){innerPadding ->
-                Box(modifier = Modifier.padding(innerPadding)){HomeScreen()}
-            }
+            FinalScreen(scrollBehavior)
         }
+    }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior){
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            LearnTopAppBar(scrollBehavior)
+        }
+    ){innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)){HomeScreen()}
     }
 }
 
