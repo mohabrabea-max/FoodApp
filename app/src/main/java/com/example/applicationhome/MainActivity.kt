@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,12 +28,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.applicationhome.ui.theme.BackgroundForCards
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.screens.HomeScreen
 
 class MainActivity : ComponentActivity() {
-
     @OptIn(ExperimentalMaterial3Api::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,31 +48,51 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior){
+    val navigationController = rememberNavController()
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            LearnTopAppBar(scrollBehavior)
+            LearnTopAppBar(scrollBehavior,navigationController)
         }
     ){innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)){HomeScreen()}
+        Box(modifier = Modifier.padding(innerPadding)){
+            NavHost(navController = navigationController, startDestination = Screens.Menu.screen){
+                composable(
+                    Screens.HomeScreen.screen,
+                    enterTransition = { EnterTransition.None },
+                    exitTransition = { ExitTransition.None },
+                    popEnterTransition = { EnterTransition.None },
+                    popExitTransition = { ExitTransition.None }
+                ){HomeScreen()}
+                composable(
+                    Screens.Menu.screen,
+                    enterTransition = { EnterTransition.None },
+                    exitTransition = { ExitTransition.None },
+                    popEnterTransition = { EnterTransition.None },
+                    popExitTransition = { ExitTransition.None }
+                ){Menu()}
+            }
+        }
+
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LearnTopAppBar(scrollBehavior: TopAppBarScrollBehavior){
+fun LearnTopAppBar(scrollBehavior: TopAppBarScrollBehavior, navController: NavController){
     val context = LocalContext.current.applicationContext
     TopAppBar(modifier = Modifier.fillMaxWidth(),
         title = {Text(text = "Home")},
         scrollBehavior = scrollBehavior,
         navigationIcon = {
-            IconButton(onClick = {Toast.makeText(context, "Home", Toast.LENGTH_SHORT).show()}){
+            IconButton(onClick = {navController.navigate(Screens.HomeScreen.screen){popUpTo(0)}}){
                 Icon(
                     imageVector = Icons.Default.Home,
-                    contentDescription = "Add",
+                    contentDescription = "Home",
                     tint = Color.BrownForFont,
 
                     )
