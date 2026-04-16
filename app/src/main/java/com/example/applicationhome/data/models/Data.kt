@@ -1,7 +1,11 @@
 package com.example.applicationhome.data.models
 
-data class FoodItem(val id : Int, val name : String, val price : Double, val image : Int, val size : String, val description: String){
-}
+import androidx.compose.ui.graphics.vector.ImageVector
 
-data class CategoriesImage(val name : String, val image : Int){
-}
+data class FoodItem(val id : Int, val name : String, val price : Double, val image : Int, val size : String, val description: String)
+
+data class CategoriesImage(val name : String, val image : Int)
+
+data class Options(val title : String, val icon : ImageVector, val screen: String)
+
+data class Account(val title : String, val value: String, val icon : ImageVector)
