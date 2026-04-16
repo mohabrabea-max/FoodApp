@@ -1,6 +1,7 @@
 package com.example.applicationhome.ui.theme.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +36,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.Account
+import com.example.applicationhome.ui.theme.BackgroundForCards
 import com.example.applicationhome.ui.theme.BrownForFont
+import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 
 @Composable
@@ -45,10 +48,10 @@ fun Profile(){
         Account("Phone Number","01011223344",Icons.Default.Phone),
         Account("Country","Egypt",Icons.Default.LocationOn)
     )
-        LazyColumn(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.spacedBy(16.dp)){
+        LazyColumn(modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),verticalArrangement = Arrangement.spacedBy(16.dp)){
             item{
                 Column(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().background(Color.BackgroundForCards),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Top
                 ){
@@ -92,7 +95,7 @@ fun Profile(){
             }
             item{
                 Box(modifier = Modifier.fillMaxSize().padding(50.dp), contentAlignment = Alignment.Center){
-                    IconButton(onClick = {}){
+                    IconButton(modifier = Modifier.size(50.dp),onClick = {}){
                         Icon(modifier = Modifier.size(50.dp), imageVector = Icons.Default.ExitToApp, contentDescription = "Logout", tint = Color.BrownForFont)
                     }
                 }
