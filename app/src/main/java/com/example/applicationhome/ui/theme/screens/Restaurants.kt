@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -44,8 +43,8 @@ import com.example.applicationhome.ui.theme.components.Favorite
 @Composable
 fun Restaurants(){
     val restaurants = listOf(
-        Restaurants("McDonald's", R.drawable.mcdonalds, 4.5, Color.Red),
         Restaurants("KFC", R.drawable.kfc, 4.5, Color.White),
+        Restaurants("McDonald's", R.drawable.mcdonalds, 4.5, Color.Red),
         Restaurants("Bazooka", R.drawable.bazooka, 4.5, Color.Black),
         Restaurants("Burger King", R.drawable.burgerking, 4.5, Color.White),
         Restaurants("Pizza Hut", R.drawable.pizzahut, 4.5, Color.White),
@@ -56,9 +55,7 @@ fun Restaurants(){
             items(restaurants){item ->
                 Surface(modifier = Modifier.aspectRatio(3f).padding(5.dp).shadow(elevation = 3.dp, shape = RoundedCornerShape(10.dp)).clickable{}){
                     Row(modifier = Modifier.background(Color.LightBackgroundForCards), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically){
-                        Box(modifier = Modifier.fillMaxSize().weight(1f).background(item.background)){
-                            Image(painter = painterResource(id = item.image), contentDescription = item.name, contentScale = ContentScale.Crop)
-                        }
+                        Image(modifier = Modifier.fillMaxSize().weight(1f).background(item.background),painter = painterResource(id = item.image), contentDescription = item.name, contentScale = ContentScale.Crop)
                         VerticalDivider()
                         Column(modifier = Modifier.fillMaxSize().weight(1.5f).padding(10.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.Start){
                             Row(modifier = Modifier.clickable{}, horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically){
