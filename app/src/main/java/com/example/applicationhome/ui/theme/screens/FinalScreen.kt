@@ -1,6 +1,8 @@
 package com.example.applicationhome.ui.theme.screens
 
-import android.widget.Toast
+import android.annotation.SuppressLint
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,61 +12,70 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.Surface
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.applicationhome.MyTopBar
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.data.models.Settings
+import com.example.applicationhome.ui.theme.BackgroundForCards
 import com.example.applicationhome.ui.theme.BrownForFont
-import com.example.applicationhome.ui.theme.LightBackgroundForCards
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
-import kotlinx.coroutines.CoroutineScope
+import com.example.applicationhome.ui.theme.components.Options
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController){
-    val context = LocalContext.current.applicationContext
-    val settings = listOf(
-        Settings("Notifications", "Disabled", Icons.Default.Notifications),
-        Settings("Language", "English", Icons.Default.AccountCircle),
-        Settings("Country", "Egypt", Icons.Default.AccountCircle)
+fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState){
+    val allScreens = listOf(
+        Screens.HomeScreen,
+        Screens.Profile,
+        Screens.Settings,
+        Screens.Menu,
+        Screens.Restaurants,
+        Screens.Varieties
     )
-    Surface(modifier = Modifier.background(Color.LightBrownForBackground).fillMaxSize()){
-        LazyColumn(modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),verticalArrangement = Arrangement.spacedBy(16.dp)){
-            item{
+    val navigationController = rememberNavController()
+    val coroutineScope = rememberCoroutineScope()
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        gesturesEnabled = true,
+        drawerContent = {
+            ModalDrawerSheet(drawerContainerColor = Color.LightBrownForBackground,modifier = Modifier.width(250.dp)){
                 Box(
                     modifier = Modifier.
-                    height(120.dp).
-                    background(Color.LightBackgroundForCards).
+                    background(Color.BackgroundForCards).
+                    fillMaxWidth().
+                    height(80.dp).
                     clickable{
                         coroutineScope.launch{drawerState.close()}
                         navigationController.navigate(Screens.Profile.screen){popUpTo(0)}
@@ -76,7 +87,7 @@ fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigat
                         verticalAlignment = Alignment.CenterVertically
                     ){
                         Box(
-                            modifier = Modifier.size(70.dp).
+                            modifier = Modifier.size(50.dp).
                             clip(CircleShape),
                             contentAlignment = Alignment.Center
                         ){
@@ -92,40 +103,53 @@ fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigat
                         Column(modifier = Modifier.weight(2.5f),horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center){
                             Text(
                                 text = "Mohab Rabea",
-                                fontSize = 22.sp,
+                                fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.BrownForFont
                             )
                             Spacer(modifier = Modifier.height(5.dp))
                             Text(
                                 text = "01011223344",
-                                fontSize = 18.sp,
+                                fontSize = 12.sp,
                                 color = Color.MediumBrownForTitle
                             )
                         }
-                        VerticalDivider()
-                        Box(modifier = Modifier.weight(1f).fillMaxSize().clickable{Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()}){
-                            Icon(modifier = Modifier.size(50.dp).align(Alignment.Center), imageVector = Icons.Default.ExitToApp, contentDescription = "Logout", tint = Color.Red)
-                        }
+
                     }
 
                 }
                 Divider()
+                Options(navigationController, drawerState, coroutineScope)
             }
-            items(settings){item ->
-                NavigationDrawerItem(
-                    label = {
-                        Column {
-                            Text(text = item.title, fontSize = 20.sp, color = Color.BrownForFont)
-                            Text(text = item.value, fontSize = 13.sp, color = Color.MediumBrownForTitle)
+        }
+    ){
+        Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = {
+                MyTopBar(scrollBehavior,navigationController, drawerState)
+            }
+        ){innerPadding ->
+            Box(modifier = Modifier.padding(innerPadding)){
+                NavHost(navController = navigationController, startDestination = Screens.HomeScreen.screen){
+                    allScreens.forEach { item ->
+                        composable(
+                            route = item.screen,
+                            enterTransition = { EnterTransition.None },
+                            exitTransition = { ExitTransition.None },
+                            popEnterTransition = { EnterTransition.None },
+                            popExitTransition = { ExitTransition.None }
+                        ) {
+                            when(item){
+                                is Screens.HomeScreen -> HomeScreen()
+                                is Screens.Profile -> Profile()
+                                is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController)
+                                is Screens.Menu -> Menu()
+                                is Screens.Restaurants -> Restaurants()
+                                is Screens.Varieties -> Varieties()
+                            }
                         }
-                    },
-                    selected = false,
-                    icon = {Icon(modifier = Modifier.size(30.dp), imageVector = item.icon, contentDescription = item.title, tint = Color.BrownForFont)},
-                    onClick = {}
-                )
-                Spacer(modifier = Modifier.height(17.dp))
-                Divider()
+                    }
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.example.applicationhome.ui.theme.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -43,6 +45,7 @@ import com.example.applicationhome.ui.theme.MediumBrownForTitle
 
 @Composable
 fun Profile(){
+    val context = LocalContext.current.applicationContext
     val profile = listOf(
         Account("Name","Mohab Rabea",Icons.Default.Person),
         Account("Phone Number","01011223344",Icons.Default.Phone),
@@ -78,25 +81,24 @@ fun Profile(){
             }
         }
         items(profile){item ->
-            Column(modifier = Modifier.fillMaxSize()){
-                NavigationDrawerItem(
-                    label = {
-                        Column {
-                            Text(text = item.title, fontSize = 20.sp, color = Color.BrownForFont)
-                            Text(text = item.value, fontSize = 13.sp, color = Color.MediumBrownForTitle)
-                        }
-                    },
-                    selected = false,
-                    icon = {Icon(modifier = Modifier.size(30.dp), imageVector = item.icon, contentDescription = item.title, tint = Color.BrownForFont)},
-                    onClick = {}
-                )
-            }
+            NavigationDrawerItem(
+                label = {
+                    Column {
+                        Text(text = item.title, fontSize = 20.sp, color = Color.BrownForFont)
+                        Text(text = item.value, fontSize = 13.sp, color = Color.MediumBrownForTitle)
+                    }
+                },
+                selected = false,
+                icon = {Icon(modifier = Modifier.size(30.dp), imageVector = item.icon, contentDescription = item.title, tint = Color.BrownForFont)},
+                onClick = {}
+            )
+            Spacer(modifier = Modifier.height(17.dp))
             Divider()
         }
         item{
             Box(modifier = Modifier.fillMaxSize().padding(50.dp), contentAlignment = Alignment.Center){
-                IconButton(modifier = Modifier.size(50.dp),onClick = {}){
-                    Icon(modifier = Modifier.size(50.dp), imageVector = Icons.Default.ExitToApp, contentDescription = "Logout", tint = Color.BrownForFont)
+                IconButton(modifier = Modifier.size(50.dp),onClick = {Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()}){
+                    Icon(modifier = Modifier.size(50.dp), imageVector = Icons.Default.ExitToApp, contentDescription = "Logout", tint = Color.Red)
                 }
             }
         }

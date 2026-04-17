@@ -3,10 +3,7 @@ package com.example.applicationhome.ui.theme.components
 import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -19,13 +16,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.applicationhome.ui.theme.BrownForFont
-import com.example.applicationhome.ui.theme.LightBrownForBackground
 import kotlinx.coroutines.launch
 
 @Composable
@@ -47,13 +42,22 @@ fun Favorite(modifier: Modifier = Modifier){
         }
     }
 
-    if(favorite){
-        IconButton(modifier = modifier.padding(10.dp).clip(CircleShape).size(35.dp).background(Color.LightBrownForBackground.copy(alpha = 0.8f)), onClick = {favorite1("Add To Favorite")}){
-            Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "More", tint = Color.BrownForFont, modifier = Modifier.size(20.dp).scale(scale.value))
-        }
-    }else{
-        IconButton(modifier = modifier.padding(10.dp).clip(CircleShape).size(35.dp).background(Color.LightBrownForBackground.copy(alpha = 0.8f)), onClick = {favorite1("Remove From Favorite")}){
-            Icon(imageVector = Icons.Default.Favorite, contentDescription = "More", tint = Color.Red, modifier = Modifier.size(20.dp).scale(scale.value))
+
+    IconButton(modifier = modifier, onClick = {favorite1("Add To Favorite")}){
+        if(favorite) {
+            Icon(
+                imageVector = Icons.Default.FavoriteBorder,
+                contentDescription = "More",
+                tint = Color.BrownForFont,
+                modifier = Modifier.size(20.dp).scale(scale.value)
+            )
+        }else{
+            Icon(
+                imageVector = Icons.Default.Favorite,
+                contentDescription = "More",
+                tint = Color.Red,
+                modifier = Modifier.size(20.dp).scale(scale.value)
+            )
         }
     }
 }

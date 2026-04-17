@@ -11,3 +11,4 @@ data class Restaurants(val name : String, val image : Int, val review : Double, 
 data class Options(val title : String, val icon : ImageVector, val screen: String)
 
 data class Account(val title : String, val value: String, val icon : ImageVector)
+data class Settings(val title : String, val value: String, val icon : ImageVector)
