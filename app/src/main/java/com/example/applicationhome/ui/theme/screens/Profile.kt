@@ -42,7 +42,6 @@ import com.example.applicationhome.ui.theme.BackgroundForCards
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
-
 @Composable
 fun Profile(){
     val context = LocalContext.current.applicationContext
