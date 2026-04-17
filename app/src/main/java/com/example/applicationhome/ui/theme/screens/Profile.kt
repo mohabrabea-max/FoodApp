@@ -48,80 +48,57 @@ fun Profile(){
         Account("Phone Number","01011223344",Icons.Default.Phone),
         Account("Country","Egypt",Icons.Default.LocationOn)
     )
-        LazyColumn(modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),verticalArrangement = Arrangement.spacedBy(16.dp)){
-            item{
-                Column(
-                    modifier = Modifier.fillMaxSize().background(Color.BackgroundForCards),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Top
-                ){
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Box(modifier = Modifier.size(150.dp).clip(CircleShape),contentAlignment = Alignment.Center){
-                        Image(
-                            painter = painterResource(id = R.drawable.myphoto),
-                            contentDescription = "Food Logo",
-                            modifier = Modifier.
-                            fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(30.dp))
-                    Text(
-                        text = "Mohab Rabea",
-                        fontSize = 25.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Divider()
-                }
-            }
-            items(profile){item ->
-                Column(modifier = Modifier.fillMaxSize()){
-                    NavigationDrawerItem(
-                        label = {
-                            Column {
-                                Text(text = item.title, fontSize = 20.sp, color = Color.BrownForFont)
-                                Text(text = item.value, fontSize = 13.sp, color = Color.MediumBrownForTitle)
-                            }
-                        },
-                        selected = false,
-                        icon = {Icon(modifier = Modifier.size(30.dp), imageVector = item.icon, contentDescription = item.title, tint = Color.BrownForFont)},
-                        onClick = {}
+    LazyColumn(modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),verticalArrangement = Arrangement.spacedBy(16.dp)){
+        item{
+            Column(
+                modifier = Modifier.fillMaxSize().background(Color.BackgroundForCards),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ){
+                Spacer(modifier = Modifier.height(20.dp))
+                Box(modifier = Modifier.size(150.dp).clip(CircleShape),contentAlignment = Alignment.Center){
+                    Image(
+                        painter = painterResource(id = R.drawable.myphoto),
+                        contentDescription = "Food Logo",
+                        modifier = Modifier.
+                        fillMaxSize(),
+                        contentScale = ContentScale.Crop
                     )
                 }
+                Spacer(modifier = Modifier.height(30.dp))
+                Text(
+                    text = "Mohab Rabea",
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(20.dp))
                 Divider()
             }
-            item{
-                Box(modifier = Modifier.fillMaxSize().padding(50.dp), contentAlignment = Alignment.Center){
-                    IconButton(modifier = Modifier.size(50.dp),onClick = {}){
-                        Icon(modifier = Modifier.size(50.dp), imageVector = Icons.Default.ExitToApp, contentDescription = "Logout", tint = Color.BrownForFont)
-                    }
+        }
+        items(profile){item ->
+            Column(modifier = Modifier.fillMaxSize()){
+                NavigationDrawerItem(
+                    label = {
+                        Column {
+                            Text(text = item.title, fontSize = 20.sp, color = Color.BrownForFont)
+                            Text(text = item.value, fontSize = 13.sp, color = Color.MediumBrownForTitle)
+                        }
+                    },
+                    selected = false,
+                    icon = {Icon(modifier = Modifier.size(30.dp), imageVector = item.icon, contentDescription = item.title, tint = Color.BrownForFont)},
+                    onClick = {}
+                )
+            }
+            Divider()
+        }
+        item{
+            Box(modifier = Modifier.fillMaxSize().padding(50.dp), contentAlignment = Alignment.Center){
+                IconButton(modifier = Modifier.size(50.dp),onClick = {}){
+                    Icon(modifier = Modifier.size(50.dp), imageVector = Icons.Default.ExitToApp, contentDescription = "Logout", tint = Color.BrownForFont)
                 }
             }
         }
-
-//    Column(
-//        modifier = Modifier.background(Color.White).fillMaxSize().padding(10.dp),
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    ){
-//
-//
-//
-//
-//        Spacer(modifier = Modifier.height(50.dp))
-//
-//        Box(modifier = Modifier.fillMaxSize()){
-//            Column(
-//                modifier = Modifier.fillMaxSize().align(Alignment.Center).padding(10.dp),
-//                verticalArrangement = Arrangement.Top,
-//                horizontalAlignment = Alignment.Start
-//            ){
-//                Text(text = "Email   : ", fontSize = 30.sp, color = Color.Black)
-//                Text(text = "Age     : ", fontSize = 30.sp, color = Color.Black)
-//                Text(text = "Country :", fontSize = 30.sp, color = Color.Black)
-//            }
-//        }
-//    }
+    }
 }

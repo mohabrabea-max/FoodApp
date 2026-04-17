@@ -46,6 +46,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,14 +63,20 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationhome.data.models.Options
+import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.ui.theme.BackgroundForCards
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.screens.HomeScreen
+import com.example.applicationhome.ui.theme.screens.Menu
 import com.example.applicationhome.ui.theme.screens.Profile
+import com.example.applicationhome.ui.theme.screens.Restaurants
+import com.example.applicationhome.ui.theme.screens.Settings
+import com.example.applicationhome.ui.theme.screens.Varieties
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -92,17 +99,19 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
     val options = listOf(
         Options("Home", Icons.Default.Home, Screens.HomeScreen.screen),
         Options("Profile", Icons.Default.Person, Screens.Profile.screen),
-        Options("Settings", Icons.Default.Settings, Screens.HomeScreen.screen)
+        Options("Settings", Icons.Default.Settings, Screens.Settings.screen)
     )
     val menuOptions = listOf(
         Options("Menu", Icons.Default.Home, Screens.Menu.screen),
-        Options("Restaurants", Icons.Default.Person, Screens.HomeScreen.screen),
-        Options("Varieties", Icons.Default.Settings, Screens.HomeScreen.screen)
+        Options("Varieties", Icons.Default.Settings, Screens.Varieties.screen),
+        Options("Restaurants", Icons.Default.Person, Screens.Restaurants.screen)
+
     )
     val navigationController = rememberNavController()
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current.applicationContext
-    val currentRoute = navigationController.currentBackStackEntry?.destination?.route
+    val navBackStackEntry by navigationController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -207,19 +216,40 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
                         popExitTransition = { ExitTransition.None }
                     ){HomeScreen()}
                     composable(
-                        Screens.Menu.screen,
-                        enterTransition = { EnterTransition.None },
-                        exitTransition = { ExitTransition.None },
-                        popEnterTransition = { EnterTransition.None },
-                        popExitTransition = { ExitTransition.None }
-                    ){Menu()}
-                    composable(
                         Screens.Profile.screen,
                         enterTransition = { EnterTransition.None },
                         exitTransition = { ExitTransition.None },
                         popEnterTransition = { EnterTransition.None },
                         popExitTransition = { ExitTransition.None }
                     ){Profile()}
+                    composable(
+                        Screens.Settings.screen,
+                        enterTransition = { EnterTransition.None },
+                        exitTransition = { ExitTransition.None },
+                        popEnterTransition = { EnterTransition.None },
+                        popExitTransition = { ExitTransition.None }
+                    ){ Settings() }
+                    composable(
+                        Screens.Menu.screen,
+                        enterTransition = { EnterTransition.None },
+                        exitTransition = { ExitTransition.None },
+                        popEnterTransition = { EnterTransition.None },
+                        popExitTransition = { ExitTransition.None }
+                    ){ Menu() }
+                    composable(
+                        Screens.Restaurants.screen,
+                        enterTransition = { EnterTransition.None },
+                        exitTransition = { ExitTransition.None },
+                        popEnterTransition = { EnterTransition.None },
+                        popExitTransition = { ExitTransition.None }
+                    ){ Restaurants() }
+                    composable(
+                        Screens.Varieties.screen,
+                        enterTransition = { EnterTransition.None },
+                        exitTransition = { ExitTransition.None },
+                        popEnterTransition = { EnterTransition.None },
+                        popExitTransition = { ExitTransition.None }
+                    ){ Varieties() }
                 }
             }
         }

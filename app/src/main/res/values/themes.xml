@@ -2,7 +2,7 @@
 <resources>
     <style name="Theme.MySplashScreen" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/lightBackgroundForCards</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/chickenpng</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/restaurant</item>
         <item name="postSplashScreenTheme">@style/Theme.ApplicationHome</item>
     </style>
 

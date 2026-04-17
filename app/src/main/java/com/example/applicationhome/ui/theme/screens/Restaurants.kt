@@ -1,0 +1,82 @@
+package com.example.applicationhome.ui.theme.screens
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.applicationhome.R
+import com.example.applicationhome.data.models.Restaurants
+import com.example.applicationhome.ui.theme.BrownForFont
+import com.example.applicationhome.ui.theme.LightBackgroundForCards
+import com.example.applicationhome.ui.theme.LightBrownForBackground
+import com.example.applicationhome.ui.theme.MediumBrownForTitle
+import com.example.applicationhome.ui.theme.components.Favorite
+
+@Composable
+fun Restaurants(){
+    val restaurants = listOf(
+        Restaurants("McDonald's", R.drawable.mcdonalds, 4.5, Color.Red),
+        Restaurants("KFC", R.drawable.kfc, 4.5, Color.White),
+        Restaurants("Bazooka", R.drawable.bazooka, 4.5, Color.Black),
+        Restaurants("Burger King", R.drawable.burgerking, 4.5, Color.White),
+        Restaurants("Pizza Hut", R.drawable.pizzahut, 4.5, Color.White),
+        Restaurants("B.Laban", R.drawable.belaban, 4.5, Color.White)
+    )
+    Surface(modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),color = Color.LightBrownForBackground){
+        LazyColumn(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.spacedBy(5.dp),){
+            items(restaurants){item ->
+                Surface(modifier = Modifier.aspectRatio(3f).padding(5.dp).shadow(elevation = 3.dp, shape = RoundedCornerShape(10.dp)).clickable{}){
+                    Row(modifier = Modifier.background(Color.LightBackgroundForCards), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically){
+                        Box(modifier = Modifier.fillMaxSize().weight(1f).background(item.background)){
+                            Image(painter = painterResource(id = item.image), contentDescription = item.name, contentScale = ContentScale.Crop)
+                        }
+                        VerticalDivider()
+                        Column(modifier = Modifier.fillMaxSize().weight(1.5f).padding(10.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.Start){
+                            Row(modifier = Modifier.clickable{}, horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically){
+                                Icon(modifier = Modifier.size(20.dp), imageVector = Icons.Default.Star, contentDescription = "Star", tint = Color(0xFFDAA520))
+                                Spacer(modifier = Modifier.width(5.dp))
+                                Text(text = item.review.toString(), fontSize = 17.sp, color = Color.MediumBrownForTitle)
+                            }
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Divider()
+                            Spacer(modifier = Modifier.height(25.dp))
+                            Text(text = item.name, fontSize = 20.sp, color = Color.BrownForFont)
+                            Spacer(modifier = Modifier.height(30.dp))
+                        }
+                        VerticalDivider()
+                        Favorite(modifier = Modifier.fillMaxSize().weight(0.5f))
+                    }
+                }
+            }
+        }
+    }
+}
