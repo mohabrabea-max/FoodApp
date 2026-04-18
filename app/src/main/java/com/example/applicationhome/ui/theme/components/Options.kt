@@ -35,6 +35,9 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Options(navigationController: NavHostController, drawerState : DrawerState, coroutineScope : CoroutineScope){
+    val context = LocalContext.current.applicationContext
+    val navBackStackEntry by navigationController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
     val options = listOf(
         Options("Home", Icons.Default.Home, Screens.HomeScreen.screen),
         Options("Profile", Icons.Default.Person, Screens.Profile.screen),
@@ -46,9 +49,6 @@ fun Options(navigationController: NavHostController, drawerState : DrawerState, 
         Options("Restaurants", Icons.Default.Person, Screens.Restaurants.screen)
 
     )
-    val context = LocalContext.current.applicationContext
-    val navBackStackEntry by navigationController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
     LazyColumn(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.spacedBy(16.dp)){
         items(options){item ->
             NavigationDrawerItem(label = {Text(text = item.title, color = Color.BrownForFont)},

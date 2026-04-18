@@ -26,8 +26,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun Favorite(modifier: Modifier = Modifier){
     val context = LocalContext.current
-    var favorite by remember {mutableStateOf(true)}
     val scope = rememberCoroutineScope()
+    var favorite by remember {mutableStateOf(true)}
     val scale = remember { Animatable(1f) }
 
     fun favorite1(x : String){

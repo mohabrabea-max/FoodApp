@@ -41,13 +41,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.applicationhome.MyTopBar
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.ui.theme.BackgroundForCards
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
+import com.example.applicationhome.ui.theme.components.MyBottonBar
+import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.Options
 import kotlinx.coroutines.launch
 
@@ -55,17 +56,18 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState){
+    val navigationController = rememberNavController()
+    val coroutineScope = rememberCoroutineScope()
+
     val allScreens = listOf(
         Screens.HomeScreen,
         Screens.Profile,
         Screens.Settings,
         Screens.Menu,
         Screens.Restaurants,
-        Screens.Varieties
+        Screens.Varieties,
+        Screens.Search
     )
-    val navigationController = rememberNavController()
-    val coroutineScope = rememberCoroutineScope()
-
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = true,
@@ -125,9 +127,11 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
     ){
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-            topBar = {
-                MyTopBar(scrollBehavior,navigationController, drawerState)
-            }
+
+            topBar = { MyTopBar(scrollBehavior,navigationController, drawerState) },
+
+            bottomBar = { MyBottonBar(navigationController) }
+
         ){innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)){
                 NavHost(navController = navigationController, startDestination = Screens.HomeScreen.screen){
@@ -143,6 +147,7 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
                                 is Screens.HomeScreen -> HomeScreen()
                                 is Screens.Profile -> Profile()
                                 is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController)
+                                is Screens.Search -> Search()
                                 is Screens.Menu -> Menu()
                                 is Screens.Restaurants -> Restaurants()
                                 is Screens.Varieties -> Varieties()
