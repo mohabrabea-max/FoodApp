@@ -16,9 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,7 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.R
-import com.example.applicationhome.data.models.Account
+import com.example.applicationhome.data.models.ProfileData
 import com.example.applicationhome.ui.theme.BackgroundForCards
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightBrownForBackground
@@ -46,11 +43,7 @@ import com.example.applicationhome.ui.theme.MediumBrownForTitle
 @Composable
 fun Profile(){
     val context = LocalContext.current.applicationContext
-    val profile = listOf(
-        Account("Name","Mohab Rabea",Icons.Default.Person),
-        Account("Phone Number","01011223344",Icons.Default.Phone),
-        Account("Country","Egypt",Icons.Default.LocationOn)
-    )
+    val profile = ProfileData.profileData()
     LazyColumn(modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),verticalArrangement = Arrangement.spacedBy(16.dp)){
         item{
             Column(

@@ -24,23 +24,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.R
-import com.example.applicationhome.data.models.CategoriesImage
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.applicationhome.data.models.VarietiesMenu
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightBackgroundForCards
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.components.Favorite
+import com.example.applicationhome.view.model.AddBoxViewModel
 
 @Composable
-fun Varieties(){
-    val categoriesList = listOf(
-        CategoriesImage("Burger", R.drawable.burgerpng),
-        CategoriesImage("Pizza", R.drawable.pezzapng),
-        CategoriesImage("Chicken", R.drawable.chickenpng)
-    )
+fun Varieties(viewModel: AddBoxViewModel = viewModel()){
+    val categories = VarietiesMenu.categoriesList()
     Surface(modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),color = Color.LightBrownForBackground){
         LazyColumn(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.spacedBy(5.dp)){
-            items(categoriesList){item ->
+            items(categories){item ->
                 Surface(modifier = Modifier.aspectRatio(3f).padding(5.dp).shadow(elevation = 3.dp, shape = RoundedCornerShape(10.dp)).clickable{}){
                     Row(modifier = Modifier.background(Color.LightBackgroundForCards), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically){
                         Image(
@@ -51,7 +48,7 @@ fun Varieties(){
                         VerticalDivider()
                         Text(modifier = Modifier.weight(1.5f).padding(10.dp), text = item.name, fontSize = 20.sp, color = Color.BrownForFont)
                         VerticalDivider()
-                        Favorite(modifier = Modifier.weight(0.5f).fillMaxSize().padding(10.dp).clip(CircleShape).background(Color.LightBrownForBackground))
+                        Favorite(modifier = Modifier.weight(0.5f).fillMaxSize().padding(10.dp).clip(CircleShape).background(Color.LightBrownForBackground),id = item.id)
                     }
                 }
             }

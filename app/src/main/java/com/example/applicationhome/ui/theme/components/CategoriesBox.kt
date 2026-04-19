@@ -63,6 +63,6 @@ fun CategoriesBox(category : CategoriesImage){
                 padding(8.dp)
             )
         }
-        Favorite(modifier = Modifier.align(alignment = TopEnd).padding(10.dp).clip(CircleShape).size(35.dp).background(Color.LightBrownForBackground.copy(alpha = 0.8f)))
+        Favorite(modifier = Modifier.align(alignment = TopEnd).padding(10.dp).clip(CircleShape).size(35.dp).background(Color.LightBrownForBackground.copy(alpha = 0.8f)), id = category.id)
     }
 }

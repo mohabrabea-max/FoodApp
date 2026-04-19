@@ -10,29 +10,35 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.applicationhome.ui.theme.BrownForFont
+import com.example.applicationhome.view.model.FavoriteViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun Favorite(modifier: Modifier = Modifier){
+fun Favorite(modifier: Modifier = Modifier, id: Int, favoritState : FavoriteViewModel = viewModel()){
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var favorite by remember {mutableStateOf(true)}
     val scale = remember { Animatable(1f) }
+    val favorite = favoritState.itemsCount[id] ?: false
 
-    fun favorite1(x : String){
-        favorite = !favorite
-        Toast.makeText(context, x, Toast.LENGTH_SHORT).show()
+    fun favorite1(){
+
+        if(favorite == false){
+            favoritState.addFavorite(id)
+            Toast.makeText(context, "Add To Favorite", Toast.LENGTH_SHORT).show()
+        }else{
+            favoritState.removeFavorite(id)
+            Toast.makeText(context, "Remove From Favorite", Toast.LENGTH_SHORT).show()
+        }
+
 
         scope.launch {
             // يكبر بسرعة لـ 1.3x في 100 مللي ثانية
@@ -43,8 +49,8 @@ fun Favorite(modifier: Modifier = Modifier){
     }
 
 
-    IconButton(modifier = modifier, onClick = {favorite1("Add To Favorite")}){
-        if(favorite) {
+    IconButton(modifier = modifier, onClick = {favorite1()}){
+        if(favorite == false) {
             Icon(
                 imageVector = Icons.Default.FavoriteBorder,
                 contentDescription = "More",

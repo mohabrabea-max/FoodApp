@@ -111,9 +111,9 @@ fun ItemsBox(item: FoodItem){
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.End
         ){
-            Favorite(modifier = Modifier.padding(10.dp).clip(CircleShape).size(35.dp).background(Color.LightBrownForBackground.copy(alpha = 0.8f)))
+            Favorite(modifier = Modifier.padding(10.dp).clip(CircleShape).size(35.dp).background(Color.LightBrownForBackground.copy(alpha = 0.8f)),id = item.id)
             Spacer(modifier = Modifier.height(33.dp))
-            AddBox()
+            AddBox(item.id)
         }
     }
 }

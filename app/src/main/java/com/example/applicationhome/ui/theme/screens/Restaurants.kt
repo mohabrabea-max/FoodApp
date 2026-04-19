@@ -34,8 +34,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.R
-import com.example.applicationhome.data.models.Restaurants
+import com.example.applicationhome.data.models.RestaurantsMenu
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightBackgroundForCards
 import com.example.applicationhome.ui.theme.LightBrownForBackground
@@ -44,17 +43,10 @@ import com.example.applicationhome.ui.theme.components.Favorite
 
 @Composable
 fun Restaurants(){
-    val restaurants = listOf(
-        Restaurants("KFC", R.drawable.kfc, 4.5, Color.White),
-        Restaurants("McDonald's", R.drawable.mcdonalds, 4.5, Color.Red),
-        Restaurants("Bazooka", R.drawable.bazooka, 4.5, Color.Black),
-        Restaurants("Burger King", R.drawable.burgerking, 4.5, Color.White),
-        Restaurants("Pizza Hut", R.drawable.pizzahut, 4.5, Color.White),
-        Restaurants("B.Laban", R.drawable.belaban, 4.5, Color.White)
-    )
+    val restaurantsMenu = RestaurantsMenu.restaurantsMenu()
     Surface(modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),color = Color.LightBrownForBackground){
         LazyColumn(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.spacedBy(5.dp),){
-            items(restaurants){item ->
+            items(restaurantsMenu){item ->
                 Surface(modifier = Modifier.aspectRatio(3f).padding(5.dp).shadow(elevation = 3.dp, shape = RoundedCornerShape(10.dp)).clickable{}){
                     Row(modifier = Modifier.background(Color.LightBackgroundForCards), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically){
                         Image(modifier = Modifier.fillMaxSize().weight(1f).background(item.background),painter = painterResource(id = item.image), contentDescription = item.name, contentScale = ContentScale.Crop)
@@ -72,7 +64,7 @@ fun Restaurants(){
                             Spacer(modifier = Modifier.height(30.dp))
                         }
                         VerticalDivider()
-                        Favorite(modifier = Modifier.fillMaxSize().weight(0.5f).padding(10.dp).clip(CircleShape).background(Color.LightBrownForBackground))
+                        Favorite(modifier = Modifier.fillMaxSize().weight(0.5f).padding(10.dp).clip(CircleShape).background(Color.LightBrownForBackground), item.id)
                     }
                 }
             }

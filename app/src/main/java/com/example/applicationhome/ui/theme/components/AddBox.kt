@@ -17,10 +17,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,16 +29,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightBackgroundForCards
 import com.example.applicationhome.ui.theme.LightBrownForBackground
+import com.example.applicationhome.view.model.AddBoxViewModel
 
 @Composable
-fun AddBox(){
+fun AddBox(id: Int, ordernumber : AddBoxViewModel = viewModel()){
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    var number by remember {mutableStateOf(0)}
-    var targetWidth = if(number == 0) 35.dp else 120.dp
+    var count = ordernumber.itemsCount[id] ?: 0
+    var targetWidth = if(count == 0) 35.dp else 120.dp
     Box(
         modifier = Modifier.
         animateContentSize().
@@ -51,10 +49,10 @@ fun AddBox(){
         width(targetWidth).
         clip(CircleShape).
         background(Color.LightBackgroundForCards.copy(alpha = 0.8f)).
-        clickable {number++},
+        clickable {ordernumber.addBoxNumberPlus(id)},
         contentAlignment = Alignment.Center
     ){
-        if(number == 0) {
+        if(count == 0) {
             Text(
                 text = "+",
                 fontSize = 20.sp,
@@ -72,7 +70,7 @@ fun AddBox(){
                     modifier = Modifier.
                     weight(1f).
                     fillMaxHeight().
-                    clickable {number++},
+                    clickable {ordernumber.addBoxNumberPlus(id)},
                     contentAlignment = Alignment.Center
                 ){
                     Text(
@@ -87,16 +85,18 @@ fun AddBox(){
                     modifier = Modifier.
                     weight(1f).
                     fillMaxHeight().
-                    clickable {number},
+                    clickable {count},
                     contentAlignment = Alignment.Center
                 ){
                     BasicTextField(
-                        value = number.toString(),
+                        value = count.toString(),
                         onValueChange = { newValue ->
                             if (newValue.isNotEmpty()) {
-                                number = newValue.toIntOrNull() ?: number
+                                val newCount = newValue.toIntOrNull() ?: count
+                                ordernumber.updateCount(id, newCount)
                             }else{
-                                number = newValue.toIntOrNull() ?: 0
+                                val newCount = newValue.toIntOrNull() ?: 0
+                                ordernumber.updateCount(id, newCount)
                             }
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
@@ -118,7 +118,7 @@ fun AddBox(){
                     weight(1f).
                     fillMaxHeight().
                     animateContentSize().
-                    clickable {number--},
+                    clickable {ordernumber.addBoxNumberMinus(id)},
                     contentAlignment = Alignment.Center
                 ){
                     Text(
