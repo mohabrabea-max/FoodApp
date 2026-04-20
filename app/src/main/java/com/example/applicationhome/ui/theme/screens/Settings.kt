@@ -18,9 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
@@ -41,8 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
+import com.example.applicationhome.data.models.ProfileData
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.data.models.Settings
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightBackgroundForCards
 import com.example.applicationhome.ui.theme.LightBrownForBackground
@@ -53,11 +51,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController){
     val context = LocalContext.current.applicationContext
-    val settings = listOf(
-        Settings("Notifications", "Disabled", Icons.Default.Notifications),
-        Settings("Language", "English", Icons.Default.AccountCircle),
-        Settings("Country", "Egypt", Icons.Default.AccountCircle)
-    )
+    val settings = ProfileData.settingsata()
     Surface(modifier = Modifier.background(Color.LightBrownForBackground).fillMaxSize()){
         LazyColumn(modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),verticalArrangement = Arrangement.spacedBy(16.dp)){
             item{
@@ -82,7 +76,7 @@ fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigat
                         ){
                             Image(
                                 painter = painterResource(id = R.drawable.myphoto),
-                                contentDescription = "Food Logo",
+                                contentDescription = "My Photo",
                                 modifier = Modifier.
                                 fillMaxSize(),
                                 contentScale = ContentScale.Crop

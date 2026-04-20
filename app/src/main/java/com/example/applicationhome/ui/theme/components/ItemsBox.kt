@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,21 +38,30 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.FoodItem
+import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.ui.theme.BackgroundForCards
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightBackgroundForCards
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
+import com.example.applicationhome.view.model.ItemScreenViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
-fun ItemsBox(item: FoodItem){
+fun ItemsBox(item: FoodItem, drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, viewModel: ItemScreenViewModel){
     val context = LocalContext.current
     Box(
         modifier = Modifier.
         animateContentSize().
         aspectRatio(0.8f).
-        clickable{ Toast.makeText(context, item.name, Toast.LENGTH_SHORT).show()}.
+        clickable{
+            coroutineScope.launch{drawerState.close()}
+            viewModel.selectedItem = item
+            navigationController.navigate(Screens.ItemScreen.screen){popUpTo(0)}
+        }.
         padding(5.dp).
         shadow(elevation = 3.dp, shape = RoundedCornerShape(10.dp))
     ){

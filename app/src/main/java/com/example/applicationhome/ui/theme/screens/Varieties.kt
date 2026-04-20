@@ -24,16 +24,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.applicationhome.data.models.VarietiesMenu
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightBackgroundForCards
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.components.Favorite
-import com.example.applicationhome.view.model.AddBoxViewModel
 
 @Composable
-fun Varieties(viewModel: AddBoxViewModel = viewModel()){
+fun Varieties(){
     val categories = VarietiesMenu.categoriesList()
     Surface(modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),color = Color.LightBrownForBackground){
         LazyColumn(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.spacedBy(5.dp)){

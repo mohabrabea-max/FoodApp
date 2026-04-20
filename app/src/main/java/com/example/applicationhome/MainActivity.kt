@@ -9,7 +9,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.applicationhome.ui.theme.screens.FinalScreen
+import com.example.applicationhome.view.model.ItemScreenViewModel
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -20,7 +22,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-            FinalScreen(scrollBehavior, drawerState)
+            val viewModel: ItemScreenViewModel = viewModel()
+            FinalScreen(scrollBehavior, drawerState, viewModel)
         }
     }
 }

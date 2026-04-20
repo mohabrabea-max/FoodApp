@@ -1,7 +1,9 @@
 package com.example.applicationhome.data.models
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.ui.graphics.Color
@@ -63,7 +65,17 @@ object ProfileData {
         Account("Phone Number","01011223344",Icons.Default.Phone),
         Account("Country","Egypt",Icons.Default.LocationOn)
     )
+
+    val settings = listOf(
+        Settings("Notifications", "Disabled", Icons.Default.Notifications),
+        Settings("Language", "English", Icons.Default.AccountCircle),
+        Settings("Country", "Egypt", Icons.Default.AccountCircle)
+    )
     fun profileData(): List<Account>{
         return profile
+    }
+
+    fun settingsata(): List<Settings>{
+        return settings
     }
 }

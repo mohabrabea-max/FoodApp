@@ -38,6 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -50,12 +51,13 @@ import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.Options
+import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState){
+fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, viewModel : ItemScreenViewModel = viewModel()){
     val navigationController = rememberNavController()
     val coroutineScope = rememberCoroutineScope()
 
@@ -66,7 +68,8 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
         Screens.Menu,
         Screens.Restaurants,
         Screens.Varieties,
-        Screens.Search
+        Screens.Search,
+        Screens.ItemScreen
     )
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -144,13 +147,14 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
                             popExitTransition = { ExitTransition.None }
                         ) {
                             when(item){
-                                is Screens.HomeScreen -> HomeScreen()
+                                is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel = viewModel)
                                 is Screens.Profile -> Profile()
                                 is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController)
                                 is Screens.Search -> Search()
-                                is Screens.Menu -> Menu()
+                                is Screens.Menu -> Menu(drawerState, coroutineScope, navigationController)
                                 is Screens.Restaurants -> Restaurants()
                                 is Screens.Varieties -> Varieties()
+                                is Screens.ItemScreen -> ItemScreen(viewModel)
                             }
                         }
                     }

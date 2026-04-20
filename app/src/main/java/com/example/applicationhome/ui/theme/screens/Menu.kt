@@ -5,19 +5,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.FoodDataSource
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.components.ItemsBox
-import com.example.applicationhome.view.model.AddBoxViewModel
+import com.example.applicationhome.view.model.ItemScreenViewModel
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
-fun Menu(viewModel: AddBoxViewModel = viewModel()){
+fun Menu(drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, viewModel: ItemScreenViewModel = viewModel()){
     val menu = FoodDataSource.allMenu()
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -28,7 +31,10 @@ fun Menu(viewModel: AddBoxViewModel = viewModel()){
             columns = GridCells.Fixed(2),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ){
-            items(menu){ item -> ItemsBox(item) }
+            items(menu){ item ->
+                ItemsBox(item, drawerState, coroutineScope, navigationController, viewModel)
+
+            }
         }
     }
 }

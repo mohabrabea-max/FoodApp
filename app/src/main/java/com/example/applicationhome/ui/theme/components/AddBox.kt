@@ -40,7 +40,8 @@ fun AddBox(id: Int, ordernumber : AddBoxViewModel = viewModel()){
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var count = ordernumber.itemsCount[id] ?: 0
-    var targetWidth = if(count == 0) 35.dp else 120.dp
+    var activid = ordernumber.activId == id
+    var targetWidth = if(count == 0 || activid == false) 35.dp else 120.dp
     Box(
         modifier = Modifier.
         animateContentSize().
@@ -55,6 +56,14 @@ fun AddBox(id: Int, ordernumber : AddBoxViewModel = viewModel()){
         if(count == 0) {
             Text(
                 text = "+",
+                fontSize = 20.sp,
+                style = MaterialTheme.typography.labelLarge,
+                color = Color.BrownForFont,
+                textAlign = TextAlign.Center
+            )
+        }else if(count > 0 && activid == false){
+            Text(
+                text = count.toString(),
                 fontSize = 20.sp,
                 style = MaterialTheme.typography.labelLarge,
                 color = Color.BrownForFont,
@@ -92,8 +101,10 @@ fun AddBox(id: Int, ordernumber : AddBoxViewModel = viewModel()){
                         value = count.toString(),
                         onValueChange = { newValue ->
                             if (newValue.isNotEmpty()) {
-                                val newCount = newValue.toIntOrNull() ?: count
-                                ordernumber.updateCount(id, newCount)
+                                if(newValue.all {it.isDigit()} && newValue.length <= 2){
+                                    val newCount = newValue.toIntOrNull() ?: count
+                                    ordernumber.updateCount(id, newCount)
+                                }
                             }else{
                                 val newCount = newValue.toIntOrNull() ?: 0
                                 ordernumber.updateCount(id, newCount)
