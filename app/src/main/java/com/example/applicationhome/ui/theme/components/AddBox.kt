@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,25 +32,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.applicationhome.ui.theme.BrownForFont
-import com.example.applicationhome.ui.theme.LightBackgroundForCards
-import com.example.applicationhome.ui.theme.LightBrownForBackground
+import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.view.model.AddBoxViewModel
 
 @Composable
-fun AddBox(id: Int, ordernumber : AddBoxViewModel = viewModel()){
+fun AddBox(modifier: Modifier = Modifier, color : Color, id: Int, ordernumber : AddBoxViewModel = viewModel()){
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var count = ordernumber.itemsCount[id] ?: 0
     var activid = ordernumber.activId == id
     var targetWidth = if(count == 0 || activid == false) 35.dp else 120.dp
     Box(
-        modifier = Modifier.
+        modifier = modifier.
         animateContentSize().
         padding(10.dp).
         height(35.dp).
         width(targetWidth).
         clip(CircleShape).
-        background(Color.LightBackgroundForCards.copy(alpha = 0.8f)).
+        background(color.copy(alpha = 0.8f)).
         clickable {ordernumber.addBoxNumberPlus(id)},
         contentAlignment = Alignment.Center
     ){
@@ -73,7 +73,7 @@ fun AddBox(id: Int, ordernumber : AddBoxViewModel = viewModel()){
             Row(
                 modifier = Modifier.
                 fillMaxSize().
-                background(Color.LightBrownForBackground)
+                background(color)
             ){
                 Box(
                     modifier = Modifier.
@@ -90,6 +90,7 @@ fun AddBox(id: Int, ordernumber : AddBoxViewModel = viewModel()){
                         textAlign = TextAlign.Center
                     )
                 }
+                VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.padding(5.dp))
                 Box(
                     modifier = Modifier.
                     weight(1f).
@@ -124,6 +125,7 @@ fun AddBox(id: Int, ordernumber : AddBoxViewModel = viewModel()){
                         )
                     )
                 }
+                VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.padding(5.dp))
                 Box(
                     modifier = Modifier.
                     weight(1f).

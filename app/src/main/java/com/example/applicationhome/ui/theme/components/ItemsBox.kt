@@ -123,7 +123,7 @@ fun ItemsBox(item: FoodItem, drawerState : DrawerState, coroutineScope : Corouti
         ){
             Favorite(modifier = Modifier.padding(10.dp).clip(CircleShape).size(35.dp).background(Color.LightBrownForBackground.copy(alpha = 0.8f)),id = item.id)
             Spacer(modifier = Modifier.height(33.dp))
-            AddBox(item.id)
+            AddBox(color = Color.LightBrownForBackground, id = item.id)
         }
     }
 }

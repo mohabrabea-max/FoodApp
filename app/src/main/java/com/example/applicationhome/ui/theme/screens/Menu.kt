@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.FoodDataSource
 import com.example.applicationhome.ui.theme.LightBrownForBackground
@@ -20,7 +19,7 @@ import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
-fun Menu(drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, viewModel: ItemScreenViewModel = viewModel()){
+fun Menu(drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, viewModel: ItemScreenViewModel){
     val menu = FoodDataSource.allMenu()
     Surface(
         modifier = Modifier.fillMaxSize(),

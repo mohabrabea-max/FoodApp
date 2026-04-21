@@ -38,7 +38,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -57,7 +56,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, viewModel : ItemScreenViewModel = viewModel()){
+fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, viewModel : ItemScreenViewModel){
     val navigationController = rememberNavController()
     val coroutineScope = rememberCoroutineScope()
 
@@ -151,7 +150,7 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
                                 is Screens.Profile -> Profile()
                                 is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController)
                                 is Screens.Search -> Search()
-                                is Screens.Menu -> Menu(drawerState, coroutineScope, navigationController)
+                                is Screens.Menu -> Menu(drawerState, coroutineScope, navigationController, viewModel)
                                 is Screens.Restaurants -> Restaurants()
                                 is Screens.Varieties -> Varieties()
                                 is Screens.ItemScreen -> ItemScreen(viewModel)
