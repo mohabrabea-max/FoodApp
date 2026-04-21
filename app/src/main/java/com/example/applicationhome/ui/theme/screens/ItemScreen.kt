@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -24,6 +25,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,11 +42,13 @@ import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.components.AddBox
 import com.example.applicationhome.ui.theme.components.CartButton
+import com.example.applicationhome.ui.theme.components.Favorite
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
 @Composable
 fun ItemScreen(viewModel: ItemScreenViewModel){
     val item = viewModel.selectedItem
+    val selected = remember{mutableStateOf("Mediam")}
     var size = 3
     if(item != null){
         Box(
@@ -61,6 +66,9 @@ fun ItemScreen(viewModel: ItemScreenViewModel){
                                 modifier = Modifier.
                                 fillMaxSize()
                             )
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd){
+                                Favorite(modifier = Modifier.padding(10.dp).clip(CircleShape).size(50.dp).background(Color.LightBrownForBackground.copy(alpha = 0.8f)), modifier2 = Modifier.size(30.dp), id = item.id)
+                            }
                         }
                         Divider()
                         Spacer(modifier = Modifier.height(20.dp))
@@ -103,30 +111,60 @@ fun ItemScreen(viewModel: ItemScreenViewModel){
                         ){
                             if(size == 3){
                                 Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-                                    Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable {}, contentAlignment = Alignment.Center){
-                                        Text(text = "Beg", color = Color.BrownForFont)
+                                    Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{selected.value = "Beg"}, contentAlignment = Alignment.Center){
+                                        if(selected.value == "Beg"){
+                                            Box(modifier = Modifier.fillMaxSize().background(Color.BrownForFont), contentAlignment = Alignment.Center){
+                                                Text(text = "Beg", color = Color.BackgroundForCards)
+                                            }
+                                        }else{
+                                            Text(text = "Beg", color = Color.BrownForFont)
+                                        }
                                     }
-                                    VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.padding(5.dp))
-                                    Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable {}, contentAlignment = Alignment.Center){
-                                        Text(text = "Mediam", color = Color.BrownForFont)
+                                    VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(30.dp))
+                                    Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{selected.value = "Mediam"}, contentAlignment = Alignment.Center){
+                                        if(selected.value == "Mediam"){
+                                            Box(modifier = Modifier.fillMaxSize().background(Color.BrownForFont), contentAlignment = Alignment.Center){
+                                                Text(text = "Mediam", color = Color.BackgroundForCards)
+                                            }
+                                        }else{
+                                            Text(text = "Mediam", color = Color.BrownForFont)
+                                        }
                                     }
-                                    VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.padding(5.dp))
-                                    Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable {}, contentAlignment = Alignment.Center){
-                                        Text(text = "Small", color = Color.BrownForFont)
+                                    VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(30.dp))
+                                    Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{selected.value = "Small"}, contentAlignment = Alignment.Center){
+                                        if(selected.value == "Small"){
+                                            Box(modifier = Modifier.fillMaxSize().background(Color.BrownForFont), contentAlignment = Alignment.Center){
+                                                Text(text = "Small", color = Color.BackgroundForCards)
+                                            }
+                                        }else{
+                                            Text(text = "Small", color = Color.BrownForFont)
+                                        }
                                     }
                                 }
                             }else if(size == 2){
                                 Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-                                    Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable {}, contentAlignment = Alignment.Center){
-                                        Text(text = "Beg", color = Color.BrownForFont)
+                                    Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{selected.value = "Beg"}, contentAlignment = Alignment.Center){
+                                        if(selected.value == "Beg"){
+                                            Box(modifier = Modifier.fillMaxSize().background(Color.BrownForFont), contentAlignment = Alignment.Center){
+                                                Text(text = "Beg", color = Color.BackgroundForCards)
+                                            }
+                                        }else{
+                                            Text(text = "Beg", color = Color.BrownForFont)
+                                        }
                                     }
                                     VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.padding(5.dp))
-                                    Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable {}, contentAlignment = Alignment.Center){
-                                        Text(text = "Mediam", color = Color.BrownForFont)
+                                    Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{selected.value = "Mediam"}, contentAlignment = Alignment.Center){
+                                        if(selected.value == "Mediam"){
+                                            Box(modifier = Modifier.fillMaxSize().background(Color.BrownForFont), contentAlignment = Alignment.Center){
+                                                Text(text = "Mediam", color = Color.BackgroundForCards)
+                                            }
+                                        }else{
+                                            Text(text = "Mediam", color = Color.BrownForFont)
+                                        }
                                     }
                                 }
                             }else{
-                                Box(modifier = Modifier.fillMaxSize().clickable {}, contentAlignment = Alignment.Center){
+                                Box(modifier = Modifier.fillMaxSize().clickable{}, contentAlignment = Alignment.Center){
                                     Text(text = item.size, color = Color.BrownForFont)
                                 }
                             }
@@ -139,7 +177,8 @@ fun ItemScreen(viewModel: ItemScreenViewModel){
 
             }
             Row(modifier = Modifier.fillMaxWidth().height(60.dp).align(Alignment.BottomCenter).background(Color.BrownForFont.copy(alpha = 0.1f)), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-                AddBox(modifier = Modifier.padding(5.dp).height(48.dp).clip(CircleShape).shadow(elevation = 3.dp, shape = RoundedCornerShape(30.dp)).background(Color.LightGray.copy(alpha = 1f)), color = Color.LightGray, id = item.id)
+                AddBox(modifier = Modifier.height(48.dp).clip(CircleShape).shadow(elevation = 3.dp, shape = RoundedCornerShape(30.dp)).background(Color.LightGray.copy(alpha = 1f)), color = Color.LightGray, id = item.id)
+                Spacer(modifier = Modifier.width(5.dp))
                 //AddBox2(modifier = Modifier.padding(5.dp).height(48.dp).clip(CircleShape), id = item.id)
                 CartButton(modifier = Modifier.padding(5.dp))
             }

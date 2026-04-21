@@ -14,10 +14,12 @@ class AddBoxViewModel : ViewModel(){
     fun addBoxNumberPlus(id : Int){
         var current = itemsCount[id] ?: 0
         var cart2 = cart[id] ?: 0
-        itemsCount[id] = current + 1
-        cart[id] = cart2 + 1
-        totalCart.value = totalCart.value + 1
-        activId = id
+        if(current < 99){
+            itemsCount[id] = current + 1
+            cart[id] = cart2 + 1
+            totalCart.value = totalCart.value + 1
+            activId = id
+        }
     }
     fun addBoxNumberMinus(id : Int){
         var current = itemsCount[id] ?: 0

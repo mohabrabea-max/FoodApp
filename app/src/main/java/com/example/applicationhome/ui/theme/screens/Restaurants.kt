@@ -64,7 +64,7 @@ fun Restaurants(){
                             Spacer(modifier = Modifier.height(30.dp))
                         }
                         VerticalDivider()
-                        Favorite(modifier = Modifier.fillMaxSize().weight(0.5f).padding(10.dp).clip(CircleShape).background(Color.LightBrownForBackground), item.id)
+                        Favorite(modifier = Modifier.fillMaxSize().weight(0.5f).padding(10.dp).clip(CircleShape).background(Color.LightBrownForBackground), id = item.id)
                     }
                 }
             }

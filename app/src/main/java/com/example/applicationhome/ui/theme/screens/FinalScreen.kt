@@ -48,7 +48,6 @@ import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.components.MyBottonBar
-import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.Options
 import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.launch
@@ -130,7 +129,7 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
-            topBar = { MyTopBar(scrollBehavior,navigationController, drawerState) },
+            //topBar = { MyTopBar(scrollBehavior,navigationController, drawerState) },
 
             bottomBar = { MyBottonBar(navigationController) }
 
@@ -146,7 +145,7 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
                             popExitTransition = { ExitTransition.None }
                         ) {
                             when(item){
-                                is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel = viewModel)
+                                is Screens.HomeScreen -> HomeScreen(scrollBehavior, drawerState, coroutineScope, navigationController, viewModel = viewModel)
                                 is Screens.Profile -> Profile()
                                 is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController)
                                 is Screens.Search -> Search()

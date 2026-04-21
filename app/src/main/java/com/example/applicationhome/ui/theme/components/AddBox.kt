@@ -3,6 +3,7 @@ package com.example.applicationhome.ui.theme.components
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -73,7 +74,8 @@ fun AddBox(modifier: Modifier = Modifier, color : Color, id: Int, ordernumber : 
             Row(
                 modifier = Modifier.
                 fillMaxSize().
-                background(color)
+                background(color),
+                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
             ){
                 Box(
                     modifier = Modifier.
@@ -90,7 +92,7 @@ fun AddBox(modifier: Modifier = Modifier, color : Color, id: Int, ordernumber : 
                         textAlign = TextAlign.Center
                     )
                 }
-                VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.padding(5.dp))
+                VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(20.dp))
                 Box(
                     modifier = Modifier.
                     weight(1f).
@@ -125,7 +127,7 @@ fun AddBox(modifier: Modifier = Modifier, color : Color, id: Int, ordernumber : 
                         )
                     )
                 }
-                VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.padding(5.dp))
+                VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(20.dp))
                 Box(
                     modifier = Modifier.
                     weight(1f).

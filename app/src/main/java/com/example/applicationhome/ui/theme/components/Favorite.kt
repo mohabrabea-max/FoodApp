@@ -23,7 +23,7 @@ import com.example.applicationhome.view.model.FavoriteViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun Favorite(modifier: Modifier = Modifier, id: Int, favoritState : FavoriteViewModel = viewModel()){
+fun Favorite(modifier: Modifier = Modifier, modifier2 : Modifier = Modifier, id: Int, favoritState : FavoriteViewModel = viewModel()){
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
@@ -55,14 +55,14 @@ fun Favorite(modifier: Modifier = Modifier, id: Int, favoritState : FavoriteView
                 imageVector = Icons.Default.FavoriteBorder,
                 contentDescription = "More",
                 tint = Color.BrownForFont,
-                modifier = Modifier.size(20.dp).scale(scale.value)
+                modifier = modifier2.size(20.dp).scale(scale.value)
             )
         }else{
             Icon(
                 imageVector = Icons.Default.Favorite,
                 contentDescription = "More",
                 tint = Color.Red,
-                modifier = Modifier.size(20.dp).scale(scale.value)
+                modifier = modifier2.size(20.dp).scale(scale.value)
             )
         }
     }

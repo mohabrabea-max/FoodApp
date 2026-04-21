@@ -29,45 +29,44 @@ import com.example.applicationhome.view.model.AddBoxViewModel
 fun CartButton(modifier: Modifier = Modifier, cartNumber : AddBoxViewModel = viewModel()){
     val context = LocalContext.current
     var cart2 = cartNumber.totalCart.value ?: 0
-        if(cart2 > 0){
-            Box(
-                modifier = modifier.size(150.dp).
-                aspectRatio(3f).
-                clip(shape = RoundedCornerShape(30.dp)).
-                background(Color.Blue).
-                clickable{
-                    cartNumber.addToCart()
-                    Toast.makeText(context, "Added To Cart", Toast.LENGTH_SHORT).show()
-                }.
-                padding(5.dp),
-                contentAlignment = Alignment.Center
-            ){
-                Row(verticalAlignment = Alignment.CenterVertically){
-                    Icon(Icons.Default.ShoppingCart, contentDescription = "Cart", tint = Color.White, modifier = Modifier.weight(1f))
-                    VerticalDivider(modifier = Modifier.align(Alignment.CenterVertically))
-                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center){
-                        Text(text = cart2.toString(), color = Color.White)
-                    }
-
-                }
-            }
-        }else{
-            Box(
-                modifier = Modifier.size(150.dp).
-                aspectRatio(3f).
-                clip(shape = RoundedCornerShape(30.dp)).
-                background(Color.LightGray).
-                clickable{}.
-                padding(5.dp),
-                contentAlignment = Alignment.Center
-            ){
-                Row(verticalAlignment = Alignment.CenterVertically){
-                    Icon(Icons.Default.ShoppingCart, contentDescription = "Cart", tint = Color.BrownForFont, modifier = Modifier.weight(1f))
-                    VerticalDivider(color = Color.BrownForFont, modifier = Modifier.align(Alignment.CenterVertically))
-                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center){
-                        Text(text = "Cart", color = Color.BrownForFont)
-                    }
+    if(cart2 > 0){
+        Box(
+            modifier = modifier.size(150.dp).
+            aspectRatio(3f).
+            clip(shape = RoundedCornerShape(30.dp)).
+            background(Color.Blue).
+            clickable{
+                cartNumber.addToCart()
+                Toast.makeText(context, "Added To Cart", Toast.LENGTH_SHORT).show()
+            }.
+            padding(5.dp),
+            contentAlignment = Alignment.Center
+        ){
+            Row(verticalAlignment = Alignment.CenterVertically){
+                Icon(Icons.Default.ShoppingCart, contentDescription = "Cart", tint = Color.White, modifier = Modifier.weight(1f))
+                VerticalDivider(modifier = Modifier.align(Alignment.CenterVertically))
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center){
+                    Text(text = cart2.toString(), color = Color.White)
                 }
             }
         }
+    }else{
+        Box(
+            modifier = Modifier.size(150.dp).
+            aspectRatio(3f).
+            clip(shape = RoundedCornerShape(30.dp)).
+            background(Color.LightGray).
+            clickable{}.
+            padding(5.dp),
+            contentAlignment = Alignment.Center
+        ){
+            Row(verticalAlignment = Alignment.CenterVertically){
+                Icon(Icons.Default.ShoppingCart, contentDescription = "Cart", tint = Color.BrownForFont, modifier = Modifier.weight(1f))
+                VerticalDivider(color = Color.BrownForFont, modifier = Modifier.align(Alignment.CenterVertically))
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center){
+                    Text(text = "Cart", color = Color.BrownForFont)
+                }
+            }
+        }
+    }
 }
