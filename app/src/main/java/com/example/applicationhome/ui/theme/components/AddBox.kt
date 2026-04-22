@@ -2,6 +2,7 @@ package com.example.applicationhome.ui.theme.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -51,7 +53,8 @@ fun AddBox(modifier: Modifier = Modifier, color : Color, id: Int, ordernumber : 
         width(targetWidth).
         clip(CircleShape).
         background(color.copy(alpha = 0.8f)).
-        clickable {ordernumber.addBoxNumberPlus(id)},
+        clickable {ordernumber.addBoxNumberPlus(id)}.
+        border(width = 0.5.dp, color = Color.BrownForFont.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)),
         contentAlignment = Alignment.Center
     ){
         if(count == 0) {

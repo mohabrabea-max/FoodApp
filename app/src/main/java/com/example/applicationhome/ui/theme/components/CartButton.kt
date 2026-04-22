@@ -2,6 +2,7 @@ package com.example.applicationhome.ui.theme.components
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -22,7 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.view.model.AddBoxViewModel
 
 @Composable
@@ -39,6 +39,7 @@ fun CartButton(modifier: Modifier = Modifier, cartNumber : AddBoxViewModel = vie
                 cartNumber.addToCart()
                 Toast.makeText(context, "Added To Cart", Toast.LENGTH_SHORT).show()
             }.
+            border(width = 1.dp, color = Color.White.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)).
             padding(5.dp),
             contentAlignment = Alignment.Center
         ){
@@ -47,24 +48,6 @@ fun CartButton(modifier: Modifier = Modifier, cartNumber : AddBoxViewModel = vie
                 VerticalDivider(modifier = Modifier.align(Alignment.CenterVertically))
                 Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center){
                     Text(text = cart2.toString(), color = Color.White)
-                }
-            }
-        }
-    }else{
-        Box(
-            modifier = Modifier.size(150.dp).
-            aspectRatio(3f).
-            clip(shape = RoundedCornerShape(30.dp)).
-            background(Color.LightGray).
-            clickable{}.
-            padding(5.dp),
-            contentAlignment = Alignment.Center
-        ){
-            Row(verticalAlignment = Alignment.CenterVertically){
-                Icon(Icons.Default.ShoppingCart, contentDescription = "Cart", tint = Color.BrownForFont, modifier = Modifier.weight(1f))
-                VerticalDivider(color = Color.BrownForFont, modifier = Modifier.align(Alignment.CenterVertically))
-                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center){
-                    Text(text = "Cart", color = Color.BrownForFont)
                 }
             }
         }

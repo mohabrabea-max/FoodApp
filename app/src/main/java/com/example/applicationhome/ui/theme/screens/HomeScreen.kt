@@ -14,6 +14,9 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -24,33 +27,35 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.FoodDataSource
+import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.data.models.VarietiesMenu
-import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.components.CartButton
 import com.example.applicationhome.ui.theme.components.CategoriesBox
 import com.example.applicationhome.ui.theme.components.ItemsBox
+import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.MyTopBar
-import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, cartNumber : AddBoxViewModel = viewModel(), viewModel: ItemScreenViewModel){
+fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, viewModel: ItemScreenViewModel){
     val menu = FoodDataSource.allMenu()
     val categories = VarietiesMenu.categoriesList()
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection).
         fillMaxSize().
         background(Color.LightBrownForBackground),
-        topBar = { MyTopBar(scrollBehavior,navigationController, drawerState) }
+        topBar = { MyTopBar(scrollBehavior, {coroutineScope.launch{drawerState.open()}}, {navigationController.navigate(Screens.Notifications.screen)}, Icons.Default.Notifications, {navigationController.navigate(Screens.Search.screen)}, Icons.Default.Search) },
+        bottomBar = { MyBottonBar(navigationController) }
+        //floatingActionButton = { CartButton() }
     ){innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)){
+        Box(modifier = Modifier.background(Color.LightBrownForBackground).padding(innerPadding)){
             LazyVerticalGrid (
                 modifier = Modifier.fillMaxSize(),
                 columns = GridCells.Fixed(2),
@@ -65,7 +70,7 @@ fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerStat
 
                 items(menu){ item -> ItemsBox(item, drawerState, coroutineScope, navigationController, viewModel) }
             }
-            Box(modifier = Modifier.fillMaxWidth().height(60.dp).align(Alignment.BottomCenter).background(Color.BrownForFont.copy(alpha = 0.1f)), contentAlignment = Alignment.Center){
+            Box(modifier = Modifier.fillMaxWidth().height(60.dp).align(Alignment.BottomCenter), contentAlignment = Alignment.Center){
                 CartButton()
             }
         }

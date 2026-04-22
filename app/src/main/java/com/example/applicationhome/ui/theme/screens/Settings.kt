@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -52,7 +53,7 @@ import kotlinx.coroutines.launch
 fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController){
     val context = LocalContext.current.applicationContext
     val settings = ProfileData.settingsata()
-    Surface(modifier = Modifier.background(Color.LightBrownForBackground).fillMaxSize()){
+    Surface(modifier = Modifier.background(Color.LightBrownForBackground).fillMaxSize().statusBarsPadding()){
         LazyColumn(modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),verticalArrangement = Arrangement.spacedBy(16.dp)){
             item{
                 Box(
@@ -61,7 +62,7 @@ fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigat
                     background(Color.LightBackgroundForCards).
                     clickable{
                         coroutineScope.launch{drawerState.close()}
-                        navigationController.navigate(Screens.Profile.screen){popUpTo(0)}
+                        navigationController.navigate(Screens.Profile.screen)
                     }
                 ){
                     Row(

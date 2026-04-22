@@ -35,9 +35,9 @@ object FoodDataSource {
 
 object VarietiesMenu {
     private val categorieslist = listOf(
-        CategoriesImage(1,"Burger", R.drawable.burgerpng),
-        CategoriesImage(2,"Pizza", R.drawable.pezzapng),
-        CategoriesImage(3,"Chicken", R.drawable.chickenpng)
+        CategoriesImage(11,"Burger", R.drawable.burgerpng),
+        CategoriesImage(22,"Pizza", R.drawable.pezzapng),
+        CategoriesImage(33,"Chicken", R.drawable.chickenpng)
     )
     fun categoriesList(): List<CategoriesImage>{
         return categorieslist
@@ -46,12 +46,12 @@ object VarietiesMenu {
 
 object RestaurantsMenu {
     private val restaurants = listOf(
-        Restaurants(1, "KFC", R.drawable.kfc, 4.5, Color.White),
-        Restaurants(2, "McDonald's", R.drawable.mcdonalds, 4.5, Color.Red),
-        Restaurants(3, "Bazooka", R.drawable.bazooka, 4.5, Color.Black),
-        Restaurants(4, "Burger King", R.drawable.burgerking, 4.5, Color.White),
-        Restaurants(5, "Pizza Hut", R.drawable.pizzahut, 4.5, Color.White),
-        Restaurants(6, "B.Laban", R.drawable.belaban, 4.5, Color.White)
+        Restaurants(111, "KFC", R.drawable.kfc, 4.5, Color.White),
+        Restaurants(222, "McDonald's", R.drawable.mcdonalds, 4.5, Color.Red),
+        Restaurants(333, "Bazooka", R.drawable.bazooka, 4.5, Color.Black),
+        Restaurants(444, "Burger King", R.drawable.burgerking, 4.5, Color.White),
+        Restaurants(555, "Pizza Hut", R.drawable.pizzahut, 4.5, Color.White),
+        Restaurants(666, "B.Laban", R.drawable.belaban, 4.5, Color.White)
     )
     fun restaurantsMenu(): List<Restaurants>{
         return restaurants

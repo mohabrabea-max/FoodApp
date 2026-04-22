@@ -60,7 +60,7 @@ fun ItemsBox(item: FoodItem, drawerState : DrawerState, coroutineScope : Corouti
         clickable{
             coroutineScope.launch{drawerState.close()}
             viewModel.selectedItem = item
-            navigationController.navigate(Screens.ItemScreen.screen){popUpTo(0)}
+            navigationController.navigate(Screens.ItemScreen.screen)
         }.
         padding(5.dp).
         shadow(elevation = 3.dp, shape = RoundedCornerShape(10.dp))

@@ -47,7 +47,6 @@ import com.example.applicationhome.ui.theme.BackgroundForCards
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
-import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.Options
 import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.launch
@@ -67,7 +66,8 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
         Screens.Restaurants,
         Screens.Varieties,
         Screens.Search,
-        Screens.ItemScreen
+        Screens.ItemScreen,
+        Screens.Notifications
     )
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -81,7 +81,7 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
                     height(80.dp).
                     clickable{
                         coroutineScope.launch{drawerState.close()}
-                        navigationController.navigate(Screens.Profile.screen){popUpTo(0)}
+                        navigationController.navigate(Screens.Profile.screen)
                     }
                 ){
                     Row(
@@ -129,12 +129,12 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
-            //topBar = { MyTopBar(scrollBehavior,navigationController, drawerState) },
+            //topBar = { MyTopBar(scrollBehavior, {coroutineScope.launch{drawerState.open()}}, {navigationController.navigate(Screens.Notifications.screen)}, Icons.Default.Notifications, {navigationController.navigate(Screens.Search.screen)}, Icons.Default.Search) },
 
-            bottomBar = { MyBottonBar(navigationController) }
+            //bottomBar = { MyBottonBar(navigationController) }
 
         ){innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding)){
+            Box(modifier = Modifier){
                 NavHost(navController = navigationController, startDestination = Screens.HomeScreen.screen){
                     allScreens.forEach { item ->
                         composable(
@@ -149,10 +149,11 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
                                 is Screens.Profile -> Profile()
                                 is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController)
                                 is Screens.Search -> Search()
-                                is Screens.Menu -> Menu(drawerState, coroutineScope, navigationController, viewModel)
+                                is Screens.Menu -> Menu(drawerState, coroutineScope, navigationController, viewModel, scrollBehavior)
                                 is Screens.Restaurants -> Restaurants()
                                 is Screens.Varieties -> Varieties()
-                                is Screens.ItemScreen -> ItemScreen(viewModel)
+                                is Screens.ItemScreen -> ItemScreen(scrollBehavior, navigationController, viewModel)
+                                is Screens.Notifications -> Notifications()
                             }
                         }
                     }

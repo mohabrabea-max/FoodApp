@@ -52,7 +52,7 @@ fun MyBottonBar(navController : NavController){
                 IconButton(
                     onClick = {
                         selected.value = item.icon
-                        navController.navigate(item.screens){popUpTo(0)}
+                        navController.navigate(item.screens)
                     },
                     modifier = Modifier.weight(1f)
                 ){

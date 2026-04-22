@@ -15,14 +15,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun Search(){
+fun Notifications(){
     Box(modifier = Modifier.fillMaxSize()){
         Column(
             modifier = Modifier.fillMaxSize().align(Alignment.Center).padding(10.dp).statusBarsPadding(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ){
-            Text(text = "Search", fontSize = 30.sp, color = Color.Black)
+            Text(text = "Notifications", fontSize = 30.sp, color = Color.Black)
         }
     }
 }
