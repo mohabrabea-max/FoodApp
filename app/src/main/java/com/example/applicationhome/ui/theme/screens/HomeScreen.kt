@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.FoodDataSource
@@ -37,6 +36,7 @@ import com.example.applicationhome.ui.theme.components.CategoriesBox
 import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.MyTopBar
+import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -44,22 +44,23 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, viewModel: ItemScreenViewModel){
+fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, viewModel: ItemScreenViewModel, viewModelForBottomBar : BottomBarViewModel){
     val menu = FoodDataSource.allMenu()
     val categories = VarietiesMenu.categoriesList()
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection).
+        modifier = Modifier.
         fillMaxSize().
         background(Color.LightBrownForBackground),
         topBar = { MyTopBar(scrollBehavior, {coroutineScope.launch{drawerState.open()}}, {navigationController.navigate(Screens.Notifications.screen)}, Icons.Default.Notifications, {navigationController.navigate(Screens.Search.screen)}, Icons.Default.Search) },
-        bottomBar = { MyBottonBar(navigationController) }
+        bottomBar = { MyBottonBar(navigationController, viewModelForBottomBar) }
         //floatingActionButton = { CartButton() }
     ){innerPadding ->
         Box(modifier = Modifier.background(Color.LightBrownForBackground).padding(innerPadding)){
             LazyVerticalGrid (
                 modifier = Modifier.fillMaxSize(),
                 columns = GridCells.Fixed(2),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                //contentPadding = innerPadding
             ){
                 item(span = { GridItemSpan(2) }){ LazyRow(
                     modifier = Modifier.height(150.dp),
@@ -68,7 +69,7 @@ fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerStat
                     items(categories) { category -> CategoriesBox(category) } }
                 }
 
-                items(menu){ item -> ItemsBox(item, drawerState, coroutineScope, navigationController, viewModel) }
+                items(menu){ item -> ItemsBox(item, navigationController, viewModel) }
             }
             Box(modifier = Modifier.fillMaxWidth().height(60.dp).align(Alignment.BottomCenter), contentAlignment = Alignment.Center){
                 CartButton()
@@ -76,3 +77,5 @@ fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerStat
         }
     }
 }
+
+//nestedScroll(scrollBehavior.nestedScrollConnection)

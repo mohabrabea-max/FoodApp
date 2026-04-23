@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.applicationhome.ui.theme.BrownForFont
+import com.example.applicationhome.ui.theme.Orange
 import com.example.applicationhome.view.model.FavoriteViewModel
 import kotlinx.coroutines.launch
 
@@ -54,14 +54,14 @@ fun Favorite(modifier: Modifier = Modifier, modifier2 : Modifier = Modifier, id:
             Icon(
                 imageVector = Icons.Default.FavoriteBorder,
                 contentDescription = "More",
-                tint = Color.BrownForFont,
+                tint = Color.Orange,
                 modifier = modifier2.size(20.dp).scale(scale.value)
             )
         }else{
             Icon(
                 imageVector = Icons.Default.Favorite,
                 contentDescription = "More",
-                tint = Color.Red,
+                tint = Color.Orange,
                 modifier = modifier2.size(20.dp).scale(scale.value)
             )
         }

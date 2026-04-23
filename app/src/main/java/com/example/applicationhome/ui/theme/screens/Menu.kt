@@ -19,7 +19,6 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.FoodDataSource
@@ -37,7 +36,7 @@ import kotlinx.coroutines.launch
 fun Menu(drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, viewModel: ItemScreenViewModel, scrollBehavior: TopAppBarScrollBehavior){
     val menu = FoodDataSource.allMenu()
     Scaffold(
-        modifier = Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection).background(Color.LightBrownForBackground),
+        modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),
         topBar = { MyTopBar(scrollBehavior, {coroutineScope.launch{drawerState.open()}}, {navigationController.navigate(Screens.Notifications.screen)}, Icons.Default.Notifications, {navigationController.navigate(Screens.Search.screen)}, Icons.Default.Search) }
     ){innerPadding ->
         Box(modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground).padding(innerPadding)){
@@ -47,7 +46,7 @@ fun Menu(drawerState : DrawerState, coroutineScope : CoroutineScope, navigationC
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ){
                 items(menu){ item ->
-                    ItemsBox(item, drawerState, coroutineScope, navigationController, viewModel)
+                    ItemsBox(item, navigationController, viewModel)
 
                 }
             }

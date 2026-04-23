@@ -10,17 +10,22 @@ import androidx.compose.ui.graphics.Color
 import com.example.applicationhome.R
 
 object FoodDataSource {
-
+    private var imageList = mutableListOf<Int>(
+        R.drawable.pezzapng,
+        R.drawable.chickenpng,
+        R.drawable.myphoto
+    )
     private val pizzamenu = listOf(
-        FoodItem(1, "Big Pizza", 200.0, R.drawable.pezzapng, "B", "Pizza - Potato - Drink"),
-        FoodItem(2, "Medium Pizza", 150.0, R.drawable.pezzapng, "M", "Pizza - Potato - Drink"),
-        FoodItem(3, "Small Pizza", 100.0, R.drawable.pezzapng, "S", "Pizza - Potato - Drink"),
+        FoodItem(1, "Peprony Pizza", imageList, mapOf("Big" to 200.0, "Medium" to 150.0, "Small" to 100.0), listOf("Big Fries", "Big Coleslaw", "Mozzarella Sticks6")),
+        FoodItem(2, "Chicken Pizza", imageList, mapOf("Big" to 190.0, "Medium" to 140.0, "Small" to 90.0), listOf("Medium Fries", "Medium Coleslaw", "Mozzarella Sticks4")),
+        FoodItem(3, "Beef Pizza", imageList, mapOf("Big" to 210.0, "Medium" to 160.0, "Small" to 110.0), listOf("Small Fries", "Small Coleslaw", "Mozzarella Sticks2")),
     )
     private val chickenmenu = listOf(
-        FoodItem(4, "10 Pieces Of Chicken", 380.0, R.drawable.chickenpng, "10 Pieces", "10 Pieces Chicken - Potato - Drink"),
-        FoodItem(5, "5 Pieces Of Chicken", 210.0, R.drawable.chickenpng, "5 Pieces", "5 Pieces Chicken - Potato - Drink"),
-        FoodItem(6, "3 Pieces Of Chicken", 130.0, R.drawable.chickenpng, "3 Pieces", "3 Pieces Chicken - Potato - Drink")
+        FoodItem(4, "10 Pieces Of Chicken", imageList, mapOf("10 Pieces" to 380.0), listOf("Big Fries", "Big Coleslaw", "Mozzarella Sticks6")),
+        FoodItem(5, "5 Pieces Of Chicken", imageList, mapOf("5 Pieces" to 210.0), listOf("Medium Fries", "Medium Coleslaw", "Mozzarella Sticks4")),
+        FoodItem(6, "3 Pieces Of Chicken", imageList, mapOf("3 Pieces" to 130.0), listOf("Small Fries", "Small Coleslaw", "Mozzarella Sticks2"))
     )
+
     fun allMenu(): List<FoodItem>{
         return pizzamenu + chickenmenu
     }
@@ -31,6 +36,33 @@ object FoodDataSource {
         return chickenmenu
     }
 
+}
+
+object Snakes {
+    private var snakesMenu = mutableListOf(
+        Snake(12, "Frinch Fries",R.drawable.frenchfries, mapOf("Big" to 50.0, "Medium" to 40.0, "Small" to 30.0)),
+        Snake(13, "Coleslaw",R.drawable.coleslaw, mapOf("Big" to 60.0, "Medium" to 45.0, "Small" to 30.0)),
+        Snake(14, "Mozzarella Sticks",R.drawable.mozzarellasticks, mapOf("6 Pieces" to 70.0, "4 Pieces" to 50.0, "2 Pieces" to 30.0))
+    )
+    private val snaksForItems = mapOf<String, Snake>(
+        "Big Fries" to Snake(51, "Frinch Fries",R.drawable.frenchfries, mapOf("Big" to 50.0)),
+        "Medium Fries" to Snake(52, "Frinch Fries",R.drawable.frenchfries, mapOf("Medium" to 40.0)),
+        "Small Fries" to Snake(53, "Frinch Fries",R.drawable.frenchfries, mapOf("Small" to 30.0)),
+        "Big Coleslaw" to Snake(54, "Coleslaw",R.drawable.coleslaw, mapOf("Big" to 60.0)),
+        "Medium Coleslaw" to Snake(55, "Coleslaw",R.drawable.coleslaw, mapOf("Medium" to 45.0)),
+        "Small Coleslaw" to Snake(56, "Coleslaw",R.drawable.coleslaw, mapOf("Small" to 30.0)),
+        "Mozzarella Sticks6" to Snake(57, "Mozzarella Sticks",R.drawable.mozzarellasticks, mapOf("6 Pieces" to 70.0)),
+        "Mozzarella Sticks4" to Snake(58, "Mozzarella Sticks",R.drawable.mozzarellasticks, mapOf("4 Pieces" to 50.0)),
+        "Mozzarella Sticks2" to Snake(59, "Mozzarella Sticks",R.drawable.mozzarellasticks, mapOf("2 Pieces" to 30.0))
+
+
+    )
+    fun snakes(): List<Snake>{
+        return snakesMenu
+    }
+    fun snakesItems(): Map<String, Snake>{
+        return snaksForItems
+    }
 }
 
 object VarietiesMenu {

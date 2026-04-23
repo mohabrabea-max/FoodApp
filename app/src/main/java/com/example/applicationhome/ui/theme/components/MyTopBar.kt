@@ -16,17 +16,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import com.example.applicationhome.ui.theme.BackgroundForCards
-import com.example.applicationhome.ui.theme.BrownForFont
+import com.example.applicationhome.ui.theme.Orange
 
 //@OptIn(ExperimentalMaterial3Api::class)
 //@Composable
@@ -55,42 +50,34 @@ import com.example.applicationhome.ui.theme.BrownForFont
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyTopBar(scrollBehavior: TopAppBarScrollBehavior, onMenuClick: () -> Unit, onFirstClick: () -> Unit, firstIcon : ImageVector, onSecondeClick: () -> Unit, secondeIcon : ImageVector){
-    val maxHeight = 100.dp
-    val density = LocalDensity.current
-    val currentHeight by remember {
-        derivedStateOf {
-            (maxHeight + with(density) { scrollBehavior.state.heightOffset.toDp() })
-                .coerceAtLeast(0.dp)
-        }
-    }
     Surface(
         modifier = Modifier.
         fillMaxWidth().
-        height(currentHeight).
+        height(100.dp).
         statusBarsPadding(),
-        color = Color.BackgroundForCards
+        color = Color.Black.copy(alpha = 1f)
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically, // العناصر كلها هتتوسطن أوتوماتيكياً!
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(onClick = onMenuClick) {
-                Icon(Icons.Default.Menu, contentDescription = null, tint = Color.BrownForFont)
+                Icon(Icons.Default.Menu, contentDescription = null, tint = Color.Orange)
             }
 
             // العنوان (دلوقتي هو في النص بالملي)
             Text(
                 text = "Home",
                 style = MaterialTheme.typography.headlineMedium,
-                color = Color.BrownForFont
+                color = Color.Orange
             )
             Row{
                 IconButton(onClick = onFirstClick) {
-                    Icon(firstIcon, contentDescription = null, tint = Color.BrownForFont)
+                    Icon(firstIcon, contentDescription = null, tint = Color.Orange)
                 }
                 IconButton(onClick = onSecondeClick) {
-                    Icon(secondeIcon, contentDescription = null, tint = Color.BrownForFont)
+                    Icon(secondeIcon, contentDescription = null, tint = Color.Orange)
                 }
             }
         }

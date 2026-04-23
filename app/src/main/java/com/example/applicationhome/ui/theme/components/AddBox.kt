@@ -34,8 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.applicationhome.ui.theme.BrownForFont
-import com.example.applicationhome.ui.theme.MediumBrownForTitle
+import com.example.applicationhome.ui.theme.Orange
 import com.example.applicationhome.view.model.AddBoxViewModel
 
 @Composable
@@ -54,7 +53,7 @@ fun AddBox(modifier: Modifier = Modifier, color : Color, id: Int, ordernumber : 
         clip(CircleShape).
         background(color.copy(alpha = 0.8f)).
         clickable {ordernumber.addBoxNumberPlus(id)}.
-        border(width = 0.5.dp, color = Color.BrownForFont.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)),
+        border(width = 0.5.dp, color = Color.Orange.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)),
         contentAlignment = Alignment.Center
     ){
         if(count == 0) {
@@ -62,7 +61,7 @@ fun AddBox(modifier: Modifier = Modifier, color : Color, id: Int, ordernumber : 
                 text = "+",
                 fontSize = 20.sp,
                 style = MaterialTheme.typography.labelLarge,
-                color = Color.BrownForFont,
+                color = Color.Orange,
                 textAlign = TextAlign.Center
             )
         }else if(count > 0 && activid == false){
@@ -70,7 +69,7 @@ fun AddBox(modifier: Modifier = Modifier, color : Color, id: Int, ordernumber : 
                 text = count.toString(),
                 fontSize = 20.sp,
                 style = MaterialTheme.typography.labelLarge,
-                color = Color.BrownForFont,
+                color = Color.Orange,
                 textAlign = TextAlign.Center
             )
         }else{
@@ -91,11 +90,11 @@ fun AddBox(modifier: Modifier = Modifier, color : Color, id: Int, ordernumber : 
                         text = "+",
                         fontSize = 20.sp,
                         style = MaterialTheme.typography.labelLarge,
-                        color = Color.BrownForFont,
+                        color = Color.Orange,
                         textAlign = TextAlign.Center
                     )
                 }
-                VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(20.dp))
+                VerticalDivider(color = Color.Orange, modifier = Modifier.height(20.dp))
                 Box(
                     modifier = Modifier.
                     weight(1f).
@@ -126,11 +125,12 @@ fun AddBox(modifier: Modifier = Modifier, color : Color, id: Int, ordernumber : 
                         singleLine = true,
                         textStyle = TextStyle(
                             textAlign = TextAlign.Center,
-                            fontSize = 20.sp
+                            fontSize = 20.sp,
+                            color = Color.Orange
                         )
                     )
                 }
-                VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(20.dp))
+                VerticalDivider(color = Color.Orange, modifier = Modifier.height(20.dp))
                 Box(
                     modifier = Modifier.
                     weight(1f).
@@ -143,7 +143,7 @@ fun AddBox(modifier: Modifier = Modifier, color : Color, id: Int, ordernumber : 
                         text = "-",
                         fontSize = 20.sp,
                         style = MaterialTheme.typography.labelLarge,
-                        color = Color.BrownForFont,
+                        color = Color.Orange,
                         textAlign = TextAlign.Center
                     )
                 }

@@ -45,7 +45,7 @@ import com.example.applicationhome.ui.theme.components.Favorite
 fun Restaurants(){
     val restaurantsMenu = RestaurantsMenu.restaurantsMenu()
     Surface(modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),color = Color.LightBrownForBackground){
-        LazyColumn(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.spacedBy(5.dp),){
+        LazyColumn(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.spacedBy(5.dp)){
             items(restaurantsMenu){item ->
                 Surface(modifier = Modifier.aspectRatio(3f).padding(5.dp).shadow(elevation = 3.dp, shape = RoundedCornerShape(10.dp)).clickable{}){
                     Row(modifier = Modifier.background(Color.LightBackgroundForCards), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically){

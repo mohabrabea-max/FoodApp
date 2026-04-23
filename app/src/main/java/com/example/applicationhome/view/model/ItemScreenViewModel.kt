@@ -8,8 +8,19 @@ import com.example.applicationhome.data.models.FoodItem
 
 class ItemScreenViewModel : ViewModel() {
     var selectedItem by mutableStateOf<FoodItem?>(null)
+    var selectedSize = mutableStateOf("Small")
+    var selectedPieces = mutableStateOf("10 Pieces")
 
     fun selectItem(item: FoodItem) {
         selectedItem = item
+    }
+    fun bigSize(){
+        selectedSize.value = "Big"
+    }
+    fun mediumSize(){
+        selectedSize.value = "Medium"
+    }
+    fun smallSize(){
+        selectedSize.value = "Small"
     }
 }

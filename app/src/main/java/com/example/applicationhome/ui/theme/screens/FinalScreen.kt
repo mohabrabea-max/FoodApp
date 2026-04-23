@@ -18,9 +18,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -32,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,18 +46,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.ui.theme.BackgroundForCards
-import com.example.applicationhome.ui.theme.BrownForFont
-import com.example.applicationhome.ui.theme.LightBrownForBackground
-import com.example.applicationhome.ui.theme.MediumBrownForTitle
+import com.example.applicationhome.ui.theme.Orange
 import com.example.applicationhome.ui.theme.components.Options
+import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, viewModel : ItemScreenViewModel){
+fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, viewModel : ItemScreenViewModel, viewModelForBottomBar : BottomBarViewModel){
     val navigationController = rememberNavController()
     val coroutineScope = rememberCoroutineScope()
 
@@ -67,16 +68,22 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
         Screens.Varieties,
         Screens.Search,
         Screens.ItemScreen,
-        Screens.Notifications
+        Screens.Notifications,
+        Screens.Favorite,
+        Screens.Cart
     )
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = true,
         drawerContent = {
-            ModalDrawerSheet(drawerContainerColor = Color.LightBrownForBackground,modifier = Modifier.width(250.dp)){
+            ModalDrawerSheet(drawerContainerColor = Color.Black,modifier = Modifier.width(250.dp)){
+                IconButton(onClick = {}) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Orange)
+                }
+                Divider()
                 Box(
                     modifier = Modifier.
-                    background(Color.BackgroundForCards).
+                    background(Color.Orange).
                     fillMaxWidth().
                     height(80.dp).
                     clickable{
@@ -108,13 +115,13 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
                                 text = "Mohab Rabea",
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.BrownForFont
+                                color = Color.Black
                             )
                             Spacer(modifier = Modifier.height(5.dp))
                             Text(
                                 text = "01011223344",
                                 fontSize = 12.sp,
-                                color = Color.MediumBrownForTitle
+                                color = Color.DarkGray
                             )
                         }
 
@@ -127,8 +134,6 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
         }
     ){
         Scaffold(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-
             //topBar = { MyTopBar(scrollBehavior, {coroutineScope.launch{drawerState.open()}}, {navigationController.navigate(Screens.Notifications.screen)}, Icons.Default.Notifications, {navigationController.navigate(Screens.Search.screen)}, Icons.Default.Search) },
 
             //bottomBar = { MyBottonBar(navigationController) }
@@ -145,8 +150,8 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
                             popExitTransition = { ExitTransition.None }
                         ) {
                             when(item){
-                                is Screens.HomeScreen -> HomeScreen(scrollBehavior, drawerState, coroutineScope, navigationController, viewModel = viewModel)
-                                is Screens.Profile -> Profile()
+                                is Screens.HomeScreen -> HomeScreen(scrollBehavior, drawerState, coroutineScope, navigationController, viewModel, viewModelForBottomBar)
+                                is Screens.Profile -> Profile(scrollBehavior, drawerState, coroutineScope, navigationController, viewModelForBottomBar)
                                 is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController)
                                 is Screens.Search -> Search()
                                 is Screens.Menu -> Menu(drawerState, coroutineScope, navigationController, viewModel, scrollBehavior)
@@ -154,6 +159,8 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
                                 is Screens.Varieties -> Varieties()
                                 is Screens.ItemScreen -> ItemScreen(scrollBehavior, navigationController, viewModel)
                                 is Screens.Notifications -> Notifications()
+                                is Screens.Favorite -> Favorite(scrollBehavior, drawerState, coroutineScope, navigationController, viewModelForBottomBar)
+                                is Screens.Cart -> Cart(navigationController, viewModelForBottomBar)
                             }
                         }
                     }

@@ -3,6 +3,7 @@ package com.example.applicationhome.ui.theme.components
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,7 +28,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.applicationhome.data.models.Options
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.ui.theme.BrownForFont
+import com.example.applicationhome.ui.theme.Orange
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -49,35 +50,37 @@ fun Options(navigationController: NavHostController, drawerState : DrawerState, 
         Options("Restaurants", Icons.Default.Person, Screens.Restaurants.screen)
 
     )
-    LazyColumn(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.spacedBy(16.dp)){
-        items(options){item ->
-            NavigationDrawerItem(label = {Text(text = item.title, color = Color.BrownForFont)},
-                selected = currentRoute == item.screen,
-                icon = {Icon(imageVector = item.icon, contentDescription = item.title, tint = Color.BrownForFont)},
-                onClick = {
-                    coroutineScope.launch{drawerState.close()}
-                    navigationController.navigate(item.screen){popUpTo(0)}
-                }
-            )
-        }
-        item{Divider()}
-        items(menuOptions){item ->
-            NavigationDrawerItem(label = {Text(text = item.title, color = Color.BrownForFont)},
-                selected = currentRoute == item.screen,
-                icon = {Icon(imageVector = item.icon, contentDescription = item.title, tint = Color.BrownForFont)},
-                onClick = {
-                    coroutineScope.launch{drawerState.close()}
-                    navigationController.navigate(item.screen){popUpTo(0)}
-                }
-            )
-        }
-        item { NavigationDrawerItem(label = {Text(text = "Logout", color = Color.Red)},
-            selected = false,
-            icon = {Icon(imageVector = Icons.Default.ExitToApp, contentDescription = "Logout", tint = Color.Red)},
-            onClick = {
-                coroutineScope.launch{drawerState.close()}
-                Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()
+    Box(modifier = Modifier.fillMaxSize()){
+        LazyColumn(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.spacedBy(16.dp)){
+            items(options){item ->
+                NavigationDrawerItem(label = {Text(text = item.title, color = Color.Orange)},
+                    selected = currentRoute == item.screen,
+                    icon = {Icon(imageVector = item.icon, contentDescription = item.title, tint = Color.Orange)},
+                    onClick = {
+                        coroutineScope.launch{drawerState.close()}
+                        navigationController.navigate(item.screen)
+                    }
+                )
             }
-        )}
+            item{Divider()}
+            items(menuOptions){item ->
+                NavigationDrawerItem(label = {Text(text = item.title, color = Color.Orange)},
+                    selected = currentRoute == item.screen,
+                    icon = {Icon(imageVector = item.icon, contentDescription = item.title, tint = Color.Orange)},
+                    onClick = {
+                        coroutineScope.launch{drawerState.close()}
+                        navigationController.navigate(item.screen)
+                    }
+                )
+            }
+            item { NavigationDrawerItem(label = {Text(text = "Logout", color = Color.Red)},
+                selected = false,
+                icon = {Icon(imageVector = Icons.Default.ExitToApp, contentDescription = "Logout", tint = Color.Red)},
+                onClick = {
+                    coroutineScope.launch{drawerState.close()}
+                    Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()
+                }
+            )}
+        }
     }
 }

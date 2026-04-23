@@ -1,6 +1,5 @@
 package com.example.applicationhome.ui.theme.screens
 
-import android.R.attr.name
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.animation.animateContentSize
@@ -23,6 +22,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -43,18 +44,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -71,6 +66,7 @@ import com.example.applicationhome.ui.theme.BackgroundForCards
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
+import com.example.applicationhome.ui.theme.Orange
 import com.example.applicationhome.ui.theme.components.Favorite
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
@@ -80,28 +76,61 @@ import com.example.applicationhome.view.model.ItemScreenViewModel
 @Composable
 fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : NavHostController, viewModel: ItemScreenViewModel){
     val item = viewModel.selectedItem
-    val selected = remember{mutableStateOf("Mediam")}
-    var size = 3
+    val price = viewModel.selectedSize.value
+    val images = item?.image?.size ?: 0
+    val pagerState = rememberPagerState(pageCount = {images})
+    val size = item?.priceANDsize?.size
     if(item != null){
         Scaffold(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection).fillMaxSize().
+            modifier = Modifier.fillMaxSize().
             background(Color.LightBrownForBackground),
-            topBar = {MyTopBar2(scrollBehavior, item.id, navigationController)}
+            topBar = {MyTopBar2(item.id, navigationController)},
+            bottomBar = {
+                Box(modifier = Modifier.fillMaxWidth().height(90.dp), contentAlignment = Alignment.TopCenter){
+                    Row(modifier = Modifier.fillMaxWidth().height(60.dp).align(Alignment.Center), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
+                        AddBox2(color = Color.LightGray, id = item.id)
+                        Spacer(modifier = Modifier.width(10.dp))
+                        CartButton2(modifier = Modifier)
+                    }
+                }
+            }
         ){innerPadding ->
             Box(modifier = Modifier.background(Color.LightBrownForBackground).padding(innerPadding)){
                 LazyColumn(modifier = Modifier.fillMaxSize()){
                     item {
                         Column(modifier = Modifier.fillMaxSize().padding(10.dp)){
-                            Box(modifier = Modifier.fillMaxWidth().height(300.dp)){
+                            HorizontalPager(
+                                state = pagerState,
+                                modifier = Modifier.fillMaxWidth().height(400.dp)
+                            ) { page ->
                                 Image(
-                                    painter = painterResource(id = item.image),
-                                    contentDescription = "$name Logo",
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier.
-                                    fillMaxSize()
+                                    painter = painterResource(id = item.image[page]),
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)),
+                                    contentScale = ContentScale.Crop
                                 )
                             }
-                            Divider()
+                            Row(
+                                Modifier
+                                    .height(50.dp)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                repeat(item.image.size) { iteration ->
+                                    // بنحدد اللون: لو النقطة دي هي الصفحة الحالية لونها باللون الأساسي، لو لأ لونها رمادي
+                                    val color = if (pagerState.currentPage == iteration) Color.BrownForFont else Color.LightGray
+
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(4.dp)
+                                            .clip(CircleShape)
+                                            .background(color)
+                                            .size(5.dp) // حجم النقطة
+                                    )
+                                }
+                            }
+                            Divider(modifier = Modifier.width(300.dp).padding(10.dp).align(Alignment.CenterHorizontally), color = Color.BrownForFont)
                             Spacer(modifier = Modifier.height(20.dp))
                             Column{
                                 Text(
@@ -112,23 +141,23 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
                                     modifier = Modifier.padding(10.dp)
                                 )
                                 Text(
-                                    text = item.description,
+                                    text = item.description.toString(),
                                     color = Color.MediumBrownForTitle,
                                     modifier = Modifier.padding(10.dp)
                                 )
                             }
                             Spacer(modifier = Modifier.height(20.dp))
-                            Divider()
+                            Divider(modifier = Modifier.width(300.dp).padding(10.dp))
                             Spacer(modifier = Modifier.height(20.dp))
                             Text(
-                                text = "${item.price} L.E",
+                                text = "${item.priceANDsize[price]} L.E",
                                 fontSize = 30.sp,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = Color.BrownForFont,
                                 modifier = Modifier.padding(10.dp)
                             )
                             Spacer(modifier = Modifier.height(20.dp))
-                            Divider()
+                            Divider(modifier = Modifier.width(300.dp).padding(10.dp))
                             Spacer(modifier = Modifier.height(20.dp))
                             Box(
                                 modifier = Modifier.
@@ -142,28 +171,28 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
                             ){
                                 if(size == 3){
                                     Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-                                        Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{selected.value = "Beg"}, contentAlignment = Alignment.Center){
-                                            if(selected.value == "Beg"){
+                                        Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.bigSize()}, contentAlignment = Alignment.Center){
+                                            if(price == "Big"){
                                                 Box(modifier = Modifier.fillMaxSize().background(Color.BrownForFont), contentAlignment = Alignment.Center){
-                                                    Text(text = "Beg", color = Color.BackgroundForCards)
+                                                    Text(text = "Big", color = Color.BackgroundForCards)
                                                 }
                                             }else{
-                                                Text(text = "Beg", color = Color.BrownForFont)
+                                                Text(text = "Big", color = Color.BrownForFont)
                                             }
                                         }
                                         VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(30.dp))
-                                        Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{selected.value = "Mediam"}, contentAlignment = Alignment.Center){
-                                            if(selected.value == "Mediam"){
+                                        Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.mediumSize()}, contentAlignment = Alignment.Center){
+                                            if(price == "Medium"){
                                                 Box(modifier = Modifier.fillMaxSize().background(Color.BrownForFont), contentAlignment = Alignment.Center){
-                                                    Text(text = "Mediam", color = Color.BackgroundForCards)
+                                                    Text(text = "Medium", color = Color.BackgroundForCards)
                                                 }
                                             }else{
-                                                Text(text = "Mediam", color = Color.BrownForFont)
+                                                Text(text = "Medium", color = Color.BrownForFont)
                                             }
                                         }
                                         VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(30.dp))
-                                        Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{selected.value = "Small"}, contentAlignment = Alignment.Center){
-                                            if(selected.value == "Small"){
+                                        Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.smallSize()}, contentAlignment = Alignment.Center){
+                                            if(price == "Small"){
                                                 Box(modifier = Modifier.fillMaxSize().background(Color.BrownForFont), contentAlignment = Alignment.Center){
                                                     Text(text = "Small", color = Color.BackgroundForCards)
                                                 }
@@ -174,8 +203,9 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
                                     }
                                 }else if(size == 2){
                                     Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-                                        Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{selected.value = "Beg"}, contentAlignment = Alignment.Center){
-                                            if(selected.value == "Beg"){
+                                        Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.bigSize()}, contentAlignment = Alignment.Center){
+                                            if(price == "Beg"){
+                                                viewModel.bigSize()
                                                 Box(modifier = Modifier.fillMaxSize().background(Color.BrownForFont), contentAlignment = Alignment.Center){
                                                     Text(text = "Beg", color = Color.BackgroundForCards)
                                                 }
@@ -184,30 +214,26 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
                                             }
                                         }
                                         VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.padding(5.dp))
-                                        Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{selected.value = "Mediam"}, contentAlignment = Alignment.Center){
-                                            if(selected.value == "Mediam"){
+                                        Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.mediumSize()}, contentAlignment = Alignment.Center){
+                                            if(price == "Medium"){
+                                                viewModel.mediumSize()
                                                 Box(modifier = Modifier.fillMaxSize().background(Color.BrownForFont), contentAlignment = Alignment.Center){
-                                                    Text(text = "Mediam", color = Color.BackgroundForCards)
+                                                    Text(text = "Medium", color = Color.BackgroundForCards)
                                                 }
                                             }else{
-                                                Text(text = "Mediam", color = Color.BrownForFont)
+                                                Text(text = "Medium", color = Color.BrownForFont)
                                             }
                                         }
                                     }
                                 }else{
                                     Box(modifier = Modifier.fillMaxSize().clickable{}, contentAlignment = Alignment.Center){
-                                        Text(text = item.size, color = Color.BrownForFont)
+                                        Text(text = price, color = Color.BrownForFont)
                                     }
                                 }
 
                             }
                         }
                     }
-                }
-                Row(modifier = Modifier.fillMaxWidth().height(60.dp).align(Alignment.BottomCenter), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-                    AddBox2(color = Color.LightGray, id = item.id)
-                    Spacer(modifier = Modifier.width(10.dp))
-                    CartButton2(modifier = Modifier)
                 }
             }
         }
@@ -377,40 +403,32 @@ fun AddBox2(color : Color, id: Int, ordernumber : AddBoxViewModel = viewModel())
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTopBar2(scrollBehavior: TopAppBarScrollBehavior, item: Int, navController: NavHostController){
-    val maxHeight = 100.dp
-    val density = LocalDensity.current
-    val currentHeight by remember {
-        derivedStateOf {
-            (maxHeight + with(density) { scrollBehavior.state.heightOffset.toDp() })
-                .coerceAtLeast(0.dp)
-        }
-    }
+fun MyTopBar2(item: Int, navController: NavHostController){
     Surface(
         modifier = Modifier.
         fillMaxWidth().
-        height(currentHeight).
+        height(100.dp).
         statusBarsPadding(),
-        color = Color.BackgroundForCards
+        color = Color.Black
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically, // العناصر كلها هتتوسطن أوتوماتيكياً!
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(onClick = {if (navController.previousBackStackEntry != null) { navController.popBackStack() } } ) {
-                Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.BrownForFont)
+                Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Orange)
             }
             Text(
                 text = "Home",
                 style = MaterialTheme.typography.headlineMedium,
-                color = Color.BrownForFont
+                color = Color.Orange
             )
             Row{
                 IconButton(onClick = {navController.navigate(Screens.ItemScreen.screen)}) {
-                    Icon(Icons.Default.Search, contentDescription = null, tint = Color.BrownForFont)
+                    Icon(Icons.Default.Search, contentDescription = null, tint = Color.Orange)
                 }
-                Favorite(modifier = Modifier.padding(10.dp).clip(CircleShape).size(35.dp).background(Color.LightBrownForBackground.copy(alpha = 0.8f)),id = item)
+                Favorite(modifier = Modifier.padding(10.dp).clip(CircleShape).size(35.dp).background(Color.Black.copy(alpha = 0.8f)),id = item)
             }
         }
     }

@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,24 +40,17 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.ui.theme.BackgroundForCards
-import com.example.applicationhome.ui.theme.BrownForFont
-import com.example.applicationhome.ui.theme.LightBackgroundForCards
-import com.example.applicationhome.ui.theme.LightBrownForBackground
-import com.example.applicationhome.ui.theme.MediumBrownForTitle
+import com.example.applicationhome.ui.theme.Orange
 import com.example.applicationhome.view.model.ItemScreenViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
-fun ItemsBox(item: FoodItem, drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, viewModel: ItemScreenViewModel){
+fun ItemsBox(item: FoodItem, navigationController : NavHostController, viewModel: ItemScreenViewModel){
     val context = LocalContext.current
     Box(
         modifier = Modifier.
         animateContentSize().
         aspectRatio(0.8f).
         clickable{
-            coroutineScope.launch{drawerState.close()}
             viewModel.selectedItem = item
             navigationController.navigate(Screens.ItemScreen.screen)
         }.
@@ -67,29 +59,38 @@ fun ItemsBox(item: FoodItem, drawerState : DrawerState, coroutineScope : Corouti
     ){
         Column(
             modifier = Modifier.
-            background(Color.LightBackgroundForCards)
+            background(Color.Orange)
         ) {
-            Image(
-                painter = painterResource(id = item.image),
-                contentDescription = "Food Logo",
-                modifier = Modifier.
-                fillMaxSize().
-                weight(3f),
-                contentScale = ContentScale.Crop
-            )
-            Text(
-                text = item.name,
-                style = MaterialTheme.typography.titleLarge,
-                color = Color.MediumBrownForTitle,
-                fontSize = 18.sp,
-                modifier = Modifier.
-                weight(1f).
-                padding(10.dp)
-            )
+            Box(modifier = Modifier.fillMaxSize().weight(4f)){
+                Image(
+                    painter = painterResource(id = item.image[1]),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop
+                )
+                Column{
+                    Column(
+                        modifier = Modifier.fillMaxSize().weight(5f),
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.SpaceBetween
+                    ){
+                        Favorite(modifier = Modifier.padding(10.dp).clip(CircleShape).size(35.dp).background(Color.Black.copy(alpha = 0.8f)),id = item.id)
+                        Spacer(modifier = Modifier.height(33.dp))
+                        AddBox(color = Color.Black, id = item.id)
+                    }
+                    Box(modifier = Modifier.fillMaxWidth().height(50.dp).weight(1.5f).background(Color.Black.copy(alpha = 0.7f)).padding(10.dp), contentAlignment = Alignment.CenterStart){
+                        Text(
+                            text = item.name,
+                            style = MaterialTheme.typography.titleLarge,
+                            color = Color.White,
+                            fontSize = 18.sp,
+                        )
+                    }
+                }
+            }
             Box(
                 modifier = Modifier.
                 fillMaxWidth().
-                background(Color.BackgroundForCards),
+                background(Color.Black),
                 contentAlignment = Alignment.Center
             ){
                 Row(
@@ -100,30 +101,22 @@ fun ItemsBox(item: FoodItem, drawerState : DrawerState, coroutineScope : Corouti
                     Icon(
                         imageVector = Icons.Default.Info,
                         contentDescription = "Information",
-                        tint = Color.BrownForFont,
+                        tint = Color.Orange,
                         modifier = Modifier.
                         clip(CircleShape).
                         alpha(0.8f).
-                        clickable {Toast.makeText(context, "Price : ${item.price}", Toast.LENGTH_SHORT).show()}
+                        clickable {Toast.makeText(context, "Price : ${item.priceANDsize["Small"]}", Toast.LENGTH_SHORT).show()}
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "${item.price} L.E",
+                        text = "${item.priceANDsize["Small"]} L.E",
                         fontSize = 20.sp,
                         style = MaterialTheme.typography.labelLarge,
-                        color = Color.BrownForFont,
+                        color = Color.Orange,
                         textAlign = TextAlign.Center,
                     )
                 }
             }
-        }
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.End
-        ){
-            Favorite(modifier = Modifier.padding(10.dp).clip(CircleShape).size(35.dp).background(Color.LightBrownForBackground.copy(alpha = 0.8f)),id = item.id)
-            Spacer(modifier = Modifier.height(33.dp))
-            AddBox(color = Color.LightBrownForBackground, id = item.id)
         }
     }
 }
