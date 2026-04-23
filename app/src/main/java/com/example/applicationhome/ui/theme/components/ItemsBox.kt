@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -74,10 +73,10 @@ fun ItemsBox(item: FoodItem, navigationController : NavHostController, viewModel
                         verticalArrangement = Arrangement.SpaceBetween
                     ){
                         Favorite(modifier = Modifier.padding(10.dp).clip(CircleShape).size(35.dp).background(Color.Black.copy(alpha = 0.8f)),id = item.id)
-                        Spacer(modifier = Modifier.height(33.dp))
+
                         AddBox(color = Color.Black, id = item.id)
                     }
-                    Box(modifier = Modifier.fillMaxWidth().height(50.dp).weight(1.5f).background(Color.Black.copy(alpha = 0.7f)).padding(10.dp), contentAlignment = Alignment.CenterStart){
+                    Box(modifier = Modifier.fillMaxWidth().weight(1.3f).background(Color.Black.copy(alpha = 0.7f)).padding(5.dp), contentAlignment = Alignment.CenterStart){
                         Text(
                             text = item.name,
                             style = MaterialTheme.typography.titleLarge,

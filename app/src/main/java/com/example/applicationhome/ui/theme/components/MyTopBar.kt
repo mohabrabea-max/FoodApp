@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,7 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.applicationhome.R
 import com.example.applicationhome.ui.theme.Orange
 
 //@OptIn(ExperimentalMaterial3Api::class)
@@ -63,7 +63,7 @@ fun MyTopBar(scrollBehavior: TopAppBarScrollBehavior, onMenuClick: () -> Unit, o
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(onClick = onMenuClick) {
-                Icon(Icons.Default.Menu, contentDescription = null, tint = Color.Orange)
+                Icon(painter = painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Orange)
             }
 
             // العنوان (دلوقتي هو في النص بالملي)

@@ -99,38 +99,34 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
                 LazyColumn(modifier = Modifier.fillMaxSize()){
                     item {
                         Column(modifier = Modifier.fillMaxSize().padding(10.dp)){
-                            HorizontalPager(
-                                state = pagerState,
-                                modifier = Modifier.fillMaxWidth().height(400.dp)
-                            ) { page ->
-                                Image(
-                                    painter = painterResource(id = item.image[page]),
-                                    contentDescription = null,
-                                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)),
-                                    contentScale = ContentScale.Crop
-                                )
-                            }
-                            Row(
-                                Modifier
-                                    .height(50.dp)
-                                    .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                repeat(item.image.size) { iteration ->
-                                    // بنحدد اللون: لو النقطة دي هي الصفحة الحالية لونها باللون الأساسي، لو لأ لونها رمادي
-                                    val color = if (pagerState.currentPage == iteration) Color.BrownForFont else Color.LightGray
-
-                                    Box(
-                                        modifier = Modifier
-                                            .padding(4.dp)
-                                            .clip(CircleShape)
-                                            .background(color)
-                                            .size(5.dp) // حجم النقطة
+                            Box(modifier = Modifier.fillMaxWidth().height(400.dp).clip(RoundedCornerShape(10.dp))){
+                                HorizontalPager(
+                                    state = pagerState,
+                                    modifier = Modifier.fillMaxSize()
+                                ) { page ->
+                                    Image(
+                                        painter = painterResource(id = item.image[page]),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)),
+                                        contentScale = ContentScale.Crop
                                     )
                                 }
+                                Row(
+                                    Modifier.height(50.dp).fillMaxWidth().background(Color.Black.copy(alpha = 0.5f)).align(Alignment.BottomCenter),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    repeat(item.image.size) { iteration ->
+                                        val color = if (pagerState.currentPage == iteration) Color.Orange else Color.LightGray
+
+                                        Box(
+                                            modifier = Modifier.padding(4.dp).clip(CircleShape).background(color).size(5.dp)
+                                        )
+                                    }
+                                }
                             }
-                            Divider(modifier = Modifier.width(300.dp).padding(10.dp).align(Alignment.CenterHorizontally), color = Color.BrownForFont)
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Divider(modifier = Modifier.width(300.dp).align(Alignment.CenterHorizontally), color = Color.BrownForFont)
                             Spacer(modifier = Modifier.height(20.dp))
                             Column{
                                 Text(
