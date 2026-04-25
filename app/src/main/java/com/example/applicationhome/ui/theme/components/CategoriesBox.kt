@@ -5,64 +5,41 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.applicationhome.data.models.CategoriesImage
-import com.example.applicationhome.ui.theme.BackgroundForCards
-import com.example.applicationhome.ui.theme.BrownForFont
-import com.example.applicationhome.ui.theme.LightBrownForBackground
 
 @Composable
 fun CategoriesBox(category : CategoriesImage){
     val context = LocalContext.current.applicationContext
     Box(
         modifier = Modifier.
-        aspectRatio(1f).
-        clickable{ Toast.makeText(context, category.name, Toast.LENGTH_SHORT).show()}.
-        padding(5.dp).
-        shadow(elevation = 3.dp, shape = RoundedCornerShape(10.dp))
+        size(75.dp).
+        clip(CircleShape).
+        background(Color.LightGray.copy(alpha = 0.5f)).
+        clickable{ Toast.makeText(context, category.name, Toast.LENGTH_SHORT).show()},
+        contentAlignment = Alignment.Center
     ){
-        Column(
-            modifier = Modifier.background(Color.BackgroundForCards),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Image(
-                painter = painterResource(id = category.image),
-                contentDescription = "${category.name} Logo",
-                modifier = Modifier.
-                fillMaxWidth().
-                weight(2f),
-                contentScale = ContentScale.Crop
-            )
-            Text(
-                text = category.name,
-                style = MaterialTheme.typography.titleLarge,
-                color = Color.BrownForFont,
-                fontSize = 18.sp,
-                modifier = Modifier.
-                weight(1f).
-                padding(8.dp)
-            )
-        }
-        Favorite(modifier = Modifier.align(alignment = TopEnd).padding(10.dp).clip(CircleShape).size(35.dp).background(Color.LightBrownForBackground.copy(alpha = 0.8f)), id = category.id)
+        Image(
+            painter = painterResource(id = category.icon),
+            contentDescription = "${category.name} Logo",
+            modifier = Modifier.
+            fillMaxSize().
+            padding(20.dp),
+            contentScale = ContentScale.Crop
+        )
+        //Favorite(modifier = Modifier.align(alignment = TopEnd).padding(10.dp).clip(CircleShape).size(35.dp).background(Color.LightBrownForBackground.copy(alpha = 0.8f)), id = category.id)
     }
 }
+//border(width = 0.5.dp, color = Color.Black, shape = RoundedCornerShape(100.dp))

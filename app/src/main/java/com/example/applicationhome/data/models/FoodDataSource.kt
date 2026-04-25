@@ -67,9 +67,9 @@ object Snakes {
 
 object VarietiesMenu {
     private val categorieslist = listOf(
-        CategoriesImage(11,"Burger", R.drawable.burgerpng),
-        CategoriesImage(22,"Pizza", R.drawable.pezzapng),
-        CategoriesImage(33,"Chicken", R.drawable.chickenpng)
+        CategoriesImage(11,"Burger", R.drawable.burgerpng, R.drawable.burgericon),
+        CategoriesImage(22,"Pizza", R.drawable.pezzapng, R.drawable.pizzaicon),
+        CategoriesImage(33,"Chicken", R.drawable.chickenpng, R.drawable.friedchickenicon)
     )
     fun categoriesList(): List<CategoriesImage>{
         return categorieslist
@@ -109,5 +109,25 @@ object ProfileData {
 
     fun settingsata(): List<Settings>{
         return settings
+    }
+}
+
+object OffersData {
+    private val offers = listOf(
+        Offers(71, "Offer 1", R.drawable.ic_launcher_background),
+        Offers(72, "Offer 2", R.drawable.ic_launcher_background),
+        Offers(73, "Offer 3", R.drawable.ic_launcher_background),
+        Offers(74, "Offer 4", R.drawable.ic_launcher_background),
+        Offers(75, "Offer 5", R.drawable.ic_launcher_background)
+    )
+    fun offersMenu(): List<Offers>{
+        return offers
+    }
+}
+
+object Cart {
+    var cartlist = mutableListOf<Food>()
+    fun cartList(): List<Food>{
+        return cartlist
     }
 }

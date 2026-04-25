@@ -46,7 +46,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.ui.theme.Orange
 import com.example.applicationhome.ui.theme.components.Options
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
@@ -76,14 +75,14 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
         drawerState = drawerState,
         gesturesEnabled = true,
         drawerContent = {
-            ModalDrawerSheet(drawerContainerColor = Color.Black,modifier = Modifier.width(250.dp)){
+            ModalDrawerSheet(drawerContainerColor = Color.White,modifier = Modifier.width(250.dp)){
                 IconButton(onClick = {}) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Orange)
+                    Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)
                 }
                 Divider()
                 Box(
                     modifier = Modifier.
-                    background(Color.Orange).
+                    background(Color.White).
                     fillMaxWidth().
                     height(80.dp).
                     clickable{
@@ -129,7 +128,7 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
 
                 }
                 Divider()
-                Options(navigationController, drawerState, coroutineScope)
+                Options(navigationController, drawerState, coroutineScope, viewModelForBottomBar)
             }
         }
     ){
@@ -159,8 +158,8 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
                                 is Screens.Varieties -> Varieties()
                                 is Screens.ItemScreen -> ItemScreen(scrollBehavior, navigationController, viewModel)
                                 is Screens.Notifications -> Notifications()
-                                is Screens.Favorite -> Favorite(scrollBehavior, drawerState, coroutineScope, navigationController, viewModelForBottomBar)
-                                is Screens.Cart -> Cart(navigationController, viewModelForBottomBar)
+                                is Screens.Favorite -> Favorite(scrollBehavior, drawerState, coroutineScope, navigationController, viewModelForBottomBar, viewModel)
+                                is Screens.Cart -> Cart(navigationController, viewModelForBottomBar, viewModel)
                             }
                         }
                     }

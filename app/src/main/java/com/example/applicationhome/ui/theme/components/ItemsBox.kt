@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -39,7 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.ui.theme.Orange
+import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
 @Composable
@@ -54,11 +53,11 @@ fun ItemsBox(item: FoodItem, navigationController : NavHostController, viewModel
             navigationController.navigate(Screens.ItemScreen.screen)
         }.
         padding(5.dp).
-        shadow(elevation = 3.dp, shape = RoundedCornerShape(10.dp))
+        clip(RoundedCornerShape(10.dp))
     ){
         Column(
             modifier = Modifier.
-            background(Color.Orange)
+            background(Color.White)
         ) {
             Box(modifier = Modifier.fillMaxSize().weight(4f)){
                 Image(
@@ -72,15 +71,15 @@ fun ItemsBox(item: FoodItem, navigationController : NavHostController, viewModel
                         horizontalAlignment = Alignment.End,
                         verticalArrangement = Arrangement.SpaceBetween
                     ){
-                        Favorite(modifier = Modifier.padding(10.dp).clip(CircleShape).size(35.dp).background(Color.Black.copy(alpha = 0.8f)),id = item.id)
+                        Favorite(modifier = Modifier.padding(10.dp).clip(CircleShape).size(35.dp).background(Color.White.copy(alpha = 1f)),id = item.id)
 
-                        AddBox(color = Color.Black, id = item.id)
+                        AddBox(color = Color.White, food = item)
                     }
-                    Box(modifier = Modifier.fillMaxWidth().weight(1.3f).background(Color.Black.copy(alpha = 0.7f)).padding(5.dp), contentAlignment = Alignment.CenterStart){
+                    Box(modifier = Modifier.fillMaxWidth().weight(1.3f).background(Color.White.copy(alpha = 0.7f)).padding(5.dp), contentAlignment = Alignment.CenterStart){
                         Text(
                             text = item.name,
                             style = MaterialTheme.typography.titleLarge,
-                            color = Color.White,
+                            color = Color.Black,
                             fontSize = 18.sp,
                         )
                     }
@@ -89,7 +88,7 @@ fun ItemsBox(item: FoodItem, navigationController : NavHostController, viewModel
             Box(
                 modifier = Modifier.
                 fillMaxWidth().
-                background(Color.Black),
+                background(Color.DarkOrange),
                 contentAlignment = Alignment.Center
             ){
                 Row(
@@ -100,7 +99,7 @@ fun ItemsBox(item: FoodItem, navigationController : NavHostController, viewModel
                     Icon(
                         imageVector = Icons.Default.Info,
                         contentDescription = "Information",
-                        tint = Color.Orange,
+                        tint = Color.White,
                         modifier = Modifier.
                         clip(CircleShape).
                         alpha(0.8f).
@@ -111,7 +110,7 @@ fun ItemsBox(item: FoodItem, navigationController : NavHostController, viewModel
                         text = "${item.priceANDsize["Small"]} L.E",
                         fontSize = 20.sp,
                         style = MaterialTheme.typography.labelLarge,
-                        color = Color.Orange,
+                        color = Color.White,
                         textAlign = TextAlign.Center,
                     )
                 }

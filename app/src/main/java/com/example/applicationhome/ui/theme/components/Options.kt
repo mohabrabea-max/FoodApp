@@ -28,14 +28,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.applicationhome.data.models.Options
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.ui.theme.Orange
+import com.example.applicationhome.ui.theme.DarkOrange
+import com.example.applicationhome.view.model.BottomBarViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Options(navigationController: NavHostController, drawerState : DrawerState, coroutineScope : CoroutineScope){
+fun Options(navigationController: NavHostController, drawerState : DrawerState, coroutineScope : CoroutineScope, bottomBarViewModel: BottomBarViewModel){
     val context = LocalContext.current.applicationContext
     val navBackStackEntry by navigationController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -53,10 +54,12 @@ fun Options(navigationController: NavHostController, drawerState : DrawerState, 
     Box(modifier = Modifier.fillMaxSize()){
         LazyColumn(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.spacedBy(16.dp)){
             items(options){item ->
-                NavigationDrawerItem(label = {Text(text = item.title, color = Color.Orange)},
+                NavigationDrawerItem(label = {Text(text = item.title, color = Color.DarkOrange)},
                     selected = currentRoute == item.screen,
-                    icon = {Icon(imageVector = item.icon, contentDescription = item.title, tint = Color.Orange)},
+                    icon = {Icon(imageVector = item.icon, contentDescription = item.title, tint = Color.DarkOrange)},
                     onClick = {
+                        if(item.title == "Home") bottomBarViewModel.home()
+                        else if(item.title == "Profile") bottomBarViewModel.profile()
                         coroutineScope.launch{drawerState.close()}
                         navigationController.navigate(item.screen)
                     }
@@ -64,9 +67,9 @@ fun Options(navigationController: NavHostController, drawerState : DrawerState, 
             }
             item{Divider()}
             items(menuOptions){item ->
-                NavigationDrawerItem(label = {Text(text = item.title, color = Color.Orange)},
+                NavigationDrawerItem(label = {Text(text = item.title, color = Color.DarkOrange)},
                     selected = currentRoute == item.screen,
-                    icon = {Icon(imageVector = item.icon, contentDescription = item.title, tint = Color.Orange)},
+                    icon = {Icon(imageVector = item.icon, contentDescription = item.title, tint = Color.DarkOrange)},
                     onClick = {
                         coroutineScope.launch{drawerState.close()}
                         navigationController.navigate(item.screen)

@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.applicationhome.data.models.Food
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.ui.theme.BackgroundForCards
 import com.example.applicationhome.ui.theme.BrownForFont
@@ -75,6 +76,7 @@ import com.example.applicationhome.view.model.ItemScreenViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : NavHostController, viewModel: ItemScreenViewModel){
+    val food : Food
     val item = viewModel.selectedItem
     val price = viewModel.selectedSize.value
     val images = item?.image?.size ?: 0
@@ -88,7 +90,7 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
             bottomBar = {
                 Box(modifier = Modifier.fillMaxWidth().height(90.dp), contentAlignment = Alignment.TopCenter){
                     Row(modifier = Modifier.fillMaxWidth().height(60.dp).align(Alignment.Center), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-                        AddBox2(color = Color.LightGray, id = item.id)
+                        AddBox2(color = Color.LightGray, id = item.id, food = item)
                         Spacer(modifier = Modifier.width(10.dp))
                         CartButton2(modifier = Modifier)
                     }
@@ -285,7 +287,7 @@ fun CartButton2(modifier: Modifier = Modifier, cartNumber : AddBoxViewModel = vi
 }
 
 @Composable
-fun AddBox2(color : Color, id: Int, ordernumber : AddBoxViewModel = viewModel()){
+fun AddBox2(color : Color, id: Int, ordernumber : AddBoxViewModel = viewModel(), food : Food){
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var count = ordernumber.itemsCount[id] ?: 0
@@ -298,7 +300,7 @@ fun AddBox2(color : Color, id: Int, ordernumber : AddBoxViewModel = viewModel())
         width(targetWidth).
         clip(CircleShape).
         background(color).
-        clickable {ordernumber.addBoxNumberPlus(id)}.
+        clickable {ordernumber.addBoxNumberPlus(food)}.
         border(width = 0.5.dp, color = Color.BrownForFont.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)),
         contentAlignment = Alignment.Center
     ){
@@ -329,7 +331,7 @@ fun AddBox2(color : Color, id: Int, ordernumber : AddBoxViewModel = viewModel())
                     modifier = Modifier.
                     weight(1f).
                     fillMaxHeight().
-                    clickable {ordernumber.addBoxNumberPlus(id)},
+                    clickable {ordernumber.addBoxNumberPlus(food)},
                     contentAlignment = Alignment.Center
                 ){
                     Text(
@@ -354,11 +356,11 @@ fun AddBox2(color : Color, id: Int, ordernumber : AddBoxViewModel = viewModel())
                             if (newValue.isNotEmpty()) {
                                 if(newValue.all {it.isDigit()} && newValue.length <= 2){
                                     val newCount = newValue.toIntOrNull() ?: count
-                                    ordernumber.updateCount(id, newCount)
+                                    ordernumber.updateCount(food, newCount)
                                 }
                             }else{
                                 val newCount = newValue.toIntOrNull() ?: 0
-                                ordernumber.updateCount(id, newCount)
+                                ordernumber.updateCount(food, newCount)
                             }
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
@@ -381,7 +383,7 @@ fun AddBox2(color : Color, id: Int, ordernumber : AddBoxViewModel = viewModel())
                     weight(1f).
                     fillMaxHeight().
                     animateContentSize().
-                    clickable {ordernumber.addBoxNumberMinus(id)},
+                    clickable {ordernumber.addBoxNumberMinus(food)},
                     contentAlignment = Alignment.Center
                 ){
                     Text(

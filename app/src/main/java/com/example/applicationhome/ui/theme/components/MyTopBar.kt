@@ -12,72 +12,46 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.applicationhome.R
-import com.example.applicationhome.ui.theme.Orange
+import com.example.applicationhome.ui.theme.DarkOrange
 
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun MyTopBar(scrollBehavior: TopAppBarScrollBehavior, navController: NavController, drawerState : DrawerState){
-//    val coroutineScope = rememberCoroutineScope()
-//    CenterAlignedTopAppBar(modifier = Modifier.fillMaxWidth(),
-//        title = {Text(text = "Home")},
-//        windowInsets = WindowInsets(top = 20.dp),
-//        scrollBehavior = scrollBehavior,
-//        navigationIcon = {
-//            IconButton(onClick = { coroutineScope.launch{drawerState.open()} }){
-//                Icon(
-//                    imageVector = Icons.Default.Menu,
-//                    contentDescription = "MenuButton",
-//                    tint = Color.BrownForFont
-//                )
-//            }
-//        }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.BackgroundForCards,scrolledContainerColor = Color.BackgroundForCards, titleContentColor = Color.BrownForFont, navigationIconContentColor = Color.BrownForFont),
-//        actions = {
-//            IconButton(onClick = {navController.navigate(Screens.HomeScreen.screen){popUpTo(0)}}){
-//                Icon(imageVector = Icons.Default.Home, contentDescription = "Menu", tint = Color.BrownForFont)
-//            }
-//        }
-//    )
-//}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTopBar(scrollBehavior: TopAppBarScrollBehavior, onMenuClick: () -> Unit, onFirstClick: () -> Unit, firstIcon : ImageVector, onSecondeClick: () -> Unit, secondeIcon : ImageVector){
+fun MyTopBar(onMenuClick: () -> Unit, startIcon : @Composable () -> Unit = {}, onFirstClick: () -> Unit, firstIcon : ImageVector, onSecondeClick: () -> Unit, secondeIcon : ImageVector){
     Surface(
         modifier = Modifier.
         fillMaxWidth().
         height(100.dp).
-        statusBarsPadding(),
-        color = Color.Black.copy(alpha = 1f)
+        shadow(elevation = 5.dp),
+        color = Color.White
     ) {
         Row(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().statusBarsPadding(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(onClick = onMenuClick) {
-                Icon(painter = painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Orange)
+                startIcon()
             }
 
             // العنوان (دلوقتي هو في النص بالملي)
             Text(
                 text = "Home",
                 style = MaterialTheme.typography.headlineMedium,
-                color = Color.Orange
+                color = Color.DarkOrange
             )
             Row{
                 IconButton(onClick = onFirstClick) {
-                    Icon(firstIcon, contentDescription = null, tint = Color.Orange)
+                    Icon(firstIcon, contentDescription = null, tint = Color.Black)
                 }
                 IconButton(onClick = onSecondeClick) {
-                    Icon(secondeIcon, contentDescription = null, tint = Color.Orange)
+                    Icon(secondeIcon, contentDescription = null, tint = Color.Black)
                 }
             }
         }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -23,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.applicationhome.ui.theme.Orange
 import com.example.applicationhome.view.model.AddBoxViewModel
 
 @Composable
@@ -34,20 +36,20 @@ fun CartButton(modifier: Modifier = Modifier, cartNumber : AddBoxViewModel = vie
             modifier = modifier.size(150.dp).
             aspectRatio(3f).
             clip(shape = RoundedCornerShape(30.dp)).
-            background(Color.Blue).
+            background(Color.Orange).
             clickable{
                 cartNumber.addToCart()
                 Toast.makeText(context, "Added To Cart", Toast.LENGTH_SHORT).show()
             }.
-            border(width = 1.dp, color = Color.White.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)).
+            border(width = 1.dp, color = Color.Black.copy(alpha = 1f), shape = RoundedCornerShape(30.dp)).
             padding(5.dp),
             contentAlignment = Alignment.Center
         ){
             Row(verticalAlignment = Alignment.CenterVertically){
                 Icon(Icons.Default.ShoppingCart, contentDescription = "Cart", tint = Color.White, modifier = Modifier.weight(1f))
-                VerticalDivider(modifier = Modifier.align(Alignment.CenterVertically))
+                VerticalDivider(color = Color.Black ,modifier = Modifier.align(Alignment.CenterVertically))
                 Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center){
-                    Text(text = cart2.toString(), color = Color.White)
+                    Text(text = cart2.toString(), style = MaterialTheme.typography.labelLarge, color = Color.White)
                 }
             }
         }

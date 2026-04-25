@@ -1,40 +1,57 @@
 package com.example.applicationhome.ui.theme.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.applicationhome.R
 import com.example.applicationhome.data.models.FoodDataSource
+import com.example.applicationhome.data.models.OffersData
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.data.models.VarietiesMenu
-import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.components.CartButton
 import com.example.applicationhome.ui.theme.components.CategoriesBox
 import com.example.applicationhome.ui.theme.components.ItemsBox
-import com.example.applicationhome.ui.theme.components.MyBottonBar
+import com.example.applicationhome.ui.theme.components.MyBottonBar2
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
@@ -45,37 +62,97 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, viewModel: ItemScreenViewModel, viewModelForBottomBar : BottomBarViewModel){
+//    val gridState = rememberLazyGridState()
+//    val isAtTop by remember {
+//        derivedStateOf {
+//            gridState.firstVisibleItemIndex == 0
+//        }
+//    }
+//    val appBarColor by animateColorAsState(
+//        targetValue = if (isAtTop) Color.Transparent else Color.White,
+//        animationSpec = tween(durationMillis = 300) // سرعة التحول
+//    )
+    val offers = OffersData.offersMenu()
     val menu = FoodDataSource.allMenu()
     val categories = VarietiesMenu.categoriesList()
+    val pagerState = rememberPagerState(pageCount = {offers.size})
     Scaffold(
         modifier = Modifier.
         fillMaxSize().
-        background(Color.LightBrownForBackground),
-        topBar = { MyTopBar(scrollBehavior, {coroutineScope.launch{drawerState.open()}}, {navigationController.navigate(Screens.Notifications.screen)}, Icons.Default.Notifications, {navigationController.navigate(Screens.Search.screen)}, Icons.Default.Search) },
-        bottomBar = { MyBottonBar(navigationController, viewModelForBottomBar) }
-        //floatingActionButton = { CartButton() }
-    ){innerPadding ->
-        Box(modifier = Modifier.background(Color.LightBrownForBackground).padding(innerPadding)){
-            LazyVerticalGrid (
-                modifier = Modifier.fillMaxSize(),
-                columns = GridCells.Fixed(2),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                //contentPadding = innerPadding
-            ){
-                item(span = { GridItemSpan(2) }){ LazyRow(
-                    modifier = Modifier.height(150.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ){
-                    items(categories) { category -> CategoriesBox(category) } }
-                }
+        background(Color.White),
+    ){
+        Box(modifier = Modifier.background(Color.White)){
+            Column {
+                Box{
+                    LazyVerticalGrid (
+                        modifier = Modifier.fillMaxSize(),
+                        columns = GridCells.Fixed(2),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ){
+                        item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
+                        item(span = { GridItemSpan(2) }){
+                            Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
+                                LazyRow(
+                                    modifier = Modifier.padding(10.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(20.dp)
+                                ){
+                                    items(categories) { category -> CategoriesBox(category) }
+                                }
+                            }
+                        }
+                        item(span = { GridItemSpan(2) }){
+                            Spacer(modifier = Modifier.height(20.dp))
+                            Divider(color = Color.LightGray.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(10.dp))
+                            Spacer(modifier = Modifier.height(20.dp))
+                        }
+                        item(span = { GridItemSpan(2) }){
+                            Box(modifier = Modifier.fillMaxWidth().height(180.dp)){
+                                HorizontalPager(
+                                    state = pagerState,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentPadding = PaddingValues(horizontal = 10.dp), // عشان تبين طرف الصورة اللي قبلها واللي بعدها (شكلها بيبقى أشيك)
+                                    pageSpacing = 10.dp
+                                ) {page ->
+                                    val currentOffer = offers[page]
+                                    Image(
+                                        painter = painterResource(id = currentOffer.image),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
+                            }
+                        }
+                        item(span = { GridItemSpan(2) }){
+                            Spacer(modifier = Modifier.height(20.dp))
+                            Divider(color = Color.LightGray.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(10.dp))
+                            Spacer(modifier = Modifier.height(20.dp))
+                        }
+                        items(menu){ item -> ItemsBox(item, navigationController, viewModel) }
 
-                items(menu){ item -> ItemsBox(item, navigationController, viewModel) }
+                        item{Spacer(modifier = Modifier.height(90.dp))}
+                    }
+                    MyTopBar({coroutineScope.launch{drawerState.open()}}, {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)}, {navigationController.navigate(Screens.Search.screen)}, Icons.Default.Search, {navigationController.navigate(Screens.Notifications.screen)}, Icons.Default.Notifications)
+                    Divider(color = Color.LightGray.copy(alpha = 0.5f))
+                }
             }
-            Box(modifier = Modifier.fillMaxWidth().height(60.dp).align(Alignment.BottomCenter), contentAlignment = Alignment.Center){
-                CartButton()
+            Column(modifier = Modifier.align(Alignment.BottomCenter)){
+                Box(modifier = Modifier.fillMaxWidth().height(60.dp), contentAlignment = Alignment.Center){
+                    CartButton()
+                }
+                Box(
+                    modifier = Modifier.fillMaxWidth().
+                    height(60.dp).
+                    pointerInput(Unit) { detectTapGestures { } },
+                    contentAlignment = Alignment.Center
+                ){
+                    MyBottonBar2(navigationController, viewModelForBottomBar)
+                }
+                Box(modifier = Modifier.fillMaxWidth().height(15.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){}
             }
         }
     }
 }
-
-//nestedScroll(scrollBehavior.nestedScrollConnection)
+//Spacer(modifier = Modifier.height(20.dp))
+//Divider(modifier = Modifier.width(300.dp).padding(10.dp))
+//Spacer(modifier = Modifier.height(20.dp))
