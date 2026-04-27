@@ -42,7 +42,11 @@ import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
 @Composable
-fun ItemsBox(item: FoodItem, navigationController : NavHostController, viewModel: ItemScreenViewModel){
+fun ItemsBox(
+    item: FoodItem,
+    navigationController : NavHostController,
+    viewModel: ItemScreenViewModel
+){
     val context = LocalContext.current
     Box(
         modifier = Modifier.
@@ -61,9 +65,10 @@ fun ItemsBox(item: FoodItem, navigationController : NavHostController, viewModel
         ) {
             Box(modifier = Modifier.fillMaxSize().weight(4f)){
                 Image(
-                    painter = painterResource(id = item.image[1]),
+                    painter = painterResource(id = item.image[0]),
                     contentDescription = null,
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
                 )
                 Column{
                     Column(
@@ -71,11 +76,23 @@ fun ItemsBox(item: FoodItem, navigationController : NavHostController, viewModel
                         horizontalAlignment = Alignment.End,
                         verticalArrangement = Arrangement.SpaceBetween
                     ){
-                        Favorite(modifier = Modifier.padding(10.dp).clip(CircleShape).size(35.dp).background(Color.White.copy(alpha = 1f)),id = item.id)
+                        Favorite(
+                            modifier = Modifier.padding(10.dp).
+                            clip(CircleShape).
+                            size(35.dp).
+                            background(Color.White.copy(alpha = 1f)),
+                            food = item
+                        )
 
                         AddBox(color = Color.White, food = item)
                     }
-                    Box(modifier = Modifier.fillMaxWidth().weight(1.3f).background(Color.White.copy(alpha = 0.7f)).padding(5.dp), contentAlignment = Alignment.CenterStart){
+                    Box(
+                        modifier = Modifier.fillMaxWidth().
+                        weight(1.3f).
+                        background(Color.White.copy(alpha = 0.7f)).
+                        padding(5.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ){
                         Text(
                             text = item.name,
                             style = MaterialTheme.typography.titleLarge,

@@ -7,12 +7,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,7 +47,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -63,9 +65,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.Food
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.ui.theme.BackgroundForCards
 import com.example.applicationhome.ui.theme.BrownForFont
-import com.example.applicationhome.ui.theme.LightBrownForBackground
+import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.Orange
 import com.example.applicationhome.ui.theme.components.Favorite
@@ -75,7 +76,7 @@ import com.example.applicationhome.view.model.ItemScreenViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : NavHostController, viewModel: ItemScreenViewModel){
+fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : NavHostController, viewModel: ItemScreenViewModel, addBoxViewModel : AddBoxViewModel = viewModel()){
     val food : Food
     val item = viewModel.selectedItem
     val price = viewModel.selectedSize.value
@@ -85,313 +86,302 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
     if(item != null){
         Scaffold(
             modifier = Modifier.fillMaxSize().
-            background(Color.LightBrownForBackground),
-            topBar = {MyTopBar2(item.id, navigationController)},
+            background(Color.White),
             bottomBar = {
-                Box(modifier = Modifier.fillMaxWidth().height(90.dp), contentAlignment = Alignment.TopCenter){
-                    Row(modifier = Modifier.fillMaxWidth().height(60.dp).align(Alignment.Center), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-                        AddBox2(color = Color.LightGray, id = item.id, food = item)
-                        Spacer(modifier = Modifier.width(10.dp))
-                        CartButton2(modifier = Modifier)
-                    }
+                Box(modifier = Modifier.fillMaxWidth().height(70.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.TopCenter){
+                    BottonBarForItemScreen(item.id, addBoxViewModel, item)
                 }
             }
-        ){innerPadding ->
-            Box(modifier = Modifier.background(Color.LightBrownForBackground).padding(innerPadding)){
-                LazyColumn(modifier = Modifier.fillMaxSize()){
-                    item {
-                        Column(modifier = Modifier.fillMaxSize().padding(10.dp)){
-                            Box(modifier = Modifier.fillMaxWidth().height(400.dp).clip(RoundedCornerShape(10.dp))){
-                                HorizontalPager(
-                                    state = pagerState,
-                                    modifier = Modifier.fillMaxSize()
-                                ) { page ->
-                                    Image(
-                                        painter = painterResource(id = item.image[page]),
-                                        contentDescription = null,
-                                        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)),
-                                        contentScale = ContentScale.Crop
-                                    )
-                                }
-                                Row(
-                                    Modifier.height(50.dp).fillMaxWidth().background(Color.Black.copy(alpha = 0.5f)).align(Alignment.BottomCenter),
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    repeat(item.image.size) { iteration ->
-                                        val color = if (pagerState.currentPage == iteration) Color.Orange else Color.LightGray
-
-                                        Box(
-                                            modifier = Modifier.padding(4.dp).clip(CircleShape).background(color).size(5.dp)
+        ){
+            Box(modifier = Modifier.background(Color.White)){
+                Box{
+                    LazyColumn(modifier = Modifier.fillMaxSize()){
+                        item{Spacer(modifier = Modifier.height(100.dp))}
+                        item {
+                            Column(modifier = Modifier.fillMaxSize().padding(10.dp)){
+                                Box(modifier = Modifier.fillMaxWidth().height(400.dp).clip(RoundedCornerShape(10.dp))){
+                                    HorizontalPager(
+                                        state = pagerState,
+                                        modifier = Modifier.fillMaxSize()
+                                    ) { page ->
+                                        Image(
+                                            painter = painterResource(id = item.image[page]),
+                                            contentDescription = null,
+                                            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)),
+                                            contentScale = ContentScale.Crop
                                         )
                                     }
+                                    Row(
+                                        Modifier.height(50.dp).fillMaxWidth().background(Color.Black.copy(alpha = 0.5f)).align(Alignment.BottomCenter),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        repeat(item.image.size) { iteration ->
+                                            val color = if (pagerState.currentPage == iteration) Color.Orange else Color.LightGray
+                                            Box(
+                                                modifier = Modifier.padding(4.dp).clip(CircleShape).background(color).size(5.dp)
+                                            )
+                                        }
+                                    }
                                 }
-                            }
-                            Spacer(modifier = Modifier.height(10.dp))
-                            Divider(modifier = Modifier.width(300.dp).align(Alignment.CenterHorizontally), color = Color.BrownForFont)
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Column{
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Divider(modifier = Modifier.width(300.dp).align(Alignment.CenterHorizontally), color = Color.BrownForFont)
+                                Spacer(modifier = Modifier.height(20.dp))
+                                Column{
+                                    Text(
+                                        text = item.name,
+                                        fontSize = 20.sp,
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = Color.BrownForFont,
+                                        modifier = Modifier.padding(10.dp)
+                                    )
+                                    Text(
+                                        text = item.description.toString(),
+                                        color = Color.MediumBrownForTitle,
+                                        modifier = Modifier.padding(10.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(20.dp))
+                                Divider(modifier = Modifier.width(300.dp).padding(10.dp))
+                                Spacer(modifier = Modifier.height(20.dp))
                                 Text(
-                                    text = item.name,
-                                    fontSize = 20.sp,
+                                    text = "${item.priceANDsize[price]} L.E",
+                                    fontSize = 30.sp,
                                     style = MaterialTheme.typography.labelLarge,
                                     color = Color.BrownForFont,
                                     modifier = Modifier.padding(10.dp)
                                 )
-                                Text(
-                                    text = item.description.toString(),
-                                    color = Color.MediumBrownForTitle,
-                                    modifier = Modifier.padding(10.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Divider(modifier = Modifier.width(300.dp).padding(10.dp))
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Text(
-                                text = "${item.priceANDsize[price]} L.E",
-                                fontSize = 30.sp,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = Color.BrownForFont,
-                                modifier = Modifier.padding(10.dp)
-                            )
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Divider(modifier = Modifier.width(300.dp).padding(10.dp))
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Box(
-                                modifier = Modifier.
-                                animateContentSize().
-                                padding(10.dp).
-                                height(50.dp).
-                                width(180.dp).
-                                clip(CircleShape).
-                                background(Color.BackgroundForCards.copy(alpha = 0.8f)),
-                                contentAlignment = Alignment.Center
-                            ){
-                                if(size == 3){
-                                    Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-                                        Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.bigSize()}, contentAlignment = Alignment.Center){
-                                            if(price == "Big"){
-                                                Box(modifier = Modifier.fillMaxSize().background(Color.BrownForFont), contentAlignment = Alignment.Center){
-                                                    Text(text = "Big", color = Color.BackgroundForCards)
+                                Spacer(modifier = Modifier.height(20.dp))
+                                Divider(modifier = Modifier.width(300.dp).padding(10.dp))
+                                Spacer(modifier = Modifier.height(20.dp))
+                                Box(
+                                    modifier = Modifier.
+                                    animateContentSize().
+                                    padding(10.dp).
+                                    height(50.dp).
+                                    width(180.dp).
+                                    clip(CircleShape).
+                                    background(Color.White).
+                                    border(width = 0.5.dp, color = Color.DarkGray.copy(alpha = 1f), shape = RoundedCornerShape(50.dp)),
+                                    contentAlignment = Alignment.Center
+                                ){
+                                    if(size == 3){
+                                        Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
+                                            Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.bigSize()}, contentAlignment = Alignment.Center){
+                                                if(price == "Big"){
+                                                    Box(modifier = Modifier.fillMaxSize().background(Color.Orange), contentAlignment = Alignment.Center){
+                                                        Text(text = "Big", color = Color.Black)
+                                                    }
+                                                }else{
+                                                    Text(text = "Big", color = Color.DarkOrange)
                                                 }
-                                            }else{
-                                                Text(text = "Big", color = Color.BrownForFont)
+                                            }
+                                            VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(30.dp))
+                                            Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.mediumSize()}, contentAlignment = Alignment.Center){
+                                                if(price == "Medium"){
+                                                    Box(modifier = Modifier.fillMaxSize().background(Color.Orange), contentAlignment = Alignment.Center){
+                                                        Text(text = "Medium", color = Color.Black)
+                                                    }
+                                                }else{
+                                                    Text(text = "Medium", color = Color.DarkOrange)
+                                                }
+                                            }
+                                            VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(30.dp))
+                                            Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.smallSize(item)}, contentAlignment = Alignment.Center){
+                                                if(price == "Small"){
+                                                    Box(modifier = Modifier.fillMaxSize().background(Color.Orange), contentAlignment = Alignment.Center){
+                                                        Text(text = "Small", color = Color.Black)
+                                                    }
+                                                }else{
+                                                    Text(text = "Small", color = Color.DarkOrange)
+                                                }
                                             }
                                         }
-                                        VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(30.dp))
-                                        Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.mediumSize()}, contentAlignment = Alignment.Center){
-                                            if(price == "Medium"){
-                                                Box(modifier = Modifier.fillMaxSize().background(Color.BrownForFont), contentAlignment = Alignment.Center){
-                                                    Text(text = "Medium", color = Color.BackgroundForCards)
+                                    }else if(size == 2){
+                                        Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
+                                            Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.bigSize()}, contentAlignment = Alignment.Center){
+                                                if(price == "Beg"){
+                                                    viewModel.bigSize()
+                                                    Box(modifier = Modifier.fillMaxSize().background(Color.Orange), contentAlignment = Alignment.Center){
+                                                        Text(text = "Beg", color = Color.Black)
+                                                    }
+                                                }else{
+                                                    Text(text = "Beg", color = Color.DarkOrange)
                                                 }
-                                            }else{
-                                                Text(text = "Medium", color = Color.BrownForFont)
+                                            }
+                                            VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.padding(5.dp))
+                                            Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.mediumSize()}, contentAlignment = Alignment.Center){
+                                                if(price == "Medium"){
+                                                    viewModel.mediumSize()
+                                                    Box(modifier = Modifier.fillMaxSize().background(Color.Orange), contentAlignment = Alignment.Center){
+                                                        Text(text = "Medium", color = Color.Black)
+                                                    }
+                                                }else{
+                                                    Text(text = "Medium", color = Color.DarkOrange)
+                                                }
                                             }
                                         }
-                                        VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(30.dp))
-                                        Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.smallSize()}, contentAlignment = Alignment.Center){
-                                            if(price == "Small"){
-                                                Box(modifier = Modifier.fillMaxSize().background(Color.BrownForFont), contentAlignment = Alignment.Center){
-                                                    Text(text = "Small", color = Color.BackgroundForCards)
-                                                }
-                                            }else{
-                                                Text(text = "Small", color = Color.BrownForFont)
-                                            }
-                                        }
-                                    }
-                                }else if(size == 2){
-                                    Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-                                        Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.bigSize()}, contentAlignment = Alignment.Center){
-                                            if(price == "Beg"){
-                                                viewModel.bigSize()
-                                                Box(modifier = Modifier.fillMaxSize().background(Color.BrownForFont), contentAlignment = Alignment.Center){
-                                                    Text(text = "Beg", color = Color.BackgroundForCards)
-                                                }
-                                            }else{
-                                                Text(text = "Beg", color = Color.BrownForFont)
-                                            }
-                                        }
-                                        VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.padding(5.dp))
-                                        Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.mediumSize()}, contentAlignment = Alignment.Center){
-                                            if(price == "Medium"){
-                                                viewModel.mediumSize()
-                                                Box(modifier = Modifier.fillMaxSize().background(Color.BrownForFont), contentAlignment = Alignment.Center){
-                                                    Text(text = "Medium", color = Color.BackgroundForCards)
-                                                }
-                                            }else{
-                                                Text(text = "Medium", color = Color.BrownForFont)
-                                            }
+                                    }else{
+                                        Box(modifier = Modifier.fillMaxSize().clickable{}, contentAlignment = Alignment.Center){
+                                            Text(text = price, color = Color.BrownForFont)
                                         }
                                     }
-                                }else{
-                                    Box(modifier = Modifier.fillMaxSize().clickable{}, contentAlignment = Alignment.Center){
-                                        Text(text = price, color = Color.BrownForFont)
-                                    }
-                                }
 
+                                }
                             }
                         }
+                        item{Spacer(modifier = Modifier.height(90.dp))}
+                    }
+                    MyTopBar2(food = item, navigationController)
+                    Divider(color = Color.LightGray.copy(alpha = 0.5f))
+                }
+                Column(modifier = Modifier.align(Alignment.BottomCenter)){
+//                    Box(modifier = Modifier.fillMaxWidth().height(60.dp), contentAlignment = Alignment.Center){
+//                        CartButton()
+//                    }
+//                    Box(
+//                        modifier = Modifier.fillMaxWidth().
+//                        height(60.dp).
+//                        pointerInput(Unit) { detectTapGestures { } },
+//                        contentAlignment = Alignment.Center
+//                    ){
+//
+//                    }
+                    Box(modifier = Modifier.fillMaxWidth().height(15.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){}
+                }
+            }
+        }
+    }
+}
+
+@SuppressLint("UnrememberedMutableState")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BottonBarForItemScreen(
+    id: Int,
+    ordernumber : AddBoxViewModel = viewModel(),
+    food : Food
+){
+    val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    var count = ordernumber.itemsCount[food] ?: 0
+    var color : Color
+    var fontColor : Color
+    if(count == 0){
+        color = Color.LightGray
+        fontColor = Color.Black
+    }else{
+        color = Color.Blue
+        fontColor = Color.White
+    }
+    Box(
+        modifier = Modifier.width(220.dp).
+        height(50.dp).
+        clip(RoundedCornerShape(50.dp)).
+        background(color).
+        border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(50.dp)).
+        pointerInput(Unit) {
+            detectTapGestures { }
+        }
+    ){
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ){
+            Box(
+                modifier = Modifier.weight(2.5f).
+                height(50.dp).
+                clip(RoundedCornerShape(50.dp)).
+                background(Color.White).
+                border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(50.dp))
+            ){
+                Row(
+                    modifier = Modifier.
+                    fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
+                ){
+                    Box(
+                        modifier = Modifier.
+                        weight(1f).
+                        fillMaxHeight().
+                        clickable {ordernumber.addBoxNumberPlus(food)},
+                        contentAlignment = Alignment.Center
+                    ){
+                        Text(
+                            text = "+",
+                            fontSize = 20.sp,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    VerticalDivider(color = Color.Black, modifier = Modifier.height(20.dp))
+                    Box(
+                        modifier = Modifier.
+                        weight(1f).
+                        fillMaxHeight().
+                        clickable {count},
+                        contentAlignment = Alignment.Center
+                    ){
+                        BasicTextField(
+                            value = count.toString(),
+                            onValueChange = { newValue ->
+                                if (newValue.isNotEmpty()) {
+                                    if(newValue.all {it.isDigit()} && newValue.length <= 2){
+                                        val newCount = newValue.toIntOrNull() ?: count
+                                        ordernumber.updateCount(food, newCount)
+                                    }
+                                }else{
+                                    val newCount = newValue.toIntOrNull() ?: 0
+                                    ordernumber.updateCount(food, newCount)
+                                }
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    keyboardController?.hide()
+                                    focusManager.clearFocus()
+                                }
+                            ),
+                            singleLine = true,
+                            textStyle = TextStyle(
+                                textAlign = TextAlign.Center,
+                                fontSize = 20.sp,
+                                color = Color.Black
+                            )
+                        )
+                    }
+                    VerticalDivider(color = Color.Black, modifier = Modifier.height(20.dp))
+                    Box(
+                        modifier = Modifier.
+                        weight(1f).
+                        fillMaxHeight().
+                        animateContentSize().
+                        clickable {ordernumber.addBoxNumberMinus(food)},
+                        contentAlignment = Alignment.Center
+                    ){
+                        Text(
+                            text = "-",
+                            fontSize = 20.sp,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
             }
-        }
-    }
-}
-@Composable
-fun CartButton2(modifier: Modifier = Modifier, cartNumber : AddBoxViewModel = viewModel()){
-    val context = LocalContext.current
-    var cart2 = cartNumber.totalCart.value ?: 0
-    if(cart2 > 0){
-        Box(
-            modifier = modifier.size(150.dp).
-            aspectRatio(3f).
-            clip(shape = RoundedCornerShape(30.dp)).
-            background(Color.Blue).
-            clickable{
-                cartNumber.addToCart()
-                Toast.makeText(context, "Added To Cart", Toast.LENGTH_SHORT).show()
-            }.
-            border(width = 0.5.dp, color = Color.BrownForFont.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)).
-            padding(5.dp),
-            contentAlignment = Alignment.Center
-        ){
-            Row(verticalAlignment = Alignment.CenterVertically){
-                Icon(Icons.Default.ShoppingCart, contentDescription = "Cart", tint = Color.White, modifier = Modifier.weight(1f))
-                VerticalDivider(modifier = Modifier.align(Alignment.CenterVertically))
-                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center){
-                    Text(text = cart2.toString(), color = Color.White)
-                }
-            }
-        }
-    }
-    else{
-        Box(
-            modifier = Modifier.size(150.dp).
-            aspectRatio(3f).
-            clip(shape = RoundedCornerShape(30.dp)).
-            background(Color.LightGray).
-            clickable{}.
-            border(width = 0.5.dp, color = Color.BrownForFont.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)).
-            padding(5.dp),
-            contentAlignment = Alignment.Center
-        ){
-            Row(verticalAlignment = Alignment.CenterVertically){
-                Icon(Icons.Default.ShoppingCart, contentDescription = "Cart", tint = Color.BrownForFont, modifier = Modifier.weight(1f))
-                VerticalDivider(color = Color.BrownForFont, modifier = Modifier.align(Alignment.CenterVertically))
-                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center){
-                    Text(text = "Cart", color = Color.BrownForFont)
-                }
-            }
-        }
-    }
-}
+            Box(modifier = Modifier.weight(1f)){
+                IconButton(onClick = {
 
-@Composable
-fun AddBox2(color : Color, id: Int, ordernumber : AddBoxViewModel = viewModel(), food : Food){
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-    var count = ordernumber.itemsCount[id] ?: 0
-    var activid = ordernumber.activId == id
-    var targetWidth = if(count == 0 || activid == false) 50.dp else 120.dp
-    Box(
-        modifier = Modifier.
-        animateContentSize().
-        height(50.dp).
-        width(targetWidth).
-        clip(CircleShape).
-        background(color).
-        clickable {ordernumber.addBoxNumberPlus(food)}.
-        border(width = 0.5.dp, color = Color.BrownForFont.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)),
-        contentAlignment = Alignment.Center
-    ){
-        if(count == 0) {
-            Text(
-                text = "+",
-                fontSize = 20.sp,
-                style = MaterialTheme.typography.labelLarge,
-                color = Color.BrownForFont,
-                textAlign = TextAlign.Center
-            )
-        }else if(count > 0 && activid == false){
-            Text(
-                text = count.toString(),
-                fontSize = 20.sp,
-                style = MaterialTheme.typography.labelLarge,
-                color = Color.BrownForFont,
-                textAlign = TextAlign.Center
-            )
-        }else{
-            Row(
-                modifier = Modifier.
-                fillMaxSize().
-                background(color),
-                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
-            ){
-                Box(
-                    modifier = Modifier.
-                    weight(1f).
-                    fillMaxHeight().
-                    clickable {ordernumber.addBoxNumberPlus(food)},
-                    contentAlignment = Alignment.Center
-                ){
-                    Text(
-                        text = "+",
-                        fontSize = 20.sp,
-                        style = MaterialTheme.typography.labelLarge,
-                        color = Color.BrownForFont,
-                        textAlign = TextAlign.Center
-                    )
-                }
-                VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(20.dp))
-                Box(
-                    modifier = Modifier.
-                    weight(1f).
-                    fillMaxHeight().
-                    clickable {count},
-                    contentAlignment = Alignment.Center
-                ){
-                    BasicTextField(
-                        value = count.toString(),
-                        onValueChange = { newValue ->
-                            if (newValue.isNotEmpty()) {
-                                if(newValue.all {it.isDigit()} && newValue.length <= 2){
-                                    val newCount = newValue.toIntOrNull() ?: count
-                                    ordernumber.updateCount(food, newCount)
-                                }
-                            }else{
-                                val newCount = newValue.toIntOrNull() ?: 0
-                                ordernumber.updateCount(food, newCount)
-                            }
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                keyboardController?.hide()
-                                focusManager.clearFocus()
-                            }
-                        ),
-                        singleLine = true,
-                        textStyle = TextStyle(
-                            textAlign = TextAlign.Center,
-                            fontSize = 20.sp
-                        )
-                    )
-                }
-                VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(20.dp))
-                Box(
-                    modifier = Modifier.
-                    weight(1f).
-                    fillMaxHeight().
-                    animateContentSize().
-                    clickable {ordernumber.addBoxNumberMinus(food)},
-                    contentAlignment = Alignment.Center
-                ){
-                    Text(
-                        text = "-",
-                        fontSize = 20.sp,
-                        style = MaterialTheme.typography.labelLarge,
-                        color = Color.BrownForFont,
-                        textAlign = TextAlign.Center
+                    ordernumber.addToCart()
+                    Toast.makeText(context, "Added To Cart", Toast.LENGTH_SHORT).show()}){
+                    Icon(
+                        Icons.Default.ShoppingCart,
+                        contentDescription = "Cart",
+                        tint = fontColor,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
@@ -401,32 +391,32 @@ fun AddBox2(color : Color, id: Int, ordernumber : AddBoxViewModel = viewModel(),
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTopBar2(item: Int, navController: NavHostController){
+fun MyTopBar2(food: Food, navController: NavHostController){
     Surface(
         modifier = Modifier.
         fillMaxWidth().
         height(100.dp).
-        statusBarsPadding(),
-        color = Color.Black
+        shadow(elevation = 5.dp),
+        color = Color.White
     ) {
         Row(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().statusBarsPadding(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(onClick = {if (navController.previousBackStackEntry != null) { navController.popBackStack() } } ) {
-                Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Orange)
+                Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)
             }
             Text(
                 text = "Home",
                 style = MaterialTheme.typography.headlineMedium,
-                color = Color.Orange
+                color = Color.DarkOrange
             )
-            Row{
-                IconButton(onClick = {navController.navigate(Screens.ItemScreen.screen)}) {
-                    Icon(Icons.Default.Search, contentDescription = null, tint = Color.Orange)
+            Row(verticalAlignment = Alignment.CenterVertically){
+                IconButton(onClick = {navController.navigate(Screens.Search.screen)}) {
+                    Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
                 }
-                Favorite(modifier = Modifier.padding(10.dp).clip(CircleShape).size(35.dp).background(Color.Black.copy(alpha = 0.8f)),id = item)
+                Favorite(modifier = Modifier.padding(10.dp).clip(CircleShape).size(35.dp),food = food)
             }
         }
     }

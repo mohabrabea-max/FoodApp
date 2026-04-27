@@ -66,70 +66,78 @@ fun Profile(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, 
         modifier = Modifier.
         fillMaxSize().
         background(Color.White),
-        topBar = { MyTopBar({coroutineScope.launch{drawerState.open()}}, {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)}, {navigationController.navigate(Screens.Notifications.screen)}, Icons.Default.Notifications, {navigationController.navigate(Screens.Settings.screen)}, Icons.Default.Settings) }
+        topBar = {
+            MyTopBar(
+                "Profile",
+                {coroutineScope.launch{drawerState.open()}},
+                {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
+                {navigationController.navigate(Screens.Notifications.screen)},
+                Icons.Default.Notifications,
+                {navigationController.navigate(Screens.Settings.screen)},
+                Icons.Default.Settings
+            )
+        }
     ){
         Box(modifier = Modifier.background(Color.White)){
-            Column{
-                Spacer(modifier = Modifier.height(100.dp))
-                LazyColumn(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.spacedBy(16.dp)){
-                    item{
-                        Column(
-                            modifier = Modifier.fillMaxSize().background(Color.LightOrange),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Top
-                        ){
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Box(modifier = Modifier.size(150.dp).clip(CircleShape),contentAlignment = Alignment.Center){
-                                Image(
-                                    painter = painterResource(id = R.drawable.myphoto),
-                                    contentDescription = "Food Logo",
-                                    modifier = Modifier.
-                                    fillMaxSize(),
-                                    contentScale = ContentScale.Crop
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(30.dp))
-                            Text(
-                                text = "Mohab Rabea",
-                                fontSize = 25.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black,
-                                textAlign = TextAlign.Center
+            LazyColumn(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.spacedBy(16.dp)){
+                item{Spacer(modifier = Modifier.height(80.dp))}
+                item{
+                    Column(
+                        modifier = Modifier.fillMaxSize().background(Color.LightOrange),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Top
+                    ){
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Box(modifier = Modifier.size(150.dp).clip(CircleShape),contentAlignment = Alignment.Center){
+                            Image(
+                                painter = painterResource(id = R.drawable.myphoto),
+                                contentDescription = "Food Logo",
+                                modifier = Modifier.
+                                fillMaxSize(),
+                                contentScale = ContentScale.Crop
                             )
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Divider()
                         }
-                    }
-                    items(profile){item ->
-                        NavigationDrawerItem(
-                            label = {
-                                Column {
-                                    Text(text = item.title, fontSize = 20.sp, color = Color.BrownForFont)
-                                    Text(text = item.value, fontSize = 13.sp, color = Color.MediumBrownForTitle)
-                                }
-                            },
-                            selected = false,
-                            icon = {Icon(modifier = Modifier.size(30.dp), imageVector = item.icon, contentDescription = item.title, tint = Color.BrownForFont)},
-                            onClick = {}
+                        Spacer(modifier = Modifier.height(30.dp))
+                        Text(
+                            text = "Mohab Rabea",
+                            fontSize = 25.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
                         )
-                        Spacer(modifier = Modifier.height(17.dp))
+                        Spacer(modifier = Modifier.height(20.dp))
                         Divider()
                     }
-                    item{
-                        Box(modifier = Modifier.fillMaxSize().padding(50.dp), contentAlignment = Alignment.Center){
-                            IconButton(modifier = Modifier.size(50.dp),onClick = {Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()}){
-                                Icon(modifier = Modifier.size(50.dp), imageVector = Icons.Default.ExitToApp, contentDescription = "Logout", tint = Color.Red)
+                }
+                items(profile){item ->
+                    NavigationDrawerItem(
+                        label = {
+                            Column {
+                                Text(text = item.title, fontSize = 20.sp, color = Color.BrownForFont)
+                                Text(text = item.value, fontSize = 13.sp, color = Color.MediumBrownForTitle)
                             }
+                        },
+                        selected = false,
+                        icon = {Icon(modifier = Modifier.size(30.dp), imageVector = item.icon, contentDescription = item.title, tint = Color.BrownForFont)},
+                        onClick = {}
+                    )
+                    Spacer(modifier = Modifier.height(17.dp))
+                    Divider()
+                }
+                item{
+                    Box(modifier = Modifier.fillMaxSize().padding(50.dp), contentAlignment = Alignment.Center){
+                        IconButton(modifier = Modifier.size(50.dp),onClick = {Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()}){
+                            Icon(modifier = Modifier.size(50.dp), imageVector = Icons.Default.ExitToApp, contentDescription = "Logout", tint = Color.Red)
                         }
                     }
-                    item{Spacer(modifier = Modifier.height(90.dp))}
                 }
+                item{Spacer(modifier = Modifier.height(90.dp))}
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter)){
                 Box(modifier = Modifier.fillMaxWidth().height(60.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){
                     MyBottonBar2(navigationController, viewModelForBottomBar)
                 }
-                Box(modifier = Modifier.fillMaxWidth().height(15.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){}
+                Box(modifier = Modifier.fillMaxWidth().height(20.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){}
             }
         }
     }

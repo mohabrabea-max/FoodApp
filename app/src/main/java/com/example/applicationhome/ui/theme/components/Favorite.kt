@@ -18,27 +18,33 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.applicationhome.ui.theme.Orange
+import com.example.applicationhome.data.models.Favorite
+import com.example.applicationhome.data.models.Food
+import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.view.model.FavoriteViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun Favorite(modifier: Modifier = Modifier, modifier2 : Modifier = Modifier, id: Int, favoritState : FavoriteViewModel = viewModel()){
+fun Favorite(
+    modifier: Modifier = Modifier,
+    modifier2 : Modifier = Modifier,
+    food: Food,
+    favoritState : FavoriteViewModel = viewModel()
+){
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
-    val favorite = favoritState.itemsCount[id] ?: false
-
+    val favorite = favoritState.itemsCount[food.id] ?: false
+    val favorite2 = if(food in Favorite.favoritelist) true else false
     fun favorite1(){
 
-        if(favorite == false){
-            favoritState.addFavorite(id)
-            Toast.makeText(context, "Add To Favorite", Toast.LENGTH_SHORT).show()
-        }else{
-            favoritState.removeFavorite(id)
+        if(favorite == true || favorite2 == true){
+            favoritState.removeFavorite(food)
             Toast.makeText(context, "Remove From Favorite", Toast.LENGTH_SHORT).show()
+        }else{
+            favoritState.addFavorite(food)
+            Toast.makeText(context, "Add To Favorite", Toast.LENGTH_SHORT).show()
         }
-
 
         scope.launch {
             // يكبر بسرعة لـ 1.3x في 100 مللي ثانية
@@ -48,20 +54,19 @@ fun Favorite(modifier: Modifier = Modifier, modifier2 : Modifier = Modifier, id:
         }
     }
 
-
     IconButton(modifier = modifier, onClick = {favorite1()}){
-        if(favorite == false) {
+        if(favorite == false && favorite2 == false) {
             Icon(
                 imageVector = Icons.Default.FavoriteBorder,
                 contentDescription = "More",
-                tint = Color.Orange,
+                tint = Color.DarkOrange,
                 modifier = modifier2.size(20.dp).scale(scale.value)
             )
         }else{
             Icon(
                 imageVector = Icons.Default.Favorite,
                 contentDescription = "More",
-                tint = Color.Orange,
+                tint = Color.DarkOrange,
                 modifier = modifier2.size(20.dp).scale(scale.value)
             )
         }

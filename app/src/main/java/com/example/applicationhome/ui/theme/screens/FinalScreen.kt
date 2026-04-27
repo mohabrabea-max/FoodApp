@@ -31,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,10 +44,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.ui.theme.components.Options
+import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.launch
@@ -54,9 +57,11 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, viewModel : ItemScreenViewModel, viewModelForBottomBar : BottomBarViewModel){
+fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, viewModel : ItemScreenViewModel, viewModelForBottomBar : BottomBarViewModel, addBoxViewModel: AddBoxViewModel){
     val navigationController = rememberNavController()
     val coroutineScope = rememberCoroutineScope()
+    val navBackStackEntry by navigationController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
     val allScreens = listOf(
         Screens.HomeScreen,
@@ -73,7 +78,7 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
     )
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = true,
+        gesturesEnabled = currentRoute == "homescreen" || currentRoute == "favorite" || currentRoute == "cart" || currentRoute == "profile",
         drawerContent = {
             ModalDrawerSheet(drawerContainerColor = Color.White,modifier = Modifier.width(250.dp)){
                 IconButton(onClick = {}) {
@@ -159,7 +164,7 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
                                 is Screens.ItemScreen -> ItemScreen(scrollBehavior, navigationController, viewModel)
                                 is Screens.Notifications -> Notifications()
                                 is Screens.Favorite -> Favorite(scrollBehavior, drawerState, coroutineScope, navigationController, viewModelForBottomBar, viewModel)
-                                is Screens.Cart -> Cart(navigationController, viewModelForBottomBar, viewModel)
+                                is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, viewModelForBottomBar, viewModel, addBoxViewModel)
                             }
                         }
                     }

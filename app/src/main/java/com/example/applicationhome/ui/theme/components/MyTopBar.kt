@@ -23,7 +23,7 @@ import com.example.applicationhome.ui.theme.DarkOrange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTopBar(onMenuClick: () -> Unit, startIcon : @Composable () -> Unit = {}, onFirstClick: () -> Unit, firstIcon : ImageVector, onSecondeClick: () -> Unit, secondeIcon : ImageVector){
+fun MyTopBar(title : String, onMenuClick: () -> Unit, startIcon : @Composable () -> Unit = {}, onFirstClick: () -> Unit, firstIcon : ImageVector, onSecondeClick: () -> Unit, secondeIcon : ImageVector){
     Surface(
         modifier = Modifier.
         fillMaxWidth().
@@ -42,7 +42,7 @@ fun MyTopBar(onMenuClick: () -> Unit, startIcon : @Composable () -> Unit = {}, o
 
             // العنوان (دلوقتي هو في النص بالملي)
             Text(
-                text = "Home",
+                text = title,
                 style = MaterialTheme.typography.headlineMedium,
                 color = Color.DarkOrange
             )

@@ -9,7 +9,7 @@ class BottomBarViewModel : ViewModel() {
     fun home(){
         selected.value = "Home"
     }
-    fun favorit(){
+    fun favorite(){
         selected.value = "Favorite"
     }
     fun cart(){

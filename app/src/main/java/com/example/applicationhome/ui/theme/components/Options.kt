@@ -36,7 +36,12 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Options(navigationController: NavHostController, drawerState : DrawerState, coroutineScope : CoroutineScope, bottomBarViewModel: BottomBarViewModel){
+fun Options(
+    navigationController: NavHostController,
+    drawerState : DrawerState,
+    coroutineScope : CoroutineScope,
+    bottomBarViewModel: BottomBarViewModel
+){
     val context = LocalContext.current.applicationContext
     val navBackStackEntry by navigationController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route

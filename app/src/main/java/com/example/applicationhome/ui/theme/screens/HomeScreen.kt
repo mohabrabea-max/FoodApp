@@ -48,7 +48,6 @@ import com.example.applicationhome.data.models.FoodDataSource
 import com.example.applicationhome.data.models.OffersData
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.data.models.VarietiesMenu
-import com.example.applicationhome.ui.theme.components.CartButton
 import com.example.applicationhome.ui.theme.components.CategoriesBox
 import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyBottonBar2
@@ -82,64 +81,66 @@ fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerStat
         background(Color.White),
     ){
         Box(modifier = Modifier.background(Color.White)){
-            Column {
-                Box{
-                    LazyVerticalGrid (
-                        modifier = Modifier.fillMaxSize(),
-                        columns = GridCells.Fixed(2),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                    ){
-                        item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
-                        item(span = { GridItemSpan(2) }){
-                            Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
-                                LazyRow(
-                                    modifier = Modifier.padding(10.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(20.dp)
-                                ){
-                                    items(categories) { category -> CategoriesBox(category) }
-                                }
+            Box{
+                LazyVerticalGrid (
+                    modifier = Modifier.fillMaxSize(),
+                    columns = GridCells.Fixed(2),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ){
+                    item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
+                    item(span = { GridItemSpan(2) }){
+                        Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
+                            LazyRow(
+                                modifier = Modifier.padding(10.dp),
+                                horizontalArrangement = Arrangement.spacedBy(30.dp)
+                            ){
+                                items(categories) { category -> CategoriesBox(category) }
                             }
                         }
-                        item(span = { GridItemSpan(2) }){
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Divider(color = Color.LightGray.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(10.dp))
-                            Spacer(modifier = Modifier.height(20.dp))
-                        }
-                        item(span = { GridItemSpan(2) }){
-                            Box(modifier = Modifier.fillMaxWidth().height(180.dp)){
-                                HorizontalPager(
-                                    state = pagerState,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentPadding = PaddingValues(horizontal = 10.dp), // عشان تبين طرف الصورة اللي قبلها واللي بعدها (شكلها بيبقى أشيك)
-                                    pageSpacing = 10.dp
-                                ) {page ->
-                                    val currentOffer = offers[page]
-                                    Image(
-                                        painter = painterResource(id = currentOffer.image),
-                                        contentDescription = null,
-                                        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)),
-                                        contentScale = ContentScale.Crop
-                                    )
-                                }
-                            }
-                        }
-                        item(span = { GridItemSpan(2) }){
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Divider(color = Color.LightGray.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(10.dp))
-                            Spacer(modifier = Modifier.height(20.dp))
-                        }
-                        items(menu){ item -> ItemsBox(item, navigationController, viewModel) }
-
-                        item{Spacer(modifier = Modifier.height(90.dp))}
                     }
-                    MyTopBar({coroutineScope.launch{drawerState.open()}}, {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)}, {navigationController.navigate(Screens.Search.screen)}, Icons.Default.Search, {navigationController.navigate(Screens.Notifications.screen)}, Icons.Default.Notifications)
-                    Divider(color = Color.LightGray.copy(alpha = 0.5f))
+                    item(span = { GridItemSpan(2) }){
+                        Divider(color = Color.LightGray.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(10.dp))
+                        Spacer(modifier = Modifier.height(20.dp))
+                    }
+                    item(span = { GridItemSpan(2) }){
+                        Box(modifier = Modifier.fillMaxWidth().height(180.dp)){
+                            HorizontalPager(
+                                state = pagerState,
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(horizontal = 10.dp), // عشان تبين طرف الصورة اللي قبلها واللي بعدها (شكلها بيبقى أشيك)
+                                pageSpacing = 10.dp
+                            ) {page ->
+                                val currentOffer = offers[page]
+                                Image(
+                                    painter = painterResource(id = currentOffer.image),
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                        }
+                    }
+                    item(span = { GridItemSpan(2) }){
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Divider(color = Color.LightGray.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(10.dp))
+                        Spacer(modifier = Modifier.height(20.dp))
+                    }
+                    items(menu){ item -> ItemsBox(item, navigationController, viewModel) }
+
+                    item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(90.dp))}
                 }
+                MyTopBar(
+                    "Home",
+                    {coroutineScope.launch{drawerState.open()}},
+                    {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
+                    {navigationController.navigate(Screens.Search.screen)},
+                    Icons.Default.Search,
+                    {navigationController.navigate(Screens.Notifications.screen)},
+                    Icons.Default.Notifications
+                )
+                Divider(color = Color.LightGray.copy(alpha = 0.5f))
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter)){
-                Box(modifier = Modifier.fillMaxWidth().height(60.dp), contentAlignment = Alignment.Center){
-                    CartButton()
-                }
                 Box(
                     modifier = Modifier.fillMaxWidth().
                     height(60.dp).
@@ -148,7 +149,7 @@ fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerStat
                 ){
                     MyBottonBar2(navigationController, viewModelForBottomBar)
                 }
-                Box(modifier = Modifier.fillMaxWidth().height(15.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){}
+                Box(modifier = Modifier.fillMaxWidth().height(20.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){}
             }
         }
     }

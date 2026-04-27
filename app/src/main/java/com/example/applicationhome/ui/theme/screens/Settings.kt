@@ -62,7 +62,17 @@ fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigat
     Scaffold(
         modifier = Modifier.background(Color.LightBrownForBackground).
         fillMaxSize(),
-        topBar = { MyTopBar({coroutineScope.launch{drawerState.open()}}, {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)}, {navigationController.navigate(Screens.Notifications.screen)}, Icons.Default.Notifications, {navigationController.navigate(Screens.Search.screen)}, Icons.Default.Search) },
+        topBar = {
+            MyTopBar(
+                "Settings",
+                {coroutineScope.launch{drawerState.open()}},
+                {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
+                {navigationController.navigate(Screens.Notifications.screen)},
+                Icons.Default.Notifications,
+                {navigationController.navigate(Screens.Search.screen)},
+                Icons.Default.Search
+            )
+                 },
     ){ innerPadding ->
         LazyColumn(modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground).padding(innerPadding),verticalArrangement = Arrangement.spacedBy(16.dp)){
             item{

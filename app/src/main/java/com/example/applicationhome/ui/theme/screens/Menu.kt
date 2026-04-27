@@ -38,7 +38,17 @@ fun Menu(drawerState : DrawerState, coroutineScope : CoroutineScope, navigationC
     val menu = FoodDataSource.allMenu()
     Scaffold(
         modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),
-        topBar = { MyTopBar({ navigationController.popBackStack() }, {Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)}, {navigationController.navigate(Screens.Notifications.screen)}, Icons.Default.Notifications, {navigationController.navigate(Screens.Search.screen)}, Icons.Default.Search) }
+        topBar = {
+            MyTopBar(
+                "Menu",
+                { navigationController.popBackStack() },
+                {Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)},
+                {navigationController.navigate(Screens.Notifications.screen)},
+                Icons.Default.Notifications,
+                {navigationController.navigate(Screens.Search.screen)},
+                Icons.Default.Search
+            )
+        }
     ){innerPadding ->
         Box(modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground).padding(innerPadding)){
             LazyVerticalGrid (

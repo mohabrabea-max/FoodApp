@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -27,7 +26,6 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -39,7 +37,6 @@ import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightBackgroundForCards
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
-import com.example.applicationhome.ui.theme.components.Favorite
 
 @Composable
 fun Restaurants(){
@@ -64,7 +61,7 @@ fun Restaurants(){
                             Spacer(modifier = Modifier.height(30.dp))
                         }
                         VerticalDivider()
-                        Favorite(modifier = Modifier.fillMaxSize().weight(0.5f).padding(10.dp).clip(CircleShape).background(Color.LightBrownForBackground), id = item.id)
+                        //Favorite(modifier = Modifier.fillMaxSize().weight(0.5f).padding(10.dp).clip(CircleShape).background(Color.LightBrownForBackground), food = item)
                     }
                 }
             }

@@ -12,6 +12,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.applicationhome.ui.theme.screens.FinalScreen
+import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
@@ -26,7 +27,8 @@ class MainActivity : ComponentActivity() {
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
             val viewModel: ItemScreenViewModel = viewModel()
             val viewModelForBottomBar : BottomBarViewModel = viewModel()
-            FinalScreen(scrollBehavior, drawerState, viewModel, viewModelForBottomBar)
+            val addBoxViewModel : AddBoxViewModel = viewModel()
+            FinalScreen(scrollBehavior, drawerState, viewModel, viewModelForBottomBar, addBoxViewModel)
         }
     }
 }

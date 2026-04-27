@@ -20,7 +20,11 @@ class ItemScreenViewModel : ViewModel() {
     fun mediumSize(){
         selectedSize.value = "Medium"
     }
-    fun smallSize(){
-        selectedSize.value = "Small"
+    fun smallSize(item: FoodItem){
+        if(item.name.contains("Chicken")){   //هنا السطر دا بنسأل فيه لو الاسم فيه كلمةChicken
+            selectedSize.value = item.name
+        }else{
+            selectedSize.value = "Small"
+        }
     }
 }

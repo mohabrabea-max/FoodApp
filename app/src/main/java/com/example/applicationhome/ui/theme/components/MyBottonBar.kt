@@ -15,7 +15,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,78 +34,10 @@ import com.example.applicationhome.view.model.BottomBarViewModel
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyBottonBar(navController : NavController, viewModel: BottomBarViewModel){
-    var selected = viewModel.selected.value
-    BottomAppBar(
-        contentColor = Color.DarkOrange,
-        containerColor = Color.White
-    ){
-        IconButton(
-            onClick = {
-                viewModel.home()
-                navController.navigate(Screens.HomeScreen.screen)
-            },
-            modifier = Modifier.weight(1f)
-        ){
-            Icon(
-                Icons.Default.Home,
-                contentDescription = "Home",
-                modifier = Modifier.size(26.dp),
-                tint = if(selected == "Home") Color.Blue else Color.DarkOrange
-            )
-        }
-
-        IconButton(
-            onClick = {
-                viewModel.favorit()
-                navController.navigate(Screens.Favorite.screen)
-            },
-            modifier = Modifier.weight(1f)
-        ){
-            Icon(
-                Icons.Default.Favorite,
-                contentDescription = "Favorite",
-                modifier = Modifier.size(26.dp),
-                tint = if(selected == "Favorite") Color.Blue else Color.DarkOrange
-            )
-        }
-
-        IconButton(
-            onClick = {
-                viewModel.cart()
-                navController.navigate(Screens.Cart.screen)
-            },
-            modifier = Modifier.weight(1f)
-        ){
-            Icon(
-                Icons.Default.ShoppingCart,
-                contentDescription = "Cart",
-                modifier = Modifier.size(26.dp),
-                tint = if(selected == "Cart") Color.Blue else Color.DarkOrange
-            )
-        }
-
-        IconButton(
-            onClick = {
-                viewModel.profile()
-                navController.navigate(Screens.Profile.screen)
-            },
-            modifier = Modifier.weight(1f)
-        ){
-            Icon(
-                Icons.Default.Person,
-                contentDescription = "Profile",
-                modifier = Modifier.size(26.dp),
-                tint = if(selected == "Profile") Color.Blue else Color.DarkOrange
-            )
-        }
-    }
-}
-
-@SuppressLint("UnrememberedMutableState")
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MyBottonBar2(navController : NavController, viewModel: BottomBarViewModel){
+fun MyBottonBar2(
+    navController : NavController,
+    viewModel: BottomBarViewModel
+){
     var selected = viewModel.selected.value
     Box(
         modifier = Modifier.width(350.dp).
@@ -117,7 +48,10 @@ fun MyBottonBar2(navController : NavController, viewModel: BottomBarViewModel){
             detectTapGestures { }
         }
     ){
-        Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically
+        ){
             Box(modifier = Modifier.weight(1f)){
                 IconButton(
                     onClick = {
@@ -136,7 +70,7 @@ fun MyBottonBar2(navController : NavController, viewModel: BottomBarViewModel){
             Box(modifier = Modifier.weight(1f)){
                 IconButton(
                     onClick = {
-                        viewModel.favorit()
+                        viewModel.favorite()
                         navController.navigate(Screens.Favorite.screen)
                     }, modifier = Modifier.align(Alignment.Center)
                 ){
@@ -181,3 +115,75 @@ fun MyBottonBar2(navController : NavController, viewModel: BottomBarViewModel){
         }
     }
 }
+
+
+//@SuppressLint("UnrememberedMutableState")
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun MyBottonBar(navController : NavController, viewModel: BottomBarViewModel){
+//    var selected = viewModel.selected.value
+//    BottomAppBar(
+//        contentColor = Color.DarkOrange,
+//        containerColor = Color.White
+//    ){
+//        IconButton(
+//            onClick = {
+//                viewModel.home()
+//                navController.navigate(Screens.HomeScreen.screen)
+//            },
+//            modifier = Modifier.weight(1f)
+//        ){
+//            Icon(
+//                Icons.Default.Home,
+//                contentDescription = "Home",
+//                modifier = Modifier.size(26.dp),
+//                tint = if(selected == "Home") Color.Blue else Color.DarkOrange
+//            )
+//        }
+//
+//        IconButton(
+//            onClick = {
+//                viewModel.favorit()
+//                navController.navigate(Screens.Favorite.screen)
+//            },
+//            modifier = Modifier.weight(1f)
+//        ){
+//            Icon(
+//                Icons.Default.Favorite,
+//                contentDescription = "Favorite",
+//                modifier = Modifier.size(26.dp),
+//                tint = if(selected == "Favorite") Color.Blue else Color.DarkOrange
+//            )
+//        }
+//
+//        IconButton(
+//            onClick = {
+//                viewModel.cart()
+//                navController.navigate(Screens.Cart.screen)
+//            },
+//            modifier = Modifier.weight(1f)
+//        ){
+//            Icon(
+//                Icons.Default.ShoppingCart,
+//                contentDescription = "Cart",
+//                modifier = Modifier.size(26.dp),
+//                tint = if(selected == "Cart") Color.Blue else Color.DarkOrange
+//            )
+//        }
+//
+//        IconButton(
+//            onClick = {
+//                viewModel.profile()
+//                navController.navigate(Screens.Profile.screen)
+//            },
+//            modifier = Modifier.weight(1f)
+//        ){
+//            Icon(
+//                Icons.Default.Person,
+//                contentDescription = "Profile",
+//                modifier = Modifier.size(26.dp),
+//                tint = if(selected == "Profile") Color.Blue else Color.DarkOrange
+//            )
+//        }
+//    }
+//}
