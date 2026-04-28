@@ -33,7 +33,7 @@ fun CategoriesBox(category : CategoriesImage){
     Column(horizontalAlignment = Alignment.CenterHorizontally){
         Box(
             modifier = Modifier.
-            size(75.dp).
+            size(70.dp).
             clip(CircleShape).
             background(Color.LightGray.copy(alpha = 0.5f)).
             clickable{ Toast.makeText(context, category.name, Toast.LENGTH_SHORT).show()},

@@ -44,6 +44,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -77,19 +81,19 @@ import com.example.applicationhome.view.model.ItemScreenViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : NavHostController, viewModel: ItemScreenViewModel, addBoxViewModel : AddBoxViewModel = viewModel()){
-    val food : Food
     val item = viewModel.selectedItem
     val price = viewModel.selectedSize.value
     val images = item?.image?.size ?: 0
     val pagerState = rememberPagerState(pageCount = {images})
     val size = item?.priceANDsize?.size
+    var selectedSize by remember { mutableStateOf("Small") }
     if(item != null){
         Scaffold(
             modifier = Modifier.fillMaxSize().
             background(Color.White),
             bottomBar = {
                 Box(modifier = Modifier.fillMaxWidth().height(70.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.TopCenter){
-                    BottonBarForItemScreen(item.id, addBoxViewModel, item)
+                    BottonBarForItemScreen(addBoxViewModel, item, selectedSize)
                 }
             }
         ){
@@ -167,7 +171,15 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
                                 ){
                                     if(size == 3){
                                         Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-                                            Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.bigSize()}, contentAlignment = Alignment.Center){
+                                            Box(
+                                                modifier = Modifier.weight(1f).
+                                                fillMaxHeight().
+                                                clickable{
+                                                    viewModel.bigSize()
+                                                    selectedSize = "Big"
+                                                },
+                                                contentAlignment = Alignment.Center
+                                            ){
                                                 if(price == "Big"){
                                                     Box(modifier = Modifier.fillMaxSize().background(Color.Orange), contentAlignment = Alignment.Center){
                                                         Text(text = "Big", color = Color.Black)
@@ -177,7 +189,15 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
                                                 }
                                             }
                                             VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(30.dp))
-                                            Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.mediumSize()}, contentAlignment = Alignment.Center){
+                                            Box(
+                                                modifier = Modifier.weight(1f).
+                                                fillMaxHeight().
+                                                clickable{
+                                                    viewModel.mediumSize()
+                                                    selectedSize = "Medium"
+                                                },
+                                                contentAlignment = Alignment.Center
+                                            ){
                                                 if(price == "Medium"){
                                                     Box(modifier = Modifier.fillMaxSize().background(Color.Orange), contentAlignment = Alignment.Center){
                                                         Text(text = "Medium", color = Color.Black)
@@ -187,7 +207,15 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
                                                 }
                                             }
                                             VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(30.dp))
-                                            Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.smallSize(item)}, contentAlignment = Alignment.Center){
+                                            Box(
+                                                modifier = Modifier.weight(1f).
+                                                fillMaxHeight().
+                                                clickable{
+                                                    viewModel.smallSize(item)
+                                                    selectedSize = "Small"
+                                                },
+                                                contentAlignment = Alignment.Center
+                                            ){
                                                 if(price == "Small"){
                                                     Box(modifier = Modifier.fillMaxSize().background(Color.Orange), contentAlignment = Alignment.Center){
                                                         Text(text = "Small", color = Color.Black)
@@ -199,7 +227,15 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
                                         }
                                     }else if(size == 2){
                                         Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-                                            Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.bigSize()}, contentAlignment = Alignment.Center){
+                                            Box(
+                                                modifier = Modifier.weight(1f).
+                                                fillMaxHeight().
+                                                clickable{
+                                                    viewModel.bigSize()
+                                                    selectedSize = "Big"
+                                                },
+                                                contentAlignment = Alignment.Center
+                                            ){
                                                 if(price == "Beg"){
                                                     viewModel.bigSize()
                                                     Box(modifier = Modifier.fillMaxSize().background(Color.Orange), contentAlignment = Alignment.Center){
@@ -210,7 +246,15 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
                                                 }
                                             }
                                             VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.padding(5.dp))
-                                            Box(modifier = Modifier.weight(1f).fillMaxHeight().clickable{viewModel.mediumSize()}, contentAlignment = Alignment.Center){
+                                            Box(
+                                                modifier = Modifier.weight(1f).
+                                                fillMaxHeight().
+                                                clickable{
+                                                    viewModel.mediumSize()
+                                                    selectedSize = "Medium"
+                                                },
+                                                contentAlignment = Alignment.Center
+                                            ){
                                                 if(price == "Medium"){
                                                     viewModel.mediumSize()
                                                     Box(modifier = Modifier.fillMaxSize().background(Color.Orange), contentAlignment = Alignment.Center){
@@ -258,14 +302,14 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottonBarForItemScreen(
-    id: Int,
     ordernumber : AddBoxViewModel = viewModel(),
-    food : Food
+    food : Food,
+    size : String
 ){
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    var count = ordernumber.itemsCount[food] ?: 0
+    var count = ordernumber.totalCart.value ?: 0
     var color : Color
     var fontColor : Color
     if(count == 0){
@@ -306,7 +350,7 @@ fun BottonBarForItemScreen(
                         modifier = Modifier.
                         weight(1f).
                         fillMaxHeight().
-                        clickable {ordernumber.addBoxNumberPlus(food)},
+                        clickable {ordernumber.addBoxNumberPlus(food, size)},
                         contentAlignment = Alignment.Center
                     ){
                         Text(
@@ -331,11 +375,11 @@ fun BottonBarForItemScreen(
                                 if (newValue.isNotEmpty()) {
                                     if(newValue.all {it.isDigit()} && newValue.length <= 2){
                                         val newCount = newValue.toIntOrNull() ?: count
-                                        ordernumber.updateCount(food, newCount)
+                                        ordernumber.updateCount(food, size, newCount)
                                     }
                                 }else{
                                     val newCount = newValue.toIntOrNull() ?: 0
-                                    ordernumber.updateCount(food, newCount)
+                                    ordernumber.updateCount(food, size, newCount)
                                 }
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
@@ -359,7 +403,7 @@ fun BottonBarForItemScreen(
                         weight(1f).
                         fillMaxHeight().
                         animateContentSize().
-                        clickable {ordernumber.addBoxNumberMinus(food)},
+                        clickable {ordernumber.addBoxNumberMinus(food, size)},
                         contentAlignment = Alignment.Center
                     ){
                         Text(

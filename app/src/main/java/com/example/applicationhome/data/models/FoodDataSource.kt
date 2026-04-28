@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.ui.graphics.Color
 import com.example.applicationhome.R
 
@@ -321,8 +322,8 @@ object OffersData {
 }
 
 object Cart {
-    var cartmap = mutableMapOf<Food, Int>()
-    fun cartMap(): Map<Food, Int>{
+    var cartmap = mutableStateMapOf<CartKey, Int>()
+    fun cartMap(): Map<CartKey, Int>{
         return cartmap
     }
 }

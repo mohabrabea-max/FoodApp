@@ -105,6 +105,7 @@ fun ItemsBox(
             Box(
                 modifier = Modifier.
                 fillMaxWidth().
+                clip(RoundedCornerShape(10.dp)).
                 background(Color.DarkOrange),
                 contentAlignment = Alignment.Center
             ){

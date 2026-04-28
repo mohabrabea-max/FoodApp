@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.Cart
+import com.example.applicationhome.data.models.CartKey
 import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
@@ -58,22 +59,24 @@ import com.example.applicationhome.view.model.ItemScreenViewModel
 @Composable
 fun CartBox(
     item: FoodItem,
+    size : String,
     number : Int,
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel,
     ordernumber : AddBoxViewModel = viewModel()
-){
+) {
     var cartnumber = Cart.cartMap()
+    var cartkey = CartKey(item, size)
     val context = LocalContext.current
-    var count = ordernumber.itemsCount[item] ?: 0
+    var count = ordernumber.itemsCount[cartkey] ?: 0
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    var total = item.priceANDsize["Small"] ?: 0
+    var total = item.priceANDsize[size] ?: 0
     var totalPrice = total.toInt() * number
     Box(
         modifier = Modifier.
         animateContentSize().
-        aspectRatio(0.8f).
+        aspectRatio(0.7f).
         clickable{
             viewModel.selectedItem = item
             navigationController.navigate(Screens.ItemScreen.screen)
@@ -92,107 +95,24 @@ fun CartBox(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
-                Column(modifier = Modifier.align(Alignment.BottomCenter), verticalArrangement = Arrangement.Bottom, horizontalAlignment = Alignment.CenterHorizontally){
-                    Box(
-                        modifier = Modifier.height(35.dp).
-                        width(120.dp).
-                        clip(RoundedCornerShape(50.dp)).
-                        background(Color.White).
-                        border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(50.dp))
-                    ){
-                        Row(
-                            modifier = Modifier.
-                            fillMaxSize(),
-                            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
-                        ){
-                            Box(
-                                modifier = Modifier.
-                                weight(1f).
-                                fillMaxHeight().
-                                clickable {ordernumber.addBoxNumberPlus(item)},
-                                contentAlignment = Alignment.Center
-                            ){
-                                Text(
-                                    text = "+",
-                                    fontSize = 20.sp,
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = Color.Black,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-                            VerticalDivider(color = Color.Black, modifier = Modifier.height(20.dp))
-                            Box(
-                                modifier = Modifier.
-                                weight(1f).
-                                fillMaxHeight().
-                                clickable {cartnumber[item]},
-                                contentAlignment = Alignment.Center
-                            ){
-                                BasicTextField(
-                                    value = cartnumber[item].toString(),
-                                    onValueChange = { newValue ->
-                                        if (newValue.isNotEmpty()) {
-                                            if(newValue.all {it.isDigit()} && newValue.length <= 2){
-                                                val newCount = newValue.toIntOrNull() ?: count
-                                                ordernumber.updateCount(item, newCount)
-                                            }
-                                        }else{
-                                            val newCount = newValue.toIntOrNull() ?: 0
-                                            ordernumber.updateCount(item, newCount)
-                                        }
-                                    },
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
-                                    keyboardActions = KeyboardActions(
-                                        onDone = {
-                                            keyboardController?.hide()
-                                            focusManager.clearFocus()
-                                        }
-                                    ),
-                                    singleLine = true,
-                                    textStyle = TextStyle(
-                                        textAlign = TextAlign.Center,
-                                        fontSize = 20.sp,
-                                        color = Color.Black
-                                    )
-                                )
-                            }
-                            VerticalDivider(color = Color.Black, modifier = Modifier.height(20.dp))
-                            Box(
-                                modifier = Modifier.
-                                weight(1f).
-                                fillMaxHeight().
-                                animateContentSize().
-                                clickable {ordernumber.addBoxNumberMinus(item)},
-                                contentAlignment = Alignment.Center
-                            ){
-                                Text(
-                                    text = "-",
-                                    fontSize = 20.sp,
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = Color.Black,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-                        }
-                    }
-                    Box(
-                        modifier = Modifier.fillMaxWidth().
-                        background(Color.White.copy(alpha = 0.7f)).
-                        padding(5.dp),
-                        contentAlignment = Alignment.CenterStart
-                    ){
-                        Text(
-                            text = item.name,
-                            style = MaterialTheme.typography.titleLarge,
-                            color = Color.Black,
-                            fontSize = 18.sp,
-                        )
-                    }
+                Box(
+                    modifier = Modifier.fillMaxWidth().
+                    background(Color.White.copy(alpha = 0.7f)).
+                    padding(5.dp).align(Alignment.BottomCenter),
+                    contentAlignment = Alignment.CenterStart
+                ){
+                    Text(
+                        text = item.name + " ( $size )",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.Black,
+                        fontSize = 15.sp,
+                    )
                 }
             }
             Box(
                 modifier = Modifier.
                 fillMaxWidth().
+                clip(RoundedCornerShape(10.dp)).
                 background(Color.DarkOrange),
                 contentAlignment = Alignment.Center
             ){
@@ -218,6 +138,89 @@ fun CartBox(
                         color = Color.White,
                         textAlign = TextAlign.Center,
                     )
+                }
+            }
+            Spacer(modifier = Modifier.height(5.dp))
+            Box(
+                modifier = Modifier.height(40.dp).
+                fillMaxWidth().
+                clip(RoundedCornerShape(10.dp)).
+                background(Color.White).
+                border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(10.dp))
+            ){
+                Row(
+                    modifier = Modifier.
+                    fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
+                ){
+                    Box(
+                        modifier = Modifier.
+                        weight(1f).
+                        fillMaxHeight().
+                        clickable {ordernumber.addBoxNumberPlus(item, size)},
+                        contentAlignment = Alignment.Center
+                    ){
+                        Text(
+                            text = "+",
+                            fontSize = 20.sp,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    VerticalDivider(color = Color.Black, modifier = Modifier.height(20.dp))
+                    Box(
+                        modifier = Modifier.
+                        weight(1f).
+                        fillMaxHeight().
+                        clickable {cartnumber[cartkey]},
+                        contentAlignment = Alignment.Center
+                    ){
+                        BasicTextField(
+                            value = cartnumber[cartkey].toString(),
+                            onValueChange = { newValue ->
+                                if (newValue.isNotEmpty()) {
+                                    if(newValue.all {it.isDigit()} && newValue.length <= 2){
+                                        val newCount = newValue.toIntOrNull() ?: count
+                                        ordernumber.updateCount(item, size, newCount)
+                                    }
+                                }else{
+                                    val newCount = newValue.toIntOrNull() ?: 0
+                                    ordernumber.updateCount(item, size, newCount)
+                                }
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    keyboardController?.hide()
+                                    focusManager.clearFocus()
+                                }
+                            ),
+                            singleLine = true,
+                            textStyle = TextStyle(
+                                textAlign = TextAlign.Center,
+                                fontSize = 20.sp,
+                                color = Color.Black
+                            )
+                        )
+                    }
+                    VerticalDivider(color = Color.Black, modifier = Modifier.height(20.dp))
+                    Box(
+                        modifier = Modifier.
+                        weight(1f).
+                        fillMaxHeight().
+                        animateContentSize().
+                        clickable {ordernumber.addBoxNumberMinus(item, size)},
+                        contentAlignment = Alignment.Center
+                    ){
+                        Text(
+                            text = "-",
+                            fontSize = 20.sp,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
         }

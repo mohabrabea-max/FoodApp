@@ -58,7 +58,7 @@ data class Settings(
     val icon : ImageVector
 )
 
-
+data class CartKey(val food : Food, val size : String)
 
 
 

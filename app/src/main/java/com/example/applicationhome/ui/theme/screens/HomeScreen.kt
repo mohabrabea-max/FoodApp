@@ -61,16 +61,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, viewModel: ItemScreenViewModel, viewModelForBottomBar : BottomBarViewModel){
-//    val gridState = rememberLazyGridState()
-//    val isAtTop by remember {
-//        derivedStateOf {
-//            gridState.firstVisibleItemIndex == 0
-//        }
-//    }
-//    val appBarColor by animateColorAsState(
-//        targetValue = if (isAtTop) Color.Transparent else Color.White,
-//        animationSpec = tween(durationMillis = 300) // سرعة التحول
-//    )
     val offers = OffersData.offersMenu()
     val menu = FoodDataSource.allMenu()
     val categories = VarietiesMenu.categoriesList()
@@ -99,7 +89,7 @@ fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerStat
                         }
                     }
                     item(span = { GridItemSpan(2) }){
-                        Divider(color = Color.LightGray.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(10.dp))
+                        Divider(color = Color.LightGray.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(start = 20.dp, end = 20.dp))
                         Spacer(modifier = Modifier.height(20.dp))
                     }
                     item(span = { GridItemSpan(2) }){
@@ -122,7 +112,7 @@ fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerStat
                     }
                     item(span = { GridItemSpan(2) }){
                         Spacer(modifier = Modifier.height(20.dp))
-                        Divider(color = Color.LightGray.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(10.dp))
+                        Divider(color = Color.LightGray.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(start = 20.dp, end = 20.dp))
                         Spacer(modifier = Modifier.height(20.dp))
                     }
                     items(menu){ item -> ItemsBox(item, navigationController, viewModel) }

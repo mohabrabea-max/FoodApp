@@ -26,6 +26,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.applicationhome.data.models.CartKey
 import com.example.applicationhome.data.models.Food
 import com.example.applicationhome.ui.theme.Orange
 import com.example.applicationhome.view.model.AddBoxViewModel
@@ -48,15 +53,18 @@ import com.example.applicationhome.view.model.AddBoxViewModel
 fun AddBox(
     modifier: Modifier = Modifier,
     color : Color,
-    food: Food,
+    food : Food,
     ordernumber : AddBoxViewModel = viewModel()
 ){
     val context = LocalContext.current
     var id = food.id
+    var selectedSize by remember { mutableStateOf("Small") }
+    var cartkey = CartKey(food, selectedSize)
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    var count = ordernumber.itemsCount[food] ?: 0
+    var count = ordernumber.itemsCount[cartkey] ?: 0
     var activid = ordernumber.activId == id
+
     var targetWidth = if(count == 0 || activid == false) 35.dp else 160.dp
     Box(
         modifier = modifier.
@@ -81,7 +89,7 @@ fun AddBox(
                 width(targetWidth).
                 clip(CircleShape).
                 background(color.copy(alpha = 1f)).
-                clickable {ordernumber.addBoxNumberPlus(food)}.
+                clickable {ordernumber.addBoxNumberPlus(food, selectedSize)}.
                 border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)),
                 contentAlignment = Alignment.Center
             ){
@@ -101,7 +109,7 @@ fun AddBox(
                 width(targetWidth).
                 clip(CircleShape).
                 background(color.copy(alpha = 1f)).
-                clickable {ordernumber.addBoxNumberPlus(food)}.
+                clickable {ordernumber.addBoxNumberPlus(food, selectedSize)}.
                 border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)),
                 contentAlignment = Alignment.Center
             ){
@@ -127,7 +135,7 @@ fun AddBox(
                     weight(3f).
                     clip(CircleShape).
                     background(color.copy(alpha = 1f)).
-                    clickable {ordernumber.addBoxNumberPlus(food)}.
+                    clickable {ordernumber.addBoxNumberPlus(food, selectedSize)}.
                     border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)),
                     contentAlignment = Alignment.Center
                 ){
@@ -141,7 +149,7 @@ fun AddBox(
                             modifier = Modifier.
                             weight(1f).
                             fillMaxHeight().
-                            clickable {ordernumber.addBoxNumberPlus(food)},
+                            clickable {ordernumber.addBoxNumberPlus(food, selectedSize)},
                             contentAlignment = Alignment.Center
                         ){
                             Text(
@@ -166,11 +174,11 @@ fun AddBox(
                                     if (newValue.isNotEmpty()) {
                                         if(newValue.all {it.isDigit()} && newValue.length <= 2){
                                             val newCount = newValue.toIntOrNull() ?: count
-                                            ordernumber.updateCount(food, newCount)
+                                            ordernumber.updateCount(food, selectedSize, newCount)
                                         }
                                     }else{
                                         val newCount = newValue.toIntOrNull() ?: 0
-                                        ordernumber.updateCount(food, newCount)
+                                        ordernumber.updateCount(food, selectedSize, newCount)
                                     }
                                 },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
@@ -194,7 +202,7 @@ fun AddBox(
                             weight(1f).
                             fillMaxHeight().
                             animateContentSize().
-                            clickable {ordernumber.addBoxNumberMinus(food)},
+                            clickable {ordernumber.addBoxNumberMinus(food, selectedSize)},
                             contentAlignment = Alignment.Center
                         ){
                             Text(

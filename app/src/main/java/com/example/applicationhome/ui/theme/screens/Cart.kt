@@ -91,15 +91,15 @@ fun Cart(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ){
                         item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
-                        items(cart.keys.toList(), key = { it.id }) { item ->
-                            when (item) {
+                        items(cart.keys.toList(), key = { it.food.id.toString() + it.size}) { item ->
+                            when (item.food) {
                                 is FoodItem -> {
-                                    CartBox(item, cart[item] ?: 0, navigationController, viewModel)
+                                    CartBox(item.food, item.size, cart[item] ?: 0, navigationController, viewModel)
                                 }
                                 is Snake -> {
-                                    Text(text =item.name)
+                                    Text(text = item.food.name)
                                     // هنا الـ image نوعها Int (Resource ID)
-                                    Image(painter = painterResource(id = item.image), contentDescription = null, modifier = Modifier.fillMaxSize())
+                                    Image(painter = painterResource(id = item.food.image), contentDescription = null, modifier = Modifier.fillMaxSize())
                                 }
                             }
                         }
@@ -108,11 +108,28 @@ fun Cart(
                     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
                         Spacer(modifier = Modifier.height(150.dp))
                         Text(
-                            text = "The cart is empty!",
-                            fontSize = 45.sp,
+                            text = "Your shopping cart",
+                            fontSize = 25.sp,
                             style = MaterialTheme.typography.labelLarge,
                             color = Color.Black,
                             textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(5.dp)
+                        )
+                        Text(
+                            text = "looks empty!",
+                            fontSize = 25.sp,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(5.dp)
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "What are you waiting for?",
+                            fontSize = 20.sp,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(5.dp)
                         )
                         Spacer(modifier = Modifier.height(50.dp))
                         Box(
