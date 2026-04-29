@@ -46,6 +46,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.Favorite
@@ -111,7 +112,15 @@ fun Favorite(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState,
                             padding(5.dp).
                             clip(RoundedCornerShape(30.dp)).
                             clickable{
-                                navigationController.navigate(Screens.HomeScreen.screen)
+                                navigationController.navigate(Screens.HomeScreen.screen){
+                                    popUpTo(navigationController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+
+                                    launchSingleTop = true
+
+                                    restoreState = true
+                                }
                                 viewModelForBottomBar.home()
                             }.
                             border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp))
@@ -146,9 +155,29 @@ fun Favorite(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState,
                     "Favorite",
                     {coroutineScope.launch{drawerState.open()}},
                     {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
-                    {navigationController.navigate(Screens.Search.screen)},
+                    {
+                        navigationController.navigate(Screens.Search.screen){
+                            popUpTo(navigationController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+
+                            restoreState = true
+                        }
+                    },
                     Icons.Default.Search,
-                    {navigationController.navigate(Screens.Favorite.screen)},
+                    {
+                        navigationController.navigate(Screens.Favorite.screen){
+                            popUpTo(navigationController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+
+                            restoreState = true
+                        }
+                    },
                     Icons.Default.Favorite
                 )
                 Divider(color = Color.LightGray.copy(alpha = 0.5f))

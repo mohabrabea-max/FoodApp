@@ -11,7 +11,6 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.applicationhome.data.models.Food
 import com.example.applicationhome.ui.theme.screens.FinalScreen
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
@@ -29,7 +28,6 @@ class MainActivity : ComponentActivity() {
             val viewModel: ItemScreenViewModel = viewModel()
             val viewModelForBottomBar : BottomBarViewModel = viewModel()
             val addBoxViewModel : AddBoxViewModel = viewModel()
-            val food : Food
             FinalScreen(scrollBehavior, drawerState, viewModel, viewModelForBottomBar, addBoxViewModel)
         }
     }

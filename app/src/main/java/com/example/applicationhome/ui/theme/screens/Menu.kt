@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.FoodDataSource
 import com.example.applicationhome.data.models.Screens
@@ -43,9 +44,29 @@ fun Menu(drawerState : DrawerState, coroutineScope : CoroutineScope, navigationC
                 "Menu",
                 { navigationController.popBackStack() },
                 {Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)},
-                {navigationController.navigate(Screens.Notifications.screen)},
+                {
+                    navigationController.navigate(Screens.Notifications.screen){
+                        popUpTo(navigationController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+
+                        launchSingleTop = true
+
+                        restoreState = true
+                    }
+                },
                 Icons.Default.Notifications,
-                {navigationController.navigate(Screens.Search.screen)},
+                {
+                    navigationController.navigate(Screens.Search.screen){
+                        popUpTo(navigationController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+
+                        launchSingleTop = true
+
+                        restoreState = true
+                    }
+                },
                 Icons.Default.Search
             )
         }

@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.Cart
 import com.example.applicationhome.data.models.CartKey
@@ -79,7 +80,15 @@ fun CartBox(
         aspectRatio(0.7f).
         clickable{
             viewModel.selectedItem = item
-            navigationController.navigate(Screens.ItemScreen.screen)
+            navigationController.navigate(Screens.ItemScreen.screen){
+                popUpTo(navigationController.graph.findStartDestination().id) {
+                    saveState = true
+                }
+
+                launchSingleTop = true
+
+                restoreState = true
+            }
         }.
         padding(5.dp).
         clip(RoundedCornerShape(10.dp))
@@ -157,7 +166,7 @@ fun CartBox(
                         modifier = Modifier.
                         weight(1f).
                         fillMaxHeight().
-                        clickable {ordernumber.addBoxNumberPlus(item, size)},
+                        clickable {ordernumber.cartPlus(item, size)},
                         contentAlignment = Alignment.Center
                     ){
                         Text(
@@ -182,11 +191,11 @@ fun CartBox(
                                 if (newValue.isNotEmpty()) {
                                     if(newValue.all {it.isDigit()} && newValue.length <= 2){
                                         val newCount = newValue.toIntOrNull() ?: count
-                                        ordernumber.updateCount(item, size, newCount)
+                                        ordernumber.updatecart(item, size, newCount)
                                     }
                                 }else{
                                     val newCount = newValue.toIntOrNull() ?: 0
-                                    ordernumber.updateCount(item, size, newCount)
+                                    ordernumber.updatecart(item, size, newCount)
                                 }
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
@@ -210,7 +219,7 @@ fun CartBox(
                         weight(1f).
                         fillMaxHeight().
                         animateContentSize().
-                        clickable {ordernumber.addBoxNumberMinus(item, size)},
+                        clickable {ordernumber.cartMinus(item, size)},
                         contentAlignment = Alignment.Center
                     ){
                         Text(

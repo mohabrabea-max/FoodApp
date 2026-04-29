@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -42,6 +43,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.FoodDataSource
@@ -65,6 +67,7 @@ fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerStat
     val menu = FoodDataSource.allMenu()
     val categories = VarietiesMenu.categoriesList()
     val pagerState = rememberPagerState(pageCount = {offers.size})
+    val scrollState = rememberLazyGridState()
     Scaffold(
         modifier = Modifier.
         fillMaxSize().
@@ -73,6 +76,7 @@ fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerStat
         Box(modifier = Modifier.background(Color.White)){
             Box{
                 LazyVerticalGrid (
+                    state = scrollState,
                     modifier = Modifier.fillMaxSize(),
                     columns = GridCells.Fixed(2),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -123,9 +127,29 @@ fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerStat
                     "Home",
                     {coroutineScope.launch{drawerState.open()}},
                     {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
-                    {navigationController.navigate(Screens.Search.screen)},
+                    {
+                        navigationController.navigate(Screens.Search.screen){
+                            popUpTo(navigationController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+
+                            restoreState = true
+                        }
+                    },
                     Icons.Default.Search,
-                    {navigationController.navigate(Screens.Notifications.screen)},
+                    {
+                        navigationController.navigate(Screens.Notifications.screen){
+                            popUpTo(navigationController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+
+                            restoreState = true
+                        }
+                    },
                     Icons.Default.Notifications
                 )
                 Divider(color = Color.LightGray.copy(alpha = 0.5f))

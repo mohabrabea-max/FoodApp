@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
@@ -56,7 +57,17 @@ fun MyBottonBar2(
                 IconButton(
                     onClick = {
                         viewModel.home()
-                        navController.navigate(Screens.HomeScreen.screen)
+                        navController.navigate(Screens.HomeScreen.screen){
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true // احفظ حالة الصفحة اللي أنا خارج منها (زي السكرول)
+                            }
+
+                            // 2. ميكررش نفس الصفحة لو أنا دوست عليها وأنا واقف فيها
+                            launchSingleTop = true
+
+                            // 3. يرجع الحالة اللي كانت محفوظة لما أرجع للصفحة دي تاني
+                            restoreState = true
+                        }
                     }, modifier = Modifier.align(Alignment.Center)
                 ){
                     Icon(
@@ -71,7 +82,14 @@ fun MyBottonBar2(
                 IconButton(
                     onClick = {
                         viewModel.favorite()
-                        navController.navigate(Screens.Favorite.screen)
+                        navController.navigate(Screens.Favorite.screen){
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+
+                            restoreState = true
+                        }
                     }, modifier = Modifier.align(Alignment.Center)
                 ){
                     Icon(
@@ -86,7 +104,15 @@ fun MyBottonBar2(
                 IconButton(
                     onClick = {
                         viewModel.cart()
-                        navController.navigate(Screens.Cart.screen)
+                        navController.navigate(Screens.Cart.screen){
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+
+                            restoreState = true
+                        }
                     }, modifier = Modifier.align(Alignment.Center)
                 ){
                     Icon(
@@ -101,7 +127,15 @@ fun MyBottonBar2(
                 IconButton(
                     onClick = {
                         viewModel.profile()
-                        navController.navigate(Screens.Profile.screen)
+                        navController.navigate(Screens.Profile.screen){
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+
+                            restoreState = true
+                        }
                     }, modifier = Modifier.align(Alignment.Center)
                 ){
                     Icon(
@@ -115,75 +149,3 @@ fun MyBottonBar2(
         }
     }
 }
-
-
-//@SuppressLint("UnrememberedMutableState")
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun MyBottonBar(navController : NavController, viewModel: BottomBarViewModel){
-//    var selected = viewModel.selected.value
-//    BottomAppBar(
-//        contentColor = Color.DarkOrange,
-//        containerColor = Color.White
-//    ){
-//        IconButton(
-//            onClick = {
-//                viewModel.home()
-//                navController.navigate(Screens.HomeScreen.screen)
-//            },
-//            modifier = Modifier.weight(1f)
-//        ){
-//            Icon(
-//                Icons.Default.Home,
-//                contentDescription = "Home",
-//                modifier = Modifier.size(26.dp),
-//                tint = if(selected == "Home") Color.Blue else Color.DarkOrange
-//            )
-//        }
-//
-//        IconButton(
-//            onClick = {
-//                viewModel.favorit()
-//                navController.navigate(Screens.Favorite.screen)
-//            },
-//            modifier = Modifier.weight(1f)
-//        ){
-//            Icon(
-//                Icons.Default.Favorite,
-//                contentDescription = "Favorite",
-//                modifier = Modifier.size(26.dp),
-//                tint = if(selected == "Favorite") Color.Blue else Color.DarkOrange
-//            )
-//        }
-//
-//        IconButton(
-//            onClick = {
-//                viewModel.cart()
-//                navController.navigate(Screens.Cart.screen)
-//            },
-//            modifier = Modifier.weight(1f)
-//        ){
-//            Icon(
-//                Icons.Default.ShoppingCart,
-//                contentDescription = "Cart",
-//                modifier = Modifier.size(26.dp),
-//                tint = if(selected == "Cart") Color.Blue else Color.DarkOrange
-//            )
-//        }
-//
-//        IconButton(
-//            onClick = {
-//                viewModel.profile()
-//                navController.navigate(Screens.Profile.screen)
-//            },
-//            modifier = Modifier.weight(1f)
-//        ){
-//            Icon(
-//                Icons.Default.Person,
-//                contentDescription = "Profile",
-//                modifier = Modifier.size(26.dp),
-//                tint = if(selected == "Profile") Color.Blue else Color.DarkOrange
-//            )
-//        }
-//    }
-//}

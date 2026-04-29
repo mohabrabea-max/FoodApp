@@ -41,6 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.ProfileData
@@ -67,9 +68,29 @@ fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigat
                 "Settings",
                 {coroutineScope.launch{drawerState.open()}},
                 {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
-                {navigationController.navigate(Screens.Notifications.screen)},
+                {
+                    navigationController.navigate(Screens.Notifications.screen){
+                        popUpTo(navigationController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+
+                        launchSingleTop = true
+
+                        restoreState = true
+                    }
+                },
                 Icons.Default.Notifications,
-                {navigationController.navigate(Screens.Search.screen)},
+                {
+                    navigationController.navigate(Screens.Search.screen){
+                        popUpTo(navigationController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+
+                        launchSingleTop = true
+
+                        restoreState = true
+                    }
+                },
                 Icons.Default.Search
             )
                  },
@@ -82,7 +103,15 @@ fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigat
                     background(Color.LightBackgroundForCards).
                     clickable{
                         coroutineScope.launch{drawerState.close()}
-                        navigationController.navigate(Screens.Profile.screen)
+                        navigationController.navigate(Screens.Profile.screen){
+                            popUpTo(navigationController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+
+                            restoreState = true
+                        }
                     }
                 ){
                     Row(

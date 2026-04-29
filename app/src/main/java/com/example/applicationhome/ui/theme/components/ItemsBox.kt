@@ -35,6 +35,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
@@ -45,7 +47,7 @@ import com.example.applicationhome.view.model.ItemScreenViewModel
 fun ItemsBox(
     item: FoodItem,
     navigationController : NavHostController,
-    viewModel: ItemScreenViewModel
+    viewModel: ItemScreenViewModel = viewModel()
 ){
     val context = LocalContext.current
     Box(
@@ -54,7 +56,15 @@ fun ItemsBox(
         aspectRatio(0.8f).
         clickable{
             viewModel.selectedItem = item
-            navigationController.navigate(Screens.ItemScreen.screen)
+            navigationController.navigate(Screens.ItemScreen.screen){
+                popUpTo(navigationController.graph.findStartDestination().id) {
+                    saveState = true
+                }
+
+                launchSingleTop = true
+
+                restoreState = true
+            }
         }.
         padding(5.dp).
         clip(RoundedCornerShape(10.dp))

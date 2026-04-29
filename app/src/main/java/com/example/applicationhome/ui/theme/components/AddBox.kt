@@ -75,7 +75,7 @@ fun AddBox(
         clip(CircleShape).
         background(Color.Blue).
         clickable {
-            ordernumber.addToCart()
+            ordernumber.addToCart(food, selectedSize)
             Toast.makeText(context, "Added To Cart", Toast.LENGTH_SHORT).show()
         }.
         border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)),
@@ -109,7 +109,13 @@ fun AddBox(
                 width(targetWidth).
                 clip(CircleShape).
                 background(color.copy(alpha = 1f)).
-                clickable {ordernumber.addBoxNumberPlus(food, selectedSize)}.
+                clickable {
+                    if(count == 99){
+                        ordernumber.activ(food)
+                    }else{
+                        ordernumber.addBoxNumberPlus(food, selectedSize)
+                    }
+                }.
                 border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)),
                 contentAlignment = Alignment.Center
             ){
@@ -216,7 +222,6 @@ fun AddBox(
                     }
                 }
             }
-
         }
     }
 }

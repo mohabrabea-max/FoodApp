@@ -27,7 +27,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
@@ -42,6 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -57,7 +57,13 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, viewModel : ItemScreenViewModel, viewModelForBottomBar : BottomBarViewModel, addBoxViewModel: AddBoxViewModel){
+fun FinalScreen(
+    scrollBehavior: TopAppBarScrollBehavior,
+    drawerState : DrawerState,
+    viewModel : ItemScreenViewModel = viewModel(),
+    viewModelForBottomBar : BottomBarViewModel = viewModel(),
+    addBoxViewModel: AddBoxViewModel = viewModel()
+){
     val navigationController = rememberNavController()
     val coroutineScope = rememberCoroutineScope()
     val navBackStackEntry by navigationController.currentBackStackEntryAsState()
@@ -137,35 +143,28 @@ fun FinalScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerSta
             }
         }
     ){
-        Scaffold(
-            //topBar = { MyTopBar(scrollBehavior, {coroutineScope.launch{drawerState.open()}}, {navigationController.navigate(Screens.Notifications.screen)}, Icons.Default.Notifications, {navigationController.navigate(Screens.Search.screen)}, Icons.Default.Search) },
-
-            //bottomBar = { MyBottonBar(navigationController) }
-
-        ){innerPadding ->
-            Box(modifier = Modifier){
-                NavHost(navController = navigationController, startDestination = Screens.HomeScreen.screen){
-                    allScreens.forEach { item ->
-                        composable(
-                            route = item.screen,
-                            enterTransition = { EnterTransition.None },
-                            exitTransition = { ExitTransition.None },
-                            popEnterTransition = { EnterTransition.None },
-                            popExitTransition = { ExitTransition.None }
-                        ) {
-                            when(item){
-                                is Screens.HomeScreen -> HomeScreen(scrollBehavior, drawerState, coroutineScope, navigationController, viewModel, viewModelForBottomBar)
-                                is Screens.Profile -> Profile(scrollBehavior, drawerState, coroutineScope, navigationController, viewModelForBottomBar)
-                                is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController)
-                                is Screens.Search -> Search()
-                                is Screens.Menu -> Menu(drawerState, coroutineScope, navigationController, viewModel, scrollBehavior)
-                                is Screens.Restaurants -> Restaurants()
-                                is Screens.Varieties -> Varieties()
-                                is Screens.ItemScreen -> ItemScreen(scrollBehavior, navigationController, viewModel)
-                                is Screens.Notifications -> Notifications()
-                                is Screens.Favorite -> Favorite(scrollBehavior, drawerState, coroutineScope, navigationController, viewModelForBottomBar, viewModel)
-                                is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, viewModelForBottomBar, viewModel, addBoxViewModel)
-                            }
+        Box{
+            NavHost(navController = navigationController, startDestination = Screens.HomeScreen.screen){
+                allScreens.forEach { item ->
+                    composable(
+                        route = item.screen,
+                        enterTransition = { EnterTransition.None },
+                        exitTransition = { ExitTransition.None },
+                        popEnterTransition = { EnterTransition.None },
+                        popExitTransition = { ExitTransition.None }
+                    ) {
+                        when(item){
+                            is Screens.HomeScreen -> HomeScreen(scrollBehavior, drawerState, coroutineScope, navigationController, viewModel, viewModelForBottomBar)
+                            is Screens.Profile -> Profile(scrollBehavior, drawerState, coroutineScope, navigationController, viewModelForBottomBar)
+                            is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController)
+                            is Screens.Search -> Search()
+                            is Screens.Menu -> Menu(drawerState, coroutineScope, navigationController, viewModel, scrollBehavior)
+                            is Screens.Restaurants -> Restaurants()
+                            is Screens.Varieties -> Varieties()
+                            is Screens.ItemScreen -> ItemScreen(scrollBehavior, navigationController, viewModel)
+                            is Screens.Notifications -> Notifications()
+                            is Screens.Favorite -> Favorite(scrollBehavior, drawerState, coroutineScope, navigationController, viewModelForBottomBar, viewModel)
+                            is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, viewModelForBottomBar, viewModel, addBoxViewModel)
                         }
                     }
                 }

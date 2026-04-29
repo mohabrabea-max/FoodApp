@@ -44,10 +44,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,8 +63,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.applicationhome.data.models.Cart
+import com.example.applicationhome.data.models.CartKey
 import com.example.applicationhome.data.models.Food
+import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
+import com.example.applicationhome.data.models.Snake
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
@@ -81,19 +81,45 @@ import com.example.applicationhome.view.model.ItemScreenViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : NavHostController, viewModel: ItemScreenViewModel, addBoxViewModel : AddBoxViewModel = viewModel()){
+    val itemsCount = addBoxViewModel.itemsCount
+    var cart = Cart.cartmap
     val item = viewModel.selectedItem
-    val price = viewModel.selectedSize.value
+    val size = viewModel.selectedSize.value
     val images = item?.image?.size ?: 0
     val pagerState = rememberPagerState(pageCount = {images})
-    val size = item?.priceANDsize?.size
-    var selectedSize by remember { mutableStateOf("Small") }
+    val price = item?.priceANDsize?.size
+    var key: CartKey? = null
+    when (item) {
+        is FoodItem -> {
+            key = CartKey(item, size)
+        }
+        is Snake -> { }
+    }
+
     if(item != null){
         Scaffold(
             modifier = Modifier.fillMaxSize().
             background(Color.White),
             bottomBar = {
-                Box(modifier = Modifier.fillMaxWidth().height(70.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.TopCenter){
-                    BottonBarForItemScreen(addBoxViewModel, item, selectedSize)
+                Box(modifier = Modifier.fillMaxWidth().height(100.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){
+                    if(cart.containsKey(key)){
+                        Box(
+                            modifier = Modifier.width(200.dp).
+                            height(70.dp).
+                            clip(RoundedCornerShape(50.dp)).
+                            background(Color.Yellow).align(Alignment.TopCenter).
+                            border(width = 0.3.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(50.dp)).
+                            pointerInput(Unit) {
+                                detectTapGestures { }
+                            }
+                        ){
+                            Text(
+                                text = "${cart[key]} added in your cart",
+                                modifier = Modifier.padding(5.dp).align(Alignment.TopCenter)
+                            )
+                        }
+                    }
+                    BottonBarForItemScreen(addBoxViewModel, item, size)
                 }
             }
         ){
@@ -149,7 +175,7 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
                                 Divider(modifier = Modifier.width(300.dp).padding(10.dp))
                                 Spacer(modifier = Modifier.height(20.dp))
                                 Text(
-                                    text = "${item.priceANDsize[price]} L.E",
+                                    text = "${item.priceANDsize[size]} L.E",
                                     fontSize = 30.sp,
                                     style = MaterialTheme.typography.labelLarge,
                                     color = Color.BrownForFont,
@@ -169,18 +195,17 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
                                     border(width = 0.5.dp, color = Color.DarkGray.copy(alpha = 1f), shape = RoundedCornerShape(50.dp)),
                                     contentAlignment = Alignment.Center
                                 ){
-                                    if(size == 3){
+                                    if(price == 3){
                                         Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
                                             Box(
                                                 modifier = Modifier.weight(1f).
                                                 fillMaxHeight().
                                                 clickable{
                                                     viewModel.bigSize()
-                                                    selectedSize = "Big"
                                                 },
                                                 contentAlignment = Alignment.Center
                                             ){
-                                                if(price == "Big"){
+                                                if(size == "Big"){
                                                     Box(modifier = Modifier.fillMaxSize().background(Color.Orange), contentAlignment = Alignment.Center){
                                                         Text(text = "Big", color = Color.Black)
                                                     }
@@ -194,11 +219,10 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
                                                 fillMaxHeight().
                                                 clickable{
                                                     viewModel.mediumSize()
-                                                    selectedSize = "Medium"
                                                 },
                                                 contentAlignment = Alignment.Center
                                             ){
-                                                if(price == "Medium"){
+                                                if(size == "Medium"){
                                                     Box(modifier = Modifier.fillMaxSize().background(Color.Orange), contentAlignment = Alignment.Center){
                                                         Text(text = "Medium", color = Color.Black)
                                                     }
@@ -212,11 +236,10 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
                                                 fillMaxHeight().
                                                 clickable{
                                                     viewModel.smallSize(item)
-                                                    selectedSize = "Small"
                                                 },
                                                 contentAlignment = Alignment.Center
                                             ){
-                                                if(price == "Small"){
+                                                if(size == "Small"){
                                                     Box(modifier = Modifier.fillMaxSize().background(Color.Orange), contentAlignment = Alignment.Center){
                                                         Text(text = "Small", color = Color.Black)
                                                     }
@@ -225,18 +248,17 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
                                                 }
                                             }
                                         }
-                                    }else if(size == 2){
+                                    }else if(price == 2){
                                         Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
                                             Box(
                                                 modifier = Modifier.weight(1f).
                                                 fillMaxHeight().
                                                 clickable{
                                                     viewModel.bigSize()
-                                                    selectedSize = "Big"
                                                 },
                                                 contentAlignment = Alignment.Center
                                             ){
-                                                if(price == "Beg"){
+                                                if(size == "Beg"){
                                                     viewModel.bigSize()
                                                     Box(modifier = Modifier.fillMaxSize().background(Color.Orange), contentAlignment = Alignment.Center){
                                                         Text(text = "Beg", color = Color.Black)
@@ -251,11 +273,10 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
                                                 fillMaxHeight().
                                                 clickable{
                                                     viewModel.mediumSize()
-                                                    selectedSize = "Medium"
                                                 },
                                                 contentAlignment = Alignment.Center
                                             ){
-                                                if(price == "Medium"){
+                                                if(size == "Medium"){
                                                     viewModel.mediumSize()
                                                     Box(modifier = Modifier.fillMaxSize().background(Color.Orange), contentAlignment = Alignment.Center){
                                                         Text(text = "Medium", color = Color.Black)
@@ -267,7 +288,7 @@ fun ItemScreen(scrollBehavior: TopAppBarScrollBehavior, navigationController : N
                                         }
                                     }else{
                                         Box(modifier = Modifier.fillMaxSize().clickable{}, contentAlignment = Alignment.Center){
-                                            Text(text = price, color = Color.BrownForFont)
+                                            Text(text = size, color = Color.BrownForFont)
                                         }
                                     }
 
@@ -309,7 +330,8 @@ fun BottonBarForItemScreen(
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    var count = ordernumber.totalCart.value ?: 0
+    var cartkey = CartKey(food, size)
+    var count = ordernumber.itemsCount[cartkey] ?: 0
     var color : Color
     var fontColor : Color
     if(count == 0){
@@ -419,7 +441,7 @@ fun BottonBarForItemScreen(
             Box(modifier = Modifier.weight(1f)){
                 IconButton(onClick = {
 
-                    ordernumber.addToCart()
+                    ordernumber.addToCart(food, size)
                     Toast.makeText(context, "Added To Cart", Toast.LENGTH_SHORT).show()}){
                     Icon(
                         Icons.Default.ShoppingCart,
