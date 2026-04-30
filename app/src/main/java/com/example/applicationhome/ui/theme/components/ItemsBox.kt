@@ -36,7 +36,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
@@ -55,16 +54,8 @@ fun ItemsBox(
         animateContentSize().
         aspectRatio(0.8f).
         clickable{
-            viewModel.selectedItem = item
-            navigationController.navigate(Screens.ItemScreen.screen){
-                popUpTo(navigationController.graph.findStartDestination().id) {
-                    saveState = true
-                }
-
-                launchSingleTop = true
-
-                restoreState = true
-            }
+            viewModel.selectItem(item, item.priceANDsize.keys.last())
+            navigationController.navigate(Screens.ItemScreen.screen)
         }.
         padding(5.dp).
         clip(RoundedCornerShape(10.dp))
@@ -135,7 +126,7 @@ fun ItemsBox(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "${item.priceANDsize["Small"]} L.E",
+                        text = "${item.priceANDsize.values.last()} L.E",
                         fontSize = 20.sp,
                         style = MaterialTheme.typography.labelLarge,
                         color = Color.White,

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -24,13 +25,13 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -46,7 +47,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.Favorite
@@ -55,7 +55,7 @@ import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.data.models.Snake
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.components.ItemsBox
-import com.example.applicationhome.ui.theme.components.MyBottonBar2
+import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
@@ -70,7 +70,37 @@ fun Favorite(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState,
     Scaffold(
         modifier = Modifier.
         fillMaxSize().
-        background(Color.White)
+        background(Color.White),
+        bottomBar = {
+            Box(
+                modifier = Modifier.navigationBarsPadding().fillMaxWidth().
+                height(100.dp).
+                pointerInput(Unit) { detectTapGestures { } },
+                contentAlignment = Alignment.BottomCenter
+            ){
+                MyBottonBar(navigationController, viewModelForBottomBar)
+            }
+        },
+        topBar = {
+            MyTopBar(
+                "Favorite",
+                {coroutineScope.launch{drawerState.open()}},
+                {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
+                {
+                    IconButton(onClick = {
+                        navigationController.navigate(Screens.Search.screen)
+                    }) {
+                        Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
+                    }
+                    IconButton(onClick = {
+                        navigationController.navigate(Screens.Cart.screen)
+                    }) {
+                        Icon(Icons.Default.ShoppingCart, contentDescription = null, tint = Color.Black)
+                    }
+                }
+            )
+            Divider(color = Color.LightGray.copy(alpha = 0.5f))
+        }
     ){
         Box(modifier = Modifier.background(Color.White)){
             Box(modifier = Modifier.fillMaxSize()){
@@ -112,15 +142,7 @@ fun Favorite(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState,
                             padding(5.dp).
                             clip(RoundedCornerShape(30.dp)).
                             clickable{
-                                navigationController.navigate(Screens.HomeScreen.screen){
-                                    popUpTo(navigationController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-
-                                    launchSingleTop = true
-
-                                    restoreState = true
-                                }
+                                navigationController.navigate(Screens.HomeScreen.screen)
                                 viewModelForBottomBar.home()
                             }.
                             border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp))
@@ -151,49 +173,6 @@ fun Favorite(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState,
                         }
                     }
                 }
-                MyTopBar(
-                    "Favorite",
-                    {coroutineScope.launch{drawerState.open()}},
-                    {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
-                    {
-                        navigationController.navigate(Screens.Search.screen){
-                            popUpTo(navigationController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-
-                            launchSingleTop = true
-
-                            restoreState = true
-                        }
-                    },
-                    Icons.Default.Search,
-                    {
-                        navigationController.navigate(Screens.Favorite.screen){
-                            popUpTo(navigationController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-
-                            launchSingleTop = true
-
-                            restoreState = true
-                        }
-                    },
-                    Icons.Default.Favorite
-                )
-                Divider(color = Color.LightGray.copy(alpha = 0.5f))
-
-            }
-            Column(modifier = Modifier.align(Alignment.BottomCenter)){
-                Spacer(modifier = Modifier.height(10.dp))
-                Box(
-                    modifier = Modifier.fillMaxWidth().
-                    height(60.dp).
-                    pointerInput(Unit) { detectTapGestures { } },
-                    contentAlignment = Alignment.Center
-                ){
-                    MyBottonBar2(navigationController, viewModelForBottomBar)
-                }
-                Box(modifier = Modifier.fillMaxWidth().height(20.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){}
             }
         }
     }

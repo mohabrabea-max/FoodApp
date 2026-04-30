@@ -9,22 +9,9 @@ import com.example.applicationhome.data.models.FoodItem
 class ItemScreenViewModel : ViewModel() {
     var selectedItem by mutableStateOf<FoodItem?>(null)
     var selectedSize = mutableStateOf("Small")
-    var selectedPieces = mutableStateOf("10 Pieces")
 
-    fun selectItem(item: FoodItem) {
+    fun selectItem(item: FoodItem, size : String) {
         selectedItem = item
-    }
-    fun bigSize(){
-        selectedSize.value = "Big"
-    }
-    fun mediumSize(){
-        selectedSize.value = "Medium"
-    }
-    fun smallSize(item: FoodItem){
-        if(item.name.contains("Pieces")){   //هنا السطر دا بنسأل فيه لو الاسم فيه كلمةChicken
-            selectedSize.value = item.name
-        }else{
-            selectedSize.value = "Small"
-        }
+        selectedSize.value = size
     }
 }

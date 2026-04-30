@@ -35,14 +35,14 @@ import com.example.applicationhome.view.model.BottomBarViewModel
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyBottonBar2(
+fun MyBottonBar(
     navController : NavController,
     viewModel: BottomBarViewModel
 ){
     var selected = viewModel.selected.value
     Box(
         modifier = Modifier.width(350.dp).
-        height(90.dp).
+        height(60.dp).
         clip(RoundedCornerShape(50.dp)).
         background(Color.DeepMatteBlack).
         pointerInput(Unit) {

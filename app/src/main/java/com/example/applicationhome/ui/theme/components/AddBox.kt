@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.applicationhome.data.models.CartKey
-import com.example.applicationhome.data.models.Food
+import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.ui.theme.Orange
 import com.example.applicationhome.view.model.AddBoxViewModel
 
@@ -53,12 +53,12 @@ import com.example.applicationhome.view.model.AddBoxViewModel
 fun AddBox(
     modifier: Modifier = Modifier,
     color : Color,
-    food : Food,
+    food : FoodItem,
     ordernumber : AddBoxViewModel = viewModel()
 ){
     val context = LocalContext.current
     var id = food.id
-    var selectedSize by remember { mutableStateOf("Small") }
+    var selectedSize by remember { mutableStateOf(food.priceANDsize.keys.last()) }
     var cartkey = CartKey(food, selectedSize)
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current

@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
@@ -42,32 +43,36 @@ fun Menu(drawerState : DrawerState, coroutineScope : CoroutineScope, navigationC
         topBar = {
             MyTopBar(
                 "Menu",
-                { navigationController.popBackStack() },
+                {navigationController.popBackStack()},
                 {Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)},
                 {
-                    navigationController.navigate(Screens.Notifications.screen){
-                        popUpTo(navigationController.graph.findStartDestination().id) {
-                            saveState = true
+                    IconButton(onClick = {
+                        navigationController.navigate(Screens.Notifications.screen){
+                            popUpTo(navigationController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+
+                            restoreState = true
                         }
-
-                        launchSingleTop = true
-
-                        restoreState = true
+                    }) {
+                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.Black)
                     }
-                },
-                Icons.Default.Notifications,
-                {
-                    navigationController.navigate(Screens.Search.screen){
-                        popUpTo(navigationController.graph.findStartDestination().id) {
-                            saveState = true
+                    IconButton(onClick = {
+                        navigationController.navigate(Screens.Search.screen){
+                            popUpTo(navigationController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+
+                            restoreState = true
                         }
-
-                        launchSingleTop = true
-
-                        restoreState = true
+                    }) {
+                        Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
                     }
-                },
-                Icons.Default.Search
+                }
             )
         }
     ){innerPadding ->

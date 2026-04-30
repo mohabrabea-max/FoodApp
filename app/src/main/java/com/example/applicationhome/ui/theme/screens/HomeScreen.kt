@@ -6,13 +6,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -32,8 +32,8 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,7 +52,7 @@ import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.data.models.VarietiesMenu
 import com.example.applicationhome.ui.theme.components.CategoriesBox
 import com.example.applicationhome.ui.theme.components.ItemsBox
-import com.example.applicationhome.ui.theme.components.MyBottonBar2
+import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
@@ -62,7 +62,13 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, viewModel: ItemScreenViewModel, viewModelForBottomBar : BottomBarViewModel){
+fun HomeScreen(
+    drawerState : DrawerState,
+    coroutineScope : CoroutineScope,
+    navigationController : NavHostController,
+    viewModel: ItemScreenViewModel,
+    viewModelForBottomBar : BottomBarViewModel
+){
     val offers = OffersData.offersMenu()
     val menu = FoodDataSource.allMenu()
     val categories = VarietiesMenu.categoriesList()
@@ -72,6 +78,52 @@ fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerStat
         modifier = Modifier.
         fillMaxSize().
         background(Color.White),
+        bottomBar = {
+            Box(
+                modifier = Modifier.navigationBarsPadding().fillMaxWidth().
+                height(100.dp).
+                pointerInput(Unit) { detectTapGestures { } },
+                contentAlignment = Alignment.BottomCenter
+            ){
+                MyBottonBar(navigationController, viewModelForBottomBar)
+            }
+        },
+        topBar = {
+            MyTopBar(
+                "Home",
+                {coroutineScope.launch{drawerState.open()}},
+                {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
+                {
+                    IconButton(onClick = {
+                        navigationController.navigate(Screens.Search.screen){
+                            popUpTo(navigationController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+
+                            restoreState = true
+                        }
+                    }) {
+                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.Black)
+                    }
+                    IconButton(onClick = {
+                        navigationController.navigate(Screens.Notifications.screen){
+                            popUpTo(navigationController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+
+                            restoreState = true
+                        }
+                    }) {
+                        Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
+                    }
+                }
+            )
+            Divider(color = Color.LightGray.copy(alpha = 0.5f))
+        }
     ){
         Box(modifier = Modifier.background(Color.White)){
             Box{
@@ -123,47 +175,6 @@ fun HomeScreen(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerStat
 
                     item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(90.dp))}
                 }
-                MyTopBar(
-                    "Home",
-                    {coroutineScope.launch{drawerState.open()}},
-                    {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
-                    {
-                        navigationController.navigate(Screens.Search.screen){
-                            popUpTo(navigationController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-
-                            launchSingleTop = true
-
-                            restoreState = true
-                        }
-                    },
-                    Icons.Default.Search,
-                    {
-                        navigationController.navigate(Screens.Notifications.screen){
-                            popUpTo(navigationController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-
-                            launchSingleTop = true
-
-                            restoreState = true
-                        }
-                    },
-                    Icons.Default.Notifications
-                )
-                Divider(color = Color.LightGray.copy(alpha = 0.5f))
-            }
-            Column(modifier = Modifier.align(Alignment.BottomCenter)){
-                Box(
-                    modifier = Modifier.fillMaxWidth().
-                    height(60.dp).
-                    pointerInput(Unit) { detectTapGestures { } },
-                    contentAlignment = Alignment.Center
-                ){
-                    MyBottonBar2(navigationController, viewModelForBottomBar)
-                }
-                Box(modifier = Modifier.fillMaxWidth().height(20.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){}
             }
         }
     }

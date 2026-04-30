@@ -54,7 +54,6 @@ data class Account(
 
 data class Settings(
     val title : String,
-    val value: String,
     val icon : ImageVector
 )
 

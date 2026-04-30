@@ -16,9 +16,9 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -32,6 +32,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -58,7 +59,8 @@ import com.example.applicationhome.data.models.Snake
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.components.CartBox
-import com.example.applicationhome.ui.theme.components.MyBottonBar2
+import com.example.applicationhome.ui.theme.components.CartButton
+import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
@@ -82,6 +84,52 @@ fun Cart(
         modifier = Modifier.
         fillMaxSize().
         background(Color.LightBrownForBackground),
+        bottomBar = {
+            Box(
+                modifier = Modifier.navigationBarsPadding().fillMaxWidth().
+                height(100.dp).
+                pointerInput(Unit) { detectTapGestures { } },
+                contentAlignment = Alignment.BottomCenter
+            ){
+                MyBottonBar(navigationController, viewModelForBottomBar)
+            }
+        },
+        topBar = {
+            MyTopBar(
+                "Cart",
+                {coroutineScope.launch{drawerState.open()}},
+                {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
+                {
+                    IconButton(onClick = {
+                        navigationController.navigate(Screens.Search.screen){
+                            popUpTo(navigationController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+
+                            restoreState = true
+                        }
+                    }) {
+                        Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
+                    }
+                    IconButton(onClick = {
+                        navigationController.navigate(Screens.Favorite.screen){
+                            popUpTo(navigationController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+
+                            restoreState = true
+                        }
+                    }) {
+                        Icon(Icons.Default.Favorite, contentDescription = null, tint = Color.Black)
+                    }
+                }
+            )
+            Divider(color = Color.LightGray.copy(alpha = 0.5f))
+        }
     ){
         Box(modifier = Modifier.background(Color.White)){
             Box(modifier = Modifier.fillMaxSize()){
@@ -213,78 +261,12 @@ fun Cart(
                         }
                     }
                 }
-                MyTopBar(
-                    "Cart",
-                    {coroutineScope.launch{drawerState.open()}},
-                    {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
-                    {
-                        navigationController.navigate(Screens.Search.screen){
-                            popUpTo(navigationController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-
-                            launchSingleTop = true
-
-                            restoreState = true
-                        }
-                    },
-                    Icons.Default.Search,
-                    {
-                        navigationController.navigate(Screens.Favorite.screen){
-                            popUpTo(navigationController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-
-                            launchSingleTop = true
-
-                            restoreState = true
-                        }
-                    },
-                    Icons.Default.Favorite
-                )
-                Divider(color = Color.LightGray.copy(alpha = 0.5f))
-
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally){
                 if(cart.isNotEmpty()){
-                    Box(
-                        modifier = Modifier.width(150.dp).
-                        height(50.dp).
-                        clip(RoundedCornerShape(50.dp)).
-                        background(Color.Green).
-                        clickable{addBoxViewModel.bay()}.
-                        border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(50.dp)),
-                        contentAlignment = Alignment.Center
-                    ){
-                        Row(verticalAlignment = Alignment.CenterVertically){
-                            Text(
-                                text = cart.size.toString(),
-                                fontSize = 20.sp,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = Color.White,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.weight(1f)
-                            )
-                            VerticalDivider(color = Color.White)
-                            Icon(
-                                Icons.Default.ShoppingCart,
-                                contentDescription = "Cart",
-                                tint = Color.White,
-                                modifier = Modifier.weight(1f).size(30.dp)
-                            )
-                        }
-                    }
+                    CartButton(addBoxViewModel, cart)
                 }
-                Spacer(modifier = Modifier.height(10.dp))
-                Box(
-                    modifier = Modifier.fillMaxWidth().
-                    height(60.dp).
-                    pointerInput(Unit) { detectTapGestures { } },
-                    contentAlignment = Alignment.Center
-                ){
-                    MyBottonBar2(navigationController, viewModelForBottomBar)
-                }
-                Box(modifier = Modifier.fillMaxWidth().height(20.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){}
+                Spacer(modifier = Modifier.height(80.dp))
             }
         }
     }

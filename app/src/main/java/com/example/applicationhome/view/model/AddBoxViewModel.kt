@@ -1,6 +1,7 @@
 package com.example.applicationhome.view.model
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,13 +9,14 @@ import androidx.lifecycle.ViewModel
 import com.example.applicationhome.data.models.Cart
 import com.example.applicationhome.data.models.CartKey
 import com.example.applicationhome.data.models.Food
+import com.example.applicationhome.data.models.FoodItem
 
-val addBoxViewModel = AddBoxViewModel()
 class AddBoxViewModel : ViewModel(){
     var activId by mutableStateOf<Int?>(null)
     var itemsCount = mutableStateMapOf<CartKey, Int>()
     var totalCart = mutableStateOf(0)
     var cartMap = Cart.cartmap
+    var totalPrice = mutableDoubleStateOf(0.0)
     fun addBoxNumberPlus(food: Food, size : String){
         val key = CartKey(food, size)
         if((itemsCount[key] ?: 0) < 99){
@@ -43,6 +45,10 @@ class AddBoxViewModel : ViewModel(){
     }
     fun addToCart(food : Food, size: String){
         var key = CartKey(food, size)
+        if(food is FoodItem){
+            val priceForSize = food.priceANDsize[size] ?: 0.0
+            totalPrice.value = totalPrice.value + (priceForSize * (itemsCount[key] ?: 0))
+        }
         cartMap[key] = (cartMap[key] ?: 0) + (itemsCount[key] ?: 0)
         itemsCount.remove(key)
         totalCart.value = 0

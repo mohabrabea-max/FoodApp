@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,9 +32,9 @@ fun CategoriesBox(category : CategoriesImage){
     Column(horizontalAlignment = Alignment.CenterHorizontally){
         Box(
             modifier = Modifier.
-            size(70.dp).
+            size(68.dp).
             clip(CircleShape).
-            background(Color.LightGray.copy(alpha = 0.5f)).
+            background(Color.LightGray.copy(alpha = 0.4f)).
             clickable{ Toast.makeText(context, category.name, Toast.LENGTH_SHORT).show()},
             contentAlignment = Alignment.Center
         ){
@@ -51,11 +50,9 @@ fun CategoriesBox(category : CategoriesImage){
         Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = category.name,
-            fontSize = 20.sp,
-            style = MaterialTheme.typography.labelLarge,
+            fontSize = 18.sp,
             color = Color.DarkGray,
             textAlign = TextAlign.Center,
         )
     }
 }
-//border(width = 0.5.dp, color = Color.Black, shape = RoundedCornerShape(100.dp))

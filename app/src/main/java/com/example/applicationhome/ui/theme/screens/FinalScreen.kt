@@ -154,14 +154,14 @@ fun FinalScreen(
                         popExitTransition = { ExitTransition.None }
                     ) {
                         when(item){
-                            is Screens.HomeScreen -> HomeScreen(scrollBehavior, drawerState, coroutineScope, navigationController, viewModel, viewModelForBottomBar)
+                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, viewModelForBottomBar)
                             is Screens.Profile -> Profile(scrollBehavior, drawerState, coroutineScope, navigationController, viewModelForBottomBar)
-                            is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController)
+                            is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, viewModelForBottomBar)
                             is Screens.Search -> Search()
                             is Screens.Menu -> Menu(drawerState, coroutineScope, navigationController, viewModel, scrollBehavior)
                             is Screens.Restaurants -> Restaurants()
                             is Screens.Varieties -> Varieties()
-                            is Screens.ItemScreen -> ItemScreen(scrollBehavior, navigationController, viewModel)
+                            is Screens.ItemScreen -> ItemScreen(navigationController, viewModel)
                             is Screens.Notifications -> Notifications()
                             is Screens.Favorite -> Favorite(scrollBehavior, drawerState, coroutineScope, navigationController, viewModelForBottomBar, viewModel)
                             is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, viewModelForBottomBar, viewModel, addBoxViewModel)

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -43,7 +44,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.ProfileData
@@ -51,7 +51,7 @@ import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
-import com.example.applicationhome.ui.theme.components.MyBottonBar2
+import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.view.model.BottomBarViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -67,35 +67,33 @@ fun Profile(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, 
         modifier = Modifier.
         fillMaxSize().
         background(Color.White),
+        bottomBar = {
+            Box(
+                modifier = Modifier.navigationBarsPadding().fillMaxWidth().
+                height(100.dp).
+                pointerInput(Unit) { detectTapGestures { } },
+                contentAlignment = Alignment.BottomCenter
+            ){
+                MyBottonBar(navigationController, viewModelForBottomBar)
+            }
+        },
         topBar = {
             MyTopBar(
                 "Profile",
                 {coroutineScope.launch{drawerState.open()}},
                 {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
                 {
-                    navigationController.navigate(Screens.Notifications.screen){
-                        popUpTo(navigationController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-
-                        launchSingleTop = true
-
-                        restoreState = true
+                    IconButton(onClick = {
+                        navigationController.navigate(Screens.Notifications.screen)
+                    }) {
+                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.Black)
                     }
-                },
-                Icons.Default.Notifications,
-                {
-                    navigationController.navigate(Screens.Settings.screen){
-                        popUpTo(navigationController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-
-                        launchSingleTop = true
-
-                        restoreState = true
+                    IconButton(onClick = {
+                        navigationController.navigate(Screens.Settings.screen)
+                    }) {
+                        Icon(Icons.Default.Settings, contentDescription = null, tint = Color.Black)
                     }
-                },
-                Icons.Default.Settings
+                }
             )
         }
     ){
@@ -139,7 +137,7 @@ fun Profile(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, 
                             }
                         },
                         selected = false,
-                        icon = {Icon(modifier = Modifier.size(30.dp), imageVector = item.icon, contentDescription = item.title, tint = Color.BrownForFont)},
+                        icon = {Icon(modifier = Modifier.size(30.dp), imageVector = item.icon, contentDescription = item.title, tint = Color.Black)},
                         onClick = {}
                     )
                     Spacer(modifier = Modifier.height(17.dp))
@@ -153,12 +151,6 @@ fun Profile(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, 
                     }
                 }
                 item{Spacer(modifier = Modifier.height(90.dp))}
-            }
-            Column(modifier = Modifier.align(Alignment.BottomCenter)){
-                Box(modifier = Modifier.fillMaxWidth().height(60.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){
-                    MyBottonBar2(navigationController, viewModelForBottomBar)
-                }
-                Box(modifier = Modifier.fillMaxWidth().height(20.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){}
             }
         }
     }

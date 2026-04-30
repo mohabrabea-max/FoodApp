@@ -1,11 +1,19 @@
 package com.example.applicationhome.data.models
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.SettingsBrightness
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.ui.graphics.Color
@@ -78,7 +86,7 @@ object FoodDataSource {
             4,
             "10 Pieces Of Chicken",
             chickenimageList,
-            mapOf("Small" to 380.0),
+            mapOf("10 Pieces" to 380.0),
             listOf(
                 "Big Fries",
                 "Big Coleslaw",
@@ -89,7 +97,7 @@ object FoodDataSource {
             5,
             "5 Pieces Of Chicken",
             chickenimageList,
-            mapOf("Small" to 210.0),
+            mapOf("5 Pieces" to 210.0),
             listOf(
                 "Medium Fries",
                 "Medium Coleslaw",
@@ -100,7 +108,7 @@ object FoodDataSource {
             6,
             "3 Pieces Of Chicken",
             chickenimageList,
-            mapOf("Small" to 130.0),
+            mapOf("3 Pieces" to 130.0),
             listOf(
                 "Small Fries",
                 "Small Coleslaw",
@@ -229,7 +237,31 @@ object VarietiesMenu {
             "Chicken",
             R.drawable.chickenpng,
             R.drawable.friedchickenicon
-        )
+        ),
+        CategoriesImage(
+            33,
+            "Chicken",
+            R.drawable.chickenpng,
+            R.drawable.friedchickenicon
+        ),
+        CategoriesImage(
+            33,
+            "Chicken",
+            R.drawable.chickenpng,
+            R.drawable.friedchickenicon
+        ),
+        CategoriesImage(
+            33,
+            "Chicken",
+            R.drawable.chickenpng,
+            R.drawable.friedchickenicon
+        ),
+        CategoriesImage(
+            33,
+            "Chicken",
+            R.drawable.chickenpng,
+            R.drawable.friedchickenicon
+        ),
     )
     fun categoriesList(): List<CategoriesImage>{
         return categorieslist
@@ -295,9 +327,17 @@ object ProfileData {
     )
 
     val settings = listOf(
-        Settings("Notifications", "Disabled", Icons.Default.Notifications),
-        Settings("Language", "English", Icons.Default.AccountCircle),
-        Settings("Country", "Egypt", Icons.Default.AccountCircle)
+        Settings("My Addresses", Icons.Default.LocationOn),
+        Settings("Payment Methods", Icons.Default.CreditCard),
+        Settings("Notifications", Icons.Default.Notifications),
+        Settings("Appearance", Icons.Default.SettingsBrightness),
+        Settings("Language", Icons.Default.Language),
+        Settings("Privacy & Security", Icons.Default.Lock),
+        Settings("Help Center", Icons.Default.Call),
+        Settings("FAQ", Icons.Default.Help),
+        Settings("About App", Icons.Default.Info),
+        Settings("Logout", Icons.Default.ExitToApp),
+        Settings("Delete Account", Icons.Default.Delete)
     )
     fun profileData(): List<Account>{
         return profile
