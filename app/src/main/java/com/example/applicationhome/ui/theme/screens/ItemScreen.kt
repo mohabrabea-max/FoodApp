@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -83,7 +84,12 @@ fun ItemScreen(
         Scaffold(
             modifier = Modifier.fillMaxSize().
             background(Color.White),
-            topBar = {MyTopBar(
+            topBar = {
+                MyTopBar(
+                    modifier = Modifier.
+                    fillMaxWidth().
+                    height(100.dp).
+                    shadow(elevation = 5.dp),
                 item.name,
                 {if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() } },
                 {Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)},

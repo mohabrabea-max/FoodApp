@@ -62,7 +62,7 @@ fun FinalScreen(
     drawerState : DrawerState,
     viewModel : ItemScreenViewModel = viewModel(),
     viewModelForBottomBar : BottomBarViewModel = viewModel(),
-    addBoxViewModel: AddBoxViewModel = viewModel()
+    addBoxViewModel: AddBoxViewModel
 ){
     val navigationController = rememberNavController()
     val coroutineScope = rememberCoroutineScope()

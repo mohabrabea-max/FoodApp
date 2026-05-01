@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Divider
@@ -46,7 +47,6 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.ProfileData
-import com.example.applicationhome.data.models.ProfileData.settings
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightOrange
@@ -78,9 +78,12 @@ fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigat
         topBar = {
             Column {
                 MyTopBar(
+                    modifier = Modifier.
+                    fillMaxWidth().
+                    height(100.dp),
                     "Settings",
-                    {coroutineScope.launch{drawerState.open()}},
-                    {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
+                    {navigationController.popBackStack()},
+                    {Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)},
                     {
                         IconButton(onClick = {
                             navigationController.navigate(Screens.Notifications.screen){
@@ -110,21 +113,13 @@ fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigat
                         }
                     }
                 )
-                Box(
+                Column(
                     modifier = Modifier.fillMaxWidth().
                     height(90.dp).
                     background(Color.LightOrange).
                     clickable{
                         coroutineScope.launch{drawerState.close()}
-                        navigationController.navigate(Screens.Profile.screen){
-                            popUpTo(navigationController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-
-                            launchSingleTop = true
-
-                            restoreState = true
-                        }
+                        navigationController.navigate(Screens.Profile.screen)
                     }
                 ){
                     Row(
@@ -166,34 +161,28 @@ fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigat
             }
         },
     ){
-        Box(modifier = Modifier.fillMaxSize().background(Color.LightGray.copy(alpha = 0.3f)).padding(15.dp)){
-            LazyColumn(modifier = Modifier,verticalArrangement = Arrangement.spacedBy(16.dp)){
-                item { Spacer(modifier = Modifier.height(180.dp)) }
-                item{
-                    Box(modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(20.dp)).background(Color.White).padding(17.dp)){
-                        Column{
-                            Settings()
+        LazyColumn {
+            item {
+                Column(modifier = Modifier.fillMaxSize().background(Color.LightGray.copy(alpha = 0.3f)).padding(15.dp)){
+                    Spacer(modifier = Modifier.height(190.dp))
+                    Column(modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(20.dp)).background(Color.White).padding(17.dp)){
+                        settings.forEach{ item ->
+                            Column(modifier = Modifier.fillMaxSize().clickable{ }){
+                                Spacer(modifier = Modifier.height(25.dp))
+                                Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
+                                    Icon(modifier = Modifier.size(20.dp), imageVector = item.icon, contentDescription = item.title, tint = Color.Black)
+                                    Spacer(modifier = Modifier.width(15.dp))
+                                    Text(text = item.title, fontSize = 17.sp, color = Color.BrownForFont)
+                                    //Text(text = item.value, fontSize = 13.sp, color = Color.MediumBrownForTitle)
+                                }
+                                Spacer(modifier = Modifier.height(25.dp))
+                                Divider(color = Color.LightGray.copy(alpha = 0.2f))
+                            }
                         }
                     }
+                    Spacer(modifier = Modifier.height(80.dp))
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun Settings(){
-    settings.forEach{ item ->
-        Column(modifier = Modifier.fillMaxSize().clickable{ }){
-            Spacer(modifier = Modifier.height(25.dp))
-            Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
-                Icon(modifier = Modifier.size(20.dp), imageVector = item.icon, contentDescription = item.title, tint = Color.Black)
-                Spacer(modifier = Modifier.width(15.dp))
-                Text(text = item.title, fontSize = 17.sp, color = Color.BrownForFont)
-                //Text(text = item.value, fontSize = 13.sp, color = Color.MediumBrownForTitle)
-            }
-            Spacer(modifier = Modifier.height(25.dp))
-            Divider(color = Color.LightGray.copy(alpha = 0.2f))
         }
     }
 }

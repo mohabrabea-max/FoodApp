@@ -1,7 +1,9 @@
 package com.example.applicationhome.ui.theme.screens
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -35,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -57,12 +60,16 @@ import com.example.applicationhome.view.model.BottomBarViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Profile(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, viewModelForBottomBar: BottomBarViewModel){
-    val context = LocalContext.current.applicationContext
     val profile = ProfileData.profileData()
+    val context = LocalContext.current as? Activity
+    BackHandler(enabled = true) {
+                                  // ده بيمسح الأبلكيشن من الـ Background ويقفله تماماً
+        context?.finishAffinity()
+    }
     Scaffold(
         modifier = Modifier.
         fillMaxSize().
@@ -79,6 +86,10 @@ fun Profile(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, 
         },
         topBar = {
             MyTopBar(
+                modifier = Modifier.
+                fillMaxWidth().
+                height(100.dp).
+                shadow(elevation = 5.dp),
                 "Profile",
                 {coroutineScope.launch{drawerState.open()}},
                 {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},

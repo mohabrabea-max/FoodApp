@@ -1,6 +1,8 @@
 package com.example.applicationhome.ui.theme.screens
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -38,9 +40,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -59,7 +63,7 @@ import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -74,6 +78,11 @@ fun HomeScreen(
     val categories = VarietiesMenu.categoriesList()
     val pagerState = rememberPagerState(pageCount = {offers.size})
     val scrollState = rememberLazyGridState()
+    val context = LocalContext.current as? Activity
+    BackHandler(enabled = true) {
+        // ده بيمسح الأبلكيشن من الـ Background ويقفله تماماً
+        context?.finishAffinity()
+    }
     Scaffold(
         modifier = Modifier.
         fillMaxSize().
@@ -90,6 +99,10 @@ fun HomeScreen(
         },
         topBar = {
             MyTopBar(
+                modifier = Modifier.
+                fillMaxWidth().
+                height(100.dp).
+                shadow(elevation = 5.dp),
                 "Home",
                 {coroutineScope.launch{drawerState.open()}},
                 {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},

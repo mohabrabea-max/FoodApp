@@ -68,7 +68,7 @@ fun CartBox(
     var cartnumber = Cart.cartMap()
     var cartkey = CartKey(item, size)
     val context = LocalContext.current
-    var count = ordernumber.itemsCount[cartkey] ?: 0
+    var count = ordernumber.cartMap[cartkey] ?: 0
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var total = item.priceANDsize[size] ?: 0
@@ -157,7 +157,7 @@ fun CartBox(
                         modifier = Modifier.
                         weight(1f).
                         fillMaxHeight().
-                        clickable {ordernumber.cartPlus(item, size)},
+                        clickable {ordernumber.addBoxNumberPlus(item, size)},
                         contentAlignment = Alignment.Center
                     ){
                         Text(
@@ -182,11 +182,11 @@ fun CartBox(
                                 if (newValue.isNotEmpty()) {
                                     if(newValue.all {it.isDigit()} && newValue.length <= 2){
                                         val newCount = newValue.toIntOrNull() ?: count
-                                        ordernumber.updatecart(item, size, newCount)
+                                        ordernumber.updateCount(item, size, newCount)
                                     }
                                 }else{
                                     val newCount = newValue.toIntOrNull() ?: 0
-                                    ordernumber.updatecart(item, size, newCount)
+                                    ordernumber.updateCount(item, size, newCount)
                                 }
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
@@ -210,7 +210,7 @@ fun CartBox(
                         weight(1f).
                         fillMaxHeight().
                         animateContentSize().
-                        clickable {ordernumber.cartMinus(item, size)},
+                        clickable {ordernumber.addBoxNumberMinus(item, size)},
                         contentAlignment = Alignment.Center
                     ){
                         Text(

@@ -59,7 +59,7 @@ fun BottonBarForItemScreen(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var cartkey = CartKey(food, size)
-    var count = ordernumber.itemsCount[cartkey] ?: 0
+    var count = ordernumber.cartMap[cartkey] ?: 0
     var color : Color
     var fontColor : Color
     if(count == 0){
@@ -169,7 +169,7 @@ fun BottonBarForItemScreen(
             Box(modifier = Modifier.weight(1f)){
                 IconButton(onClick = {
 
-                    ordernumber.addToCart(food, size)
+                    ordernumber.delete(food, size)
                     Toast.makeText(context, "Added To Cart", Toast.LENGTH_SHORT).show()}){
                     Icon(
                         Icons.Default.ShoppingCart,

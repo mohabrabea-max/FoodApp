@@ -2,7 +2,6 @@ package com.example.applicationhome.view.model
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -13,77 +12,70 @@ import com.example.applicationhome.data.models.FoodItem
 
 class AddBoxViewModel : ViewModel(){
     var activId by mutableStateOf<Int?>(null)
-    var itemsCount = mutableStateMapOf<CartKey, Int>()
-    var totalCart = mutableStateOf(0)
-    var cartMap = Cart.cartmap
-    var totalPrice = mutableDoubleStateOf(0.0)
+    var totalCart by mutableStateOf(0)
+    val cartMap get() = Cart.cartmap
+    var totalPrice by mutableDoubleStateOf(0.0)
+    var totalNumber by mutableStateOf(0)
+    fun updateTotals() {
+        var newTotalPrice = 0.0
+        // بنلف على كل العناصر اللي في السلة ونحسبها من الصفر
+        for ((key, value) in cartMap) {
+            val food = key.food
+            val size = key.size
+            if (food is FoodItem) {
+                totalNumber += value
+                val priceForSize = food.priceANDsize[size] ?: food.priceANDsize[size.trim()] ?: 0.0
+                newTotalPrice += priceForSize * value
+            }
+            println(totalPrice)
+            println(totalNumber)
+        }
+
+        // بنحدث الـ States مرة واحدة
+        totalPrice = newTotalPrice
+    }
     fun addBoxNumberPlus(food: Food, size : String){
         val key = CartKey(food, size)
-        if((itemsCount[key] ?: 0) < 99){
-            totalCart.value = totalCart.value + 1
-            activId = food.id
-            if(itemsCount.containsKey(key)){
-                itemsCount[key] = (itemsCount[key] ?: 0) + 1
-            }else{
-                itemsCount[key] = 1
-            }
-        }
-    }
-    fun addBoxNumberMinus(food: Food, size : String){
-        val key = CartKey(food, size)
-        if((itemsCount[key] ?: 0) > 0){
-            if(itemsCount[key] == 1){
-                itemsCount.remove(key)
-            }else{
-                itemsCount[key] = (itemsCount[key] ?: 0) - 1
-            }
-        }
-    }
-    fun updateCount(food: Food, size : String, newCount: Int) {
-        val key = CartKey(food, size)
-        itemsCount[key] = newCount
-    }
-    fun addToCart(food : Food, size: String){
-        var key = CartKey(food, size)
-        if(food is FoodItem){
-            val priceForSize = food.priceANDsize[size] ?: 0.0
-            totalPrice.value = totalPrice.value + (priceForSize * (itemsCount[key] ?: 0))
-        }
-        cartMap[key] = (cartMap[key] ?: 0) + (itemsCount[key] ?: 0)
-        itemsCount.remove(key)
-        totalCart.value = 0
-    }
-    fun bay(){
-        cartMap.clear()
-        itemsCount.clear()
-        totalCart.value = 0
-    }
-
-    fun activ(food : Food){
-        activId = food.id
-    }
-
-    fun cartPlus(food: Food, size : String){
-        val key = CartKey(food, size)
         if((cartMap[key] ?: 0) < 99){
+            totalCart = totalCart + 1
             activId = food.id
             if(cartMap.containsKey(key)){
                 cartMap[key] = (cartMap[key] ?: 0) + 1
             }else{
                 cartMap[key] = 1
             }
+            updateTotals()
         }
     }
-    fun cartMinus(food: Food, size : String){
+
+    fun addBoxNumberMinus(food: Food, size : String){
         val key = CartKey(food, size)
-        if(cartMap[key] == 1){
-            cartMap.remove(key)
-        }else{
-            cartMap[key] = (cartMap[key] ?: 0) - 1
+        if((cartMap[key] ?: 0) > 0){
+            if(cartMap[key] == 1){
+                cartMap.remove(key)
+            }else{
+                cartMap[key] = (cartMap[key] ?: 0) - 1
+            }
+            updateTotals()
         }
     }
-    fun updatecart(food: Food, size : String, newCount: Int) {
+    fun updateCount(food: Food, size : String, newCount: Int) {
         val key = CartKey(food, size)
         cartMap[key] = newCount
+        updateTotals()
+    }
+    fun delete(food : Food, size: String){
+        var key = CartKey(food, size)
+        cartMap.remove(key)
+        totalCart = 0
+        updateTotals()
+    }
+    fun bay(){
+        totalPrice = 0.0
+        cartMap.clear()
+        totalCart = 0
+    }
+    fun activ(food : Food){
+        activId = food.id
     }
 }

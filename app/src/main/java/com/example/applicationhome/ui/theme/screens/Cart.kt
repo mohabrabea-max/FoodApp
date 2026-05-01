@@ -1,6 +1,8 @@
 package com.example.applicationhome.ui.theme.screens
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -42,8 +44,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -68,7 +72,9 @@ import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnrememberedMutableState")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnrememberedMutableState",
+    "ContextCastToActivity"
+)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Cart(
@@ -77,9 +83,14 @@ fun Cart(
     coroutineScope : CoroutineScope,
     viewModelForBottomBar: BottomBarViewModel = viewModel(),
     viewModel: ItemScreenViewModel = viewModel(),
-    addBoxViewModel : AddBoxViewModel = viewModel()
+    addBoxViewModel : AddBoxViewModel
 ){
     var cart = remember{Cart.cartMap()}
+    val context = LocalContext.current as? Activity
+    BackHandler(enabled = true) {
+        // ده بيمسح الأبلكيشن من الـ Background ويقفله تماماً
+        context?.finishAffinity()
+    }
     Scaffold(
         modifier = Modifier.
         fillMaxSize().
@@ -96,6 +107,10 @@ fun Cart(
         },
         topBar = {
             MyTopBar(
+                modifier = Modifier.
+                fillMaxWidth().
+                height(100.dp).
+                shadow(elevation = 5.dp),
                 "Cart",
                 {coroutineScope.launch{drawerState.open()}},
                 {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
