@@ -47,9 +47,10 @@ data class Options(
 )
 
 data class Account(
+    val id : Int,
     val title : String,
-    val value: String,
-    val icon : ImageVector
+    val value: Any?,
+    val icon : ImageVector?
 )
 
 data class Settings(

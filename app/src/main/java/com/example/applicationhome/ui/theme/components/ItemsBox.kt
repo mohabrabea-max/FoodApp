@@ -40,13 +40,15 @@ import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
+import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
 @Composable
 fun ItemsBox(
     item: FoodItem,
     navigationController : NavHostController,
-    viewModel: ItemScreenViewModel = viewModel()
+    viewModel: ItemScreenViewModel = viewModel(),
+    addBoxViewModel: AddBoxViewModel
 ){
     val context = LocalContext.current
     Box(
@@ -85,7 +87,7 @@ fun ItemsBox(
                             food = item
                         )
 
-                        AddBox(color = Color.White, food = item)
+                        AddBox(color = Color.White, food = item, ordernumber = addBoxViewModel)
                     }
                     Box(
                         modifier = Modifier.fillMaxWidth().

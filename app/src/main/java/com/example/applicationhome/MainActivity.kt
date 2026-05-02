@@ -15,6 +15,7 @@ import com.example.applicationhome.ui.theme.screens.FinalScreen
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
+import com.example.applicationhome.view.model.UserImageViewModel
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -28,7 +29,8 @@ class MainActivity : ComponentActivity() {
             val viewModel: ItemScreenViewModel = viewModel()
             val viewModelForBottomBar : BottomBarViewModel = viewModel()
             val addBoxViewModel : AddBoxViewModel = viewModel()
-            FinalScreen(scrollBehavior, drawerState, viewModel, viewModelForBottomBar, addBoxViewModel)
+            val userImageViewModel: UserImageViewModel = viewModel()
+            FinalScreen(scrollBehavior, drawerState, viewModel, viewModelForBottomBar, addBoxViewModel, userImageViewModel)
         }
     }
 }

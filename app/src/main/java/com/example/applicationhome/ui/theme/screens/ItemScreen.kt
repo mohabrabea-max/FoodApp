@@ -42,7 +42,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.Cart
@@ -66,7 +65,7 @@ import com.example.applicationhome.view.model.ItemScreenViewModel
 fun ItemScreen(
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel,
-    addBoxViewModel : AddBoxViewModel = viewModel()
+    addBoxViewModel : AddBoxViewModel
 ){
     var cart = Cart.cartmap
     val item = viewModel.selectedItem
@@ -113,28 +112,7 @@ fun ItemScreen(
                     )
                 }
             )
-                Divider(color = Color.LightGray.copy(alpha = 0.5f))},
-            bottomBar = {
-                Box(modifier = Modifier.fillMaxWidth().height(100.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){
-                    if(cart.containsKey(key)){
-                        Box(
-                            modifier = Modifier.width(200.dp).
-                            height(70.dp).
-                            clip(RoundedCornerShape(50.dp)).
-                            background(Color.Yellow).align(Alignment.TopCenter).
-                            border(width = 0.3.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(50.dp)).
-                            pointerInput(Unit) {
-                                detectTapGestures { }
-                            }
-                        ){
-                            Text(
-                                text = "${cart[key]} added in your cart",
-                                modifier = Modifier.padding(5.dp).align(Alignment.TopCenter)
-                            )
-                        }
-                    }
-                    BottonBarForItemScreen(addBoxViewModel, item, size)
-                }
+                Divider(color = Color.LightGray.copy(alpha = 0.5f))
             }
         ){
             Box(modifier = Modifier.background(Color.White)){
@@ -205,7 +183,28 @@ fun ItemScreen(
                     }
                 }
                 Column(modifier = Modifier.align(Alignment.BottomCenter)){
-                    Box(modifier = Modifier.fillMaxWidth().height(15.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){}
+                    //var size = if
+                    Box(modifier = Modifier.fillMaxWidth().height(100.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){
+                        if(cart.containsKey(key)){
+                            Box(
+                                modifier = Modifier.width(200.dp).
+                                height(70.dp).
+                                clip(RoundedCornerShape(50.dp)).
+                                background(Color.Yellow).align(Alignment.TopCenter).
+                                border(width = 0.3.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(50.dp)).
+                                pointerInput(Unit) {
+                                    detectTapGestures { }
+                                }
+                            ){
+                                Text(
+                                    text = "${cart[key]} added in your cart",
+                                    modifier = Modifier.padding(5.dp).align(Alignment.TopCenter)
+                                )
+                            }
+                        }
+                        BottonBarForItemScreen(addBoxViewModel, item, size)
+                    }
+                    Box(modifier = Modifier.fillMaxWidth().height(50.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){}
                 }
             }
         }

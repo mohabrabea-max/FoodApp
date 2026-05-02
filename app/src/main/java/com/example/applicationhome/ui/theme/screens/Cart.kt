@@ -7,7 +7,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -46,7 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -64,7 +61,6 @@ import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.components.CartBox
 import com.example.applicationhome.ui.theme.components.CartButton
-import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
@@ -95,16 +91,6 @@ fun Cart(
         modifier = Modifier.
         fillMaxSize().
         background(Color.LightBrownForBackground),
-        bottomBar = {
-            Box(
-                modifier = Modifier.navigationBarsPadding().fillMaxWidth().
-                height(100.dp).
-                pointerInput(Unit) { detectTapGestures { } },
-                contentAlignment = Alignment.BottomCenter
-            ){
-                MyBottonBar(navigationController, viewModelForBottomBar)
-            }
-        },
         topBar = {
             MyTopBar(
                 modifier = Modifier.
@@ -158,7 +144,7 @@ fun Cart(
                         items(cart.keys.toList(), key = { it.food.id.toString() + it.size}) { item ->
                             when (item.food) {
                                 is FoodItem -> {
-                                    CartBox(item.food, item.size, cart[item] ?: 0, navigationController, viewModel)
+                                    CartBox(item.food, item.size, cart[item] ?: 0, navigationController, viewModel, addBoxViewModel)
                                 }
                                 is Snake -> {
                                     Text(text = item.food.name)
@@ -279,7 +265,7 @@ fun Cart(
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally){
                 if(cart.isNotEmpty()){
-                    CartButton(addBoxViewModel, cart)
+                    CartButton(addBoxViewModel)
                 }
                 Spacer(modifier = Modifier.height(80.dp))
             }

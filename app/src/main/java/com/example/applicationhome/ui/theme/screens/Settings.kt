@@ -1,10 +1,8 @@
 package com.example.applicationhome.ui.theme.screens
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,8 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,45 +32,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.example.applicationhome.R
 import com.example.applicationhome.data.models.ProfileData
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
-import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.MyTopBar
-import com.example.applicationhome.view.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.components.UserImage
+import com.example.applicationhome.view.model.UserImageViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, viewModelForBottomBar : BottomBarViewModel){
+fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, userImageViewModel: UserImageViewModel){
     val context = LocalContext.current.applicationContext
     val settings = ProfileData.settingsata()
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        bottomBar = {
-            Box(
-                modifier = Modifier.navigationBarsPadding().fillMaxWidth().
-                height(100.dp).
-                pointerInput(Unit) { detectTapGestures { } },
-                contentAlignment = Alignment.BottomCenter
-            ){
-                MyBottonBar(navigationController, viewModelForBottomBar)
-            }
-        },
         topBar = {
             Column {
                 MyTopBar(
@@ -85,31 +66,8 @@ fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigat
                     {navigationController.popBackStack()},
                     {Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)},
                     {
-                        IconButton(onClick = {
-                            navigationController.navigate(Screens.Notifications.screen){
-                                popUpTo(navigationController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-
-                                launchSingleTop = true
-
-                                restoreState = true
-                            }
-                        }) {
-                            Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.Black)
-                        }
-                        IconButton(onClick = {
-                            navigationController.navigate(Screens.Search.screen){
-                                popUpTo(navigationController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-
-                                launchSingleTop = true
-
-                                restoreState = true
-                            }
-                        }) {
-                            Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
+                        IconButton(onClick = {}) {
+                            Icon(Icons.Default.DarkMode, contentDescription = null, tint = Color.Black)
                         }
                     }
                 )
@@ -132,13 +90,7 @@ fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigat
                             clip(CircleShape),
                             contentAlignment = Alignment.Center
                         ){
-                            Image(
-                                painter = painterResource(id = R.drawable.myphoto),
-                                contentDescription = "My Photo",
-                                modifier = Modifier.
-                                fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
+                            UserImage(userImageViewModel)
                         }
                         Spacer(modifier = Modifier.width(10.dp))
                         Column(modifier = Modifier.weight(2.5f),horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center){

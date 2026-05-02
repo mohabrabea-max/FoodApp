@@ -5,7 +5,7 @@ import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -42,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -56,8 +54,8 @@ import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.data.models.VarietiesMenu
 import com.example.applicationhome.ui.theme.components.CategoriesBox
 import com.example.applicationhome.ui.theme.components.ItemsBox
-import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.MyTopBar
+import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -71,7 +69,8 @@ fun HomeScreen(
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel,
-    viewModelForBottomBar : BottomBarViewModel
+    viewModelForBottomBar : BottomBarViewModel,
+    addBoxViewModel: AddBoxViewModel
 ){
     val offers = OffersData.offersMenu()
     val menu = FoodDataSource.allMenu()
@@ -87,16 +86,6 @@ fun HomeScreen(
         modifier = Modifier.
         fillMaxSize().
         background(Color.White),
-        bottomBar = {
-            Box(
-                modifier = Modifier.navigationBarsPadding().fillMaxWidth().
-                height(100.dp).
-                pointerInput(Unit) { detectTapGestures { } },
-                contentAlignment = Alignment.BottomCenter
-            ){
-                MyBottonBar(navigationController, viewModelForBottomBar)
-            }
-        },
         topBar = {
             MyTopBar(
                 modifier = Modifier.
@@ -173,7 +162,7 @@ fun HomeScreen(
                                 Image(
                                     painter = painterResource(id = currentOffer.image),
                                     contentDescription = null,
-                                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)),
+                                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)).clickable {  },
                                     contentScale = ContentScale.Crop
                                 )
                             }
@@ -184,9 +173,9 @@ fun HomeScreen(
                         Divider(color = Color.LightGray.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(start = 20.dp, end = 20.dp))
                         Spacer(modifier = Modifier.height(20.dp))
                     }
-                    items(menu){ item -> ItemsBox(item, navigationController, viewModel) }
+                    items(menu){ item -> ItemsBox(item, navigationController, viewModel, addBoxViewModel) }
 
-                    item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(90.dp))}
+                    item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(80.dp))}
                 }
             }
         }

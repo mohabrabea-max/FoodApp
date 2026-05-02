@@ -46,7 +46,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.Cart
 import com.example.applicationhome.data.models.CartKey
@@ -63,7 +62,7 @@ fun CartBox(
     number : Int,
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel,
-    ordernumber : AddBoxViewModel = viewModel()
+    ordernumber : AddBoxViewModel
 ) {
     var cartnumber = Cart.cartMap()
     var cartkey = CartKey(item, size)

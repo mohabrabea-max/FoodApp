@@ -13,26 +13,22 @@ import com.example.applicationhome.data.models.FoodItem
 class AddBoxViewModel : ViewModel(){
     var activId by mutableStateOf<Int?>(null)
     var totalCart by mutableStateOf(0)
-    val cartMap get() = Cart.cartmap
-    var totalPrice by mutableDoubleStateOf(0.0)
-    var totalNumber by mutableStateOf(0)
+    var cartMap = Cart.cartmap
+    var totalPrice = mutableDoubleStateOf(0.0)
+    var totalNumber = mutableStateOf(0)
     fun updateTotals() {
-        var newTotalPrice = 0.0
+        totalNumber.value = 0
+        totalPrice.value = 0.0
         // بنلف على كل العناصر اللي في السلة ونحسبها من الصفر
         for ((key, value) in cartMap) {
             val food = key.food
             val size = key.size
             if (food is FoodItem) {
-                totalNumber += value
-                val priceForSize = food.priceANDsize[size] ?: food.priceANDsize[size.trim()] ?: 0.0
-                newTotalPrice += priceForSize * value
+                totalNumber.value += value
+                val priceForSize = food.priceANDsize[size] ?: 0.0
+                totalPrice.value += priceForSize * value
             }
-            println(totalPrice)
-            println(totalNumber)
         }
-
-        // بنحدث الـ States مرة واحدة
-        totalPrice = newTotalPrice
     }
     fun addBoxNumberPlus(food: Food, size : String){
         val key = CartKey(food, size)
@@ -71,7 +67,7 @@ class AddBoxViewModel : ViewModel(){
         updateTotals()
     }
     fun bay(){
-        totalPrice = 0.0
+        totalPrice.value = 0.0
         cartMap.clear()
         totalCart = 0
     }

@@ -47,7 +47,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.applicationhome.data.models.CartKey
 import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.ui.theme.Orange
@@ -59,7 +58,7 @@ fun AddBox(
     modifier: Modifier = Modifier,
     color : Color,
     food : FoodItem,
-    ordernumber : AddBoxViewModel = viewModel()
+    ordernumber : AddBoxViewModel
 ){
     val context = LocalContext.current
     var id = food.id
@@ -81,7 +80,8 @@ fun AddBox(
             isExpanded = false
         }
     }
-    var targetWidth = if (active || (isExpanded && count > 0)) 160.dp else 35.dp
+
+    var targetWidth = if (activid == false || isExpanded == false || count == 0) 35.dp else 160.dp
     Box(
         modifier = modifier.
         animateContentSize().
@@ -179,7 +179,7 @@ fun AddBox(
                             fillMaxHeight().
                             clickable {
                                 ordernumber.addBoxNumberPlus(food, selectedSize)
-                                      },
+                            },
                             contentAlignment = Alignment.Center
                         ){
                             Text(
@@ -197,7 +197,7 @@ fun AddBox(
                             fillMaxHeight().
                             clickable {
                                 count
-                                      },
+                            },
                             contentAlignment = Alignment.Center
                         ){
                             BasicTextField(
@@ -213,10 +213,10 @@ fun AddBox(
                                         ordernumber.updateCount(food, selectedSize, 0)
                                     }
                                 },
-                                modifier = Modifier
-                                    .focusRequester(focusRequester)
+                                modifier = Modifier.
+                                    focusRequester(focusRequester).
                                     // السطر ده بيلقط أول ما المستخدم يدوس على الـ TextField عشان يكتب
-                                    .onFocusChanged { focusState ->
+                                    onFocusChanged { focusState ->
                                         active = focusState.isFocused
                                         if (focusState.isFocused) {
                                             isExpanded = true // بنخليه مفرود فوراً أول ما يركز فيه
@@ -245,7 +245,7 @@ fun AddBox(
                             animateContentSize().
                             clickable {
                                 ordernumber.addBoxNumberMinus(food, selectedSize)
-                                      },
+                            },
                             contentAlignment = Alignment.Center
                         ){
                             Text(

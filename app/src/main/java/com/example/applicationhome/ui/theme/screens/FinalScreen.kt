@@ -6,6 +6,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
@@ -36,22 +39,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.Screens
+import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.Options
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
+import com.example.applicationhome.view.model.UserImageViewModel
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -60,9 +65,10 @@ import kotlinx.coroutines.launch
 fun FinalScreen(
     scrollBehavior: TopAppBarScrollBehavior,
     drawerState : DrawerState,
-    viewModel : ItemScreenViewModel = viewModel(),
-    viewModelForBottomBar : BottomBarViewModel = viewModel(),
-    addBoxViewModel: AddBoxViewModel
+    viewModel : ItemScreenViewModel,
+    viewModelForBottomBar : BottomBarViewModel,
+    addBoxViewModel: AddBoxViewModel,
+    userImageViewModel: UserImageViewModel
 ){
     val navigationController = rememberNavController()
     val coroutineScope = rememberCoroutineScope()
@@ -143,7 +149,20 @@ fun FinalScreen(
             }
         }
     ){
-        Box{
+        Scaffold(
+            modifier = Modifier.
+            fillMaxSize().
+            background(Color.White),
+            bottomBar = {
+                Box(
+                    modifier = Modifier.navigationBarsPadding().fillMaxWidth().
+                    pointerInput(Unit) { detectTapGestures { } },
+                    contentAlignment = Alignment.BottomCenter
+                ){
+                    MyBottonBar(navigationController, viewModelForBottomBar)
+                }
+            },
+        ){
             NavHost(navController = navigationController, startDestination = Screens.HomeScreen.screen){
                 allScreens.forEach { item ->
                     composable(
@@ -154,16 +173,16 @@ fun FinalScreen(
                         popExitTransition = { ExitTransition.None }
                     ) {
                         when(item){
-                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, viewModelForBottomBar)
-                            is Screens.Profile -> Profile(scrollBehavior, drawerState, coroutineScope, navigationController, viewModelForBottomBar)
-                            is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, viewModelForBottomBar)
+                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, viewModelForBottomBar, addBoxViewModel)
+                            is Screens.Profile -> Profile(drawerState, coroutineScope, navigationController, userImageViewModel)
+                            is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel)
                             is Screens.Search -> Search()
-                            is Screens.Menu -> Menu(drawerState, coroutineScope, navigationController, viewModel, scrollBehavior)
+                            is Screens.Menu -> Menu(navigationController, viewModel, addBoxViewModel)
                             is Screens.Restaurants -> Restaurants()
                             is Screens.Varieties -> Varieties()
-                            is Screens.ItemScreen -> ItemScreen(navigationController, viewModel)
+                            is Screens.ItemScreen -> ItemScreen(navigationController, viewModel, addBoxViewModel)
                             is Screens.Notifications -> Notifications()
-                            is Screens.Favorite -> Favorite(scrollBehavior, drawerState, coroutineScope, navigationController, viewModelForBottomBar, viewModel)
+                            is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, viewModelForBottomBar, viewModel, addBoxViewModel)
                             is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, viewModelForBottomBar, viewModel, addBoxViewModel)
                         }
                     }

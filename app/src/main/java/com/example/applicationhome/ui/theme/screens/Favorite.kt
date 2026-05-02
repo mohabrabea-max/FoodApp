@@ -7,7 +7,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -37,7 +35,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -59,8 +55,8 @@ import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.data.models.Snake
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.components.ItemsBox
-import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.MyTopBar
+import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -69,7 +65,14 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Favorite(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, viewModelForBottomBar: BottomBarViewModel, viewModel : ItemScreenViewModel){
+fun Favorite(
+    drawerState : DrawerState,
+    coroutineScope : CoroutineScope,
+    navigationController : NavHostController,
+    viewModelForBottomBar: BottomBarViewModel,
+    viewModel : ItemScreenViewModel,
+    addBoxViewModel: AddBoxViewModel
+){
     var favorite = Favorite.favoriteList()
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) {
@@ -80,16 +83,6 @@ fun Favorite(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState,
         modifier = Modifier.
         fillMaxSize().
         background(Color.White),
-        bottomBar = {
-            Box(
-                modifier = Modifier.navigationBarsPadding().fillMaxWidth().
-                height(100.dp).
-                pointerInput(Unit) { detectTapGestures { } },
-                contentAlignment = Alignment.BottomCenter
-            ){
-                MyBottonBar(navigationController, viewModelForBottomBar)
-            }
-        },
         topBar = {
             MyTopBar(
                 modifier = Modifier.
@@ -127,7 +120,7 @@ fun Favorite(scrollBehavior: TopAppBarScrollBehavior, drawerState : DrawerState,
                         items(favorite) { item ->
                             when (item) {
                                 is FoodItem -> {
-                                    ItemsBox(item, navigationController, viewModel)
+                                    ItemsBox(item, navigationController, viewModel, addBoxViewModel)
                                 }
                                 is Snake -> {
                                     // هنا كوتلن فهم إن العنصر Snake

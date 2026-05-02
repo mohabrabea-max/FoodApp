@@ -1,9 +1,11 @@
 package com.example.applicationhome.data.models
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Info
@@ -11,8 +13,6 @@ import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.SettingsBrightness
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -321,9 +321,12 @@ object RestaurantsMenu {
 
 object ProfileData {
     private val profile = listOf(
-        Account("Name","Mohab Rabea",Icons.Default.Person),
-        Account("Phone Number","01011223344",Icons.Default.Phone),
-        Account("Country","Egypt",Icons.Default.LocationOn)
+        Account(101, "Email","mohabrabea@gmail.com", null),
+        Account(102,"First Name",null,Icons.Default.Edit),
+        Account(103,"Last Name",null,Icons.Default.Edit),
+        Account(104,"Phone number","01011223344",Icons.Default.Edit),
+        Account(105,"Birthday","Get offers on your special day",Icons.Default.Add),
+        Account(106,"Country","Egypt",Icons.Default.Add)
     )
 
     val settings = listOf(
@@ -350,7 +353,7 @@ object ProfileData {
 
 object OffersData {
     private val offers = listOf(
-        Offers(71, "Offer 1", R.drawable.ic_launcher_background),
+        Offers(71, "Offer 1", R.drawable.offer1),
         Offers(72, "Offer 2", R.drawable.ic_launcher_background),
         Offers(73, "Offer 3", R.drawable.ic_launcher_background),
         Offers(74, "Offer 4", R.drawable.ic_launcher_background),
