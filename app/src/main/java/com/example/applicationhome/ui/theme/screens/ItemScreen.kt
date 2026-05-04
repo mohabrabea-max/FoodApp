@@ -3,7 +3,6 @@ package com.example.applicationhome.ui.theme.screens
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,11 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.example.applicationhome.data.models.Cart
-import com.example.applicationhome.data.models.CartKey
-import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.data.models.Snake
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.Orange
@@ -57,6 +52,7 @@ import com.example.applicationhome.ui.theme.components.Favorite
 import com.example.applicationhome.ui.theme.components.ItemSize
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.view.model.AddBoxViewModel
+import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -65,20 +61,14 @@ import com.example.applicationhome.view.model.ItemScreenViewModel
 fun ItemScreen(
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel,
-    addBoxViewModel : AddBoxViewModel
+    addBoxViewModel : AddBoxViewModel,
+    favoriteState : FavoriteViewModel
 ){
-    var cart = Cart.cartmap
     val item = viewModel.selectedItem
     val size = viewModel.selectedSize.value
     val images = item?.image?.size ?: 0
     val pagerState = rememberPagerState(pageCount = {images})
-    var key: CartKey? = null
-    when (item) {
-        is FoodItem -> {
-            key = CartKey(item, size)
-        }
-        is Snake -> { }
-    }
+
     if(item != null){
         Scaffold(
             modifier = Modifier.fillMaxSize().
@@ -108,7 +98,8 @@ fun ItemScreen(
                     }
                     Favorite(
                         modifier = Modifier.padding(10.dp).clip(CircleShape).size(35.dp),
-                        food = item
+                        food = item,
+                        favoriteState = favoriteState
                     )
                 }
             )
@@ -185,24 +176,7 @@ fun ItemScreen(
                 Column(modifier = Modifier.align(Alignment.BottomCenter)){
                     //var size = if
                     Box(modifier = Modifier.fillMaxWidth().height(100.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){
-                        if(cart.containsKey(key)){
-                            Box(
-                                modifier = Modifier.width(200.dp).
-                                height(70.dp).
-                                clip(RoundedCornerShape(50.dp)).
-                                background(Color.Yellow).align(Alignment.TopCenter).
-                                border(width = 0.3.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(50.dp)).
-                                pointerInput(Unit) {
-                                    detectTapGestures { }
-                                }
-                            ){
-                                Text(
-                                    text = "${cart[key]} added in your cart",
-                                    modifier = Modifier.padding(5.dp).align(Alignment.TopCenter)
-                                )
-                            }
-                        }
-                        BottonBarForItemScreen(addBoxViewModel, item, size)
+                        BottonBarForItemScreen(addBoxViewModel, viewModel, item, size)
                     }
                     Box(modifier = Modifier.fillMaxWidth().height(50.dp).pointerInput(Unit) { detectTapGestures { } }, contentAlignment = Alignment.Center){}
                 }

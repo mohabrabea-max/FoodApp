@@ -1,21 +1,22 @@
 package com.example.applicationhome.view.model
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
 class BottomBarViewModel : ViewModel() {
-    var selected = mutableStateOf("Home")
-
+    var selected by mutableStateOf("Home")
     fun home(){
-        selected.value = "Home"
+        selected = "Home"
     }
     fun favorite(){
-        selected.value = "Favorite"
+        selected = "Favorite"
     }
     fun cart(){
-        selected.value = "Cart"
+        selected = "Cart"
     }
-    fun profile(){
-        selected.value = "Profile"
+    fun settings(){
+        selected = "Settings"
     }
 }

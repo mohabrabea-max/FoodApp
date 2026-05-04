@@ -4,15 +4,20 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Notifications
@@ -20,20 +25,31 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.FoodDataSource
+import com.example.applicationhome.data.models.RestaurantsMenu
 import com.example.applicationhome.data.models.Screens
+import com.example.applicationhome.data.models.VarietiesMenu
 import com.example.applicationhome.ui.theme.LightBrownForBackground
+import com.example.applicationhome.ui.theme.components.AddBox
+import com.example.applicationhome.ui.theme.components.Favorite
 import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyTopBar
+import com.example.applicationhome.ui.theme.components.RestaurantsBox
 import com.example.applicationhome.view.model.AddBoxViewModel
+import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -42,9 +58,14 @@ import com.example.applicationhome.view.model.ItemScreenViewModel
 fun Menu(
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel,
-    addBoxViewModel: AddBoxViewModel
+    addBoxViewModel: AddBoxViewModel,
+    favoriteState : FavoriteViewModel
 ){
-    val menu = FoodDataSource.allMenu()
+    val categories = VarietiesMenu.categoriesList()
+    val restaurants = RestaurantsMenu.restaurantsMenu()
+    val pezza = FoodDataSource.pizzaMenu()
+    val chicken = FoodDataSource.chickenMenu()
+    val burger = FoodDataSource.burgerMenu()
     Scaffold(
         modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),
         topBar = {
@@ -88,14 +109,103 @@ fun Menu(
         }
     ){innerPadding ->
         Box(modifier = Modifier.fillMaxSize().background(Color.White).padding(innerPadding)){
-            LazyVerticalGrid (
+            LazyVerticalGrid(
                 modifier = Modifier.fillMaxSize(),
                 columns = GridCells.Fixed(2),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ){
-                items(menu){ item ->
-                    ItemsBox(item, navigationController, viewModel, addBoxViewModel)
-
+                item(span = { GridItemSpan(2) }){
+                    Text(
+                        text = "Pizza",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.Black,
+                        fontSize = 25.sp,
+                    )
+                }
+                item(span = { GridItemSpan(2) }){
+                    Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
+                        LazyRow(
+                            modifier = Modifier.padding(10.dp),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ){
+                            items(restaurants){item ->
+                                RestaurantsBox(item)
+                            }
+                        }
+                    }
+                }
+                items(pezza){ item ->
+                    ItemsBox(
+                        item,
+                        navigationController,
+                        viewModel,
+                        null,
+                        {
+                            Favorite(
+                                modifier = Modifier.padding(10.dp).
+                                clip(CircleShape).
+                                size(35.dp).
+                                background(Color.White.copy(alpha = 1f)),
+                                food = item,
+                                favoriteState = favoriteState
+                            )
+                            AddBox(color = Color.White, food = item, ordernumber = addBoxViewModel)
+                        }
+                    )
+                }
+                item(span = { GridItemSpan(2) }){
+                    Text(
+                        text = "Chicken",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.Black,
+                        fontSize = 25.sp,
+                    )
+                }
+                items(chicken){ item ->
+                    ItemsBox(
+                        item,
+                        navigationController,
+                        viewModel,
+                        null,
+                        {
+                            Favorite(
+                                modifier = Modifier.padding(10.dp).
+                                clip(CircleShape).
+                                size(35.dp).
+                                background(Color.White.copy(alpha = 1f)),
+                                food = item,
+                                favoriteState = favoriteState
+                            )
+                            AddBox(color = Color.White, food = item, ordernumber = addBoxViewModel)
+                        }
+                    )
+                }
+                item(span = { GridItemSpan(2) }){
+                    Text(
+                        text = "Burger",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.Black,
+                        fontSize = 25.sp,
+                    )
+                }
+                items(burger){ item ->
+                    ItemsBox(
+                        item,
+                        navigationController,
+                        viewModel,
+                        null,
+                        {
+                            Favorite(
+                                modifier = Modifier.padding(10.dp).
+                                clip(CircleShape).
+                                size(35.dp).
+                                background(Color.White.copy(alpha = 1f)),
+                                food = item,
+                                favoriteState = favoriteState
+                            )
+                            AddBox(color = Color.White, food = item, ordernumber = addBoxViewModel)
+                        }
+                    )
                 }
                 item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(80.dp))}
             }

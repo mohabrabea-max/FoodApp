@@ -3,7 +3,6 @@ package com.example.applicationhome.ui.theme.screens
 import android.annotation.SuppressLint
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -20,9 +19,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Divider
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -40,8 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,12 +47,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.applicationhome.R
 import com.example.applicationhome.data.models.Screens
+import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.Options
+import com.example.applicationhome.ui.theme.components.UserImage
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
+import com.example.applicationhome.view.model.DrawerViewModel
+import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 import com.example.applicationhome.view.model.UserImageViewModel
 import kotlinx.coroutines.launch
@@ -63,18 +64,21 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinalScreen(
-    scrollBehavior: TopAppBarScrollBehavior,
+    scrollBehavior : TopAppBarScrollBehavior,
     drawerState : DrawerState,
     viewModel : ItemScreenViewModel,
     viewModelForBottomBar : BottomBarViewModel,
-    addBoxViewModel: AddBoxViewModel,
-    userImageViewModel: UserImageViewModel
+    addBoxViewModel : AddBoxViewModel,
+    userImageViewModel : UserImageViewModel,
+    favoriteState : FavoriteViewModel,
+    drawerViewModel: DrawerViewModel
 ){
     val navigationController = rememberNavController()
     val coroutineScope = rememberCoroutineScope()
     val navBackStackEntry by navigationController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-
+    var stat = drawerViewModel.state
+    var drawer = if(stat) 250.dp else 70.dp
     val allScreens = listOf(
         Screens.HomeScreen,
         Screens.Profile,
@@ -90,18 +94,22 @@ fun FinalScreen(
     )
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = currentRoute == "homescreen" || currentRoute == "favorite" || currentRoute == "cart" || currentRoute == "profile",
+        gesturesEnabled = currentRoute == "homescreen" || currentRoute == "favorite" || currentRoute == "cart" || currentRoute == "settings",
         drawerContent = {
-            ModalDrawerSheet(drawerContainerColor = Color.White,modifier = Modifier.width(250.dp)){
-                IconButton(onClick = {}) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)
+            ModalDrawerSheet(drawerContainerColor = Color.White,modifier = Modifier.width(drawer)){
+                IconButton(
+                    onClick = {if(stat) drawerViewModel.stateFalse() else drawerViewModel.stateTrue()},
+                    modifier = Modifier.align(if(stat) Alignment.End else Alignment.CenterHorizontally))
+                {
+                    Icon(if(stat) Icons.Default.KeyboardArrowLeft else Icons.Default.KeyboardArrowRight, contentDescription = null, tint = Color.Black)
                 }
-                Divider()
+                //Divider(color = Color.LightGray)
                 Box(
                     modifier = Modifier.
-                    background(Color.White).
                     fillMaxWidth().
                     height(80.dp).
+                    clip(RoundedCornerShape(40.dp)).
+                    background(Color.VeryLightGray).
                     clickable{
                         coroutineScope.launch{drawerState.close()}
                         navigationController.navigate(Screens.Profile.screen)
@@ -117,35 +125,31 @@ fun FinalScreen(
                             clip(CircleShape),
                             contentAlignment = Alignment.Center
                         ){
-                            Image(
-                                painter = painterResource(id = R.drawable.myphoto),
-                                contentDescription = "Food Logo",
-                                modifier = Modifier.
-                                fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
+                            UserImage(userImageViewModel)
                         }
                         Spacer(modifier = Modifier.width(10.dp))
-                        Column(modifier = Modifier.weight(2.5f),horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center){
-                            Text(
-                                text = "Mohab Rabea",
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black
-                            )
-                            Spacer(modifier = Modifier.height(5.dp))
-                            Text(
-                                text = "01011223344",
-                                fontSize = 12.sp,
-                                color = Color.DarkGray
-                            )
+                        if(stat){
+                            Column(modifier = Modifier.weight(2.5f),horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center){
+                                Text(
+                                    text = "Mohab Rabea",
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+                                Spacer(modifier = Modifier.height(5.dp))
+                                Text(
+                                    text = "01011223344",
+                                    fontSize = 12.sp,
+                                    color = Color.DarkGray
+                                )
+                            }
                         }
-
                     }
-
                 }
-                Divider()
-                Options(navigationController, drawerState, coroutineScope, viewModelForBottomBar)
+//                Box(modifier = Modifier.fillMaxWidth()){
+//                    Divider(color = Color.LightGray, modifier = Modifier.width(100.dp).align(Alignment.Center))
+//                }
+                Options(navigationController, drawerState, coroutineScope, viewModelForBottomBar, drawerViewModel)
             }
         }
     ){
@@ -173,17 +177,17 @@ fun FinalScreen(
                         popExitTransition = { ExitTransition.None }
                     ) {
                         when(item){
-                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, viewModelForBottomBar, addBoxViewModel)
+                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, addBoxViewModel, favoriteState)
                             is Screens.Profile -> Profile(drawerState, coroutineScope, navigationController, userImageViewModel)
                             is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel)
                             is Screens.Search -> Search()
-                            is Screens.Menu -> Menu(navigationController, viewModel, addBoxViewModel)
-                            is Screens.Restaurants -> Restaurants()
-                            is Screens.Varieties -> Varieties()
-                            is Screens.ItemScreen -> ItemScreen(navigationController, viewModel, addBoxViewModel)
+                            is Screens.Menu -> Menu(navigationController, viewModel, addBoxViewModel, favoriteState)
+                            is Screens.Restaurants -> Restaurants(drawerState, coroutineScope, navigationController, favoriteState)
+                            is Screens.Varieties -> Varieties(drawerState, coroutineScope, navigationController, favoriteState)
+                            is Screens.ItemScreen -> ItemScreen(navigationController, viewModel, addBoxViewModel, favoriteState)
                             is Screens.Notifications -> Notifications()
-                            is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, viewModelForBottomBar, viewModel, addBoxViewModel)
-                            is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, viewModelForBottomBar, viewModel, addBoxViewModel)
+                            is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, viewModelForBottomBar, viewModel, addBoxViewModel, favoriteState)
+                            is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, viewModelForBottomBar, viewModel, addBoxViewModel, favoriteState)
                         }
                     }
                 }

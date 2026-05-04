@@ -14,6 +14,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.applicationhome.ui.theme.screens.FinalScreen
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
+import com.example.applicationhome.view.model.DrawerViewModel
+import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 import com.example.applicationhome.view.model.UserImageViewModel
 
@@ -30,7 +32,9 @@ class MainActivity : ComponentActivity() {
             val viewModelForBottomBar : BottomBarViewModel = viewModel()
             val addBoxViewModel : AddBoxViewModel = viewModel()
             val userImageViewModel: UserImageViewModel = viewModel()
-            FinalScreen(scrollBehavior, drawerState, viewModel, viewModelForBottomBar, addBoxViewModel, userImageViewModel)
+            val favoriteState : FavoriteViewModel = viewModel()
+            val drawerViewModel : DrawerViewModel = viewModel()
+            FinalScreen(scrollBehavior, drawerState, viewModel, viewModelForBottomBar, addBoxViewModel, userImageViewModel, favoriteState, drawerViewModel)
         }
     }
 }

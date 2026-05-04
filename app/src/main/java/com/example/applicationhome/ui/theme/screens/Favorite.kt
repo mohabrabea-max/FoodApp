@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -54,10 +55,13 @@ import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.data.models.Snake
 import com.example.applicationhome.ui.theme.DarkOrange
+import com.example.applicationhome.ui.theme.components.AddBox
+import com.example.applicationhome.ui.theme.components.Favorite
 import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
+import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -71,7 +75,8 @@ fun Favorite(
     navigationController : NavHostController,
     viewModelForBottomBar: BottomBarViewModel,
     viewModel : ItemScreenViewModel,
-    addBoxViewModel: AddBoxViewModel
+    addBoxViewModel: AddBoxViewModel,
+    favoriteState : FavoriteViewModel
 ){
     var favorite = Favorite.favoriteList()
     val context = LocalContext.current as? Activity
@@ -98,11 +103,6 @@ fun Favorite(
                     }) {
                         Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
                     }
-                    IconButton(onClick = {
-                        navigationController.navigate(Screens.Cart.screen)
-                    }) {
-                        Icon(Icons.Default.ShoppingCart, contentDescription = null, tint = Color.Black)
-                    }
                 }
             )
             Divider(color = Color.LightGray.copy(alpha = 0.5f))
@@ -120,7 +120,23 @@ fun Favorite(
                         items(favorite) { item ->
                             when (item) {
                                 is FoodItem -> {
-                                    ItemsBox(item, navigationController, viewModel, addBoxViewModel)
+                                    ItemsBox(
+                                        item,
+                                        navigationController,
+                                        viewModel,
+                                        null,
+                                        {
+                                            Favorite(
+                                                modifier = Modifier.padding(10.dp).
+                                                clip(CircleShape).
+                                                size(35.dp).
+                                                background(Color.White.copy(alpha = 1f)),
+                                                food = item,
+                                                favoriteState = favoriteState
+                                            )
+                                            AddBox(color = Color.White, food = item, ordernumber = addBoxViewModel)
+                                        }
+                                        )
                                 }
                                 is Snake -> {
                                     // هنا كوتلن فهم إن العنصر Snake

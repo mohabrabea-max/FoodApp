@@ -58,6 +58,13 @@ data class Settings(
     val icon : ImageVector
 )
 
+data class ProfileOptions(
+    val title : String,
+    var description : String?,
+    val icon: ImageVector,
+    val screen : Screens
+)
+
 data class CartKey(val food : Food, val size : String)
 
 

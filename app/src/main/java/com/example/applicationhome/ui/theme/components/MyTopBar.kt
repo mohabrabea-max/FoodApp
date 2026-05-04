@@ -20,8 +20,8 @@ import com.example.applicationhome.ui.theme.DarkOrange
 @Composable
 fun MyTopBar(
     modifier : Modifier,
-    title : String,
-    onMenuClick: () -> Unit,
+    title : String?,
+    onMenuClick: () -> Unit = {},
     startIcon : @Composable () -> Unit = {},
     actions : @Composable RowScope.() -> Unit = {}
 ){
@@ -34,16 +34,16 @@ fun MyTopBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            IconButton(onClick = onMenuClick) {
-                startIcon()
+            Row(verticalAlignment = Alignment.CenterVertically){
+                IconButton(onClick = onMenuClick) {
+                    startIcon()
+                }
+                Text(
+                    text = if(title != null) title else "",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.DarkOrange
+                )
             }
-
-            Text(
-                text = title,
-                style = MaterialTheme.typography.headlineMedium,
-                color = Color.DarkOrange
-            )
-
             Row(verticalAlignment = Alignment.CenterVertically, content = actions)
         }
     }

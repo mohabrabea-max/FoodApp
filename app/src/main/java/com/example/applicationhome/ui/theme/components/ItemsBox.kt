@@ -1,20 +1,19 @@
 package com.example.applicationhome.ui.theme.components
 
 import android.widget.Toast
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,7 +39,6 @@ import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
-import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
 @Composable
@@ -48,19 +46,19 @@ fun ItemsBox(
     item: FoodItem,
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel = viewModel(),
-    addBoxViewModel: AddBoxViewModel
+    size : String?,
+    actions : @Composable ColumnScope.() -> Unit = {}
 ){
     val context = LocalContext.current
     Box(
         modifier = Modifier.
-        animateContentSize().
         aspectRatio(0.8f).
+        padding(5.dp).
+        clip(RoundedCornerShape(10.dp)).
         clickable{
             viewModel.selectItem(item, item.priceANDsize.keys.last())
             navigationController.navigate(Screens.ItemScreen.screen)
-        }.
-        padding(5.dp).
-        clip(RoundedCornerShape(10.dp))
+        }
     ){
         Column(
             modifier = Modifier.
@@ -77,18 +75,9 @@ fun ItemsBox(
                     Column(
                         modifier = Modifier.fillMaxSize().weight(5f),
                         horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ){
-                        Favorite(
-                            modifier = Modifier.padding(10.dp).
-                            clip(CircleShape).
-                            size(35.dp).
-                            background(Color.White.copy(alpha = 1f)),
-                            food = item
-                        )
-
-                        AddBox(color = Color.White, food = item, ordernumber = addBoxViewModel)
-                    }
+                        verticalArrangement = Arrangement.SpaceBetween,
+                        content = actions
+                    )
                     Box(
                         modifier = Modifier.fillMaxWidth().
                         weight(1.3f).
@@ -97,7 +86,7 @@ fun ItemsBox(
                         contentAlignment = Alignment.CenterStart
                     ){
                         Text(
-                            text = item.name,
+                            text = if(size != null)item.name + " ( $size )" else item.name,
                             style = MaterialTheme.typography.titleLarge,
                             color = Color.Black,
                             fontSize = 18.sp,

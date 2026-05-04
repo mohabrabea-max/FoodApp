@@ -36,10 +36,10 @@ import com.example.applicationhome.view.model.BottomBarViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyBottonBar(
-    navController : NavController,
+    navigationController : NavController,
     viewModel: BottomBarViewModel
 ){
-    var selected = viewModel.selected.value
+    var selected = viewModel.selected
     Box(
         modifier = Modifier.width(350.dp).
         height(60.dp).
@@ -56,17 +56,21 @@ fun MyBottonBar(
             Box(modifier = Modifier.weight(1f)){
                 IconButton(
                     onClick = {
-                        viewModel.home()
-                        navController.navigate(Screens.HomeScreen.screen){
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true // احفظ حالة الصفحة اللي أنا خارج منها (زي السكرول)
+                        if(selected == "Home"){
+                            navigationController.navigate(Screens.HomeScreen.screen)
+                        }else{
+                            viewModel.home()
+                            navigationController.navigate(Screens.HomeScreen.screen){
+                                popUpTo(navigationController.graph.findStartDestination().id) {
+                                    saveState = true // احفظ حالة الصفحة اللي أنا خارج منها (زي السكرول)
+                                }
+
+                                // 2. ميكررش نفس الصفحة لو أنا دوست عليها وأنا واقف فيها
+                                launchSingleTop = true
+
+                                // 3. يرجع الحالة اللي كانت محفوظة لما أرجع للصفحة دي تاني
+                                restoreState = true
                             }
-
-                            // 2. ميكررش نفس الصفحة لو أنا دوست عليها وأنا واقف فيها
-                            launchSingleTop = true
-
-                            // 3. يرجع الحالة اللي كانت محفوظة لما أرجع للصفحة دي تاني
-                            restoreState = true
                         }
                     }, modifier = Modifier.align(Alignment.Center)
                 ){
@@ -81,14 +85,18 @@ fun MyBottonBar(
             Box(modifier = Modifier.weight(1f)){
                 IconButton(
                     onClick = {
-                        viewModel.favorite()
-                        navController.navigate(Screens.Favorite.screen){
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
+                        if(selected == "Favorite"){
+                            navigationController.navigate(Screens.Favorite.screen)
+                        }else{
+                            viewModel.favorite()
+                            navigationController.navigate(Screens.Favorite.screen){
+                                popUpTo(navigationController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
 
-                            restoreState = true
+                                restoreState = true
+                            }
                         }
                     }, modifier = Modifier.align(Alignment.Center)
                 ){
@@ -103,15 +111,19 @@ fun MyBottonBar(
             Box(modifier = Modifier.weight(1f)){
                 IconButton(
                     onClick = {
-                        viewModel.cart()
-                        navController.navigate(Screens.Cart.screen){
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
+                        if(selected == "Cart"){
+                            navigationController.navigate(Screens.Cart.screen)
+                        }else{
+                            viewModel.cart()
+                            navigationController.navigate(Screens.Cart.screen){
+                                popUpTo(navigationController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+
+                                launchSingleTop = true
+
+                                restoreState = true
                             }
-
-                            launchSingleTop = true
-
-                            restoreState = true
                         }
                     }, modifier = Modifier.align(Alignment.Center)
                 ){
@@ -126,23 +138,27 @@ fun MyBottonBar(
             Box(modifier = Modifier.weight(1f)){
                 IconButton(
                     onClick = {
-                        viewModel.profile()
-                        navController.navigate(Screens.Profile.screen){
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
+                        if(selected == "Settings"){
+                            navigationController.navigate(Screens.Settings.screen)
+                        }else{
+                            viewModel.settings()
+                            navigationController.navigate(Screens.Settings.screen){
+                                popUpTo(navigationController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+
+                                launchSingleTop = true
+
+                                restoreState = true
                             }
-
-                            launchSingleTop = true
-
-                            restoreState = true
                         }
                     }, modifier = Modifier.align(Alignment.Center)
                 ){
                     Icon(
                         Icons.Default.Person,
-                        contentDescription = "Profile",
+                        contentDescription = "Settings",
                         modifier = Modifier.size(26.dp),
-                        tint = if(selected == "Profile") Color.DarkOrange else Color.White
+                        tint = if(selected == "Settings") Color.DarkOrange else Color.White
                     )
                 }
             }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -25,6 +26,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
@@ -52,11 +54,13 @@ import com.example.applicationhome.data.models.FoodDataSource
 import com.example.applicationhome.data.models.OffersData
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.data.models.VarietiesMenu
+import com.example.applicationhome.ui.theme.components.AddBox
 import com.example.applicationhome.ui.theme.components.CategoriesBox
+import com.example.applicationhome.ui.theme.components.Favorite
 import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.view.model.AddBoxViewModel
-import com.example.applicationhome.view.model.BottomBarViewModel
+import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -69,8 +73,8 @@ fun HomeScreen(
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel,
-    viewModelForBottomBar : BottomBarViewModel,
-    addBoxViewModel: AddBoxViewModel
+    addBoxViewModel: AddBoxViewModel,
+    favoriteState : FavoriteViewModel
 ){
     val offers = OffersData.offersMenu()
     val menu = FoodDataSource.allMenu()
@@ -97,19 +101,6 @@ fun HomeScreen(
                 {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
                 {
                     IconButton(onClick = {
-                        navigationController.navigate(Screens.Search.screen){
-                            popUpTo(navigationController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-
-                            launchSingleTop = true
-
-                            restoreState = true
-                        }
-                    }) {
-                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.Black)
-                    }
-                    IconButton(onClick = {
                         navigationController.navigate(Screens.Notifications.screen){
                             popUpTo(navigationController.graph.findStartDestination().id) {
                                 saveState = true
@@ -122,6 +113,19 @@ fun HomeScreen(
                     }) {
                         Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
                     }
+                    IconButton(onClick = {
+                        navigationController.navigate(Screens.Search.screen){
+                            popUpTo(navigationController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+
+                            restoreState = true
+                        }
+                    }) {
+                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.Black)
+                    }
                 }
             )
             Divider(color = Color.LightGray.copy(alpha = 0.5f))
@@ -133,7 +137,7 @@ fun HomeScreen(
                     state = scrollState,
                     modifier = Modifier.fillMaxSize(),
                     columns = GridCells.Fixed(2),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ){
                     item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
                     item(span = { GridItemSpan(2) }){
@@ -142,7 +146,7 @@ fun HomeScreen(
                                 modifier = Modifier.padding(10.dp),
                                 horizontalArrangement = Arrangement.spacedBy(30.dp)
                             ){
-                                items(categories) { category -> CategoriesBox(category) }
+                                items(categories) { category -> CategoriesBox(category, navigationController) }
                             }
                         }
                     }
@@ -173,8 +177,25 @@ fun HomeScreen(
                         Divider(color = Color.LightGray.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(start = 20.dp, end = 20.dp))
                         Spacer(modifier = Modifier.height(20.dp))
                     }
-                    items(menu){ item -> ItemsBox(item, navigationController, viewModel, addBoxViewModel) }
-
+                    items(menu){ item ->
+                        ItemsBox(
+                            item,
+                            navigationController,
+                            viewModel,
+                            null,
+                            {
+                                Favorite(
+                                    modifier = Modifier.padding(10.dp).
+                                    clip(CircleShape).
+                                    size(35.dp).
+                                    background(Color.White.copy(alpha = 1f)),
+                                    food = item,
+                                    favoriteState = favoriteState
+                                )
+                            AddBox(color = Color.White, food = item, ordernumber = addBoxViewModel)
+                            }
+                        )
+                    }
                     item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(80.dp))}
                 }
             }

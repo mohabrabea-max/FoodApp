@@ -1,5 +1,6 @@
 package com.example.applicationhome.ui.theme.components
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -17,32 +18,32 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.applicationhome.data.models.Favorite
 import com.example.applicationhome.data.models.Food
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.view.model.FavoriteViewModel
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun Favorite(
     modifier: Modifier = Modifier,
     modifier2 : Modifier = Modifier,
     food: Food,
-    favoritState : FavoriteViewModel = viewModel()
+    favoriteState : FavoriteViewModel
 ){
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
-    val favorite = favoritState.itemsCount[food.id] ?: false
+    val favorite = favoriteState.itemsCount[food.id] ?: false
     val favorite2 = if(food in Favorite.favoritelist) true else false
     fun favorite1(){
 
         if(favorite == true || favorite2 == true){
-            favoritState.removeFavorite(food)
+            favoriteState.removeFavorite(food)
             Toast.makeText(context, "Remove From Favorite", Toast.LENGTH_SHORT).show()
         }else{
-            favoritState.addFavorite(food)
+            favoriteState.addFavorite(food)
             Toast.makeText(context, "Add To Favorite", Toast.LENGTH_SHORT).show()
         }
 

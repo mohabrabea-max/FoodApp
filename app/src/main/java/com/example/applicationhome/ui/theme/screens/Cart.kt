@@ -64,6 +64,7 @@ import com.example.applicationhome.ui.theme.components.CartButton
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
+import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -77,9 +78,10 @@ fun Cart(
     navigationController : NavHostController,
     drawerState : DrawerState,
     coroutineScope : CoroutineScope,
-    viewModelForBottomBar: BottomBarViewModel = viewModel(),
+    viewModelForBottomBar: BottomBarViewModel,
     viewModel: ItemScreenViewModel = viewModel(),
-    addBoxViewModel : AddBoxViewModel
+    addBoxViewModel : AddBoxViewModel,
+    favoriteState : FavoriteViewModel
 ){
     var cart = remember{Cart.cartMap()}
     val context = LocalContext.current as? Activity
@@ -144,7 +146,7 @@ fun Cart(
                         items(cart.keys.toList(), key = { it.food.id.toString() + it.size}) { item ->
                             when (item.food) {
                                 is FoodItem -> {
-                                    CartBox(item.food, item.size, cart[item] ?: 0, navigationController, viewModel, addBoxViewModel)
+                                    CartBox(item.food, item.size, navigationController, viewModel, addBoxViewModel, favoriteState)
                                 }
                                 is Snake -> {
                                     Text(text = item.food.name)
