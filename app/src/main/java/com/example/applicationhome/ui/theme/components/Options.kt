@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,10 +22,13 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -45,6 +49,8 @@ fun Options(
     bottomBarViewModel: BottomBarViewModel,
     drawerViewModel: DrawerViewModel
 ){
+    val density = LocalDensity.current     //هنا بناخد قياس شاشة الموبايل
+    val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} } // بنجبر الـ Measurable يشوف إن عرضه دايماً 250dp
     val options = Drawer.optionsData()
     val menuOptions = Drawer.menuOptionsData()
     var state = drawerViewModel.state
@@ -56,9 +62,28 @@ fun Options(
         LazyColumn(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.spacedBy(16.dp)){
             item{Spacer(modifier = Modifier.height(10.dp))}
             items(options){item ->
-                NavigationDrawerItem(label = {if(state) Text(text = item.title, color = Color.DarkOrange)},
+                NavigationDrawerItem(
+                    label = {
+                        if(state) Text(
+                            text = item.title,
+                            color = Color.DarkOrange,
+                            modifier = Modifier.layout { measurable, constraints ->
+                                val placeable = measurable.measure(
+                                    constraints.copy(
+                                        minWidth = fixedWidth,
+                                        maxWidth = fixedWidth
+                                    )
+                                )
+                                // هنا السر: بنقول للأب (Drawer) إن عرضنا هو الـ drawerWidth الحالي
+                                // بس بنرسم الـ placeable اللي عرضه 250 عادي
+                                layout(width = constraints.maxWidth, height = placeable.height) {
+                                    placeable.placeRelative(0, 0)
+                                }
+                            }
+                        )
+                    },
                     selected = currentRoute == item.screen,
-                    icon = {Icon(imageVector = item.icon, contentDescription = item.title, tint = Color.DarkOrange)},
+                    icon = {Icon(imageVector = item.icon, contentDescription = item.title, tint = Color.DarkOrange, modifier = Modifier.padding(start = 5.dp))},
                     onClick = {
                         if(item.title == "Home") bottomBarViewModel.home()
                         else if(item.title == "Settings") bottomBarViewModel.settings()
@@ -73,18 +98,53 @@ fun Options(
                 }
             }
             items(menuOptions){item ->
-                NavigationDrawerItem(label = {if(state) Text(text =  item.title, color = Color.DarkOrange)},
+                NavigationDrawerItem(
+                    label = {
+                        if(state) Text(
+                            text =  item.title,
+                            color = Color.DarkOrange,
+                            modifier = Modifier.layout { measurable, constraints ->
+                                val placeable = measurable.measure(
+                                    constraints.copy(
+                                        minWidth = fixedWidth,
+                                        maxWidth = fixedWidth
+                                    )
+                                )
+                                layout(width = constraints.maxWidth, height = placeable.height) {
+                                    placeable.placeRelative(0, 0)
+                                }
+                            }
+                        )
+                    },
                     selected = currentRoute == item.screen,
-                    icon = {Icon(imageVector = item.icon, contentDescription = item.title, tint = Color.DarkOrange)},
+                    icon = {Icon(imageVector = item.icon, contentDescription = item.title, tint = Color.DarkOrange, modifier = Modifier.padding(start = 5.dp))},
                     onClick = {
                         coroutineScope.launch{drawerState.close()}
                         navigationController.navigate(item.screen)
                     }
                 )
             }
-            item { NavigationDrawerItem(label = {if(state) Text(text = "Logout", color = Color.Red)},
+            item {
+                NavigationDrawerItem(
+                    label = {
+                        if(state) Text(
+                            text = "Logout",
+                            color = Color.Red,
+                            modifier = Modifier.layout { measurable, constraints ->
+                            val placeable = measurable.measure(
+                                constraints.copy(
+                                    minWidth = fixedWidth,
+                                    maxWidth = fixedWidth
+                                )
+                            )
+                            layout(width = constraints.maxWidth, height = placeable.height) {
+                                placeable.placeRelative(0, 0)
+                            }
+                            }
+                        )
+                    },
                 selected = false,
-                icon = {Icon(imageVector = Icons.Default.ExitToApp, contentDescription = "Logout", tint = Color.Red)},
+                icon = {Icon(imageVector = Icons.Default.ExitToApp, contentDescription = "Logout", tint = Color.Red, modifier = Modifier.padding(start = 5.dp))},
                 onClick = {
                     coroutineScope.launch{drawerState.close()}
                     Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()

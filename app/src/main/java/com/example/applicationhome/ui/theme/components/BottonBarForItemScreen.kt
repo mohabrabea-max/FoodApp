@@ -22,7 +22,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -209,9 +209,9 @@ fun BottonBarForItemScreen(
                     IconButton(onClick = {
 
                         ordernumber.delete(food, size)
-                        Toast.makeText(context, "Added To Cart", Toast.LENGTH_SHORT).show()}){
+                        Toast.makeText(context, "Removed from cart", Toast.LENGTH_SHORT).show()}){
                         Icon(
-                            Icons.Default.ShoppingCart,
+                            Icons.Default.Delete,
                             contentDescription = "Cart",
                             tint = fontColor,
                             modifier = Modifier.size(20.dp)

@@ -34,8 +34,10 @@ data class Offers(
 
 data class Restaurants(
     val id : Int,
+    val typ : String,
     val name : String,
     val image : Int,
+    val image2 : Int,
     val review : Double,
     val background : Color
 )

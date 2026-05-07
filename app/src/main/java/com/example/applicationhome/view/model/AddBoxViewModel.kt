@@ -12,6 +12,7 @@ import com.example.applicationhome.data.models.FoodItem
 
 class AddBoxViewModel : ViewModel(){
     var activId by mutableStateOf<Int?>(null)
+
     var totalCart by mutableStateOf(0)
     var cartMap = Cart.cartmap
     var totalPrice = mutableDoubleStateOf(0.0)

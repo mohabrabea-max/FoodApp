@@ -127,7 +127,7 @@ fun Favorite(
                                         null,
                                         {
                                             Favorite(
-                                                modifier = Modifier.padding(10.dp).
+                                                modifier = Modifier.
                                                 clip(CircleShape).
                                                 size(35.dp).
                                                 background(Color.White.copy(alpha = 1f)),

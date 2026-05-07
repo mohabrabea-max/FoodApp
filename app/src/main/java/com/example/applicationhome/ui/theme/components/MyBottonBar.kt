@@ -15,9 +15,12 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,14 +33,18 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
+import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
+import com.example.applicationhome.view.model.FavoriteViewModel
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyBottonBar(
     navigationController : NavController,
-    viewModel: BottomBarViewModel
+    viewModel: BottomBarViewModel,
+    addBoxViewModel : AddBoxViewModel,
+    favoriteViewModel: FavoriteViewModel
 ){
     var selected = viewModel.selected
     Box(
@@ -100,6 +107,20 @@ fun MyBottonBar(
                         }
                     }, modifier = Modifier.align(Alignment.Center)
                 ){
+                    BadgedBox(
+                        badge = {
+                            if(favoriteViewModel.favoriteList.size > 0){
+                                Badge(
+                                    containerColor = Color.DarkOrange,
+                                    contentColor = Color.White
+                                ){
+                                    Text(text = favoriteViewModel.favoriteList.size.toString())
+                                }
+                            }
+                        }
+                    ){
+
+                    }
                     Icon(
                         Icons.Default.Favorite,
                         contentDescription = "Favorite",
@@ -127,12 +148,25 @@ fun MyBottonBar(
                         }
                     }, modifier = Modifier.align(Alignment.Center)
                 ){
-                    Icon(
-                        Icons.Default.ShoppingCart,
-                        contentDescription = "Cart",
-                        modifier = Modifier.size(26.dp),
-                        tint = if(selected == "Cart") Color.DarkOrange else Color.White
-                    )
+                    BadgedBox(
+                        badge = {
+                            if(addBoxViewModel.totalNumber.value > 0){
+                                Badge(
+                                    containerColor = Color.DarkOrange,
+                                    contentColor = Color.White
+                                ){
+                                    Text(text = addBoxViewModel.totalNumber.value.toString())
+                                }
+                            }
+                        }
+                    ){
+                        Icon(
+                            Icons.Default.ShoppingCart,
+                            contentDescription = "Cart",
+                            modifier = Modifier.size(26.dp),
+                            tint = if(selected == "Cart") Color.DarkOrange else Color.White
+                        )
+                    }
                 }
             }
             Box(modifier = Modifier.weight(1f)){

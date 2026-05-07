@@ -27,6 +27,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.ui.graphics.Color
 import com.example.applicationhome.R
+import com.example.applicationhome.ui.theme.BrandBlue
+import com.example.applicationhome.ui.theme.DarkOrange
+import com.example.applicationhome.ui.theme.Orange
 
 object FoodDataSource {
     private var pizzaimageList = mutableListOf<Int>(
@@ -134,7 +137,7 @@ object FoodDataSource {
 
     private val burgermenu = listOf(
         FoodItem(
-            6,
+            7,
             "Big Chicken Burger",
             burgerimageList,
             mapOf("Big" to 210.0),
@@ -145,7 +148,7 @@ object FoodDataSource {
             )
         ),
         FoodItem(
-            6,
+            8,
             "Small Chicken Burger",
             burgerimageList,
             mapOf("Small" to 140.0),
@@ -156,7 +159,7 @@ object FoodDataSource {
             )
         ),
         FoodItem(
-            6,
+            9,
             "Big Beef Burger",
             burgerimageList,
             mapOf("Big" to 240.0),
@@ -167,7 +170,7 @@ object FoodDataSource {
             )
         ),
         FoodItem(
-            6,
+            10,
             "Small Chicken Burger",
             burgerimageList,
             mapOf("Small" to 155.0),
@@ -334,46 +337,58 @@ object VarietiesMenu {
 object RestaurantsMenu {
     private val restaurants = listOf(
         Restaurants(
-            111,
+            501,
+            "Chicken",
             "KFC",
             R.drawable.kfc,
-            4.5,
-            Color.White
-        ),
-        Restaurants(
-            222,
-            "McDonald's",
-            R.drawable.mcdonalds,
+            R.drawable.chickenpng,
             4.5,
             Color.Red
         ),
         Restaurants(
-            333,
+            502,
+            "Burger",
+            "McDonald's",
+            R.drawable.mcdonalds,
+            R.drawable.burgerpng,
+            4.5,
+            Color.Orange
+        ),
+        Restaurants(
+            503,
+            "Chicken",
             "Bazooka",
             R.drawable.bazooka,
+            R.drawable.chickenpng,
             4.5,
-            Color.Black
+            Color.DarkOrange
         ),
         Restaurants(
-            444,
+            504,
+            "Burger",
             "Burger King",
             R.drawable.burgerking,
+            R.drawable.burgerpng,
             4.5,
-            Color.White
+            Color.Blue
         ),
         Restaurants(
-            555,
+            505,
+            "Pizza",
             "Pizza Hut",
             R.drawable.pizzahut,
+            R.drawable.pezzapng,
             4.5,
-            Color.White
+            Color.Red
         ),
         Restaurants(
-            666,
+            506,
+            "Sweet",
             "B.Laban",
             R.drawable.belaban,
+            R.drawable.belaban,
             4.5,
-            Color.White
+            Color.BrandBlue
         )
     )
     fun restaurantsMenu(): List<Restaurants>{
@@ -467,8 +482,14 @@ object Cart {
 
 object Favorite {
     var favoritelist = mutableStateListOf<Food>()
+    var favoriteRestaurantslist = mutableStateListOf<Restaurants>()
+
     fun favoriteList(): List<Food>{
         return favoritelist
+    }
+
+    fun favoriteRestaurantsList(): List<Restaurants>{
+        return favoriteRestaurantslist
     }
 }
 

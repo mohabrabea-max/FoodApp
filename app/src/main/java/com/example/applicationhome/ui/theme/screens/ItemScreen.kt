@@ -170,7 +170,7 @@ fun ItemScreen(
                                 ItemSize(viewModel)
                             }
                         }
-                        item{Spacer(modifier = Modifier.height(90.dp))}
+                        item{Spacer(modifier = Modifier.height(130.dp))}
                     }
                 }
                 Column(modifier = Modifier.align(Alignment.BottomCenter)){

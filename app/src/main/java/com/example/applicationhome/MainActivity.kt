@@ -14,6 +14,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.applicationhome.ui.theme.screens.FinalScreen
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
+import com.example.applicationhome.view.model.CategoriesBoxViewModel
 import com.example.applicationhome.view.model.DrawerViewModel
 import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
@@ -28,13 +29,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-            val viewModel: ItemScreenViewModel = viewModel()
+            val itemScreenViewModel: ItemScreenViewModel = viewModel()
             val viewModelForBottomBar : BottomBarViewModel = viewModel()
             val addBoxViewModel : AddBoxViewModel = viewModel()
             val userImageViewModel: UserImageViewModel = viewModel()
-            val favoriteState : FavoriteViewModel = viewModel()
+            val favoriteViewModel : FavoriteViewModel = viewModel()
             val drawerViewModel : DrawerViewModel = viewModel()
-            FinalScreen(scrollBehavior, drawerState, viewModel, viewModelForBottomBar, addBoxViewModel, userImageViewModel, favoriteState, drawerViewModel)
+            val categoriesBoxViewModel : CategoriesBoxViewModel = viewModel()
+            FinalScreen(scrollBehavior, drawerState, itemScreenViewModel, viewModelForBottomBar, addBoxViewModel, userImageViewModel, favoriteViewModel, drawerViewModel, categoriesBoxViewModel)
         }
     }
 }

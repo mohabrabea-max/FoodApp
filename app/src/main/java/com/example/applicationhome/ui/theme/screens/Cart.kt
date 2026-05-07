@@ -19,10 +19,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -38,7 +36,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -83,7 +80,7 @@ fun Cart(
     addBoxViewModel : AddBoxViewModel,
     favoriteState : FavoriteViewModel
 ){
-    var cart = remember{Cart.cartMap()}
+    var cart = Cart.cartMap()
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) {
         // ده بيمسح الأبلكيشن من الـ Background ويقفله تماماً
@@ -137,12 +134,11 @@ fun Cart(
         Box(modifier = Modifier.background(Color.White)){
             Box(modifier = Modifier.fillMaxSize()){
                 if(cart.isNotEmpty()){
-                    LazyVerticalGrid (
+                    LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        columns = GridCells.Fixed(2),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ){
-                        item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
+                        item{Spacer(modifier = Modifier.height(100.dp))}
                         items(cart.keys.toList(), key = { it.food.id.toString() + it.size}) { item ->
                             when (item.food) {
                                 is FoodItem -> {
@@ -155,6 +151,7 @@ fun Cart(
                                 }
                             }
                         }
+                        item{Spacer(modifier = Modifier.height(150.dp))}
                     }
                 }else{
                     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){

@@ -2,6 +2,7 @@ package com.example.applicationhome.ui.theme.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Notifications
@@ -43,6 +45,7 @@ import com.example.applicationhome.data.models.RestaurantsMenu
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.data.models.VarietiesMenu
 import com.example.applicationhome.ui.theme.LightBrownForBackground
+import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.AddBox
 import com.example.applicationhome.ui.theme.components.Favorite
 import com.example.applicationhome.ui.theme.components.ItemsBox
@@ -125,11 +128,10 @@ fun Menu(
                 item(span = { GridItemSpan(2) }){
                     Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
                         LazyRow(
-                            modifier = Modifier.padding(10.dp),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            horizontalArrangement = Arrangement.spacedBy(5.dp)
                         ){
                             items(restaurants){item ->
-                                RestaurantsBox(item)
+                                RestaurantsBox(item, "Pizza", favoriteState)
                             }
                         }
                     }
@@ -142,10 +144,11 @@ fun Menu(
                         null,
                         {
                             Favorite(
-                                modifier = Modifier.padding(10.dp).
+                                modifier = Modifier.
                                 clip(CircleShape).
+                                border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
                                 size(35.dp).
-                                background(Color.White.copy(alpha = 1f)),
+                                background(Color.VeryLightGray),
                                 food = item,
                                 favoriteState = favoriteState
                             )
@@ -161,6 +164,17 @@ fun Menu(
                         fontSize = 25.sp,
                     )
                 }
+                item(span = { GridItemSpan(2) }){
+                    Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        ){
+                            items(restaurants){item ->
+                                RestaurantsBox(item, "Chicken", favoriteState)
+                            }
+                        }
+                    }
+                }
                 items(chicken){ item ->
                     ItemsBox(
                         item,
@@ -169,10 +183,11 @@ fun Menu(
                         null,
                         {
                             Favorite(
-                                modifier = Modifier.padding(10.dp).
+                                modifier = Modifier.
                                 clip(CircleShape).
+                                border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
                                 size(35.dp).
-                                background(Color.White.copy(alpha = 1f)),
+                                background(Color.VeryLightGray),
                                 food = item,
                                 favoriteState = favoriteState
                             )
@@ -188,6 +203,17 @@ fun Menu(
                         fontSize = 25.sp,
                     )
                 }
+                item(span = { GridItemSpan(2) }){
+                    Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        ){
+                            items(restaurants){item ->
+                                RestaurantsBox(item, "Burger", favoriteState)
+                            }
+                        }
+                    }
+                }
                 items(burger){ item ->
                     ItemsBox(
                         item,
@@ -196,10 +222,11 @@ fun Menu(
                         null,
                         {
                             Favorite(
-                                modifier = Modifier.padding(10.dp).
+                                modifier = Modifier.
                                 clip(CircleShape).
+                                border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
                                 size(35.dp).
-                                background(Color.White.copy(alpha = 1f)),
+                                background(Color.VeryLightGray),
                                 food = item,
                                 favoriteState = favoriteState
                             )

@@ -20,7 +20,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShoppingBasket
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.data.models.CartKey
 import com.example.applicationhome.data.models.FoodItem
-import com.example.applicationhome.ui.theme.Orange
+import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.view.model.AddBoxViewModel
 import kotlinx.coroutines.delay
 
@@ -60,6 +60,7 @@ fun AddBox(
     food : FoodItem,
     ordernumber : AddBoxViewModel
 ){
+
     val context = LocalContext.current
     var id = food.id
     var selectedSize by remember { mutableStateOf(food.priceANDsize.keys.last()) }
@@ -80,21 +81,20 @@ fun AddBox(
             isExpanded = false
         }
     }
-
+    var cartColor = if (activid == false || isExpanded == false || count == 0) Color.VeryLightGray else Color.Red
     var targetWidth = if (activid == false || isExpanded == false || count == 0) 35.dp else 160.dp
     Box(
         modifier = modifier.
         animateContentSize().
-        padding(10.dp).
         height(35.dp).
         width(targetWidth).
         clip(CircleShape).
-        background(Color.Green).
+        background(cartColor).
         clickable {
             ordernumber.delete(food, selectedSize)
             Toast.makeText(context, "Removed From Cart", Toast.LENGTH_SHORT).show()
         }.
-        border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)),
+        border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)),
         contentAlignment = Alignment.Center
     ){
         if(count == 0) {
@@ -104,19 +104,18 @@ fun AddBox(
                 height(35.dp).
                 width(targetWidth).
                 clip(CircleShape).
-                background(color.copy(alpha = 1f)).
+                background(color).
                 clickable {
                     isExpanded = true
                     ordernumber.addBoxNumberPlus(food, selectedSize)
-                }.
-                border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)),
+                },
                 contentAlignment = Alignment.Center
             ){
                 Text(
                     text = "+",
                     fontSize = 20.sp,
                     style = MaterialTheme.typography.labelLarge,
-                    color = Color.Orange,
+                    color = Color.Black,
                     textAlign = TextAlign.Center
                 )
             }
@@ -127,7 +126,7 @@ fun AddBox(
                 height(35.dp).
                 width(targetWidth).
                 clip(CircleShape).
-                background(color.copy(alpha = 1f)).
+                background(color).
                 clickable {
                     isExpanded = true
                     if(count == 99){
@@ -135,15 +134,14 @@ fun AddBox(
                     }else{
                         ordernumber.addBoxNumberPlus(food, selectedSize)
                     }
-                }.
-                border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)),
+                },
                 contentAlignment = Alignment.Center
             ){
                 Text(
                     text = count.toString(),
                     fontSize = 20.sp,
                     style = MaterialTheme.typography.labelLarge,
-                    color = Color.Orange,
+                    color = Color.Black,
                     textAlign = TextAlign.Center
                 )
             }
@@ -151,8 +149,8 @@ fun AddBox(
             Row(verticalAlignment = Alignment.CenterVertically){
             Spacer(modifier = Modifier.width(5.dp))
                 Icon(
-                    Icons.Default.ShoppingBasket,
-                    contentDescription = "Cart", tint = Color.Black,
+                    Icons.Default.Delete,
+                    contentDescription = "Cart", tint = Color.White,
                     modifier = Modifier.weight(1f).padding(5.dp)
                 )
                 Box(
@@ -160,11 +158,10 @@ fun AddBox(
                     animateContentSize().
                     weight(3f).
                     clip(CircleShape).
-                    background(color.copy(alpha = 1f)).
+                    background(color).
                     clickable {
                         ordernumber.addBoxNumberPlus(food, selectedSize)
-                    }.
-                    border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)),
+                    },
                     contentAlignment = Alignment.Center
                 ){
                     Row(
@@ -186,11 +183,11 @@ fun AddBox(
                                 text = "+",
                                 fontSize = 20.sp,
                                 style = MaterialTheme.typography.labelLarge,
-                                color = Color.Orange,
+                                color = Color.Black,
                                 textAlign = TextAlign.Center
                             )
                         }
-                        VerticalDivider(color = Color.Orange, modifier = Modifier.height(20.dp))
+                        VerticalDivider(color = Color.Black, modifier = Modifier.height(20.dp))
                         Box(
                             modifier = Modifier.
                             weight(1f).
@@ -233,11 +230,11 @@ fun AddBox(
                                 textStyle = TextStyle(
                                     textAlign = TextAlign.Center,
                                     fontSize = 20.sp,
-                                    color = Color.Orange
+                                    color = Color.Black
                                 )
                             )
                         }
-                        VerticalDivider(color = Color.Orange, modifier = Modifier.height(20.dp))
+                        VerticalDivider(color = Color.Black, modifier = Modifier.height(20.dp))
                         Box(
                             modifier = Modifier.
                             weight(1f).
@@ -252,7 +249,7 @@ fun AddBox(
                                 text = "-",
                                 fontSize = 20.sp,
                                 style = MaterialTheme.typography.labelLarge,
-                                color = Color.Orange,
+                                color = Color.Black,
                                 textAlign = TextAlign.Center
                             )
                         }
