@@ -43,7 +43,6 @@ import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.FoodDataSource
 import com.example.applicationhome.data.models.RestaurantsMenu
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.data.models.VarietiesMenu
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.AddBox
@@ -52,6 +51,7 @@ import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.RestaurantsBox
 import com.example.applicationhome.view.model.AddBoxViewModel
+import com.example.applicationhome.view.model.CategoriesBoxViewModel
 import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
@@ -62,13 +62,12 @@ fun Menu(
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel,
     addBoxViewModel: AddBoxViewModel,
-    favoriteState : FavoriteViewModel
+    favoriteState : FavoriteViewModel,
+    categoriesBoxViewModel: CategoriesBoxViewModel
 ){
-    val categories = VarietiesMenu.categoriesList()
+    val typ = categoriesBoxViewModel.typ
     val restaurants = RestaurantsMenu.restaurantsMenu()
-    val pezza = FoodDataSource.pizzaMenu()
-    val chicken = FoodDataSource.chickenMenu()
-    val burger = FoodDataSource.burgerMenu()
+    val menu = FoodDataSource.allMenu()
     Scaffold(
         modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),
         topBar = {
@@ -119,7 +118,7 @@ fun Menu(
             ){
                 item(span = { GridItemSpan(2) }){
                     Text(
-                        text = "Pizza",
+                        text = typ + " :",
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.Black,
                         fontSize = 25.sp,
@@ -131,108 +130,33 @@ fun Menu(
                             horizontalArrangement = Arrangement.spacedBy(5.dp)
                         ){
                             items(restaurants){item ->
-                                RestaurantsBox(item, "Pizza", favoriteState)
+                                if(item.typ.contains(typ) || typ == "All"){
+                                    RestaurantsBox(item, favoriteState)
+                                }
                             }
                         }
                     }
                 }
-                items(pezza){ item ->
-                    ItemsBox(
-                        item,
-                        navigationController,
-                        viewModel,
-                        null,
-                        {
-                            Favorite(
-                                modifier = Modifier.
-                                clip(CircleShape).
-                                border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
-                                size(35.dp).
-                                background(Color.VeryLightGray),
-                                food = item,
-                                favoriteState = favoriteState
-                            )
-                            AddBox(color = Color.White, food = item, ordernumber = addBoxViewModel)
-                        }
-                    )
-                }
-                item(span = { GridItemSpan(2) }){
-                    Text(
-                        text = "Chicken",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.Black,
-                        fontSize = 25.sp,
-                    )
-                }
-                item(span = { GridItemSpan(2) }){
-                    Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
-                        LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(5.dp)
-                        ){
-                            items(restaurants){item ->
-                                RestaurantsBox(item, "Chicken", favoriteState)
+                items(menu){ item ->
+                    if(item.typ == typ || typ == "All"){
+                        ItemsBox(
+                            item,
+                            navigationController,
+                            viewModel,
+                            {
+                                Favorite(
+                                    modifier = Modifier.
+                                    clip(CircleShape).
+                                    border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
+                                    size(35.dp).
+                                    background(Color.VeryLightGray),
+                                    food = item,
+                                    favoriteState = favoriteState
+                                )
+                                AddBox(color = Color.White, food = item, ordernumber = addBoxViewModel)
                             }
-                        }
+                        )
                     }
-                }
-                items(chicken){ item ->
-                    ItemsBox(
-                        item,
-                        navigationController,
-                        viewModel,
-                        null,
-                        {
-                            Favorite(
-                                modifier = Modifier.
-                                clip(CircleShape).
-                                border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
-                                size(35.dp).
-                                background(Color.VeryLightGray),
-                                food = item,
-                                favoriteState = favoriteState
-                            )
-                            AddBox(color = Color.White, food = item, ordernumber = addBoxViewModel)
-                        }
-                    )
-                }
-                item(span = { GridItemSpan(2) }){
-                    Text(
-                        text = "Burger",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.Black,
-                        fontSize = 25.sp,
-                    )
-                }
-                item(span = { GridItemSpan(2) }){
-                    Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
-                        LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(5.dp)
-                        ){
-                            items(restaurants){item ->
-                                RestaurantsBox(item, "Burger", favoriteState)
-                            }
-                        }
-                    }
-                }
-                items(burger){ item ->
-                    ItemsBox(
-                        item,
-                        navigationController,
-                        viewModel,
-                        null,
-                        {
-                            Favorite(
-                                modifier = Modifier.
-                                clip(CircleShape).
-                                border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
-                                size(35.dp).
-                                background(Color.VeryLightGray),
-                                food = item,
-                                favoriteState = favoriteState
-                            )
-                            AddBox(color = Color.White, food = item, ordernumber = addBoxViewModel)
-                        }
-                    )
                 }
                 item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(80.dp))}
             }

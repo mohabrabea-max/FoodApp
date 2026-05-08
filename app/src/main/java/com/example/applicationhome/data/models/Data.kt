@@ -6,17 +6,20 @@ import androidx.compose.ui.graphics.vector.ImageVector
 sealed interface Food{val id: Int}
     data class FoodItem(
         override val id : Int,
+        val typ : String,
         val name : String,
         val image : List<Int>,
         val priceANDsize : Map<String, Double>,
-        val description: List<String>
+        val description: List<String>,
+        val review : Double
     ): Food
 
     data class Snake(
         override val id : Int,
         val name : String,
         var image : Int,
-        val priceANDsize : Map<String, Double>
+        val priceANDsize : Map<String, Double>,
+        val review : Double
     ): Food
 
 data class CategoriesImage(
@@ -34,7 +37,7 @@ data class Offers(
 
 data class Restaurants(
     val id : Int,
-    val typ : String,
+    val typ : List<String>,
     val name : String,
     val image : Int,
     val image2 : Int,

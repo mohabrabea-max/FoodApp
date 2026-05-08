@@ -45,7 +45,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.Cart
 import com.example.applicationhome.data.models.CartKey
+import com.example.applicationhome.data.models.Food
 import com.example.applicationhome.data.models.FoodItem
+import com.example.applicationhome.data.models.Snake
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.view.model.AddBoxViewModel
@@ -54,7 +56,7 @@ import com.example.applicationhome.view.model.ItemScreenViewModel
 
 @Composable
 fun CartBox(
-    item: FoodItem,
+    item: Food,
     size : String,
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel,
@@ -65,6 +67,22 @@ fun CartBox(
     var count = ordernumber.cartMap[cartkey] ?: 0
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    val image = when(item){
+        is FoodItem -> item.image.first()
+        is Snake -> item.image
+    }
+    val name : String
+    val price : String
+    when(item){
+        is FoodItem -> {
+            name = item.name
+            price = item.priceANDsize[size].toString() + " L.E"
+        }
+        is Snake -> {
+            name = item.name
+            price = item.priceANDsize[size].toString() + " L.E"
+        }
+    }
 
     Box(
         modifier = Modifier.padding(start = 10.dp, end = 10.dp).
@@ -80,7 +98,7 @@ fun CartBox(
                 Row(modifier = Modifier.weight(3f), verticalAlignment = Alignment.CenterVertically){
                     Image(
                         modifier = Modifier.fillMaxHeight().weight(1f).padding(10.dp),
-                        painter = painterResource(id = item.image.first()),
+                        painter = painterResource(id = image),
                         contentDescription = null,
                     )
                     Column(
@@ -89,7 +107,7 @@ fun CartBox(
                         verticalArrangement = Arrangement.Center
                     ){
                         Text(
-                            text = item.name,
+                            text = name,
                             fontSize = 18.sp,
                             color = Color.Black,
                             style = MaterialTheme.typography.labelLarge,
@@ -97,7 +115,7 @@ fun CartBox(
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = item.priceANDsize[size].toString() + " L.E",
+                            text = price,
                             fontSize = 15.sp,
                             color = Color.Red,
                             style = MaterialTheme.typography.labelLarge,

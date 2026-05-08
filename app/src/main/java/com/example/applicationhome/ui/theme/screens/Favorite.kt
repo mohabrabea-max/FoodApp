@@ -3,7 +3,6 @@ package com.example.applicationhome.ui.theme.screens
 import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -55,10 +54,12 @@ import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.data.models.Snake
 import com.example.applicationhome.ui.theme.DarkOrange
+import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.AddBox
 import com.example.applicationhome.ui.theme.components.Favorite
 import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyTopBar
+import com.example.applicationhome.ui.theme.components.SnaksBox
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.FavoriteViewModel
@@ -124,7 +125,6 @@ fun Favorite(
                                         item,
                                         navigationController,
                                         viewModel,
-                                        null,
                                         {
                                             Favorite(
                                                 modifier = Modifier.
@@ -136,14 +136,26 @@ fun Favorite(
                                             )
                                             AddBox(color = Color.White, food = item, ordernumber = addBoxViewModel)
                                         }
-                                        )
+                                    )
                                 }
                                 is Snake -> {
-                                    // هنا كوتلن فهم إن العنصر Snake
-                                    // تقدر تستخدم: item.name, item.image (الـ Int)
-                                    Text(text = "سناك: ${item.name}")
-                                    // هنا الـ image نوعها Int (Resource ID)
-                                    Image(painter = painterResource(id = item.image), contentDescription = null)
+                                    SnaksBox(
+                                        item,
+                                        navigationController,
+                                        viewModel,
+                                        {
+                                            Favorite(
+                                                modifier = Modifier.
+                                                clip(CircleShape).
+                                                border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
+                                                size(35.dp).
+                                                background(Color.VeryLightGray),
+                                                food = item,
+                                                favoriteState = favoriteState
+                                            )
+                                            AddBox(color = Color.VeryLightGray, food = item, ordernumber = addBoxViewModel)
+                                        }
+                                    )
                                 }
                             }
                         }

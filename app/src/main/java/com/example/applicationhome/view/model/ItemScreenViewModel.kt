@@ -5,13 +5,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.applicationhome.data.models.FoodItem
+import com.example.applicationhome.data.models.Snake
 
 class ItemScreenViewModel : ViewModel() {
+    var selectedSnak by mutableStateOf<Snake?>(null)
+    var selectedSnackSize by mutableStateOf("Small")
     var selectedItem by mutableStateOf<FoodItem?>(null)
-    var selectedSize = mutableStateOf("Small")
+    var selectedSize by mutableStateOf("Small")
 
     fun selectItem(item: FoodItem, size : String) {
         selectedItem = item
-        selectedSize.value = size
+        selectedSize = size
+    }
+    fun selectSnak(item: Snake, size : String){
+        selectedSnak = item
+        selectedSnackSize = size
     }
 }

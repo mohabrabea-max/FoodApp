@@ -3,7 +3,6 @@ package com.example.applicationhome.ui.theme.screens
 import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -145,9 +144,7 @@ fun Cart(
                                     CartBox(item.food, item.size, navigationController, viewModel, addBoxViewModel, favoriteState)
                                 }
                                 is Snake -> {
-                                    Text(text = item.food.name)
-                                    // هنا الـ image نوعها Int (Resource ID)
-                                    Image(painter = painterResource(id = item.food.image), contentDescription = null, modifier = Modifier.fillMaxSize())
+                                    CartBox(item.food, item.size, navigationController, viewModel, addBoxViewModel, favoriteState)
                                 }
                             }
                         }

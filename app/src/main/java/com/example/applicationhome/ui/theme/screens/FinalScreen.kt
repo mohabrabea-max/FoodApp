@@ -205,7 +205,7 @@ fun FinalScreen(
                             is Screens.Profile -> Profile(drawerState, coroutineScope, navigationController, userImageViewModel)
                             is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel)
                             is Screens.Search -> Search()
-                            is Screens.Menu -> Menu(navigationController, viewModel, addBoxViewModel, favoriteViewModel)
+                            is Screens.Menu -> Menu(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel)
                             is Screens.Restaurants -> Restaurants(drawerState, coroutineScope, navigationController, favoriteViewModel)
                             is Screens.Varieties -> Varieties(drawerState, coroutineScope, navigationController, favoriteViewModel)
                             is Screens.ItemScreen -> ItemScreen(navigationController, viewModel, addBoxViewModel, favoriteViewModel)

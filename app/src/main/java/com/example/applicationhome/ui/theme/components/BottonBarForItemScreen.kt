@@ -2,13 +2,13 @@ package com.example.applicationhome.ui.theme.components
 
 import android.annotation.SuppressLint
 import android.widget.Toast
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,18 +17,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,6 +50,8 @@ import com.example.applicationhome.data.models.CartKey
 import com.example.applicationhome.data.models.Food
 import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Snake
+import com.example.applicationhome.ui.theme.DarkOrange
+import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
@@ -78,38 +81,37 @@ fun BottonBarForItemScreen(
     var color : Color
     var fontColor : Color
     if(count == 0){
-        color = Color.LightGray
+        color = Color.VeryLightGray
         fontColor = Color.Black
     }else{
-        color = Color.Blue
+        color = Color.Red
         fontColor = Color.White
     }
-
-    Box(
+    Column(
         modifier = Modifier.fillMaxWidth().
-        height(100.dp).
-        pointerInput(Unit) { detectTapGestures { } },
-        contentAlignment = Alignment.Center
+        height(75.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Bottom
     ){
         if(cart.containsKey(key)){
             Box(
-                modifier = Modifier.width(200.dp).
-                height(70.dp).
-                clip(RoundedCornerShape(50.dp)).
-                background(Color.Yellow).align(Alignment.TopCenter).
-                border(width = 0.3.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(50.dp)).
+                modifier = Modifier.width(170.dp).
+                height(25.dp).
+                clip(RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp)).
+                background(Color.Yellow).
+                border(width = 0.3.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp)).
                 pointerInput(Unit) {
                     detectTapGestures { }
                 }
             ){
                 Text(
                     text = "${cart[key]} added in your cart",
-                    modifier = Modifier.padding(5.dp).align(Alignment.TopCenter)
+                    modifier = Modifier.padding(top = 5.dp, start = 5.dp, end = 5.dp).align(Alignment.TopCenter)
                 )
             }
         }
         Box(
-            modifier = Modifier.width(220.dp).
+            modifier = Modifier.width(200.dp).
             height(50.dp).
             clip(RoundedCornerShape(50.dp)).
             background(color).
@@ -127,8 +129,8 @@ fun BottonBarForItemScreen(
                     modifier = Modifier.weight(2.5f).
                     height(50.dp).
                     clip(RoundedCornerShape(50.dp)).
-                    background(Color.White).
-                    border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(50.dp))
+                    background(Color(0xFFFFE0B2)).
+                    border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = CircleShape).padding(4.dp)
                 ){
                     Row(
                         modifier = Modifier.
@@ -136,21 +138,18 @@ fun BottonBarForItemScreen(
                         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
                     ){
                         Box(
-                            modifier = Modifier.
-                            weight(1f).
-                            fillMaxHeight().
-                            clickable {ordernumber.addBoxNumberPlus(food, size)},
+                            modifier = Modifier.size(42.dp).clip(CircleShape).background(Color.VeryLightGray),
                             contentAlignment = Alignment.Center
                         ){
-                            Text(
-                                text = "+",
-                                fontSize = 20.sp,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = Color.Black,
-                                textAlign = TextAlign.Center
-                            )
+                            IconButton(onClick = {ordernumber.addBoxNumberMinus(food, size)}, modifier = Modifier.fillMaxSize()){
+                                Icon(
+                                    Icons.Default.Remove,
+                                    contentDescription = null,
+                                    tint = Color.DarkOrange,
+                                    modifier = Modifier.fillMaxSize().padding(5.dp)
+                                )
+                            }
                         }
-                        VerticalDivider(color = Color.Black, modifier = Modifier.height(20.dp))
                         Box(
                             modifier = Modifier.
                             weight(1f).
@@ -186,22 +185,18 @@ fun BottonBarForItemScreen(
                                 )
                             )
                         }
-                        VerticalDivider(color = Color.Black, modifier = Modifier.height(20.dp))
                         Box(
-                            modifier = Modifier.
-                            weight(1f).
-                            fillMaxHeight().
-                            animateContentSize().
-                            clickable {ordernumber.addBoxNumberMinus(food, size)},
+                            modifier = Modifier.size(42.dp).clip(CircleShape).background(Color.DarkOrange),
                             contentAlignment = Alignment.Center
                         ){
-                            Text(
-                                text = "-",
-                                fontSize = 20.sp,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = Color.Black,
-                                textAlign = TextAlign.Center
-                            )
+                            IconButton(onClick = {ordernumber.addBoxNumberPlus(food, size)}, modifier = Modifier.fillMaxSize()){
+                                Icon(
+                                    Icons.Default.Add,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.fillMaxSize().padding(5.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -221,5 +216,4 @@ fun BottonBarForItemScreen(
             }
         }
     }
-
 }

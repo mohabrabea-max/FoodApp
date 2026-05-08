@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -20,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +31,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
+import com.example.applicationhome.data.models.Snake
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
 
@@ -38,10 +41,8 @@ fun ItemsBox(
     item: FoodItem,
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel = viewModel(),
-    size : String?,
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
-
     Card(
         modifier = Modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
         background(Color.White).
@@ -81,6 +82,60 @@ fun ItemsBox(
                     fontSize = 11.sp,
                     color = Color.Gray,
                     style = MaterialTheme.typography.titleLarge
+                )
+                Text(
+                    text = item.priceANDsize.values.last().toString() + " E.G",
+                    fontSize = 16.sp,
+                    color = Color.Black,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+
+}
+@Composable
+fun SnaksBox(
+    item: Snake,
+    navigationController : NavHostController,
+    viewModel: ItemScreenViewModel = viewModel(),
+    actions : @Composable ColumnScope.() -> Unit = {}
+){
+    Card(
+        modifier = Modifier.size(200.dp).padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
+        background(Color.White).
+        clickable{
+            viewModel.run { selectSnak(item, item.priceANDsize.keys.last()) }
+            navigationController.navigate(Screens.ItemScreen.screen)
+        }
+    ){
+        Column(modifier = Modifier.fillMaxSize().background(Color.White)){
+            Box(modifier = Modifier.fillMaxWidth().weight(2f)){
+                Image(
+                    modifier = Modifier.fillMaxSize(),
+                    painter = painterResource(id = item.image),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop
+                )
+                Column(
+                    modifier = Modifier.fillMaxSize().
+                    padding(end = 10.dp, top = 10.dp, bottom = 5.dp),
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    content = actions
+                )
+            }
+            Column(
+                modifier = Modifier.fillMaxWidth().weight(1f).padding(start = 15.dp, end = 10.dp, top = 5.dp, bottom = 10.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ){
+                Text(
+                    text = item.name,
+                    fontSize = 14.sp,
+                    color = Color.Black,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = item.priceANDsize.values.last().toString() + " E.G",

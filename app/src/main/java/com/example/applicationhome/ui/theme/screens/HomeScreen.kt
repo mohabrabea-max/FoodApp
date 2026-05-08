@@ -57,10 +57,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
-import com.example.applicationhome.data.models.FoodDataSource
 import com.example.applicationhome.data.models.OffersData
-import com.example.applicationhome.data.models.RestaurantsMenu
 import com.example.applicationhome.data.models.Screens
+import com.example.applicationhome.data.models.Snakes
 import com.example.applicationhome.data.models.VarietiesMenu
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
@@ -71,6 +70,7 @@ import com.example.applicationhome.ui.theme.components.Favorite
 import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.RestaurantsBox
+import com.example.applicationhome.ui.theme.components.SnaksBox
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.CategoriesBoxViewModel
 import com.example.applicationhome.view.model.FavoriteViewModel
@@ -90,9 +90,10 @@ fun HomeScreen(
     favoriteState : FavoriteViewModel,
     categoriesBoxViewModel : CategoriesBoxViewModel
 ){
-    val restaurants = RestaurantsMenu.restaurantsMenu()
+    val snaks = Snakes.snakes()
+    val menu = categoriesBoxViewModel.filterMenu
+    val restaurants = categoriesBoxViewModel.restaurants
     val offers = OffersData.offersMenu()
-    val menu = FoodDataSource.allMenu()
     val categories = VarietiesMenu.categoriesList()
     val pagerState = rememberPagerState(pageCount = {offers.size})
     val scrollState = rememberLazyGridState()
@@ -158,10 +159,11 @@ fun HomeScreen(
                     item(span = { GridItemSpan(2) }){
                         Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
                             LazyRow(
+                                verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ){
                                 item { Spacer(modifier = Modifier.width(4.dp)) }
-                                items(categories) { category -> CategoriesBox(category, navigationController, categoriesBoxViewModel) }
+                                items(categories) { category -> CategoriesBox(category, categoriesBoxViewModel) }
                                 item { Spacer(modifier = Modifier.width(4.dp)) }
                             }
                         }
@@ -224,13 +226,68 @@ fun HomeScreen(
                         }
                     }
                     item(span = { GridItemSpan(2) }){
-                        Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
-                            LazyRow(
-                                horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        ){
+                            items(restaurants){item ->
+                                RestaurantsBox(item, favoriteState)
+                            }
+                        }
+                    }
+
+                    item(span = { GridItemSpan(2) }){
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Divider(color = Color.LightOrange.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(start = 20.dp, end = 20.dp))
+                        Spacer(modifier = Modifier.height(20.dp))
+                    }
+                    item(span = { GridItemSpan(2) }) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Snacks :",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = Color.Black,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(start = 10.dp)
+                            )
+                            TextButton(
+                                onClick = {navigationController.navigate(Screens.Menu.screen)},
+                                contentPadding = PaddingValues(end = 10.dp)
                             ){
-                                items(restaurants){item ->
-                                    RestaurantsBox(item, "All", favoriteState)
-                                }
+                                Text(
+                                    text = "See all",
+                                    style = MaterialTheme.typography.titleLarge,
+                                    color = Color.DarkOrange,
+                                    fontSize = 13.sp
+                                )
+                                Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, tint = Color.DarkOrange)
+                            }
+                        }
+                    }
+                    item(span = { GridItemSpan(2) }){
+                        LazyRow(horizontalArrangement = Arrangement.spacedBy(5.dp)){
+                            items(snaks){ item ->
+                                SnaksBox(
+                                    item,
+                                    navigationController,
+                                    viewModel,
+                                    {
+                                        Favorite(
+                                            modifier = Modifier.
+                                            clip(CircleShape).
+                                            border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
+                                            size(35.dp).
+                                            background(Color.VeryLightGray),
+                                            food = item,
+                                            favoriteState = favoriteState
+                                        )
+                                        AddBox(color = Color.VeryLightGray, food = item, ordernumber = addBoxViewModel)
+                                    }
+                                )
                             }
                         }
                     }
@@ -245,7 +302,6 @@ fun HomeScreen(
                             item,
                             navigationController,
                             viewModel,
-                            null,
                             {
                                 Favorite(
                                     modifier = Modifier.
@@ -256,7 +312,7 @@ fun HomeScreen(
                                     food = item,
                                     favoriteState = favoriteState
                                 )
-                            AddBox(color = Color.VeryLightGray, food = item, ordernumber = addBoxViewModel)
+                                AddBox(color = Color.VeryLightGray, food = item, ordernumber = addBoxViewModel)
                             }
                         )
                     }

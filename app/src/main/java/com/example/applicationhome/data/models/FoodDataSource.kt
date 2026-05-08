@@ -49,9 +49,10 @@ object FoodDataSource {
     )
 
 
-    private val pizzamenu = listOf(
+    private val foodmenu = listOf(
         FoodItem(
             1,
+            "Pizza",
             "Peprony Pizza",
             pizzaimageList,
             mapOf(
@@ -63,10 +64,12 @@ object FoodDataSource {
                 "Big Fries",
                 "Big Coleslaw",
                 "Mozzarella Sticks6"
-            )
+            ),
+            4.9
         ),
         FoodItem(
             2,
+            "Pizza",
             "Chicken Pizza",
             pizzaimageList,
             mapOf(
@@ -78,10 +81,12 @@ object FoodDataSource {
                 "Medium Fries",
                 "Medium Coleslaw",
                 "Mozzarella Sticks4"
-            )
+            ),
+            4.5
         ),
         FoodItem(
             3,
+            "Pizza",
             "Beef Pizza",
             pizzaimageList,
             mapOf(
@@ -93,14 +98,12 @@ object FoodDataSource {
                 "Small Fries",
                 "Small Coleslaw",
                 "Mozzarella Sticks2"
-            )
+            ),
+            4.7
         ),
-    )
-
-
-    private val chickenmenu = listOf(
         FoodItem(
             4,
+            "Chicken",
             "10 Pieces Of Chicken",
             chickenimageList,
             mapOf("10 Pieces" to 380.0),
@@ -108,10 +111,12 @@ object FoodDataSource {
                 "Big Fries",
                 "Big Coleslaw",
                 "Mozzarella Sticks6"
-            )
+            ),
+            4.5
         ),
         FoodItem(
             5,
+            "Chicken",
             "5 Pieces Of Chicken",
             chickenimageList,
             mapOf("5 Pieces" to 210.0),
@@ -119,10 +124,12 @@ object FoodDataSource {
                 "Medium Fries",
                 "Medium Coleslaw",
                 "Mozzarella Sticks4"
-            )
+            ),
+            4.2
         ),
         FoodItem(
             6,
+            "Chicken",
             "3 Pieces Of Chicken",
             chickenimageList,
             mapOf("3 Pieces" to 130.0),
@@ -130,14 +137,12 @@ object FoodDataSource {
                 "Small Fries",
                 "Small Coleslaw",
                 "Mozzarella Sticks2"
-            )
-        )
-    )
-
-
-    private val burgermenu = listOf(
+            ),
+            5.0
+        ),
         FoodItem(
             7,
+            "Burger",
             "Big Chicken Burger",
             burgerimageList,
             mapOf("Big" to 210.0),
@@ -145,10 +150,12 @@ object FoodDataSource {
                 "Small Fries",
                 "Small Coleslaw",
                 "Mozzarella Sticks2"
-            )
+            ),
+            4.5
         ),
         FoodItem(
             8,
+            "Burger",
             "Small Chicken Burger",
             burgerimageList,
             mapOf("Small" to 140.0),
@@ -156,10 +163,12 @@ object FoodDataSource {
                 "Small Fries",
                 "Small Coleslaw",
                 "Mozzarella Sticks2"
-            )
+            ),
+            3.5
         ),
         FoodItem(
             9,
+            "Burger",
             "Big Beef Burger",
             burgerimageList,
             mapOf("Big" to 240.0),
@@ -167,10 +176,12 @@ object FoodDataSource {
                 "Small Fries",
                 "Small Coleslaw",
                 "Mozzarella Sticks2"
-            )
+            ),
+            4.8
         ),
         FoodItem(
             10,
+            "Burger",
             "Small Chicken Burger",
             burgerimageList,
             mapOf("Small" to 155.0),
@@ -178,20 +189,21 @@ object FoodDataSource {
                 "Small Fries",
                 "Small Coleslaw",
                 "Mozzarella Sticks2"
-            )
-        ),
+            ),
+            4.1
+        )
+    )
+
+    private val typsList = listOf(
+        "Pizza",
+        "Chicken",
+        "Burger"
     )
     fun allMenu(): List<FoodItem>{
-        return pizzamenu + chickenmenu + burgermenu
+        return foodmenu
     }
-    fun pizzaMenu(): List<FoodItem>{
-        return pizzamenu
-    }
-    fun chickenMenu(): List<FoodItem>{
-        return chickenmenu
-    }
-    fun burgerMenu(): List<FoodItem>{
-        return burgermenu
+    fun typslist(): List<String>{
+        return typsList
     }
 }
 
@@ -205,7 +217,8 @@ object Snakes {
                 "Big" to 50.0,
                 "Medium" to 40.0,
                 "Small" to 30.0
-            )
+            ),
+            4.1
         ),
         Snake(
             13,
@@ -215,7 +228,8 @@ object Snakes {
                 "Big" to 60.0,
                 "Medium" to 45.0,
                 "Small" to 30.0
-            )
+            ),
+            4.1
         ),
         Snake(
             14,
@@ -225,7 +239,8 @@ object Snakes {
                 "6 Pieces" to 70.0,
                 "4 Pieces" to 50.0,
                 "2 Pieces" to 30.0
-            )
+            ),
+            4.1
         )
     )
     private val snaksForItems = mapOf<String, Snake>(
@@ -233,46 +248,55 @@ object Snakes {
             51,
             "Frinch Fries",
             R.drawable.frenchfries,
-            mapOf("Big" to 50.0)),
+            mapOf("Big" to 50.0),
+            4.1),
         "Medium Fries" to Snake(
             52, "Frinch Fries",
             R.drawable.frenchfries,
-            mapOf("Medium" to 40.0)),
+            mapOf("Medium" to 40.0),
+            4.1),
         "Small Fries" to Snake(
             53,
             "Frinch Fries",
             R.drawable.frenchfries,
-            mapOf("Small" to 30.0)),
+            mapOf("Small" to 30.0),
+            4.1),
         "Big Coleslaw" to Snake(
             54,
             "Coleslaw",
             R.drawable.coleslaw,
-            mapOf("Big" to 60.0)),
+            mapOf("Big" to 60.0),
+            4.8),
         "Medium Coleslaw" to Snake(
             55,
             "Coleslaw",
             R.drawable.coleslaw,
-            mapOf("Medium" to 45.0)),
+            mapOf("Medium" to 45.0),
+            4.3),
         "Small Coleslaw" to Snake(
             56,
             "Coleslaw",
             R.drawable.coleslaw,
-            mapOf("Small" to 30.0)),
+            mapOf("Small" to 30.0),
+            4.4),
         "Mozzarella Sticks6" to Snake(
             57,
             "Mozzarella Sticks",
             R.drawable.mozzarellasticks,
-            mapOf("6 Pieces" to 70.0)),
+            mapOf("6 Pieces" to 70.0),
+            5.0),
         "Mozzarella Sticks4" to Snake(
             58,
             "Mozzarella Sticks",
             R.drawable.mozzarellasticks,
-            mapOf("4 Pieces" to 50.0)),
+            mapOf("4 Pieces" to 50.0),
+            4.5),
         "Mozzarella Sticks2" to Snake(
             59,
             "Mozzarella Sticks",
             R.drawable.mozzarellasticks,
-            mapOf("2 Pieces" to 30.0))
+            mapOf("2 Pieces" to 30.0),
+            4.1)
 
 
     )
@@ -338,7 +362,7 @@ object RestaurantsMenu {
     private val restaurants = listOf(
         Restaurants(
             501,
-            "Chicken",
+            listOf("Chicken", "Burger"),
             "KFC",
             R.drawable.kfc,
             R.drawable.chickenpng,
@@ -347,7 +371,7 @@ object RestaurantsMenu {
         ),
         Restaurants(
             502,
-            "Burger",
+            listOf("Burger"),
             "McDonald's",
             R.drawable.mcdonalds,
             R.drawable.burgerpng,
@@ -356,7 +380,7 @@ object RestaurantsMenu {
         ),
         Restaurants(
             503,
-            "Chicken",
+            listOf("Chicken", "Burger"),
             "Bazooka",
             R.drawable.bazooka,
             R.drawable.chickenpng,
@@ -365,7 +389,7 @@ object RestaurantsMenu {
         ),
         Restaurants(
             504,
-            "Burger",
+            listOf("Burger"),
             "Burger King",
             R.drawable.burgerking,
             R.drawable.burgerpng,
@@ -374,7 +398,7 @@ object RestaurantsMenu {
         ),
         Restaurants(
             505,
-            "Pizza",
+            listOf("Pizza"),
             "Pizza Hut",
             R.drawable.pizzahut,
             R.drawable.pezzapng,
@@ -383,7 +407,7 @@ object RestaurantsMenu {
         ),
         Restaurants(
             506,
-            "Sweet",
+            listOf("Sweet"),
             "B.Laban",
             R.drawable.belaban,
             R.drawable.belaban,

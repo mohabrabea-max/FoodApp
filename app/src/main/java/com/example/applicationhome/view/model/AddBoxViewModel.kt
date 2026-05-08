@@ -9,6 +9,7 @@ import com.example.applicationhome.data.models.Cart
 import com.example.applicationhome.data.models.CartKey
 import com.example.applicationhome.data.models.Food
 import com.example.applicationhome.data.models.FoodItem
+import com.example.applicationhome.data.models.Snake
 
 class AddBoxViewModel : ViewModel(){
     var activId by mutableStateOf<Int?>(null)
@@ -24,10 +25,17 @@ class AddBoxViewModel : ViewModel(){
         for ((key, value) in cartMap) {
             val food = key.food
             val size = key.size
-            if (food is FoodItem) {
-                totalNumber.value += value
-                val priceForSize = food.priceANDsize[size] ?: 0.0
-                totalPrice.value += priceForSize * value
+            when(food){
+                is FoodItem -> {
+                    totalNumber.value += value
+                    val priceForSize = food.priceANDsize[size] ?: 0.0
+                    totalPrice.value += priceForSize * value
+                }
+                is Snake -> {
+                    totalNumber.value += value
+                    val priceForSize = food.priceANDsize[size] ?: 0.0
+                    totalPrice.value += priceForSize * value
+                }
             }
         }
     }

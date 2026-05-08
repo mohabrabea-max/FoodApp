@@ -79,7 +79,7 @@ fun MyBottonBar(
                                 restoreState = true
                             }
                         }
-                    }, modifier = Modifier.align(Alignment.Center)
+                    }, modifier = Modifier.fillMaxSize().align(Alignment.Center)
                 ){
                     Icon(
                         Icons.Default.Home,
@@ -105,28 +105,27 @@ fun MyBottonBar(
                                 restoreState = true
                             }
                         }
-                    }, modifier = Modifier.align(Alignment.Center)
+                    }, modifier = Modifier.fillMaxSize().align(Alignment.Center)
                 ){
                     BadgedBox(
                         badge = {
-                            if(favoriteViewModel.favoriteList.size > 0){
+                            if((favoriteViewModel.favoriteList.size + favoriteViewModel.favoriterestaurantsList.size) > 0){
                                 Badge(
                                     containerColor = Color.DarkOrange,
                                     contentColor = Color.White
                                 ){
-                                    Text(text = favoriteViewModel.favoriteList.size.toString())
+                                    Text(text = (favoriteViewModel.favoriteList.size + favoriteViewModel.favoriterestaurantsList.size).toString())
                                 }
                             }
                         }
                     ){
-
+                        Icon(
+                            Icons.Default.Favorite,
+                            contentDescription = "Favorite",
+                            modifier = Modifier.size(26.dp),
+                            tint = if(selected == "Favorite") Color.DarkOrange else Color.White
+                        )
                     }
-                    Icon(
-                        Icons.Default.Favorite,
-                        contentDescription = "Favorite",
-                        modifier = Modifier.size(26.dp),
-                        tint = if(selected == "Favorite") Color.DarkOrange else Color.White
-                    )
                 }
             }
             Box(modifier = Modifier.weight(1f)){
@@ -146,7 +145,7 @@ fun MyBottonBar(
                                 restoreState = true
                             }
                         }
-                    }, modifier = Modifier.align(Alignment.Center)
+                    }, modifier = Modifier.fillMaxSize().align(Alignment.Center)
                 ){
                     BadgedBox(
                         badge = {
@@ -186,7 +185,7 @@ fun MyBottonBar(
                                 restoreState = true
                             }
                         }
-                    }, modifier = Modifier.align(Alignment.Center)
+                    }, modifier = Modifier.fillMaxSize().align(Alignment.Center)
                 ){
                     Icon(
                         Icons.Default.Person,

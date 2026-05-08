@@ -47,8 +47,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.data.models.Cart
 import com.example.applicationhome.data.models.CartKey
+import com.example.applicationhome.data.models.Food
 import com.example.applicationhome.data.models.FoodItem
+import com.example.applicationhome.data.models.Snake
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.view.model.AddBoxViewModel
 import kotlinx.coroutines.delay
@@ -57,19 +60,28 @@ import kotlinx.coroutines.delay
 fun AddBox(
     modifier: Modifier = Modifier,
     color : Color,
-    food : FoodItem,
+    food : Food,
     ordernumber : AddBoxViewModel
 ){
 
     val context = LocalContext.current
     var id = food.id
-    var selectedSize by remember { mutableStateOf(food.priceANDsize.keys.last()) }
+    var selectedSize by remember {
+        when(food){
+            is FoodItem -> {
+                mutableStateOf(food.priceANDsize.keys.last())
+            }
+            is Snake -> {
+                mutableStateOf(food.priceANDsize.keys.last())
+            }
+        }
+    }
+
     var cartkey = CartKey(food, selectedSize)
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var count = ordernumber.cartMap[cartkey] ?: 0
     var activid = ordernumber.activId == id
-    var textValue by remember(count) { mutableStateOf(count.toString()) }
     var isExpanded by remember { mutableStateOf(false) }
     var active by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
@@ -174,13 +186,14 @@ fun AddBox(
                             modifier = Modifier.
                             weight(1f).
                             fillMaxHeight().
+                            animateContentSize().
                             clickable {
-                                ordernumber.addBoxNumberPlus(food, selectedSize)
+                                ordernumber.addBoxNumberMinus(food, selectedSize)
                             },
                             contentAlignment = Alignment.Center
                         ){
                             Text(
-                                text = "+",
+                                text = "-",
                                 fontSize = 20.sp,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = Color.Black,
@@ -198,16 +211,16 @@ fun AddBox(
                             contentAlignment = Alignment.Center
                         ){
                             BasicTextField(
-                                value = textValue,
+                                value = Cart.cartMap()[cartkey].toString(),
                                 onValueChange = { newValue ->
-                                    if (newValue.isNotEmpty() || (newValue.all { it.isDigit() } && newValue.length <= 2)) {
-                                        textValue = newValue
-                                        val newCount = newValue.toIntOrNull()
-                                        if(newCount != null){
+                                    if (newValue.isNotEmpty()) {
+                                        if((newValue.all { it.isDigit() } && newValue.length <= 2)){
+                                            val newCount = newValue.toIntOrNull() ?: count
                                             ordernumber.updateCount(food, selectedSize, newCount)
                                         }
                                     }else{
-                                        ordernumber.updateCount(food, selectedSize, 0)
+                                        val newCount = newValue.toIntOrNull() ?: 0
+                                        ordernumber.updateCount(food, selectedSize, newCount)
                                     }
                                 },
                                 modifier = Modifier.
@@ -239,14 +252,13 @@ fun AddBox(
                             modifier = Modifier.
                             weight(1f).
                             fillMaxHeight().
-                            animateContentSize().
                             clickable {
-                                ordernumber.addBoxNumberMinus(food, selectedSize)
+                                ordernumber.addBoxNumberPlus(food, selectedSize)
                             },
                             contentAlignment = Alignment.Center
                         ){
                             Text(
-                                text = "-",
+                                text = "+",
                                 fontSize = 20.sp,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = Color.Black,
