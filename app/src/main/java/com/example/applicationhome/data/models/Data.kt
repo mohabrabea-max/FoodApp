@@ -9,8 +9,7 @@ sealed interface Food{val id: Int}
         val typ : String,
         val name : String,
         val image : List<Int>,
-        val priceANDsize : Map<String, Double>,
-        val description: List<String>,
+        val sizeOptions: List<MealSizeDetail>,
         val review : Double
     ): Food
 
@@ -22,6 +21,11 @@ sealed interface Food{val id: Int}
         val review : Double
     ): Food
 
+data class MealSizeDetail(
+    val size : String,
+    val price : Double,
+    val snack : Map<Int, String>
+)
 data class CategoriesImage(
     val id : Int,
     val name : String,
@@ -54,7 +58,8 @@ data class Options(
 data class Account(
     val id : Int,
     val title : String,
-    val value: Any?,
+    val empty : String,
+    var value: Any?,
     val icon : ImageVector?
 )
 

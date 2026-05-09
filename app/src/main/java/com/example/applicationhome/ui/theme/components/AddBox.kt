@@ -66,10 +66,10 @@ fun AddBox(
 
     val context = LocalContext.current
     var id = food.id
-    var selectedSize by remember {
+    var selectedSize = remember {
         when(food){
             is FoodItem -> {
-                mutableStateOf(food.priceANDsize.keys.last())
+                mutableStateOf(food.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces")}?.size)
             }
             is Snake -> {
                 mutableStateOf(food.priceANDsize.keys.last())
@@ -77,7 +77,7 @@ fun AddBox(
         }
     }
 
-    var cartkey = CartKey(food, selectedSize)
+    var cartkey = CartKey(food, selectedSize.value.toString())
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var count = ordernumber.cartMap[cartkey] ?: 0
@@ -103,7 +103,7 @@ fun AddBox(
         clip(CircleShape).
         background(cartColor).
         clickable {
-            ordernumber.delete(food, selectedSize)
+            ordernumber.delete(food, selectedSize.value.toString())
             Toast.makeText(context, "Removed From Cart", Toast.LENGTH_SHORT).show()
         }.
         border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)),
@@ -119,7 +119,7 @@ fun AddBox(
                 background(color).
                 clickable {
                     isExpanded = true
-                    ordernumber.addBoxNumberPlus(food, selectedSize)
+                    ordernumber.addBoxNumberPlus(food, selectedSize.value.toString())
                 },
                 contentAlignment = Alignment.Center
             ){
@@ -144,7 +144,7 @@ fun AddBox(
                     if(count == 99){
                         ordernumber.activ(food)
                     }else{
-                        ordernumber.addBoxNumberPlus(food, selectedSize)
+                        ordernumber.addBoxNumberPlus(food, selectedSize.value.toString())
                     }
                 },
                 contentAlignment = Alignment.Center
@@ -172,7 +172,7 @@ fun AddBox(
                     clip(CircleShape).
                     background(color).
                     clickable {
-                        ordernumber.addBoxNumberPlus(food, selectedSize)
+                        ordernumber.addBoxNumberPlus(food, selectedSize.value.toString())
                     },
                     contentAlignment = Alignment.Center
                 ){
@@ -188,7 +188,7 @@ fun AddBox(
                             fillMaxHeight().
                             animateContentSize().
                             clickable {
-                                ordernumber.addBoxNumberMinus(food, selectedSize)
+                                ordernumber.addBoxNumberMinus(food, selectedSize.value.toString())
                             },
                             contentAlignment = Alignment.Center
                         ){
@@ -216,11 +216,11 @@ fun AddBox(
                                     if (newValue.isNotEmpty()) {
                                         if((newValue.all { it.isDigit() } && newValue.length <= 2)){
                                             val newCount = newValue.toIntOrNull() ?: count
-                                            ordernumber.updateCount(food, selectedSize, newCount)
+                                            ordernumber.updateCount(food, selectedSize.value.toString(), newCount)
                                         }
                                     }else{
                                         val newCount = newValue.toIntOrNull() ?: 0
-                                        ordernumber.updateCount(food, selectedSize, newCount)
+                                        ordernumber.updateCount(food, selectedSize.value.toString(), newCount)
                                     }
                                 },
                                 modifier = Modifier.
@@ -253,7 +253,7 @@ fun AddBox(
                             weight(1f).
                             fillMaxHeight().
                             clickable {
-                                ordernumber.addBoxNumberPlus(food, selectedSize)
+                                ordernumber.addBoxNumberPlus(food, selectedSize.value.toString())
                             },
                             contentAlignment = Alignment.Center
                         ){

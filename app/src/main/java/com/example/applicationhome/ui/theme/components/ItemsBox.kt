@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -24,7 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,8 +32,6 @@ import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.data.models.Snake
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
-
-@Preview
 @Composable
 fun ItemsBox(
     item: FoodItem,
@@ -43,12 +39,12 @@ fun ItemsBox(
     viewModel: ItemScreenViewModel = viewModel(),
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
-    Card(
+    Box(
         modifier = Modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
         background(Color.White).
         aspectRatio(0.65f).
         clickable{
-            viewModel.run { selectItem(item, item.priceANDsize.keys.last()) }
+            viewModel.run { selectItem(item, item.sizeOptions.last().size) }
             navigationController.navigate(Screens.ItemScreen.screen)
         }.
         padding(start = 20.dp, end = 15.dp, top = 15.dp, bottom = 20.dp)
@@ -84,7 +80,7 @@ fun ItemsBox(
                     style = MaterialTheme.typography.titleLarge
                 )
                 Text(
-                    text = item.priceANDsize.values.last().toString() + " E.G",
+                    text = item.sizeOptions.last().price.toString() + " E.G",
                     fontSize = 16.sp,
                     color = Color.Black,
                     style = MaterialTheme.typography.labelLarge,
@@ -97,13 +93,16 @@ fun ItemsBox(
 }
 @Composable
 fun SnaksBox(
+    modifier: Modifier = Modifier,
+    inItemScreen : Boolean,
     item: Snake,
+    size : String?,
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel = viewModel(),
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
     Card(
-        modifier = Modifier.size(200.dp).padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
+        modifier = modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
         background(Color.White).
         clickable{
             viewModel.run { selectSnak(item, item.priceANDsize.keys.last()) }
@@ -131,19 +130,21 @@ fun SnaksBox(
                 verticalArrangement = Arrangement.SpaceBetween
             ){
                 Text(
-                    text = item.name,
+                    text = if(inItemScreen == false) item.name else size + " " + item.name,
                     fontSize = 14.sp,
                     color = Color.Black,
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold
                 )
-                Text(
-                    text = item.priceANDsize.values.last().toString() + " E.G",
-                    fontSize = 16.sp,
-                    color = Color.Black,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold
-                )
+                if(inItemScreen == false){
+                    Text(
+                        text = item.priceANDsize.values.last().toString() + " E.G",
+                        fontSize = 16.sp,
+                        color = Color.Black,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }

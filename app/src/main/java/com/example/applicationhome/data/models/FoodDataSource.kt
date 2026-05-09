@@ -55,15 +55,22 @@ object FoodDataSource {
             "Pizza",
             "Peprony Pizza",
             pizzaimageList,
-            mapOf(
-                "Big" to 200.0,
-                "Medium" to 150.0,
-                "Small" to 100.0
-            ),
             listOf(
-                "Big Fries",
-                "Big Coleslaw",
-                "Mozzarella Sticks6"
+                MealSizeDetail("Big", 200.0, mapOf(
+                    12 to "Big",
+                    13 to "Big",
+                    14 to "6 Pieces"
+                )),
+                MealSizeDetail("Medium", 150.0, mapOf(
+                    12 to "Medium",
+                    13 to "Medium",
+                    14 to "4 Pieces"
+                )),
+                MealSizeDetail("Small", 100.0, mapOf(
+                    12 to "Small",
+                    13 to "Small",
+                    14 to "2 Pieces"
+                ))
             ),
             4.9
         ),
@@ -72,15 +79,22 @@ object FoodDataSource {
             "Pizza",
             "Chicken Pizza",
             pizzaimageList,
-            mapOf(
-                "Big" to 190.0,
-                "Medium" to 140.0,
-                "Small" to 90.0
-            ),
             listOf(
-                "Medium Fries",
-                "Medium Coleslaw",
-                "Mozzarella Sticks4"
+                MealSizeDetail("Big", 200.0, mapOf(
+                    12 to "Big",
+                    13 to "Big",
+                    14 to "6 Pieces"
+                )),
+                MealSizeDetail("Medium", 150.0, mapOf(
+                    12 to "Medium",
+                    13 to "Medium",
+                    14 to "4 Pieces"
+                )),
+                MealSizeDetail("Small", 110.0, mapOf(
+                    12 to "Small",
+                    13 to "Small",
+                    14 to "2 Pieces"
+                ))
             ),
             4.5
         ),
@@ -89,15 +103,22 @@ object FoodDataSource {
             "Pizza",
             "Beef Pizza",
             pizzaimageList,
-            mapOf(
-                "Big" to 210.0,
-                "Medium" to 160.0,
-                "Small" to 110.0
-            ),
             listOf(
-                "Small Fries",
-                "Small Coleslaw",
-                "Mozzarella Sticks2"
+                MealSizeDetail("Big", 200.0, mapOf(
+                    12 to "Big",
+                    13 to "Big",
+                    14 to "6 Pieces"
+                )),
+                MealSizeDetail("Medium", 150.0, mapOf(
+                    12 to "Medium",
+                    13 to "Medium",
+                    14 to "4 Pieces"
+                )),
+                MealSizeDetail("Small", 120.0, mapOf(
+                    12 to "Small",
+                    13 to "Small",
+                    14 to "2 Pieces"
+                ))
             ),
             4.7
         ),
@@ -106,11 +127,12 @@ object FoodDataSource {
             "Chicken",
             "10 Pieces Of Chicken",
             chickenimageList,
-            mapOf("10 Pieces" to 380.0),
             listOf(
-                "Big Fries",
-                "Big Coleslaw",
-                "Mozzarella Sticks6"
+                MealSizeDetail("10 Pieces", 380.0, mapOf(
+                    12 to "Big",
+                    13 to "Big",
+                    14 to "6 Pieces"
+                ))
             ),
             4.5
         ),
@@ -119,11 +141,12 @@ object FoodDataSource {
             "Chicken",
             "5 Pieces Of Chicken",
             chickenimageList,
-            mapOf("5 Pieces" to 210.0),
             listOf(
-                "Medium Fries",
-                "Medium Coleslaw",
-                "Mozzarella Sticks4"
+                MealSizeDetail("5 Pieces", 210.0, mapOf(
+                    12 to "Big",
+                    13 to "Big",
+                    14 to "6 Pieces"
+                ))
             ),
             4.2
         ),
@@ -132,63 +155,88 @@ object FoodDataSource {
             "Chicken",
             "3 Pieces Of Chicken",
             chickenimageList,
-            mapOf("3 Pieces" to 130.0),
             listOf(
-                "Small Fries",
-                "Small Coleslaw",
-                "Mozzarella Sticks2"
+                MealSizeDetail("3 Pieces", 130.0, mapOf(
+                    12 to "Big",
+                    13 to "Big",
+                    14 to "6 Pieces"
+                ))
             ),
             5.0
         ),
         FoodItem(
             7,
             "Burger",
-            "Big Chicken Burger",
+            "Beef Burger Cheez",
             burgerimageList,
-            mapOf("Big" to 210.0),
             listOf(
-                "Small Fries",
-                "Small Coleslaw",
-                "Mozzarella Sticks2"
+                MealSizeDetail("Medium", 200.0, mapOf(
+                    12 to "Medium",
+                    13 to "Medium",
+                    14 to "4 Pieces"
+                )),
+                MealSizeDetail("Small", 160.0, mapOf(
+                    12 to "Small",
+                    13 to "Small",
+                    14 to "2 Pieces"
+                ))
             ),
             4.5
         ),
         FoodItem(
             8,
             "Burger",
-            "Small Chicken Burger",
+            "Chicken Burger Cheez",
             burgerimageList,
-            mapOf("Small" to 140.0),
             listOf(
-                "Small Fries",
-                "Small Coleslaw",
-                "Mozzarella Sticks2"
+                MealSizeDetail("Medium", 200.0, mapOf(
+                    12 to "Medium",
+                    13 to "Medium",
+                    14 to "4 Pieces"
+                )),
+                MealSizeDetail("Small", 170.0, mapOf(
+                    12 to "Small",
+                    13 to "Small",
+                    14 to "2 Pieces"
+                ))
             ),
             3.5
         ),
         FoodItem(
             9,
             "Burger",
-            "Big Beef Burger",
+            "Beef Burger",
             burgerimageList,
-            mapOf("Big" to 240.0),
             listOf(
-                "Small Fries",
-                "Small Coleslaw",
-                "Mozzarella Sticks2"
+                MealSizeDetail("Medium", 200.0, mapOf(
+                    12 to "Medium",
+                    13 to "Medium",
+                    14 to "4 Pieces"
+                )),
+                MealSizeDetail("Small", 180.0, mapOf(
+                    12 to "Small",
+                    13 to "Small",
+                    14 to "2 Pieces"
+                ))
             ),
             4.8
         ),
         FoodItem(
             10,
             "Burger",
-            "Small Chicken Burger",
+            "Chicken Burger",
             burgerimageList,
-            mapOf("Small" to 155.0),
             listOf(
-                "Small Fries",
-                "Small Coleslaw",
-                "Mozzarella Sticks2"
+                MealSizeDetail("Medium", 200.0, mapOf(
+                    12 to "Medium",
+                    13 to "Medium",
+                    14 to "4 Pieces"
+                )),
+                MealSizeDetail("Small", 190.0, mapOf(
+                    12 to "Small",
+                    13 to "Small",
+                    14 to "2 Pieces"
+                ))
             ),
             4.1
         )
@@ -208,10 +256,10 @@ object FoodDataSource {
 }
 
 object Snakes {
-    private var snakesMenu = mutableListOf(
+    private val snakesMenu = mutableListOf(
         Snake(
             12,
-            "Frinch Fries",
+            "French Fries",
             R.drawable.frenchfries,
             mapOf(
                 "Big" to 50.0,
@@ -243,68 +291,65 @@ object Snakes {
             4.1
         )
     )
-    private val snaksForItems = mapOf<String, Snake>(
-        "Big Fries" to Snake(
-            51,
-            "Frinch Fries",
-            R.drawable.frenchfries,
-            mapOf("Big" to 50.0),
-            4.1),
-        "Medium Fries" to Snake(
-            52, "Frinch Fries",
-            R.drawable.frenchfries,
-            mapOf("Medium" to 40.0),
-            4.1),
-        "Small Fries" to Snake(
-            53,
-            "Frinch Fries",
-            R.drawable.frenchfries,
-            mapOf("Small" to 30.0),
-            4.1),
-        "Big Coleslaw" to Snake(
-            54,
-            "Coleslaw",
-            R.drawable.coleslaw,
-            mapOf("Big" to 60.0),
-            4.8),
-        "Medium Coleslaw" to Snake(
-            55,
-            "Coleslaw",
-            R.drawable.coleslaw,
-            mapOf("Medium" to 45.0),
-            4.3),
-        "Small Coleslaw" to Snake(
-            56,
-            "Coleslaw",
-            R.drawable.coleslaw,
-            mapOf("Small" to 30.0),
-            4.4),
-        "Mozzarella Sticks6" to Snake(
-            57,
-            "Mozzarella Sticks",
-            R.drawable.mozzarellasticks,
-            mapOf("6 Pieces" to 70.0),
-            5.0),
-        "Mozzarella Sticks4" to Snake(
-            58,
-            "Mozzarella Sticks",
-            R.drawable.mozzarellasticks,
-            mapOf("4 Pieces" to 50.0),
-            4.5),
-        "Mozzarella Sticks2" to Snake(
-            59,
-            "Mozzarella Sticks",
-            R.drawable.mozzarellasticks,
-            mapOf("2 Pieces" to 30.0),
-            4.1)
-
-
-    )
+//    private val snaksForItems = mapOf<String, Snake>(
+//        "Big Fries" to Snake(
+//            51,
+//            "Frinch Fries",
+//            R.drawable.frenchfries,
+//            mapOf("Big" to 50.0),
+//            4.1),
+//        "Medium Fries" to Snake(
+//            52, "Frinch Fries",
+//            R.drawable.frenchfries,
+//            mapOf("Medium" to 40.0),
+//            4.1),
+//        "Small Fries" to Snake(
+//            53,
+//            "Frinch Fries",
+//            R.drawable.frenchfries,
+//            mapOf("Small" to 30.0),
+//            4.1),
+//        "Big Coleslaw" to Snake(
+//            54,
+//            "Coleslaw",
+//            R.drawable.coleslaw,
+//            mapOf("Big" to 60.0),
+//            4.8),
+//        "Medium Coleslaw" to Snake(
+//            55,
+//            "Coleslaw",
+//            R.drawable.coleslaw,
+//            mapOf("Medium" to 45.0),
+//            4.3),
+//        "Small Coleslaw" to Snake(
+//            56,
+//            "Coleslaw",
+//            R.drawable.coleslaw,
+//            mapOf("Small" to 30.0),
+//            4.4),
+//        "Mozzarella Sticks6" to Snake(
+//            57,
+//            "Mozzarella Sticks",
+//            R.drawable.mozzarellasticks,
+//            mapOf("6 Pieces" to 70.0),
+//            5.0),
+//        "Mozzarella Sticks4" to Snake(
+//            58,
+//            "Mozzarella Sticks",
+//            R.drawable.mozzarellasticks,
+//            mapOf("4 Pieces" to 50.0),
+//            4.5),
+//        "Mozzarella Sticks2" to Snake(
+//            59,
+//            "Mozzarella Sticks",
+//            R.drawable.mozzarellasticks,
+//            mapOf("2 Pieces" to 30.0),
+//            4.1)
+//
+//
+//    )
     fun snakes(): List<Snake>{
         return snakesMenu
-    }
-    fun snakesItems(): Map<String, Snake>{
-        return snaksForItems
     }
 }
 
@@ -423,12 +468,47 @@ object RestaurantsMenu {
 
 object ProfileData {
     private val profile = listOf(
-        Account(101, "Email","mohabrabea@gmail.com", null),
-        Account(102,"First Name",null,Icons.Default.Edit),
-        Account(103,"Last Name",null,Icons.Default.Edit),
-        Account(104,"Phone number","01011223344",Icons.Default.Edit),
-        Account(105,"Birthday","Get offers on your special day",Icons.Default.Add),
-        Account(106,"Country","Egypt",Icons.Default.Add)
+        Account(
+            101,
+            "Email",
+            "mohabrabea@gmail.com",
+            "mohabrabea@gmail.com",
+            null
+        ),
+        Account(
+            102,
+            "First Name",
+            "First Name",
+            null,
+            Icons.Default.Edit
+        ),
+        Account(
+            103,
+            "Last Name",
+            "Last Name",
+            null,
+            Icons.Default.Edit
+        ),
+        Account(
+            104,
+            "Phone number",
+            "01011223344",
+            null,
+            Icons.Default.Edit
+        ),
+        Account(
+            105,
+            "Birthday",
+            "Get offers on your special day",
+            null,
+            Icons.Default.Add
+        ),
+        Account(106,
+            "Country",
+            "Egypt",
+            null,
+            Icons.Default.Add
+        )
     )
 
     private val profileoptions = listOf(

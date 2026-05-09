@@ -18,6 +18,7 @@ import com.example.applicationhome.view.model.CategoriesBoxViewModel
 import com.example.applicationhome.view.model.DrawerViewModel
 import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
+import com.example.applicationhome.view.model.ProfileViewModel
 import com.example.applicationhome.view.model.UserImageViewModel
 
 class MainActivity : ComponentActivity() {
@@ -36,7 +37,8 @@ class MainActivity : ComponentActivity() {
             val favoriteViewModel : FavoriteViewModel = viewModel()
             val drawerViewModel : DrawerViewModel = viewModel()
             val categoriesBoxViewModel : CategoriesBoxViewModel = viewModel()
-            FinalScreen(scrollBehavior, drawerState, itemScreenViewModel, viewModelForBottomBar, addBoxViewModel, userImageViewModel, favoriteViewModel, drawerViewModel, categoriesBoxViewModel)
+            val profileViewModel : ProfileViewModel = viewModel()
+            FinalScreen(scrollBehavior, drawerState, itemScreenViewModel, viewModelForBottomBar, addBoxViewModel, userImageViewModel, favoriteViewModel, drawerViewModel, categoriesBoxViewModel, profileViewModel)
         }
     }
 }

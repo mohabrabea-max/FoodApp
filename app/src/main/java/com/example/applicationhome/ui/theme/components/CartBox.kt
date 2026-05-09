@@ -76,7 +76,7 @@ fun CartBox(
     when(item){
         is FoodItem -> {
             name = item.name
-            price = item.priceANDsize[size].toString() + " L.E"
+            price = item.sizeOptions.find { it.size == size }?.price.toString() + " L.E"
         }
         is Snake -> {
             name = item.name

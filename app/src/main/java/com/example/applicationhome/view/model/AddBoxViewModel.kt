@@ -28,7 +28,7 @@ class AddBoxViewModel : ViewModel(){
             when(food){
                 is FoodItem -> {
                     totalNumber.value += value
-                    val priceForSize = food.priceANDsize[size] ?: 0.0
+                    val priceForSize = food.sizeOptions.find { it.size == size }?.price ?: 0.0
                     totalPrice.value += priceForSize * value
                 }
                 is Snake -> {

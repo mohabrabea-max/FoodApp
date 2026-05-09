@@ -140,7 +140,10 @@ fun Favorite(
                                 }
                                 is Snake -> {
                                     SnaksBox(
+                                        modifier = Modifier.size(200.dp),
+                                        false,
                                         item,
+                                        null,
                                         navigationController,
                                         viewModel,
                                         {

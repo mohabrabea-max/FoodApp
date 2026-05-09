@@ -38,17 +38,18 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.models.ProfileData
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.VeryLightGray
+import com.example.applicationhome.view.model.ProfileViewModel
 import com.example.applicationhome.view.model.UserImageViewModel
 
 @Composable
-fun ProfileBox(userImageViewModel: UserImageViewModel){
+fun ProfileBox(userImageViewModel: UserImageViewModel, profileViewModel : ProfileViewModel){
+
+    var profile = profileViewModel.profile
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    val profile = ProfileData.profileData()
     val focusRequesters = remember {
         profile.associate { it.id to FocusRequester() }
     }
@@ -58,6 +59,7 @@ fun ProfileBox(userImageViewModel: UserImageViewModel){
             Text(text = "Personal Information", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
             Spacer(modifier = Modifier.height(15.dp))
             profile.forEach{ item ->
+                val state = rememberTextFieldState()
                 val focusRequester = focusRequesters[item.id]
                 Column(modifier = Modifier.fillMaxSize()){
                     Spacer(modifier = Modifier.height(15.dp))
@@ -69,12 +71,17 @@ fun ProfileBox(userImageViewModel: UserImageViewModel){
                             Row {
                                 Spacer(modifier = Modifier.width(3.dp))
                                 if(item.title == "First Name" || item.title == "Last Name" || item.title == "Phone number"){
-                                    val state = rememberTextFieldState()
                                     Box(contentAlignment = Alignment.CenterStart){
-                                        if (state.text.isEmpty()) {
+                                        if (item.value == null && state.text.isEmpty()) {
                                             Text(
-                                                text = item.title,
+                                                text = item.empty,
                                                 color = Color.Gray,
+                                                fontSize = 14.sp
+                                            )
+                                        }else if(state.text.isEmpty()){
+                                            Text(
+                                                text = item.value.toString(),
+                                                color = Color.MediumBrownForTitle,
                                                 fontSize = 14.sp
                                             )
                                         }
@@ -98,6 +105,7 @@ fun ProfileBox(userImageViewModel: UserImageViewModel){
                                                 userImageViewModel.statefalse()
                                                 keyboardController?.hide()
                                                 focusManager.clearFocus()
+                                                profileViewModel.changeProfileData(item, state)
                                             },
                                             textStyle = TextStyle(
                                                 fontSize = 14.sp,
@@ -116,7 +124,7 @@ fun ProfileBox(userImageViewModel: UserImageViewModel){
                             }
                         }
                         if(item.icon != null){
-                            IconButton(modifier = Modifier.weight(1f), onClick = {focusRequester?.requestFocus()}){
+                            IconButton(modifier = Modifier.weight(1f), onClick = { focusRequester?.requestFocus() }){
                                 Icon(
                                     modifier = Modifier.size(22.dp),
                                     imageVector = item.icon,

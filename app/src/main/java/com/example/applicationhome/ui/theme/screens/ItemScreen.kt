@@ -3,6 +3,7 @@ package com.example.applicationhome.ui.theme.screens
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,8 +15,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -23,8 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Stars
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -47,16 +47,21 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.ui.theme.BrandBlue
+import com.example.applicationhome.data.models.Snakes
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.VeryLightGray
+import com.example.applicationhome.ui.theme.components.AddBox
 import com.example.applicationhome.ui.theme.components.BottonBarForItemScreen
 import com.example.applicationhome.ui.theme.components.Favorite
 import com.example.applicationhome.ui.theme.components.ItemSize
+import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyTopBar
+import com.example.applicationhome.ui.theme.components.Ratings
+import com.example.applicationhome.ui.theme.components.SnaksBox
 import com.example.applicationhome.view.model.AddBoxViewModel
+import com.example.applicationhome.view.model.CategoriesBoxViewModel
 import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
@@ -67,8 +72,11 @@ fun ItemScreen(
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel,
     addBoxViewModel : AddBoxViewModel,
-    favoriteState : FavoriteViewModel
+    favoriteState : FavoriteViewModel,
+    categoriesBoxViewModel : CategoriesBoxViewModel
 ){
+    val menu = categoriesBoxViewModel.filterMenu
+    val snaks = Snakes.snakes()
     val item = viewModel.selectedItem
     val size = viewModel.selectedSize
     val images = item?.image?.size ?: 0
@@ -167,13 +175,13 @@ fun ItemScreen(
                                         modifier = Modifier.padding(10.dp)
                                     )
                                     Text(
-                                        text = item.description.toString(),
+                                        text = item.sizeOptions.find { it.size == size }?.snack.toString(),
                                         color = Color.MediumBrownForTitle,
                                         modifier = Modifier.padding(10.dp)
                                     )
                                     Spacer(modifier = Modifier.height(10.dp))
                                     Text(
-                                        text = "${item.priceANDsize[size]} L.E",
+                                        text = "${item.sizeOptions.find { it.size == size }?.price} L.E",
                                         fontSize = 30.sp,
                                         style = MaterialTheme.typography.labelLarge,
                                         color = Color.BrownForFont,
@@ -188,112 +196,118 @@ fun ItemScreen(
                                     background(Color.White).
                                     padding(10.dp)
                                 ){
-                                    ItemSize(viewModel)
+                                    LazyRow {
+                                        item{
+                                            val selectedDetail = item.sizeOptions.find { it.size == size }
+                                            selectedDetail?.snack?.forEach { (snakeId, snakeSize) ->
+                                                val snake2 = Snakes.snakes().find { it.id == snakeId }
+                                                snake2?.let {
+                                                    SnaksBox(
+                                                        modifier = Modifier.size(170.dp),
+                                                        true,
+                                                        snake2,
+                                                        snakeSize,
+                                                        navigationController,
+                                                        viewModel
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                                 Spacer(modifier = Modifier.height(10.dp))
-                                Column(
+                                Box(
                                     modifier = Modifier.fillMaxWidth().
                                     clip(RoundedCornerShape(20.dp)).
                                     background(Color.White).
-                                    padding(10.dp),
-                                    horizontalAlignment = Alignment.Start
+                                    padding(10.dp)
                                 ){
-                                    Spacer(modifier = Modifier.height(5.dp))
-                                    Text(
-                                        text = "Ratings & Reviews",
-                                        fontSize = 16.sp,
-                                        color = Color.Black,
-                                        style = MaterialTheme.typography.labelLarge,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Spacer(modifier = Modifier.height(15.dp))
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Start
-                                    ){
-                                        Text(
-                                            text = item.review.toString(),
-                                            fontSize = 25.sp,
-                                            color = Color.Black,
-                                            style = MaterialTheme.typography.labelLarge,
-                                            fontWeight = FontWeight.Bold
+                                    ItemSize(viewModel)
+                                }
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Ratings(item)
+                            }
+                        }
+                        item{Spacer(modifier = Modifier.height(30.dp))}
+                        item{
+                            Spacer(modifier = Modifier.height(5.dp))
+                            Text(
+                                text = "Other snacks",
+                                fontSize = 16.sp,
+                                color = Color.Black,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(start = 10.dp)
+                            )
+                            Spacer(modifier = Modifier.height(5.dp))
+                        }
+                        item{
+                            Box(
+                                modifier = Modifier.fillMaxWidth().
+                                background(Color.White)
+                            ){
+                                LazyRow(horizontalArrangement = Arrangement.spacedBy(5.dp)){
+                                    items(snaks){ item ->
+                                        SnaksBox(
+                                            modifier = Modifier.size(200.dp),
+                                            false,
+                                            item,
+                                            null,
+                                            navigationController,
+                                            viewModel,
+                                            {
+                                                Favorite(
+                                                    modifier = Modifier.
+                                                    clip(CircleShape).
+                                                    border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
+                                                    size(35.dp).
+                                                    background(Color.VeryLightGray),
+                                                    food = item,
+                                                    favoriteState = favoriteState
+                                                )
+                                                AddBox(color = Color.VeryLightGray, food = item, ordernumber = addBoxViewModel)
+                                            }
                                         )
-                                        for(x in 0 .. item.review.toInt()){
-                                            Icon(
-                                                Icons.Default.Star,
-                                                contentDescription = null,
-                                                tint = Color.DarkOrange,
-                                                modifier = Modifier.size(30.dp)
-                                            )
-                                        }
                                     }
-                                    Spacer(modifier = Modifier.height(15.dp))
-                                    Text(
-                                        text = "All reviews (5)",
-                                        fontSize = 18.sp,
-                                        color = Color.Black,
-                                        style = MaterialTheme.typography.labelLarge,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Spacer(modifier = Modifier.height(10.dp))
-                                    Column(                             // البوكس بتاع التقييمات
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalAlignment = Alignment.Start
-                                    ){
-                                        Spacer(modifier = Modifier.height(10.dp))
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.SpaceBetween
-                                        ){
-                                            Text(
-                                                text = "Name",
-                                                fontSize = 14.sp,
-                                                color = Color.Black,
-                                                style = MaterialTheme.typography.bodySmall
-                                            )
-                                            Icon(
-                                                Icons.Default.Stars,
-                                                contentDescription = null,
-                                                tint = Color.BrandBlue,
-                                                modifier = Modifier.size(20.dp)
-                                            )
-                                        }
-                                        Spacer(modifier = Modifier.height(5.dp))
-                                        Row(verticalAlignment = Alignment.Bottom){
-                                            Icon(Icons.Default.Star, contentDescription = null, tint = Color.DarkOrange)
-                                            Icon(Icons.Default.Star, contentDescription = null, tint = Color.DarkOrange)
-                                            Icon(Icons.Default.Star, contentDescription = null, tint = Color.DarkOrange)
-                                            Icon(Icons.Default.Star, contentDescription = null, tint = Color.DarkOrange)
-                                            Spacer(modifier = Modifier.width(5.dp))
-                                            Text(
-                                                text = "Time",
-                                                fontSize = 10.sp,
-                                                color = Color.Gray,
-                                                style = MaterialTheme.typography.bodySmall
-                                            )
-                                        }
-                                        Spacer(modifier = Modifier.height(10.dp))
-                                        Text(
-                                            text = "It's very good!",
-                                            fontSize = 15.sp,
-                                            color = Color.Black,
-                                            style = MaterialTheme.typography.labelLarge
+                                }
+                            }
+                        }
+                        item{
+                            Spacer(modifier = Modifier.height(5.dp))
+                            Text(
+                                text = "Other meals",
+                                fontSize = 16.sp,
+                                color = Color.Black,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(start = 10.dp)
+                            )
+                            Spacer(modifier = Modifier.height(5.dp))
+                        }
+                        item{
+                            Box(
+                                modifier = Modifier.fillMaxWidth().height(300.dp).
+                                background(Color.White)
+                            ){
+                                LazyRow(horizontalArrangement = Arrangement.spacedBy(5.dp)){
+                                    items(menu){ item ->
+                                        ItemsBox(
+                                            item,
+                                            navigationController,
+                                            viewModel,
+                                            {
+                                                Favorite(
+                                                    modifier = Modifier.
+                                                    clip(CircleShape).
+                                                    border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
+                                                    size(35.dp).
+                                                    background(Color.VeryLightGray),
+                                                    food = item,
+                                                    favoriteState = favoriteState
+                                                )
+                                                AddBox(color = Color.VeryLightGray, food = item, ordernumber = addBoxViewModel)
+                                            }
                                         )
-                                        Text(
-                                            text = "It's very good!",
-                                            fontSize = 15.sp,
-                                            color = Color.Black,
-                                            style = MaterialTheme.typography.labelLarge
-                                        )
-                                        Text(
-                                            text = "It's very good!",
-                                            fontSize = 15.sp,
-                                            color = Color.Black,
-                                            style = MaterialTheme.typography.labelLarge
-                                        )
-                                        Spacer(modifier = Modifier.height(10.dp))
-                                        //Divider(color = Color.LightGray.copy(alpha = 0.4f), modifier = Modifier.padding(start = 5.dp, end = 5.dp))
                                     }
                                 }
                             }

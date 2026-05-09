@@ -31,7 +31,7 @@ import com.example.applicationhome.view.model.ItemScreenViewModel
 fun ItemSize(viewModel: ItemScreenViewModel){
     val item = viewModel.selectedItem
     val size = viewModel.selectedSize
-    val price = item?.priceANDsize
+    val price = item?.sizeOptions
     Box(
         modifier = Modifier.
         animateContentSize().
@@ -44,7 +44,7 @@ fun ItemSize(viewModel: ItemScreenViewModel){
         contentAlignment = Alignment.Center
     ){
         Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-            price?.keys?.forEach{ size2 ->
+            price?.forEach{ (size2) ->
                     Box(
                         modifier = Modifier.weight(1f).
                         fillMaxHeight().

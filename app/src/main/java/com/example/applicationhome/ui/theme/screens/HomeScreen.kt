@@ -272,7 +272,10 @@ fun HomeScreen(
                         LazyRow(horizontalArrangement = Arrangement.spacedBy(5.dp)){
                             items(snaks){ item ->
                                 SnaksBox(
+                                    modifier = Modifier.size(200.dp),
+                                    false,
                                     item,
+                                    null,
                                     navigationController,
                                     viewModel,
                                     {
