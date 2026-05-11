@@ -3,12 +3,19 @@ package com.example.applicationhome.ui.theme.screens
 import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -43,6 +50,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -90,13 +103,51 @@ fun HomeScreen(
     favoriteState : FavoriteViewModel,
     categoriesBoxViewModel : CategoriesBoxViewModel
 ){
+    var showSearchIcon by remember { mutableStateOf(false) }
+    var showcategories by remember { mutableStateOf(true) }
+    val scrollState = rememberLazyGridState()
+    LaunchedEffect(scrollState){
+        var previousOffset = 0
+        var previousIndex = 0
+        snapshotFlow{ scrollState.firstVisibleItemIndex to scrollState.firstVisibleItemScrollOffset }.
+        collect{ (currentIndex, currentOffset) ->
+            if(currentIndex == previousIndex){
+                showcategories = currentOffset <= previousOffset
+            }else{
+                showcategories = currentIndex <= previousIndex
+            }
+            if((currentOffset > 440 || scrollState.firstVisibleItemIndex > 0) && showcategories == false){
+                showSearchIcon = true
+
+            }else if((currentOffset > 210 || scrollState.firstVisibleItemIndex > 0) && showcategories == true){
+                showSearchIcon = true
+            }else{
+                showSearchIcon = false
+            }
+            previousIndex = currentIndex
+            previousOffset = currentOffset
+        }
+    }
+    var scal by remember { mutableStateOf(false) }
+
+    LaunchedEffect(scrollState) {
+        snapshotFlow { scrollState.firstVisibleItemScrollOffset }
+            .collect { offset ->
+                if ((offset > 440 || scrollState.firstVisibleItemIndex > 0) && showcategories == false) {
+                    scal = true
+                }else if((offset > 210 || scrollState.firstVisibleItemIndex > 0) && showcategories == true){
+                    scal = true
+                }else{
+                    scal = false
+                }
+            }
+    }
     val snaks = Snakes.snakes()
     val menu = categoriesBoxViewModel.filterMenu
     val restaurants = categoriesBoxViewModel.restaurants
     val offers = OffersData.offersMenu()
     val categories = VarietiesMenu.categoriesList()
     val pagerState = rememberPagerState(pageCount = {offers.size})
-    val scrollState = rememberLazyGridState()
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) {
         // ده بيمسح الأبلكيشن من الـ Background ويقفله تماماً
@@ -107,44 +158,96 @@ fun HomeScreen(
         fillMaxSize().
         background(Color.White),
         topBar = {
-            MyTopBar(
-                modifier = Modifier.
-                fillMaxWidth().
-                height(100.dp).
-                shadow(elevation = 5.dp),
-                "Home",
-                {coroutineScope.launch{drawerState.open()}},
-                {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
-                {
-                    IconButton(onClick = {
-                        navigationController.navigate(Screens.Notifications.screen){
-                            popUpTo(navigationController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-
-                            launchSingleTop = true
-
-                            restoreState = true
+            Box{
+                Column{
+                    var height = if(showcategories == true) 100.dp else 0.dp
+                    Spacer(modifier = Modifier.animateContentSize().height(height))
+                    Row(
+                        modifier = Modifier.fillMaxWidth().
+                        height(70.dp).
+                        shadow(elevation = if(showcategories == true) 5.dp else 0.dp).
+                        background(Color.White),
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        LazyRow(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ){
+                            item { Spacer(modifier = Modifier.width(4.dp)) }
+                            items(categories) { category -> CategoriesBox(category, categoriesBoxViewModel) }
+                            item { Spacer(modifier = Modifier.width(4.dp)) }
                         }
-                    }) {
-                        Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
                     }
-                    IconButton(onClick = {
-                        navigationController.navigate(Screens.Search.screen){
-                            popUpTo(navigationController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-
-                            launchSingleTop = true
-
-                            restoreState = true
-                        }
-                    }) {
-                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.Black)
-                    }
+                    Divider(color = Color.LightOrange.copy(alpha = 0.5f))
                 }
-            )
-            Divider(color = Color.LightGray.copy(alpha = 0.5f))
+                Column{
+                    MyTopBar(
+                        Color.White,
+                        modifier = Modifier.
+                        fillMaxWidth().
+                        height(100.dp),
+                        //shadow(elevation = if(showcategories == false) 5.dp else 0.dp),
+                        "Home",
+                        {
+                            IconButton(
+                                onClick = {coroutineScope.launch{drawerState.open()}},
+                                modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape).background(Color.White.copy(alpha = if(showcategories == false) 1f else 0f)).size(35.dp)
+                            ) {
+                                Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)
+                            }
+                        },
+                        {
+                            AnimatedVisibility(
+                                visible = scal,
+                                enter = fadeIn() + scaleIn(),
+                                exit = fadeOut() + scaleOut()
+                            ){
+                                IconButton(onClick = {
+                                    navigationController.navigate(Screens.Notifications.screen){
+                                        popUpTo(navigationController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+
+                                        launchSingleTop = true
+
+                                        restoreState = true
+                                    }
+                                },
+                                    modifier = Modifier.
+                                    size(50.dp).
+                                    padding(5.dp).
+                                    clip(CircleShape).background(Color.White).
+                                    border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
+                                    size(35.dp)
+                                ){
+                                    Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
+                                }
+                            }
+
+                            IconButton(onClick = {
+                                navigationController.navigate(Screens.Search.screen){
+                                    popUpTo(navigationController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+
+                                    launchSingleTop = true
+
+                                    restoreState = true
+                                }
+                            },
+                                modifier = Modifier.size(50.dp).
+                                padding(5.dp).
+                                clip(CircleShape).background(Color.White).
+                                border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
+                                size(35.dp)
+                            ) {
+                                Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.Black)
+                            }
+                        }
+                    )
+                    if(showcategories == true) Divider(color = Color.VeryLightGray)
+                }
+            }
         }
     ){
         Box(modifier = Modifier.background(Color.VeryLightGray)){
@@ -155,22 +258,13 @@ fun HomeScreen(
                     columns = GridCells.Fixed(2),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ){
-                    item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
+                    item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(170.dp))}
                     item(span = { GridItemSpan(2) }){
-                        Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
-                            LazyRow(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
-                            ){
-                                item { Spacer(modifier = Modifier.width(4.dp)) }
-                                items(categories) { category -> CategoriesBox(category, categoriesBoxViewModel) }
-                                item { Spacer(modifier = Modifier.width(4.dp)) }
-                            }
+                        Box(modifier = Modifier.fillMaxSize()){
+                            Box(
+                                modifier = Modifier.width(300.dp).height(50.dp).align(Alignment.Center).clip(CircleShape).background(Color.Black)
+                            )
                         }
-                    }
-                    item(span = { GridItemSpan(2) }){
-                        Divider(color = Color.LightOrange.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(start = 20.dp, end = 20.dp))
-                        Spacer(modifier = Modifier.height(20.dp))
                     }
                     item(span = { GridItemSpan(2) }){
                         Box(modifier = Modifier.fillMaxWidth().height(180.dp)){

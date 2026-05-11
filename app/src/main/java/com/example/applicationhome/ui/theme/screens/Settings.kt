@@ -75,12 +75,19 @@ fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigat
         topBar = {
             Column(modifier = Modifier.clip(RoundedCornerShape(30.dp)).shadow(elevation = 3.dp)){
                 MyTopBar(
+                    Color.White,
                     modifier = Modifier.
                     fillMaxWidth().
                     height(100.dp),
                     title = "Settings",
-                    {coroutineScope.launch{drawerState.open()}},
-                    {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
+                    {
+                        IconButton(
+                            onClick = {coroutineScope.launch{drawerState.open()}},
+                            modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
+                        ) {
+                            Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)
+                        }
+                    },
                     {
                         IconButton(onClick = {}){
                             Icon(

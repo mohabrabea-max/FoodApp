@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -91,13 +92,20 @@ fun Cart(
         background(Color.LightBrownForBackground),
         topBar = {
             MyTopBar(
+                Color.White,
                 modifier = Modifier.
                 fillMaxWidth().
                 height(100.dp).
                 shadow(elevation = 5.dp),
                 "Cart",
-                {coroutineScope.launch{drawerState.open()}},
-                {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
+                {
+                    IconButton(
+                        onClick = {coroutineScope.launch{drawerState.open()}},
+                        modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
+                    ) {
+                        Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)
+                    }
+                },
                 {
                     IconButton(onClick = {
                         navigationController.navigate(Screens.Search.screen){
@@ -111,19 +119,6 @@ fun Cart(
                         }
                     }) {
                         Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
-                    }
-                    IconButton(onClick = {
-                        navigationController.navigate(Screens.Favorite.screen){
-                            popUpTo(navigationController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-
-                            launchSingleTop = true
-
-                            restoreState = true
-                        }
-                    }) {
-                        Icon(Icons.Default.Favorite, contentDescription = null, tint = Color.Black)
                     }
                 }
             )

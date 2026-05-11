@@ -44,6 +44,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.size.Precision
 import com.example.applicationhome.data.models.Favorite
 import com.example.applicationhome.data.models.Restaurants
 import com.example.applicationhome.ui.theme.DarkOrange
@@ -62,9 +65,14 @@ fun RestaurantsBox(item : Restaurants, favoriteState : FavoriteViewModel){
     ){
         Box(modifier = Modifier.clickable {  }){
             Box(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray)){
-                Image(
+                AsyncImage(
                     modifier = Modifier.fillMaxSize(),
-                    painter = painterResource(id = item.image2),
+                    model = ImageRequest.Builder(LocalContext.current).
+                    data(item.image2).
+                    crossfade(true).
+                    size(400, 400).
+                    precision(Precision.EXACT).
+                    build(),
                     contentDescription = item.name,
                     contentScale = ContentScale.Crop
                 )

@@ -79,6 +79,7 @@ class AddBoxViewModel : ViewModel(){
         totalPrice.value = 0.0
         cartMap.clear()
         totalCart = 0
+        updateTotals()
     }
     fun activ(food : Food){
         activId = food.id

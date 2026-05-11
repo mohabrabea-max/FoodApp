@@ -91,13 +91,20 @@ fun Favorite(
         background(Color.White),
         topBar = {
             MyTopBar(
+                Color.White,
                 modifier = Modifier.
                 fillMaxWidth().
                 height(100.dp).
                 shadow(elevation = 5.dp),
                 "Favorite",
-                {coroutineScope.launch{drawerState.open()}},
-                {Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)},
+                {
+                    IconButton(
+                        onClick = {coroutineScope.launch{drawerState.open()}},
+                        modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
+                    ) {
+                        Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)
+                    }
+                },
                 {
                     IconButton(onClick = {
                         navigationController.navigate(Screens.Search.screen)

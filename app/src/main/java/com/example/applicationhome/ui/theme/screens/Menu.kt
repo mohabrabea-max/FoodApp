@@ -72,13 +72,20 @@ fun Menu(
         modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),
         topBar = {
             MyTopBar(
+                Color.White,
                 modifier = Modifier.
                 fillMaxWidth().
                 height(100.dp).
                 shadow(elevation = 5.dp),
                 "Menu",
-                {navigationController.popBackStack()},
-                {Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)},
+                {
+                    IconButton(
+                        onClick = {if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() } },
+                        modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
+                    ) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)
+                    }
+                },
                 {
                     IconButton(onClick = {
                         navigationController.navigate(Screens.Notifications.screen){

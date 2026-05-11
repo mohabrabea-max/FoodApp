@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
@@ -22,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -48,13 +52,20 @@ fun Profile(drawerState : DrawerState, coroutineScope : CoroutineScope, navigati
         topBar = {
             Column(modifier = Modifier.shadow(elevation = 3.dp)){
                 MyTopBar(
+                    Color.White,
                     modifier = Modifier.
                     fillMaxWidth().
                     height(100.dp).
                     shadow(elevation = 5.dp),
                     "Profile",
-                    {navigationController.popBackStack()},
-                    {Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)},
+                    {
+                        IconButton(
+                            onClick = {if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() } },
+                            modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
+                        ) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)
+                        }
+                    },
                     actions = {
                         IconButton(onClick = {}){
                             Icon(

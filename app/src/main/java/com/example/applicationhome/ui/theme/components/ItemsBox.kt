@@ -1,6 +1,5 @@
 package com.example.applicationhome.ui.theme.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,12 +20,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.size.Precision
 import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.data.models.Snake
@@ -51,9 +53,14 @@ fun ItemsBox(
     ){
         Column(modifier = Modifier.fillMaxSize().background(Color.White)){
             Box(modifier = Modifier.fillMaxWidth().weight(2f)){
-                Image(
+                AsyncImage(
                     modifier = Modifier.fillMaxSize().padding(top = 5.dp, end = 5.dp),
-                    painter = painterResource(id = item.image[0]),
+                    model = ImageRequest.Builder(LocalContext.current).
+                    data(item.image[0]).
+                    crossfade(true).
+                    size(400, 400).
+                    precision(Precision.EXACT).
+                    build(),
                     contentDescription = null
                 )
                 Column(
@@ -111,9 +118,14 @@ fun SnaksBox(
     ){
         Column(modifier = Modifier.fillMaxSize().background(Color.White)){
             Box(modifier = Modifier.fillMaxWidth().weight(2f)){
-                Image(
+                AsyncImage(
                     modifier = Modifier.fillMaxSize(),
-                    painter = painterResource(id = item.image),
+                    model = ImageRequest.Builder(LocalContext.current).
+                    data(item.image).
+                    crossfade(true).
+                    size(400, 400).
+                    precision(Precision.EXACT).
+                    build(),
                     contentDescription = null,
                     contentScale = ContentScale.Crop
                 )
