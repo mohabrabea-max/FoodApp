@@ -291,63 +291,7 @@ object Snakes {
             4.1
         )
     )
-//    private val snaksForItems = mapOf<String, Snake>(
-//        "Big Fries" to Snake(
-//            51,
-//            "Frinch Fries",
-//            R.drawable.frenchfries,
-//            mapOf("Big" to 50.0),
-//            4.1),
-//        "Medium Fries" to Snake(
-//            52, "Frinch Fries",
-//            R.drawable.frenchfries,
-//            mapOf("Medium" to 40.0),
-//            4.1),
-//        "Small Fries" to Snake(
-//            53,
-//            "Frinch Fries",
-//            R.drawable.frenchfries,
-//            mapOf("Small" to 30.0),
-//            4.1),
-//        "Big Coleslaw" to Snake(
-//            54,
-//            "Coleslaw",
-//            R.drawable.coleslaw,
-//            mapOf("Big" to 60.0),
-//            4.8),
-//        "Medium Coleslaw" to Snake(
-//            55,
-//            "Coleslaw",
-//            R.drawable.coleslaw,
-//            mapOf("Medium" to 45.0),
-//            4.3),
-//        "Small Coleslaw" to Snake(
-//            56,
-//            "Coleslaw",
-//            R.drawable.coleslaw,
-//            mapOf("Small" to 30.0),
-//            4.4),
-//        "Mozzarella Sticks6" to Snake(
-//            57,
-//            "Mozzarella Sticks",
-//            R.drawable.mozzarellasticks,
-//            mapOf("6 Pieces" to 70.0),
-//            5.0),
-//        "Mozzarella Sticks4" to Snake(
-//            58,
-//            "Mozzarella Sticks",
-//            R.drawable.mozzarellasticks,
-//            mapOf("4 Pieces" to 50.0),
-//            4.5),
-//        "Mozzarella Sticks2" to Snake(
-//            59,
-//            "Mozzarella Sticks",
-//            R.drawable.mozzarellasticks,
-//            mapOf("2 Pieces" to 30.0),
-//            4.1)
-//
-//
-//    )
+
     fun snakes(): List<Snake>{
         return snakesMenu
     }

@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -41,6 +44,8 @@ fun ItemsBox(
     viewModel: ItemScreenViewModel = viewModel(),
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
+    val images = item.image.size
+    val pagerState = rememberPagerState(pageCount = {images})
     Box(
         modifier = Modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
         background(Color.White).
@@ -52,17 +57,24 @@ fun ItemsBox(
         padding(start = 20.dp, end = 15.dp, top = 15.dp, bottom = 20.dp)
     ){
         Column(modifier = Modifier.fillMaxSize().background(Color.White)){
-            Box(modifier = Modifier.fillMaxWidth().weight(2f)){
-                AsyncImage(
-                    modifier = Modifier.fillMaxSize().padding(top = 5.dp, end = 5.dp),
-                    model = ImageRequest.Builder(LocalContext.current).
-                    data(item.image[0]).
-                    crossfade(true).
-                    size(400, 400).
-                    precision(Precision.EXACT).
-                    build(),
-                    contentDescription = null
-                )
+            Box(modifier = Modifier.fillMaxWidth().weight(2f), contentAlignment = Alignment.Center){
+                HorizontalPager(
+                    modifier = Modifier.fillMaxSize(0.95f),
+                    state = pagerState
+
+                ){ page ->
+                    AsyncImage(
+                        modifier = Modifier.padding(top = 15.dp, end = 5.dp).fillMaxSize().clip(RoundedCornerShape(10.dp)),
+                        model = ImageRequest.Builder(LocalContext.current).
+                        data(item.image[page]).
+                        crossfade(true).
+                        size(400, 400).
+                        precision(Precision.EXACT).
+                        build(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                    )
+                }
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.End,

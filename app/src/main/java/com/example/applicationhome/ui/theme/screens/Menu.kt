@@ -43,6 +43,7 @@ import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.FoodDataSource
 import com.example.applicationhome.data.models.RestaurantsMenu
 import com.example.applicationhome.data.models.Screens
+import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.AddBox
@@ -72,7 +73,7 @@ fun Menu(
         modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),
         topBar = {
             MyTopBar(
-                Color.White,
+                Color.DarkOrange,
                 modifier = Modifier.
                 fillMaxWidth().
                 height(100.dp).
@@ -83,7 +84,7 @@ fun Menu(
                         onClick = {if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() } },
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
                     ) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)
+                        Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.White)
                     }
                 },
                 {
@@ -98,7 +99,7 @@ fun Menu(
                             restoreState = true
                         }
                     }) {
-                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.Black)
+                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.White)
                     }
                     IconButton(onClick = {
                         navigationController.navigate(Screens.Search.screen){
@@ -111,7 +112,7 @@ fun Menu(
                             restoreState = true
                         }
                     }) {
-                        Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
+                        Icon(Icons.Default.Search, contentDescription = null, tint = Color.White)
                     }
                 }
             )

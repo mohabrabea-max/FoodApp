@@ -17,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.applicationhome.ui.theme.DarkOrange
+import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,8 +41,9 @@ fun MyTopBar(
                 Box(content = startaction)
                 Text(
                     text = if(title != null) title else "",
+                    fontSize = 18.sp,
                     style = MaterialTheme.typography.headlineMedium,
-                    color = Color.DarkOrange
+                    color = Color.White
                 )
             }
             Row(verticalAlignment = Alignment.CenterVertically, content = actions)

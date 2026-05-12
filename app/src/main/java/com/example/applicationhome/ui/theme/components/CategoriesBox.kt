@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.data.models.CategoriesImage
 import com.example.applicationhome.ui.theme.DarkOrange
-import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.view.model.CategoriesBoxViewModel
 
 @Composable
@@ -30,7 +29,7 @@ fun CategoriesBox(category : CategoriesImage, categoriesBoxViewModel : Categorie
     Box(
         modifier = Modifier.
         clip(RoundedCornerShape(30.dp)).
-        background(if(selected == category.id) Color.DarkOrange else Color.LightOrange).
+        background(if(selected == category.id) Color.DarkOrange else Color.DarkOrange.copy(alpha = 0.3f)).
         clickable {
             if(selected == 0){
                 categoriesBoxViewModel.selected(category)
@@ -48,13 +47,13 @@ fun CategoriesBox(category : CategoriesImage, categoriesBoxViewModel : Categorie
                 painter = painterResource(id = category.icon),
                 contentDescription = "${category.name} Logo",
                 modifier = Modifier.
-                size(if(selected == category.id) 43.dp else 40.dp).
+                size(if(selected == category.id) 38.dp else 35.dp).
                 padding(7.dp),
                 contentScale = ContentScale.Crop
             )
             Text(
                 text = category.name,
-                fontSize = if(selected == category.id) 17.sp else 15.sp,
+                fontSize = if(selected == category.id) 15.sp else 13.sp,
                 color = if(selected == category.id) Color.White else Color.Black,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.

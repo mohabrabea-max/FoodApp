@@ -51,6 +51,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,8 +64,10 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -73,16 +76,16 @@ import com.example.applicationhome.R
 import com.example.applicationhome.data.models.OffersData
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.data.models.Snakes
-import com.example.applicationhome.data.models.VarietiesMenu
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.AddBox
-import com.example.applicationhome.ui.theme.components.CategoriesBox
+import com.example.applicationhome.ui.theme.components.CategoriesBar
 import com.example.applicationhome.ui.theme.components.Favorite
 import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.RestaurantsBox
+import com.example.applicationhome.ui.theme.components.SearchBox
 import com.example.applicationhome.ui.theme.components.SnaksBox
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.CategoriesBoxViewModel
@@ -103,50 +106,62 @@ fun HomeScreen(
     favoriteState : FavoriteViewModel,
     categoriesBoxViewModel : CategoriesBoxViewModel
 ){
-    var showSearchIcon by remember { mutableStateOf(false) }
+    val density = LocalDensity.current
+    val thresholdPx = with(density) { 60.dp.toPx() }
+    val minOffsetToShowBox = with(density) { 147.dp.toPx() }
+    val minOffsetPx = remember(density) { with(density) { 170.dp.toPx() } }
+
+    var showCategoriesBox by remember { mutableStateOf(false) }
     var showcategories by remember { mutableStateOf(true) }
     val scrollState = rememberLazyGridState()
-    LaunchedEffect(scrollState){
-        var previousOffset = 0
-        var previousIndex = 0
-        snapshotFlow{ scrollState.firstVisibleItemIndex to scrollState.firstVisibleItemScrollOffset }.
-        collect{ (currentIndex, currentOffset) ->
-            if(currentIndex == previousIndex){
-                showcategories = currentOffset <= previousOffset
+    val alpha by remember {
+        derivedStateOf {
+            val targetPx = with(density) { 85.dp.toPx() }
+            if(scrollState.firstVisibleItemIndex > 0){
+                1f
             }else{
-                showcategories = currentIndex <= previousIndex
+                ((scrollState.firstVisibleItemScrollOffset / targetPx)).coerceIn(0f, 1f)
             }
-            if((currentOffset > 440 || scrollState.firstVisibleItemIndex > 0) && showcategories == false){
-                showSearchIcon = true
-
-            }else if((currentOffset > 210 || scrollState.firstVisibleItemIndex > 0) && showcategories == true){
-                showSearchIcon = true
-            }else{
-                showSearchIcon = false
-            }
-            previousIndex = currentIndex
-            previousOffset = currentOffset
         }
     }
     var scal by remember { mutableStateOf(false) }
-
-    LaunchedEffect(scrollState) {
-        snapshotFlow { scrollState.firstVisibleItemScrollOffset }
-            .collect { offset ->
-                if ((offset > 440 || scrollState.firstVisibleItemIndex > 0) && showcategories == false) {
-                    scal = true
-                }else if((offset > 210 || scrollState.firstVisibleItemIndex > 0) && showcategories == true){
-                    scal = true
-                }else{
-                    scal = false
-                }
+    LaunchedEffect(scrollState){
+        var previousOffset = 0
+        var previousIndex = 0
+        var accumulatedScrollUp = 0f
+        snapshotFlow{ scrollState.firstVisibleItemIndex to scrollState.firstVisibleItemScrollOffset }.
+        collect{ (currentIndex, currentOffset) ->
+            val delta = previousOffset - currentOffset
+            accumulatedScrollUp += delta
+            if(accumulatedScrollUp > thresholdPx && currentIndex == previousIndex){    //السكرول اللي لفوق
+                showcategories = currentOffset <= previousOffset
+                accumulatedScrollUp = thresholdPx
+            }else if (accumulatedScrollUp <= -thresholdPx && scrollState.firstVisibleItemScrollOffset > minOffsetPx){   //          السكرول اللي لتحت
+                showcategories = currentIndex < previousIndex
+                accumulatedScrollUp = -thresholdPx
             }
+            if((currentOffset > minOffsetToShowBox || scrollState.firstVisibleItemIndex > 0)){   //        الجزء المسؤول عن ظهور بار الاصناف
+                showCategoriesBox = true
+
+            }else{
+                showCategoriesBox = false
+            }
+            previousIndex = currentIndex
+            previousOffset = currentOffset
+            if ((currentOffset > minOffsetToShowBox * 1.7 || scrollState.firstVisibleItemIndex > 0) && showcategories == false) {
+                scal = true
+            }else if((currentOffset > minOffsetToShowBox * 1.7 / 2 || scrollState.firstVisibleItemIndex > 0) && showcategories == true){
+                scal = true
+            }else{
+                scal = false
+            }
+        }
     }
+
     val snaks = Snakes.snakes()
     val menu = categoriesBoxViewModel.filterMenu
     val restaurants = categoriesBoxViewModel.restaurants
     val offers = OffersData.offersMenu()
-    val categories = VarietiesMenu.categoriesList()
     val pagerState = rememberPagerState(pageCount = {offers.size})
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) {
@@ -160,40 +175,23 @@ fun HomeScreen(
         topBar = {
             Box{
                 Column{
-                    var height = if(showcategories == true) 100.dp else 0.dp
+                    var height = if(showcategories == true) 105.dp else 0.dp
                     Spacer(modifier = Modifier.animateContentSize().height(height))
-                    Row(
-                        modifier = Modifier.fillMaxWidth().
-                        height(70.dp).
-                        shadow(elevation = if(showcategories == true) 5.dp else 0.dp).
-                        background(Color.White),
-                        verticalAlignment = Alignment.CenterVertically
-                    ){
-                        LazyRow(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ){
-                            item { Spacer(modifier = Modifier.width(4.dp)) }
-                            items(categories) { category -> CategoriesBox(category, categoriesBoxViewModel) }
-                            item { Spacer(modifier = Modifier.width(4.dp)) }
-                        }
-                    }
-                    Divider(color = Color.LightOrange.copy(alpha = 0.5f))
+                    if(showCategoriesBox == true) CategoriesBar(categoriesBoxViewModel)
                 }
                 Column{
                     MyTopBar(
-                        Color.White,
+                        Color.DarkOrange.copy(alpha = alpha),
                         modifier = Modifier.
                         fillMaxWidth().
-                        height(100.dp),
-                        //shadow(elevation = if(showcategories == false) 5.dp else 0.dp),
-                        "Home",
+                        height(100.dp).shadow(elevation = if(showcategories == false && scal == true) 5.dp else 0.dp),
+                        null,
                         {
                             IconButton(
                                 onClick = {coroutineScope.launch{drawerState.open()}},
-                                modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape).background(Color.White.copy(alpha = if(showcategories == false) 1f else 0f)).size(35.dp)
+                                modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape).size(35.dp)
                             ) {
-                                Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)
+                                Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.White)
                             }
                         },
                         {
@@ -216,11 +214,10 @@ fun HomeScreen(
                                     modifier = Modifier.
                                     size(50.dp).
                                     padding(5.dp).
-                                    clip(CircleShape).background(Color.White).
-                                    border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
+                                    clip(CircleShape).
                                     size(35.dp)
                                 ){
-                                    Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
+                                    Icon(Icons.Default.Search, contentDescription = null, tint = Color.White)
                                 }
                             }
 
@@ -237,15 +234,13 @@ fun HomeScreen(
                             },
                                 modifier = Modifier.size(50.dp).
                                 padding(5.dp).
-                                clip(CircleShape).background(Color.White).
-                                border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
+                                clip(CircleShape).
                                 size(35.dp)
                             ) {
-                                Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.Black)
+                                Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.White)
                             }
                         }
                     )
-                    if(showcategories == true) Divider(color = Color.VeryLightGray)
                 }
             }
         }
@@ -255,17 +250,47 @@ fun HomeScreen(
                 LazyVerticalGrid (
                     state = scrollState,
                     modifier = Modifier.fillMaxSize(),
-                    columns = GridCells.Fixed(2),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    columns = GridCells.Fixed(2)
                 ){
-                    item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(170.dp))}
                     item(span = { GridItemSpan(2) }){
-                        Box(modifier = Modifier.fillMaxSize()){
-                            Box(
-                                modifier = Modifier.width(300.dp).height(50.dp).align(Alignment.Center).clip(CircleShape).background(Color.Black)
-                            )
+                        Box(modifier = Modifier.height(170.dp).fillMaxWidth().background(Color.DarkOrange)){
+                            Column(
+                                modifier = Modifier.align(Alignment.BottomCenter),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ){
+                                Text(
+                                    text = "What would you like to eat?",
+                                    fontSize = 22.sp,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = Color.White.copy(alpha = 1f - alpha),
+                                    textAlign = TextAlign.Center,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(bottom = 20.dp)
+                                )
+                            }
                         }
                     }
+                    item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp).background(Color.DarkOrange)) }
+                    item(span = { GridItemSpan(2) }){
+                        Box{
+                            Box(
+                                modifier = Modifier.fillMaxWidth().
+                                height(25.dp).
+                                clip(shape = RoundedCornerShape(bottomStart = 40.dp, bottomEnd = 40.dp)).
+                                background(Color.DarkOrange).
+                                align(Alignment.TopCenter)
+                            )
+                            SearchBox()
+                        }
+                    }
+                    item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
+                    item(span = { GridItemSpan(2) }){
+                        Box(modifier = Modifier.height(60.dp).fillMaxWidth()){
+                            if(showCategoriesBox == false)CategoriesBar(categoriesBoxViewModel)
+                        }
+                    }
+                    item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
                     item(span = { GridItemSpan(2) }){
                         Box(modifier = Modifier.fillMaxWidth().height(180.dp)){
                             HorizontalPager(
@@ -284,12 +309,12 @@ fun HomeScreen(
                             }
                         }
                     }
+                    item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
                     item(span = { GridItemSpan(2) }){
                         Spacer(modifier = Modifier.height(20.dp))
                         Divider(color = Color.LightOrange.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(start = 20.dp, end = 20.dp))
                         Spacer(modifier = Modifier.height(20.dp))
                     }
-
                     item(span = { GridItemSpan(2) }){
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -302,11 +327,11 @@ fun HomeScreen(
                                 color = Color.Black,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(start = 10.dp)
+                                modifier = Modifier.padding(start = 15.dp)
                             )
                             TextButton(
-                                onClick = {navigationController.navigate(Screens.Menu.screen)},
-                                contentPadding = PaddingValues(end = 10.dp)
+                                onClick = {navigationController.navigate(Screens.Restaurants.screen)},
+                                contentPadding = PaddingValues(end = 15.dp)
                             ){
                                 Text(
                                     text = "See all",
@@ -328,7 +353,7 @@ fun HomeScreen(
                             }
                         }
                     }
-
+                    item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
                     item(span = { GridItemSpan(2) }){
                         Spacer(modifier = Modifier.height(20.dp))
                         Divider(color = Color.LightOrange.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(start = 20.dp, end = 20.dp))
@@ -346,11 +371,11 @@ fun HomeScreen(
                                 color = Color.Black,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(start = 10.dp)
+                                modifier = Modifier.padding(start = 15.dp)
                             )
                             TextButton(
                                 onClick = {navigationController.navigate(Screens.Menu.screen)},
-                                contentPadding = PaddingValues(end = 10.dp)
+                                contentPadding = PaddingValues(end = 15.dp)
                             ){
                                 Text(
                                     text = "See all",
@@ -388,12 +413,13 @@ fun HomeScreen(
                             }
                         }
                     }
-
+                    item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
                     item(span = { GridItemSpan(2) }){
                         Spacer(modifier = Modifier.height(20.dp))
                         Divider(color = Color.LightOrange.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(start = 20.dp, end = 20.dp))
                         Spacer(modifier = Modifier.height(20.dp))
                     }
+                    item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
                     items(menu){ item ->
                         ItemsBox(
                             item,
@@ -403,9 +429,7 @@ fun HomeScreen(
                                 Favorite(
                                     modifier = Modifier.
                                     clip(CircleShape).
-                                    border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
-                                    size(35.dp).
-                                    background(Color.VeryLightGray),
+                                    size(35.dp),
                                     food = item,
                                     favoriteState = favoriteState
                                 )
@@ -413,12 +437,10 @@ fun HomeScreen(
                             }
                         )
                     }
+                    item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
                     item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(80.dp))}
                 }
             }
         }
     }
 }
-//Spacer(modifier = Modifier.height(20.dp))
-//Divider(modifier = Modifier.width(300.dp).padding(10.dp))
-//Spacer(modifier = Modifier.height(20.dp))

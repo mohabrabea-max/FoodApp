@@ -9,23 +9,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,7 +30,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,22 +38,28 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.size.Precision
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.Cart
 import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.data.models.Snake
+import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.components.CartBox
 import com.example.applicationhome.ui.theme.components.CartButton
 import com.example.applicationhome.ui.theme.components.MyTopBar
+import com.example.applicationhome.ui.theme.components.PaymentSummary
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.FavoriteViewModel
@@ -92,7 +93,7 @@ fun Cart(
         background(Color.LightBrownForBackground),
         topBar = {
             MyTopBar(
-                Color.White,
+                Color.DarkOrange,
                 modifier = Modifier.
                 fillMaxWidth().
                 height(100.dp).
@@ -103,7 +104,7 @@ fun Cart(
                         onClick = {coroutineScope.launch{drawerState.open()}},
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
                     ) {
-                        Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)
+                        Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.White)
                     }
                 },
                 {
@@ -118,7 +119,7 @@ fun Cart(
                             restoreState = true
                         }
                     }) {
-                        Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
+                        Icon(Icons.Default.Search, contentDescription = null, tint = Color.White)
                     }
                 }
             )
@@ -143,40 +144,46 @@ fun Cart(
                                 }
                             }
                         }
+                        item{
+                            PaymentSummary(addBoxViewModel)
+                        }
                         item{Spacer(modifier = Modifier.height(150.dp))}
                     }
                 }else{
                     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
-                        Spacer(modifier = Modifier.height(150.dp))
-                        Text(
-                            text = "Your shopping cart",
-                            fontSize = 25.sp,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = Color.Black,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(5.dp)
+                        Spacer(modifier = Modifier.height(300.dp))
+                        AsyncImage(
+                            modifier = Modifier.size(120.dp),
+                            model = ImageRequest.Builder(LocalContext.current).
+                            data(R.drawable.cartemptyimage).
+                            crossfade(true).
+                            size(400, 400).
+                            precision(Precision.EXACT).
+                            build(),
+                            contentDescription = null
                         )
+                        Spacer(modifier = Modifier.height(30.dp))
                         Text(
-                            text = "looks empty!",
-                            fontSize = 25.sp,
+                            text = "There's nothing in your cart yet",
+                            fontSize = 22.sp,
                             style = MaterialTheme.typography.labelLarge,
-                            color = Color.Black,
+                            color = Color.BrownForFont,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(5.dp)
+                            fontWeight = FontWeight.Bold
                         )
-                        Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(7.dp))
                         Text(
-                            text = "What are you waiting for?",
-                            fontSize = 20.sp,
+                            text = "Ready to order?",
+                            fontSize = 14.sp,
+                            style = MaterialTheme.typography.bodySmall,
                             color = Color.Gray,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(5.dp)
+                            textAlign = TextAlign.Center
                         )
-                        Spacer(modifier = Modifier.height(50.dp))
+                        Spacer(modifier = Modifier.height(40.dp))
                         Box(
-                            modifier = Modifier.aspectRatio(2f).
-                            padding(5.dp).
-                            clip(RoundedCornerShape(30.dp)).
+                            modifier = Modifier.width(100.dp).
+                            height(40.dp).
+                            clip(CircleShape).
                             clickable{
                                 navigationController.navigate(Screens.HomeScreen.screen){
                                     popUpTo(navigationController.graph.findStartDestination().id) {
@@ -189,67 +196,16 @@ fun Cart(
                                 }
                                 viewModelForBottomBar.home()
                             }.
-                            border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp))
+                            border(width = 1.dp, color = Color.BrownForFont, shape = RoundedCornerShape(40.dp)).
+                            padding(7.dp).align(Alignment.CenterHorizontally)
                         ){
-                            Row {
-                                Column(modifier = Modifier.weight(1f).fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center){
-                                    Text(
-                                        text = "Go",
-                                        fontSize = 80.sp,
-                                        style = MaterialTheme.typography.labelLarge,
-                                        color = Color.DarkOrange,
-                                        textAlign = TextAlign.Center,
-                                    )
-                                    Text(
-                                        text = "shopping!",
-                                        fontSize = 40.sp,
-                                        style = MaterialTheme.typography.labelLarge,
-                                        color = Color.Black,
-                                        textAlign = TextAlign.Center,
-                                    )
-                                }
-                                VerticalDivider(color = Color.LightGray.copy(alpha = 0.5f))
-                                Icon(
-                                    Icons.Default.ShoppingCart, contentDescription = "Shopping Cart", tint = Color.Blue,
-                                    modifier = Modifier.weight(1f).size(100.dp).align(Alignment.CenterVertically)
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(30.dp))
-                        Box(
-                            modifier = Modifier.aspectRatio(2f).
-                            padding(5.dp).
-                            clip(RoundedCornerShape(30.dp)).
-                            clickable{
-                                navigationController.navigate(Screens.Favorite.screen){
-                                    popUpTo(navigationController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-
-                                    launchSingleTop = true
-
-                                    restoreState = true
-                                }
-                                viewModelForBottomBar.favorite()
-                            }.
-                            border(width = 0.5.dp, color = Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp))
-                        ){
-                            Row {
-                                Column(modifier = Modifier.weight(1f).fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center){
-                                    Text(
-                                        text = "Favorite",
-                                        fontSize = 40.sp,
-                                        style = MaterialTheme.typography.labelLarge,
-                                        color = Color.DarkOrange,
-                                        textAlign = TextAlign.Center,
-                                    )
-                                }
-                                VerticalDivider(color = Color.LightGray.copy(alpha = 0.5f))
-                                Icon(
-                                    Icons.Default.Favorite, contentDescription = "Shopping Cart", tint = Color.Red,
-                                    modifier = Modifier.weight(1f).size(100.dp).align(Alignment.CenterVertically)
-                                )
-                            }
+                            Text(
+                                text = "Add items",
+                                fontSize = 15.sp,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = Color.BrownForFont,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
                         }
                     }
                 }

@@ -2,6 +2,7 @@ package com.example.applicationhome.ui.theme.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,6 +48,7 @@ import com.example.applicationhome.data.models.Cart
 import com.example.applicationhome.data.models.CartKey
 import com.example.applicationhome.data.models.Food
 import com.example.applicationhome.data.models.FoodItem
+import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.data.models.Snake
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
@@ -76,18 +78,22 @@ fun CartBox(
     when(item){
         is FoodItem -> {
             name = item.name
-            price = item.sizeOptions.find { it.size == size }?.price.toString() + " L.E"
+            price = "EGP " + item.sizeOptions.find { it.size == size }?.price.toString()
         }
         is Snake -> {
             name = item.name
-            price = item.priceANDsize[size].toString() + " L.E"
+            price = "EGP " + item.priceANDsize[size].toString()
         }
     }
 
     Box(
         modifier = Modifier.padding(start = 10.dp, end = 10.dp).
         fillMaxWidth().height(100.dp).
-        background(Color.White)
+        background(Color.White).
+        clickable {
+            if(item is FoodItem) viewModel.run { selectItem(item, item.sizeOptions.find { it.size == size }?.size.toString()) }
+            navigationController.navigate(Screens.ItemScreen.screen)
+        }
     ){
         Column(modifier = Modifier.fillMaxSize()){
             Row(

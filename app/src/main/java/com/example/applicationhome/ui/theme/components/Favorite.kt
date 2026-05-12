@@ -60,7 +60,7 @@ fun Favorite(
             Icon(
                 imageVector = Icons.Default.FavoriteBorder,
                 contentDescription = "More",
-                tint = Color.Black,
+                tint = Color.DarkOrange,
                 modifier = modifier2.size(20.dp).scale(scale.value)
             )
         }else{

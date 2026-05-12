@@ -44,6 +44,7 @@ import com.example.applicationhome.R
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.data.models.VarietiesMenu
 import com.example.applicationhome.ui.theme.BrownForFont
+import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.MyTopBar
@@ -64,7 +65,7 @@ fun Varieties(
         modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),
         topBar = {
             MyTopBar(
-                Color.White,
+                Color.DarkOrange,
                 modifier = Modifier.
                 fillMaxWidth().
                 height(100.dp).
@@ -75,7 +76,7 @@ fun Varieties(
                         onClick = {coroutineScope.launch{drawerState.open()}},
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
                     ) {
-                        Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)
+                        Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.White)
                     }
                 },
                 {
@@ -90,7 +91,7 @@ fun Varieties(
                             restoreState = true
                         }
                     }) {
-                        Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
+                        Icon(Icons.Default.Search, contentDescription = null, tint = Color.White)
                     }
                     IconButton(onClick = {
                         navigationController.navigate(Screens.Search.screen){
@@ -103,7 +104,7 @@ fun Varieties(
                             restoreState = true
                         }
                     }) {
-                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.Black)
+                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.White)
                     }
                 }
             )

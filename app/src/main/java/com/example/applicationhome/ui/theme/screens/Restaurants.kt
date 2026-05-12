@@ -76,7 +76,7 @@ fun Restaurants(
         modifier = Modifier.fillMaxSize().background(Color.VeryLightGray),
         topBar = {
             MyTopBar(
-                Color.White,
+                Color.DarkOrange,
                 modifier = Modifier.
                 fillMaxWidth().
                 height(100.dp).
@@ -87,7 +87,7 @@ fun Restaurants(
                         onClick = {coroutineScope.launch{drawerState.open()}},
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
                     ) {
-                        Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)
+                        Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.White)
                     }
                 },
                 {
@@ -102,7 +102,7 @@ fun Restaurants(
                             restoreState = true
                         }
                     }) {
-                        Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
+                        Icon(Icons.Default.Search, contentDescription = null, tint = Color.White)
                     }
                     IconButton(onClick = {
                         navigationController.navigate(Screens.Search.screen){
@@ -115,7 +115,7 @@ fun Restaurants(
                             restoreState = true
                         }
                     }) {
-                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.Black)
+                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.White)
                     }
                 }
             )

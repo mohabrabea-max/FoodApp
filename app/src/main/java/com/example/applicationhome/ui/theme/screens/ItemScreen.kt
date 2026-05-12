@@ -1,6 +1,7 @@
 package com.example.applicationhome.ui.theme.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,7 +29,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -87,17 +88,20 @@ fun ItemScreen(
     val scrollState = rememberLazyListState()
     val alpha by remember {
         derivedStateOf {
-            ((scrollState.firstVisibleItemScrollOffset / 300f) - 1f).coerceIn(0f, 1f)
-        }
-    }
-    val alpha2 by remember {
-        derivedStateOf {
-            ((1f - scrollState.firstVisibleItemScrollOffset / 300f)).coerceIn(0f, 1f)
+            if(scrollState.firstVisibleItemIndex >= 1){
+                1f
+            }else{
+                ((scrollState.firstVisibleItemScrollOffset / 300f) - 1f).coerceIn(0f, 1f)
+            }
         }
     }
     val searchSize by remember {
         derivedStateOf {
-            ((scrollState.firstVisibleItemScrollOffset / 300f) - 1f).coerceIn(1f, 3f)
+            if(scrollState.firstVisibleItemIndex >= 1){
+                3f
+            }else{
+                ((scrollState.firstVisibleItemScrollOffset / 300f) - 1f).coerceIn(1f, 3f)
+            }
         }
     }
     val menu = categoriesBoxViewModel.filterMenu
@@ -114,7 +118,7 @@ fun ItemScreen(
             topBar = {
                 Column{
                     MyTopBar(
-                        Color.White.copy(alpha = alpha),
+                        Color.DarkOrange.copy(alpha = alpha),
                         modifier = Modifier.
                         fillMaxWidth().
                         height(100.dp),
@@ -132,9 +136,10 @@ fun ItemScreen(
                         },
                         {
                             Box(
-                                modifier = Modifier.padding(5.dp).
+                                modifier = Modifier.animateContentSize().padding(5.dp).
                                 border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
-                                shadow(elevation = if(searchSize < 1) 7.dp else 0.dp, spotColor = Color.LightGray, shape = CircleShape).clip(CircleShape).width(40.dp * searchSize).height(40.dp).
+                                shadow(elevation = if(searchSize < 1) 7.dp else 0.dp, spotColor = Color.LightGray, shape = CircleShape).clip(CircleShape).
+                                width(if(searchSize > 1) 120.dp else 40.dp).height(40.dp).
                                 background(Color.White).
                                 clickable {
                                     navigationController.navigate(Screens.Search.screen){
@@ -176,20 +181,32 @@ fun ItemScreen(
                             )
                         }
                     )
-                    Divider(color = Color.VeryLightGray.copy(alpha = alpha))
                 }
             }
         ){
             Box(modifier = Modifier.background(Color.VeryLightGray)){
-                Box{
+                Column{
                     LazyColumn(
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         state = scrollState,
                         modifier = Modifier.fillMaxSize()
                     ){
-                        item{Spacer(modifier = Modifier.height(50.dp))}
-                        item {
-                            Column(modifier = Modifier.fillMaxSize().padding(start = 10.dp, end = 10.dp)){
-                                Box(modifier = Modifier.fillMaxWidth().height(400.dp).clip(RoundedCornerShape(10.dp))){
+                        item{
+                            Column{
+                                Spacer(modifier = Modifier.height(50.dp))
+                                Box(
+                                    modifier = Modifier.size(350.dp).
+                                    clip(RoundedCornerShape(10.dp)).
+                                    graphicsLayer {
+                                        // بنخلي الصورة تتحرك بنص سرعة السكرول (Parallax)
+                                        // وبنخليها تنزل لتحت شوية عشان اللي تحتها يغطيها
+                                        translationY = scrollState.firstVisibleItemScrollOffset * 1f
+                                        val scale = 1f - (scrollState.firstVisibleItemScrollOffset.toFloat() / 4000f).coerceIn(0f, 0.2f)  // تأثير التصغير (Scale)
+                                        scaleX = scale
+                                        scaleY = scale
+                                        1f - (scrollState.firstVisibleItemScrollOffset.toFloat() / 1000f).coerceIn(0f, 1f) // بنخلي الصورة دايماً "ورا" الحاجات التانية
+                                    }
+                                ){
                                     HorizontalPager(
                                         state = pagerState,
                                         modifier = Modifier.fillMaxSize()
@@ -212,8 +229,8 @@ fun ItemScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Row(
-                                            modifier = Modifier.shadow(elevation = 2.dp, spotColor = Color.Black, shape = CircleShape).
-                                            background(Color.VeryLightGray).
+                                            modifier = Modifier.clip(CircleShape).
+                                            background(Color.VeryLightGray.copy(alpha = 0.5f)).
                                             padding(3.dp)
                                         ){
                                             repeat(item.image.size) { iteration ->
@@ -228,7 +245,11 @@ fun ItemScreen(
                                         }
                                     }
                                 }
-                                Spacer(modifier = Modifier.height(20.dp))
+                            }
+                        }
+                        item {
+                            Column(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray).padding(start = 10.dp, end = 10.dp)){
+                                //Spacer(modifier = Modifier.height(20.dp))
                                 Column(
                                     modifier = Modifier.fillMaxWidth().
                                     clip(RoundedCornerShape(20.dp)).

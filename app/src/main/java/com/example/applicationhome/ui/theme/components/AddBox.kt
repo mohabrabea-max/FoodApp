@@ -16,15 +16,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,24 +33,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.models.Cart
 import com.example.applicationhome.data.models.CartKey
 import com.example.applicationhome.data.models.Food
 import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Snake
+import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.view.model.AddBoxViewModel
 import kotlinx.coroutines.delay
@@ -78,23 +69,20 @@ fun AddBox(
     }
 
     var cartkey = CartKey(food, selectedSize.value.toString())
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
     var count = ordernumber.cartMap[cartkey] ?: 0
     var activid = ordernumber.activId == id
     var isExpanded by remember { mutableStateOf(false) }
     var active by remember { mutableStateOf(false) }
-    val focusRequester = remember { FocusRequester() }
 
     //  بيراقب الـ isExpanded
     LaunchedEffect(key1 = count, key2 = active) {
-        if (isExpanded && !active && count > 0) {
+        if (isExpanded && !active) {
             delay(2000)
             isExpanded = false
         }
     }
     var cartColor = if (activid == false || isExpanded == false || count == 0) Color.VeryLightGray else Color.Red
-    var targetWidth = if (activid == false || isExpanded == false || count == 0) 35.dp else 160.dp
+    var targetWidth = if (activid == false || isExpanded == false) 35.dp else 160.dp
     Box(
         modifier = modifier.
         animateContentSize().
@@ -104,31 +92,24 @@ fun AddBox(
         background(cartColor).
         clickable {
             ordernumber.delete(food, selectedSize.value.toString())
-            Toast.makeText(context, "Removed From Cart", Toast.LENGTH_SHORT).show()
+            if( count > 0 ) Toast.makeText(context, "Removed From Cart", Toast.LENGTH_SHORT).show()
         }.
         border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)),
         contentAlignment = Alignment.Center
     ){
-        if(count == 0) {
-            Box(
-                modifier = modifier.
-                animateContentSize().
-                height(35.dp).
-                width(targetWidth).
-                clip(CircleShape).
-                background(color).
-                clickable {
+        if(count == 0 && activid == false || count == 0 && isExpanded == false) {
+            IconButton(
+                onClick = {
                     isExpanded = true
                     ordernumber.addBoxNumberPlus(food, selectedSize.value.toString())
-                },
-                contentAlignment = Alignment.Center
+                          },
+                modifier = Modifier.fillMaxSize()
             ){
-                Text(
-                    text = "+",
-                    fontSize = 20.sp,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = null,
+                    tint = Color.DarkOrange,
+                    modifier = Modifier.fillMaxSize().padding(5.dp)
                 )
             }
         }else if(count > 0 && activid == false || isExpanded == false){
@@ -138,10 +119,10 @@ fun AddBox(
                 height(35.dp).
                 width(targetWidth).
                 clip(CircleShape).
-                background(color).
+                background(Color.DarkOrange).
                 clickable {
                     isExpanded = true
-                    if(count == 99){
+                    if(count > 0){
                         ordernumber.activ(food)
                     }else{
                         ordernumber.addBoxNumberPlus(food, selectedSize.value.toString())
@@ -153,7 +134,7 @@ fun AddBox(
                     text = count.toString(),
                     fontSize = 20.sp,
                     style = MaterialTheme.typography.labelLarge,
-                    color = Color.Black,
+                    color = Color.White,
                     textAlign = TextAlign.Center
                 )
             }
@@ -162,7 +143,7 @@ fun AddBox(
             Spacer(modifier = Modifier.width(5.dp))
                 Icon(
                     Icons.Default.Delete,
-                    contentDescription = "Cart", tint = Color.White,
+                    contentDescription = "Cart", tint = if( count > 0 ) Color.White else Color.Black,
                     modifier = Modifier.weight(1f).padding(5.dp)
                 )
                 Box(
@@ -182,87 +163,34 @@ fun AddBox(
                         background(color),
                         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
                     ){
+                        IconButton(onClick = {ordernumber.addBoxNumberMinus(food, selectedSize.value.toString())}, modifier = Modifier.weight(1f).fillMaxHeight()){
+                            Icon(
+                                Icons.Default.Remove,
+                                contentDescription = null,
+                                tint = if(count > 0) Color.DarkOrange else Color.Gray,
+                                modifier = Modifier.fillMaxSize().padding(5.dp)
+                            )
+                        }
                         Box(
                             modifier = Modifier.
                             weight(1f).
-                            fillMaxHeight().
-                            animateContentSize().
-                            clickable {
-                                ordernumber.addBoxNumberMinus(food, selectedSize.value.toString())
-                            },
+                            fillMaxHeight(),
                             contentAlignment = Alignment.Center
                         ){
                             Text(
-                                text = "-",
+                                text = count.toString(),
                                 fontSize = 20.sp,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = Color.Black,
                                 textAlign = TextAlign.Center
                             )
                         }
-                        VerticalDivider(color = Color.Black, modifier = Modifier.height(20.dp))
-                        Box(
-                            modifier = Modifier.
-                            weight(1f).
-                            fillMaxHeight().
-                            clickable {
-                                count
-                            },
-                            contentAlignment = Alignment.Center
-                        ){
-                            BasicTextField(
-                                value = Cart.cartMap()[cartkey].toString(),
-                                onValueChange = { newValue ->
-                                    if (newValue.isNotEmpty()) {
-                                        if((newValue.all { it.isDigit() } && newValue.length <= 2)){
-                                            val newCount = newValue.toIntOrNull() ?: count
-                                            ordernumber.updateCount(food, selectedSize.value.toString(), newCount)
-                                        }
-                                    }else{
-                                        val newCount = newValue.toIntOrNull() ?: 0
-                                        ordernumber.updateCount(food, selectedSize.value.toString(), newCount)
-                                    }
-                                },
-                                modifier = Modifier.
-                                    focusRequester(focusRequester).
-                                    // السطر ده بيلقط أول ما المستخدم يدوس على الـ TextField عشان يكتب
-                                    onFocusChanged { focusState ->
-                                        active = focusState.isFocused
-                                        if (focusState.isFocused) {
-                                            isExpanded = true // بنخليه مفرود فوراً أول ما يركز فيه
-                                        }
-                                    },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
-                                keyboardActions = KeyboardActions(
-                                    onDone = {
-                                        keyboardController?.hide()
-                                        focusManager.clearFocus()
-                                    }
-                                ),
-                                singleLine = true,
-                                textStyle = TextStyle(
-                                    textAlign = TextAlign.Center,
-                                    fontSize = 20.sp,
-                                    color = Color.Black
-                                )
-                            )
-                        }
-                        VerticalDivider(color = Color.Black, modifier = Modifier.height(20.dp))
-                        Box(
-                            modifier = Modifier.
-                            weight(1f).
-                            fillMaxHeight().
-                            clickable {
-                                ordernumber.addBoxNumberPlus(food, selectedSize.value.toString())
-                            },
-                            contentAlignment = Alignment.Center
-                        ){
-                            Text(
-                                text = "+",
-                                fontSize = 20.sp,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = Color.Black,
-                                textAlign = TextAlign.Center
+                        IconButton(onClick = {ordernumber.addBoxNumberPlus(food, selectedSize.value.toString())}, modifier = Modifier.weight(1f).fillMaxHeight()){
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = null,
+                                tint = if(count < 99) Color.DarkOrange else Color.Gray,
+                                modifier = Modifier.fillMaxSize().padding(5.dp)
                             )
                         }
                     }
@@ -271,3 +199,40 @@ fun AddBox(
         }
     }
 }
+
+//BasicTextField(
+//value = Cart.cartMap()[cartkey].toString(),
+//onValueChange = { newValue ->
+//    if (newValue.isNotEmpty()) {
+//        if((newValue.all { it.isDigit() } && newValue.length <= 2)){
+//            val newCount = newValue.toIntOrNull() ?: count
+//            ordernumber.updateCount(food, selectedSize.value.toString(), newCount)
+//        }
+//    }else{
+//        val newCount = newValue.toIntOrNull() ?: 0
+//        ordernumber.updateCount(food, selectedSize.value.toString(), newCount)
+//    }
+//},
+//modifier = Modifier.
+//focusRequester(focusRequester).
+//// السطر ده بيلقط أول ما المستخدم يدوس على الـ TextField عشان يكتب
+//onFocusChanged { focusState ->
+//    active = focusState.isFocused
+//    if (focusState.isFocused) {
+//        isExpanded = true // بنخليه مفرود فوراً أول ما يركز فيه
+//    }
+//},
+//keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+//keyboardActions = KeyboardActions(
+//onDone = {
+//    keyboardController?.hide()
+//    focusManager.clearFocus()
+//}
+//),
+//singleLine = true,
+//textStyle = TextStyle(
+//textAlign = TextAlign.Center,
+//fontSize = 20.sp,
+//color = Color.Black
+//)
+//)
