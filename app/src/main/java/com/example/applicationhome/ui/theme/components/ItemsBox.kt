@@ -14,6 +14,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +35,8 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.data.models.Snake
+import com.example.applicationhome.data.models.Snack
+import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
 @Composable
@@ -42,132 +44,151 @@ fun ItemsBox(
     item: FoodItem,
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel = viewModel(),
+    apiData: APIData,
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
-    val images = item.image.size
-    val pagerState = rememberPagerState(pageCount = {images})
-    Box(
-        modifier = Modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
-        background(Color.White).
-        aspectRatio(0.65f).
-        clickable{
-            viewModel.run { selectItem(item, item.sizeOptions.last().size) }
-            navigationController.navigate(Screens.ItemScreen.screen)
-        }.
-        padding(start = 20.dp, end = 15.dp, top = 15.dp, bottom = 20.dp)
-    ){
-        Column(modifier = Modifier.fillMaxSize().background(Color.White)){
-            Box(modifier = Modifier.fillMaxWidth().weight(2f), contentAlignment = Alignment.Center){
-                HorizontalPager(
-                    modifier = Modifier.fillMaxSize(0.95f),
-                    state = pagerState
+    if (apiData.foodMenuListisLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator() // دايرة التحميل الافتراضية في أندرويد
+        }
+    }else{
+        val images = item.image.size
+        val pagerState = rememberPagerState(pageCount = {images})
+        Box(
+            modifier = Modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
+            background(Color.White).
+            aspectRatio(0.65f).
+            clickable{
+                viewModel.run { selectItem(item, item.sizeOptions.last().size) }
+                navigationController.navigate(Screens.ItemScreen.screen)
+            }.
+            padding(start = 20.dp, end = 15.dp, top = 15.dp, bottom = 20.dp)
+        ){
+            Column(modifier = Modifier.fillMaxSize().background(Color.White)){
+                Box(modifier = Modifier.fillMaxWidth().weight(2f), contentAlignment = Alignment.Center){
+                    HorizontalPager(
+                        modifier = Modifier.fillMaxSize(0.95f),
+                        state = pagerState
 
-                ){ page ->
-                    AsyncImage(
-                        modifier = Modifier.padding(top = 15.dp, end = 5.dp).fillMaxSize().clip(RoundedCornerShape(10.dp)),
-                        model = ImageRequest.Builder(LocalContext.current).
-                        data(item.image[page]).
-                        crossfade(true).
-                        size(400, 400).
-                        precision(Precision.EXACT).
-                        build(),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
+                    ){ page ->
+                        AsyncImage(
+                            modifier = Modifier.padding(top = 15.dp, end = 5.dp).fillMaxSize().clip(RoundedCornerShape(10.dp)),
+                            model = ImageRequest.Builder(LocalContext.current).
+                            data(item.image[page]).
+                            crossfade(true).
+                            size(400, 400).
+                            precision(Precision.EXACT).
+                            build(),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                        )
+                    }
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.SpaceBetween,
+                        content = actions
                     )
                 }
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    content = actions
-                )
-            }
 
-            Column(modifier = Modifier.fillMaxWidth().weight(1f),
-                verticalArrangement = Arrangement.SpaceBetween){
-                Text(
-                    text = item.name,
-                    fontSize = 14.sp,
-                    color = Color.Black,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = item.name,
-                    fontSize = 11.sp,
-                    color = Color.Gray,
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Text(
-                    text = item.sizeOptions.last().price.toString() + " E.G",
-                    fontSize = 16.sp,
-                    color = Color.Black,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
-    }
-
-}
-@Composable
-fun SnaksBox(
-    modifier: Modifier = Modifier,
-    inItemScreen : Boolean,
-    item: Snake,
-    size : String?,
-    navigationController : NavHostController,
-    viewModel: ItemScreenViewModel = viewModel(),
-    actions : @Composable ColumnScope.() -> Unit = {}
-){
-    Card(
-        modifier = modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
-        background(Color.White).
-        clickable{
-            viewModel.run { selectSnak(item, item.priceANDsize.keys.last()) }
-            navigationController.navigate(Screens.ItemScreen.screen)
-        }
-    ){
-        Column(modifier = Modifier.fillMaxSize().background(Color.White)){
-            Box(modifier = Modifier.fillMaxWidth().weight(2f)){
-                AsyncImage(
-                    modifier = Modifier.fillMaxSize(),
-                    model = ImageRequest.Builder(LocalContext.current).
-                    data(item.image).
-                    crossfade(true).
-                    size(400, 400).
-                    precision(Precision.EXACT).
-                    build(),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop
-                )
-                Column(
-                    modifier = Modifier.fillMaxSize().
-                    padding(end = 10.dp, top = 10.dp, bottom = 5.dp),
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    content = actions
-                )
-            }
-            Column(
-                modifier = Modifier.fillMaxWidth().weight(1f).padding(start = 15.dp, end = 10.dp, top = 5.dp, bottom = 10.dp),
-                verticalArrangement = Arrangement.SpaceBetween
-            ){
-                Text(
-                    text = if(inItemScreen == false) item.name else size + " " + item.name,
-                    fontSize = 14.sp,
-                    color = Color.Black,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                if(inItemScreen == false){
+                Column(modifier = Modifier.fillMaxWidth().weight(1f),
+                    verticalArrangement = Arrangement.SpaceBetween){
                     Text(
-                        text = item.priceANDsize.values.last().toString() + " E.G",
+                        text = item.name,
+                        fontSize = 14.sp,
+                        color = Color.Black,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = item.name,
+                        fontSize = 11.sp,
+                        color = Color.Gray,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Text(
+                        text = item.sizeOptions.last().price.toString() + " E.G",
                         fontSize = 16.sp,
                         color = Color.Black,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold
                     )
+                }
+            }
+        }
+    }
+}
+@Composable
+fun SnaksBox(
+    modifier: Modifier = Modifier,
+    inItemScreen : Boolean,
+    item: Snack,
+    size : String?,
+    navigationController : NavHostController,
+    viewModel: ItemScreenViewModel = viewModel(),
+    apiData: APIData,
+    actions : @Composable ColumnScope.() -> Unit = {}
+){
+    if (apiData.snacksisLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator() // دايرة التحميل الافتراضية في أندرويد
+        }
+    }else{
+        Card(
+            modifier = modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
+            background(Color.White).
+            clickable{
+                viewModel.run { selectSnak(item, item.priceANDsize.keys.last()) }
+                navigationController.navigate(Screens.ItemScreen.screen)
+            }
+        ){
+            Column(modifier = Modifier.fillMaxSize().background(Color.White)){
+                Box(modifier = Modifier.fillMaxWidth().weight(2f)){
+                    AsyncImage(
+                        modifier = Modifier.fillMaxSize(),
+                        model = ImageRequest.Builder(LocalContext.current).
+                        data(item.image.first()).
+                        crossfade(true).
+                        size(400, 400).
+                        precision(Precision.EXACT).
+                        build(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop
+                    )
+                    Column(
+                        modifier = Modifier.fillMaxSize().
+                        padding(end = 10.dp, top = 10.dp, bottom = 5.dp),
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.SpaceBetween,
+                        content = actions
+                    )
+                }
+                Column(
+                    modifier = Modifier.fillMaxWidth().weight(1f).padding(start = 15.dp, end = 10.dp, top = 5.dp, bottom = 10.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ){
+                    Text(
+                        text = if(inItemScreen == false) item.name else size + " " + item.name,
+                        fontSize = 14.sp,
+                        color = Color.Black,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    if(inItemScreen == false){
+                        Text(
+                            text = item.priceANDsize.values.last().toString() + " E.G",
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }

@@ -9,7 +9,7 @@ import com.example.applicationhome.data.models.Cart
 import com.example.applicationhome.data.models.CartKey
 import com.example.applicationhome.data.models.Food
 import com.example.applicationhome.data.models.FoodItem
-import com.example.applicationhome.data.models.Snake
+import com.example.applicationhome.data.models.Snack
 
 class AddBoxViewModel : ViewModel(){
     var activId by mutableStateOf<Int?>(null)
@@ -31,7 +31,7 @@ class AddBoxViewModel : ViewModel(){
                     val priceForSize = food.sizeOptions.find { it.size == size }?.price ?: 0.0
                     totalPrice.value += priceForSize * value
                 }
-                is Snake -> {
+                is Snack -> {
                     totalNumber.value += value
                     val priceForSize = food.priceANDsize[size] ?: 0.0
                     totalPrice.value += priceForSize * value

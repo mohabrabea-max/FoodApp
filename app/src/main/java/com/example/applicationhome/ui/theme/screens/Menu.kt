@@ -40,8 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.example.applicationhome.data.models.FoodDataSource
-import com.example.applicationhome.data.models.RestaurantsMenu
+import com.example.applicationhome.data.models.CategoryType
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightBrownForBackground
@@ -51,6 +50,7 @@ import com.example.applicationhome.ui.theme.components.Favorite
 import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.RestaurantsBox
+import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.CategoriesBoxViewModel
 import com.example.applicationhome.view.model.FavoriteViewModel
@@ -64,11 +64,12 @@ fun Menu(
     viewModel: ItemScreenViewModel,
     addBoxViewModel: AddBoxViewModel,
     favoriteState : FavoriteViewModel,
-    categoriesBoxViewModel: CategoriesBoxViewModel
+    categoriesBoxViewModel: CategoriesBoxViewModel,
+    apiData : APIData
 ){
     val typ = categoriesBoxViewModel.typ
-    val restaurants = RestaurantsMenu.restaurantsMenu()
-    val menu = FoodDataSource.allMenu()
+    val restaurants = apiData.restaurantsMenu
+    val menu = apiData.foodMenuList
     Scaffold(
         modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),
         topBar = {
@@ -126,7 +127,7 @@ fun Menu(
             ){
                 item(span = { GridItemSpan(2) }){
                     Text(
-                        text = typ + " :",
+                        text = typ.toString() + " :",
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.Black,
                         fontSize = 25.sp,
@@ -138,19 +139,20 @@ fun Menu(
                             horizontalArrangement = Arrangement.spacedBy(5.dp)
                         ){
                             items(restaurants){item ->
-                                if(item.typ.contains(typ) || typ == "All"){
-                                    RestaurantsBox(item, favoriteState)
+                                if(item.typ.contains(typ) || typ == CategoryType.ALL){
+                                    RestaurantsBox(item, favoriteState, apiData)
                                 }
                             }
                         }
                     }
                 }
                 items(menu){ item ->
-                    if(item.typ == typ || typ == "All"){
+                    if(item.typ == typ || typ == CategoryType.ALL){
                         ItemsBox(
                             item,
                             navigationController,
                             viewModel,
+                            apiData,
                             {
                                 Favorite(
                                     modifier = Modifier.

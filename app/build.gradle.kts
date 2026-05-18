@@ -62,5 +62,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     dependencies { implementation("androidx.compose.material:material-icons-extended:1.7.0") } // مكتبة ايقونات
     implementation("io.coil-kt:coil-compose:2.6.0")
-    implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")// Retrofit: المكتبة الأساسية للربط
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")// Converter: عشان يحول الـ JSON لكلاسات كوتلن أوتوماتيك
 }

@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import com.example.applicationhome.data.models.CartKey
 import com.example.applicationhome.data.models.Food
 import com.example.applicationhome.data.models.FoodItem
-import com.example.applicationhome.data.models.Snake
+import com.example.applicationhome.data.models.Snack
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.view.model.AddBoxViewModel
@@ -62,7 +62,7 @@ fun AddBox(
             is FoodItem -> {
                 mutableStateOf(food.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces")}?.size)
             }
-            is Snake -> {
+            is Snack -> {
                 mutableStateOf(food.priceANDsize.keys.last())
             }
         }

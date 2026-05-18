@@ -57,7 +57,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.data.models.Snakes
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
@@ -70,6 +69,7 @@ import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.Ratings
 import com.example.applicationhome.ui.theme.components.SnaksBox
+import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.CategoriesBoxViewModel
 import com.example.applicationhome.view.model.FavoriteViewModel
@@ -83,7 +83,8 @@ fun ItemScreen(
     viewModel: ItemScreenViewModel,
     addBoxViewModel : AddBoxViewModel,
     favoriteState : FavoriteViewModel,
-    categoriesBoxViewModel : CategoriesBoxViewModel
+    categoriesBoxViewModel : CategoriesBoxViewModel,
+    apiData : APIData
 ){
     val scrollState = rememberLazyListState()
     val alpha by remember {
@@ -105,7 +106,7 @@ fun ItemScreen(
         }
     }
     val menu = categoriesBoxViewModel.filterMenu
-    val snaks = Snakes.snakes()
+    val snacks = apiData.snacks
     val item = viewModel.selectedItem
     val size = viewModel.selectedSize
     val images = item?.image?.size ?: 0
@@ -215,7 +216,6 @@ fun ItemScreen(
                                             model = ImageRequest.Builder(LocalContext.current).
                                             data(item.image[page]).
                                             crossfade(true).
-                                            size(400, 400).
                                             precision(Precision.EXACT).
                                             build(),
                                             contentDescription = null,
@@ -270,7 +270,7 @@ fun ItemScreen(
                                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start){
                                             val text = mutableListOf<String>()
                                                 selectedDetail?.snack?.forEach { (snakeId, snakeSize) ->
-                                                val snake2 = Snakes.snakes().find { it.id == snakeId }
+                                                val snake2 = snacks.find { it.id == snakeId }
                                                 snake2?.let { safeSnake ->
                                                     text.add(snakeSize + " " + safeSnake.name)
                                                 }
@@ -313,7 +313,9 @@ fun ItemScreen(
                                             item{
                                                 val selectedDetail = item.sizeOptions.find { it.size == size }
                                                 selectedDetail?.snack?.forEach { (snakeId, snakeSize) ->
-                                                    val snake2 = Snakes.snakes().find { it.id == snakeId }
+                                                    println(snakeId)
+                                                    val snake2 = snacks.find { it.id == snakeId }
+                                                    println(snake2?.name)
                                                     snake2?.let { safeSnake ->
                                                         SnaksBox(
                                                             modifier = Modifier.size(170.dp),
@@ -321,7 +323,8 @@ fun ItemScreen(
                                                             safeSnake,
                                                             snakeSize,
                                                             navigationController,
-                                                            viewModel
+                                                            viewModel,
+                                                            apiData
                                                         )
                                                     }
                                                 }
@@ -403,7 +406,7 @@ fun ItemScreen(
                                         )
                                         LazyRow(horizontalArrangement = Arrangement.spacedBy(5.dp)){
                                             item{Spacer(modifier = Modifier.width(7.dp))}
-                                            items(snaks){ item ->
+                                            items(snacks){ item ->
                                                 SnaksBox(
                                                     modifier = Modifier.size(200.dp),
                                                     false,
@@ -411,6 +414,7 @@ fun ItemScreen(
                                                     null,
                                                     navigationController,
                                                     viewModel,
+                                                    apiData,
                                                     {
                                                         Favorite(
                                                             modifier = Modifier.
@@ -452,6 +456,7 @@ fun ItemScreen(
                                                     item,
                                                     navigationController,
                                                     viewModel,
+                                                    apiData,
                                                     {
                                                         Favorite(
                                                             modifier = Modifier.

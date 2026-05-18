@@ -1,6 +1,5 @@
 package com.example.applicationhome.ui.theme.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,9 +32,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -44,16 +44,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.size.Precision
 import com.example.applicationhome.data.models.Cart
 import com.example.applicationhome.data.models.CartKey
 import com.example.applicationhome.data.models.Food
 import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.data.models.Snake
+import com.example.applicationhome.data.models.Snack
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.view.model.AddBoxViewModel
-import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
 @Composable
@@ -63,16 +65,12 @@ fun CartBox(
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel,
     ordernumber : AddBoxViewModel,
-    favoriteState: FavoriteViewModel
 ){
     var cartkey = CartKey(item, size)
     var count = ordernumber.cartMap[cartkey] ?: 0
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    val image = when(item){
-        is FoodItem -> item.image.first()
-        is Snake -> item.image
-    }
+    val image = item.image.first()
     val name : String
     val price : String
     when(item){
@@ -80,12 +78,11 @@ fun CartBox(
             name = item.name
             price = "EGP " + item.sizeOptions.find { it.size == size }?.price.toString()
         }
-        is Snake -> {
+        is Snack -> {
             name = item.name
             price = "EGP " + item.priceANDsize[size].toString()
         }
     }
-
     Box(
         modifier = Modifier.padding(start = 10.dp, end = 10.dp).
         fillMaxWidth().height(100.dp).
@@ -102,10 +99,16 @@ fun CartBox(
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
                 Row(modifier = Modifier.weight(3f), verticalAlignment = Alignment.CenterVertically){
-                    Image(
+                    AsyncImage(
                         modifier = Modifier.fillMaxHeight().weight(1f).padding(10.dp),
-                        painter = painterResource(id = image),
+                        model = ImageRequest.Builder(LocalContext.current).
+                        data(image).
+                        crossfade(true).
+                        size(400, 400).
+                        precision(Precision.EXACT).
+                        build(),
                         contentDescription = null,
+                        contentScale = ContentScale.Crop
                     )
                     Column(
                         modifier = Modifier.fillMaxHeight().weight(2f),

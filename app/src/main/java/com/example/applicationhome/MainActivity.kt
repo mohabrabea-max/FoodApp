@@ -11,7 +11,10 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.applicationhome.ui.theme.screens.FinalScreen
+import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.CategoriesBoxViewModel
@@ -36,9 +39,29 @@ class MainActivity : ComponentActivity() {
             val userImageViewModel: UserImageViewModel = viewModel()
             val favoriteViewModel : FavoriteViewModel = viewModel()
             val drawerViewModel : DrawerViewModel = viewModel()
-            val categoriesBoxViewModel : CategoriesBoxViewModel = viewModel()
             val profileViewModel : ProfileViewModel = viewModel()
-            FinalScreen(scrollBehavior, drawerState, itemScreenViewModel, viewModelForBottomBar, addBoxViewModel, userImageViewModel, favoriteViewModel, drawerViewModel, categoriesBoxViewModel, profileViewModel)
+            val apiData : APIData = viewModel()
+            val categoriesBoxViewModel : CategoriesBoxViewModel = viewModel(
+                factory = viewModelFactory{
+                    initializer{
+                        val apiData = APIData()
+                        CategoriesBoxViewModel(apiData)
+                    }
+                }
+            )
+            FinalScreen(
+                scrollBehavior,
+                drawerState,
+                itemScreenViewModel,
+                viewModelForBottomBar,
+                addBoxViewModel,
+                userImageViewModel,
+                favoriteViewModel,
+                drawerViewModel,
+                categoriesBoxViewModel,
+                profileViewModel,
+                apiData
+            )
         }
     }
 }

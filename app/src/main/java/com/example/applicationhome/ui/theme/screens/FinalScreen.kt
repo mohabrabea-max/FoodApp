@@ -57,6 +57,7 @@ import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.Options
 import com.example.applicationhome.ui.theme.components.UserImage
+import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.CategoriesBoxViewModel
@@ -80,7 +81,8 @@ fun FinalScreen(
     favoriteViewModel : FavoriteViewModel,
     drawerViewModel: DrawerViewModel,
     categoriesBoxViewModel : CategoriesBoxViewModel,
-    profileViewModel : ProfileViewModel
+    profileViewModel : ProfileViewModel,
+    apiData : APIData
 ){
     val density = LocalDensity.current
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} }
@@ -101,7 +103,6 @@ fun FinalScreen(
         Screens.Settings,
         Screens.Menu,
         Screens.Restaurants,
-        Screens.Varieties,
         Screens.Search,
         Screens.ItemScreen,
         Screens.Notifications,
@@ -203,17 +204,16 @@ fun FinalScreen(
                         popExitTransition = { ExitTransition.None }
                     ) {
                         when(item){
-                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel)
+                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, apiData)
                             is Screens.Profile -> Profile(drawerState, coroutineScope, navigationController, userImageViewModel, profileViewModel)
                             is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel)
                             is Screens.Search -> Search()
-                            is Screens.Menu -> Menu(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel)
-                            is Screens.Restaurants -> Restaurants(drawerState, coroutineScope, navigationController, favoriteViewModel)
-                            is Screens.Varieties -> Varieties(drawerState, coroutineScope, navigationController, favoriteViewModel)
-                            is Screens.ItemScreen -> ItemScreen(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel)
+                            is Screens.Menu -> Menu(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, apiData)
+                            is Screens.Restaurants -> Restaurants(drawerState, coroutineScope, navigationController, favoriteViewModel, apiData)
+                            is Screens.ItemScreen -> ItemScreen(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, apiData)
                             is Screens.Notifications -> Notifications()
-                            is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, viewModelForBottomBar, viewModel, addBoxViewModel, favoriteViewModel)
-                            is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, viewModelForBottomBar, viewModel, addBoxViewModel, favoriteViewModel)
+                            is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, viewModelForBottomBar, viewModel, addBoxViewModel, favoriteViewModel, apiData)
+                            is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, viewModelForBottomBar, viewModel, addBoxViewModel)
                         }
                     }
                 }

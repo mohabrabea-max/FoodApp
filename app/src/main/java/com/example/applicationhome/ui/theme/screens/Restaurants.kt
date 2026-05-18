@@ -3,7 +3,6 @@ package com.example.applicationhome.ui.theme.screens
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +26,7 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
@@ -51,14 +51,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.size.Precision
 import com.example.applicationhome.R
-import com.example.applicationhome.data.models.RestaurantsMenu
 import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.MyTopBar
+import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.FavoriteViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -69,84 +72,104 @@ fun Restaurants(
     drawerState : DrawerState,
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
-    favoriteState : FavoriteViewModel
+    favoriteState : FavoriteViewModel,
+    apiData : APIData
 ){
-    val restaurantsMenu = RestaurantsMenu.restaurantsMenu()
-    Scaffold(
-        modifier = Modifier.fillMaxSize().background(Color.VeryLightGray),
-        topBar = {
-            MyTopBar(
-                Color.DarkOrange,
-                modifier = Modifier.
-                fillMaxWidth().
-                height(100.dp).
-                shadow(elevation = 5.dp),
-                "Home",
-                {
-                    IconButton(
-                        onClick = {coroutineScope.launch{drawerState.open()}},
-                        modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
-                    ) {
-                        Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.White)
-                    }
-                },
-                {
-                    IconButton(onClick = {
-                        navigationController.navigate(Screens.Notifications.screen){
-                            popUpTo(navigationController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-
-                            launchSingleTop = true
-
-                            restoreState = true
-                        }
-                    }) {
-                        Icon(Icons.Default.Search, contentDescription = null, tint = Color.White)
-                    }
-                    IconButton(onClick = {
-                        navigationController.navigate(Screens.Search.screen){
-                            popUpTo(navigationController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-
-                            launchSingleTop = true
-
-                            restoreState = true
-                        }
-                    }) {
-                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.White)
-                    }
-                }
-            )
-            Divider(color = Color.LightGray.copy(alpha = 0.5f))
+    val restaurantsMenu = apiData.restaurantsMenu
+    if (apiData.restaurantsMenuisLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator() // دايرة التحميل الافتراضية في أندرويد
         }
-    ){
-        Box(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray)){
-            LazyColumn(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.spacedBy(5.dp)){
-                item{Spacer(modifier = Modifier.height(100.dp))}
-                items(restaurantsMenu){item ->
-                    Surface(modifier = Modifier.aspectRatio(3f).padding(5.dp).clip(RoundedCornerShape(10.dp)).clickable{}){
-                        Row(modifier = Modifier.background(Color.White), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically){
-                            Image(modifier = Modifier.fillMaxSize().weight(1f).background(item.background),painter = painterResource(id = item.image), contentDescription = item.name, contentScale = ContentScale.Crop)
-                            VerticalDivider(color = Color.LightGray.copy(alpha = 0.5f))
-                            Column(modifier = Modifier.fillMaxSize().weight(1.5f).padding(10.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.Start){
-                                Row(modifier = Modifier.clickable{}, horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically){
-                                    Icon(modifier = Modifier.size(20.dp), imageVector = Icons.Default.Star, contentDescription = "Star", tint = Color(0xFFDAA520))
-                                    Spacer(modifier = Modifier.width(5.dp))
-                                    Text(text = item.review.toString(), fontSize = 17.sp, color = Color.MediumBrownForTitle)
+    }else{
+        Scaffold(
+            modifier = Modifier.fillMaxSize().background(Color.VeryLightGray),
+            topBar = {
+                MyTopBar(
+                    Color.DarkOrange,
+                    modifier = Modifier.
+                    fillMaxWidth().
+                    height(100.dp).
+                    shadow(elevation = 5.dp),
+                    "Home",
+                    {
+                        IconButton(
+                            onClick = {coroutineScope.launch{drawerState.open()}},
+                            modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
+                        ) {
+                            Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.White)
+                        }
+                    },
+                    {
+                        IconButton(onClick = {
+                            navigationController.navigate(Screens.Notifications.screen){
+                                popUpTo(navigationController.graph.findStartDestination().id) {
+                                    saveState = true
                                 }
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Divider(modifier = Modifier.width(60.dp), color = Color.LightGray.copy(alpha = 0.5f))
-                                Spacer(modifier = Modifier.height(25.dp))
-                                Text(text = item.name, fontSize = 20.sp, color = Color.BrownForFont)
-                                Spacer(modifier = Modifier.height(30.dp))
+
+                                launchSingleTop = true
+
+                                restoreState = true
                             }
-                            Favorite3(modifier = Modifier.fillMaxSize().weight(0.5f).padding(10.dp).clip(CircleShape).background(Color.VeryLightGray), favoriteState = favoriteState)
+                        }) {
+                            Icon(Icons.Default.Search, contentDescription = null, tint = Color.White)
+                        }
+                        IconButton(onClick = {
+                            navigationController.navigate(Screens.Search.screen){
+                                popUpTo(navigationController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+
+                                launchSingleTop = true
+
+                                restoreState = true
+                            }
+                        }) {
+                            Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.White)
                         }
                     }
+                )
+                Divider(color = Color.LightGray.copy(alpha = 0.5f))
+            }
+        ){
+            Box(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray)){
+                LazyColumn(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.spacedBy(5.dp)){
+                    item{Spacer(modifier = Modifier.height(100.dp))}
+                    items(restaurantsMenu){item ->
+                        Surface(modifier = Modifier.aspectRatio(3f).padding(5.dp).clip(RoundedCornerShape(10.dp)).clickable{}){
+                            Row(modifier = Modifier.background(Color.White), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically){
+                                AsyncImage(
+                                    modifier = Modifier.fillMaxSize().weight(1f).background(item.background),
+                                    model = ImageRequest.Builder(LocalContext.current).
+                                    data(item.image).
+                                    crossfade(true).
+                                    size(400, 400).
+                                    precision(Precision.EXACT).
+                                    build(),
+                                    contentDescription = item.name,
+                                    contentScale = ContentScale.Crop
+                                )
+                                VerticalDivider(color = Color.LightGray.copy(alpha = 0.5f))
+                                Column(modifier = Modifier.fillMaxSize().weight(1.5f).padding(10.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.Start){
+                                    Row(modifier = Modifier.clickable{}, horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically){
+                                        Icon(modifier = Modifier.size(20.dp), imageVector = Icons.Default.Star, contentDescription = "Star", tint = Color(0xFFDAA520))
+                                        Spacer(modifier = Modifier.width(5.dp))
+                                        Text(text = item.review.toString(), fontSize = 17.sp, color = Color.MediumBrownForTitle)
+                                    }
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    Divider(modifier = Modifier.width(60.dp), color = Color.LightGray.copy(alpha = 0.5f))
+                                    Spacer(modifier = Modifier.height(25.dp))
+                                    Text(text = item.name, fontSize = 20.sp, color = Color.BrownForFont)
+                                    Spacer(modifier = Modifier.height(30.dp))
+                                }
+                                Favorite3(modifier = Modifier.fillMaxSize().weight(0.5f).padding(10.dp).clip(CircleShape).background(Color.VeryLightGray), favoriteState = favoriteState)
+                            }
+                        }
+                    }
+                    item{Spacer(modifier = Modifier.height(80.dp))}
                 }
-                item{Spacer(modifier = Modifier.height(80.dp))}
             }
         }
     }

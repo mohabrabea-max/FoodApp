@@ -53,7 +53,7 @@ import com.example.applicationhome.R
 import com.example.applicationhome.data.models.Favorite
 import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.data.models.Snake
+import com.example.applicationhome.data.models.Snack
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -62,6 +62,7 @@ import com.example.applicationhome.ui.theme.components.Favorite
 import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.SnaksBox
+import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.FavoriteViewModel
@@ -79,7 +80,8 @@ fun Favorite(
     viewModelForBottomBar: BottomBarViewModel,
     viewModel : ItemScreenViewModel,
     addBoxViewModel: AddBoxViewModel,
-    favoriteState : FavoriteViewModel
+    favoriteState : FavoriteViewModel,
+    apiData : APIData
 ){
     var favorite = Favorite.favoriteList()
     val context = LocalContext.current as? Activity
@@ -134,6 +136,7 @@ fun Favorite(
                                         item,
                                         navigationController,
                                         viewModel,
+                                        apiData,
                                         {
                                             Favorite(
                                                 modifier = Modifier.
@@ -147,7 +150,7 @@ fun Favorite(
                                         }
                                     )
                                 }
-                                is Snake -> {
+                                is Snack -> {
                                     SnaksBox(
                                         modifier = Modifier.size(200.dp),
                                         false,
@@ -155,6 +158,7 @@ fun Favorite(
                                         null,
                                         navigationController,
                                         viewModel,
+                                        apiData,
                                         {
                                             Favorite(
                                                 modifier = Modifier.

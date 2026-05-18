@@ -50,9 +50,7 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.Cart
-import com.example.applicationhome.data.models.FoodItem
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.data.models.Snake
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightBrownForBackground
@@ -62,7 +60,6 @@ import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.PaymentSummary
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
-import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -78,8 +75,7 @@ fun Cart(
     coroutineScope : CoroutineScope,
     viewModelForBottomBar: BottomBarViewModel,
     viewModel: ItemScreenViewModel = viewModel(),
-    addBoxViewModel : AddBoxViewModel,
-    favoriteState : FavoriteViewModel
+    addBoxViewModel : AddBoxViewModel
 ){
     var cart = Cart.cartMap()
     val context = LocalContext.current as? Activity
@@ -135,14 +131,7 @@ fun Cart(
                     ){
                         item{Spacer(modifier = Modifier.height(100.dp))}
                         items(cart.keys.toList(), key = { it.food.id.toString() + it.size}) { item ->
-                            when (item.food) {
-                                is FoodItem -> {
-                                    CartBox(item.food, item.size, navigationController, viewModel, addBoxViewModel, favoriteState)
-                                }
-                                is Snake -> {
-                                    CartBox(item.food, item.size, navigationController, viewModel, addBoxViewModel, favoriteState)
-                                }
-                            }
+                            CartBox(item.food, item.size, navigationController, viewModel, addBoxViewModel)
                         }
                         item{
                             PaymentSummary(addBoxViewModel)

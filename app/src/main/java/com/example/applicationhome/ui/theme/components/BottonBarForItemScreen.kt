@@ -41,7 +41,7 @@ import com.example.applicationhome.data.models.Cart
 import com.example.applicationhome.data.models.CartKey
 import com.example.applicationhome.data.models.Food
 import com.example.applicationhome.data.models.FoodItem
-import com.example.applicationhome.data.models.Snake
+import com.example.applicationhome.data.models.Snack
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.view.model.AddBoxViewModel
@@ -60,10 +60,9 @@ fun BottonBarForItemScreen(
     val item = viewModel.selectedItem
     var key: CartKey? = null
     when (item) {
-        is FoodItem -> {
+        is FoodItem , is Snack-> {
             key = CartKey(item, size)
         }
-        is Snake -> { }
     }
     val context = LocalContext.current
     var cartkey = CartKey(food, size)

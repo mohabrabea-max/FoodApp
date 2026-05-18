@@ -9,7 +9,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -72,10 +71,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.size.Precision
 import com.example.applicationhome.R
-import com.example.applicationhome.data.models.OffersData
 import com.example.applicationhome.data.models.Screens
-import com.example.applicationhome.data.models.Snakes
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -87,6 +87,7 @@ import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.RestaurantsBox
 import com.example.applicationhome.ui.theme.components.SearchBox
 import com.example.applicationhome.ui.theme.components.SnaksBox
+import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.CategoriesBoxViewModel
 import com.example.applicationhome.view.model.FavoriteViewModel
@@ -104,7 +105,8 @@ fun HomeScreen(
     viewModel: ItemScreenViewModel,
     addBoxViewModel: AddBoxViewModel,
     favoriteState : FavoriteViewModel,
-    categoriesBoxViewModel : CategoriesBoxViewModel
+    categoriesBoxViewModel : CategoriesBoxViewModel,
+    apiData: APIData
 ){
     val density = LocalDensity.current
     val thresholdPx = with(density) { 60.dp.toPx() }
@@ -158,10 +160,10 @@ fun HomeScreen(
         }
     }
 
-    val snaks = Snakes.snakes()
+    val snacks = apiData.snacks
     val menu = categoriesBoxViewModel.filterMenu
-    val restaurants = categoriesBoxViewModel.restaurants
-    val offers = OffersData.offersMenu()
+    val restaurants = categoriesBoxViewModel.filterrestaurants
+    val offers = apiData.offers
     val pagerState = rememberPagerState(pageCount = {offers.size})
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) {
@@ -177,7 +179,7 @@ fun HomeScreen(
                 Column{
                     var height = if(showcategories == true) 105.dp else 0.dp
                     Spacer(modifier = Modifier.animateContentSize().height(height))
-                    if(showCategoriesBox == true) CategoriesBar(categoriesBoxViewModel)
+                    if(showCategoriesBox == true) CategoriesBar(categoriesBoxViewModel, apiData)
                 }
                 Column{
                     MyTopBar(
@@ -287,7 +289,7 @@ fun HomeScreen(
                     item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
                     item(span = { GridItemSpan(2) }){
                         Box(modifier = Modifier.height(60.dp).fillMaxWidth()){
-                            if(showCategoriesBox == false)CategoriesBar(categoriesBoxViewModel)
+                            if(showCategoriesBox == false)CategoriesBar(categoriesBoxViewModel, apiData)
                         }
                     }
                     item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
@@ -300,10 +302,15 @@ fun HomeScreen(
                                 pageSpacing = 10.dp
                             ) {page ->
                                 val currentOffer = offers[page]
-                                Image(
-                                    painter = painterResource(id = currentOffer.image),
-                                    contentDescription = null,
+                                AsyncImage(
                                     modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)).clickable {  },
+                                    model = ImageRequest.Builder(LocalContext.current).
+                                    data(currentOffer.image).
+                                    crossfade(true).
+                                    size(400, 400).
+                                    precision(Precision.EXACT).
+                                    build(),
+                                    contentDescription = null,
                                     contentScale = ContentScale.Crop
                                 )
                             }
@@ -349,7 +356,7 @@ fun HomeScreen(
                             horizontalArrangement = Arrangement.spacedBy(5.dp)
                         ){
                             items(restaurants){item ->
-                                RestaurantsBox(item, favoriteState)
+                                RestaurantsBox(item, favoriteState, apiData)
                             }
                         }
                     }
@@ -389,7 +396,7 @@ fun HomeScreen(
                     }
                     item(span = { GridItemSpan(2) }){
                         LazyRow(horizontalArrangement = Arrangement.spacedBy(5.dp)){
-                            items(snaks){ item ->
+                            items(snacks){ item ->
                                 SnaksBox(
                                     modifier = Modifier.size(200.dp),
                                     false,
@@ -397,6 +404,7 @@ fun HomeScreen(
                                     null,
                                     navigationController,
                                     viewModel,
+                                    apiData,
                                     {
                                         Favorite(
                                             modifier = Modifier.
@@ -425,6 +433,7 @@ fun HomeScreen(
                             item,
                             navigationController,
                             viewModel,
+                            apiData,
                             {
                                 Favorite(
                                     modifier = Modifier.
