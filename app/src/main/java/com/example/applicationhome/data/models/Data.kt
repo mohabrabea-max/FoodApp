@@ -13,7 +13,7 @@ interface FoodAppAPIs{
     suspend fun foodmenu():List<FoodItem>
 
     @GET("food_app/snacks.json")
-    suspend fun snakesMenu():List<Snack>
+    suspend fun snacksMenu():List<Snack>
 
     @GET("food_app/categories.json")
     suspend fun categorieslist():List<Categories>
@@ -24,14 +24,6 @@ interface FoodAppAPIs{
     @GET("food_app/offers.json")
     suspend fun offers():List<Offers>
 }
-
-
-
-
-
-
-
-
 
 
 sealed interface Food{

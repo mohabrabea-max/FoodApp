@@ -10,12 +10,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.applicationhome.ui.theme.screens.FinalScreen
 import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.AddBoxViewModel
+import com.example.applicationhome.view.model.BirthdayViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.CategoriesBoxViewModel
 import com.example.applicationhome.view.model.DrawerViewModel
@@ -44,11 +46,13 @@ class MainActivity : ComponentActivity() {
             val categoriesBoxViewModel : CategoriesBoxViewModel = viewModel(
                 factory = viewModelFactory{
                     initializer{
-                        val apiData = APIData()
+                        val application = this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]!!
+                        val apiData = APIData(application)
                         CategoriesBoxViewModel(apiData)
                     }
                 }
             )
+            val birthdayViewModel : BirthdayViewModel = viewModel()
             FinalScreen(
                 scrollBehavior,
                 drawerState,
@@ -60,7 +64,8 @@ class MainActivity : ComponentActivity() {
                 drawerViewModel,
                 categoriesBoxViewModel,
                 profileViewModel,
-                apiData
+                apiData,
+                birthdayViewModel
             )
         }
     }

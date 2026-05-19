@@ -26,6 +26,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.Calendar
 
 
 object RetrofitInstance{
@@ -33,10 +34,10 @@ object RetrofitInstance{
     private val retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create()) // السطر دا عشان نحول ملف الJSON لداتا كلاس كوتلن
             .build()
     }
-    val api : FoodAppAPIs by lazy {
+    val api : FoodAppAPIs by lazy {   //   الفاليو اللي هنستخدمه عشان نستدعي الداتا
         retrofit.create(FoodAppAPIs::class.java)
     }
 }
@@ -431,6 +432,10 @@ object RetrofitInstance{
 
 
 object ProfileData {
+    val days = (1..31).toList()
+    val months = (1..12).toList()
+    val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+    val years = (1900..currentYear).toList()
     private val profile = listOf(
         Account(
             101,

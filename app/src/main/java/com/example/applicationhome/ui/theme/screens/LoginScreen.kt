@@ -1,0 +1,361 @@
+package com.example.applicationhome.ui.theme.screens
+
+import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Facebook
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.example.applicationhome.R
+import com.example.applicationhome.data.models.Screens
+import com.example.applicationhome.ui.theme.DarkOrange
+import com.example.applicationhome.ui.theme.VeryLightGray
+import com.example.applicationhome.ui.theme.components.MyTopBar
+import com.example.applicationhome.view.model.UserImageViewModel
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+fun LoginScreen(
+    navigationController : NavHostController,
+    userImageViewModel: UserImageViewModel = viewModel()
+){
+    val state = rememberTextFieldState()
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize(),
+        topBar = {
+            MyTopBar(
+                Color.DarkOrange.copy(alpha = 0f),
+                modifier = Modifier.
+                fillMaxWidth().
+                height(100.dp),
+                null,
+                {
+                    IconButton(
+                        onClick = {if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() } },
+                        modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
+                    ) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.White)
+                    }
+                }
+            )
+        }
+    ){
+        Box(
+            modifier = Modifier.fillMaxSize().background(Color.VeryLightGray).navigationBarsPadding(),
+            contentAlignment = Alignment.BottomCenter
+        ){
+            Row(
+                modifier = Modifier.align(Alignment.TopCenter)
+            ){
+                Image(
+                    painter = painterResource(id = R.drawable.loginimage),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(540.dp)
+                )
+            }
+            Column(modifier = Modifier.align(Alignment.TopCenter)){
+                Spacer(modifier = Modifier.height(100.dp))
+                Box(
+                    modifier = Modifier
+                        .size(160.dp)
+                        .clip(shape = RoundedCornerShape(30.dp))
+                        .background(Color.Black)
+                ){
+                    Text(
+                        text = "Food",
+                        color = Color.White,
+                        fontSize = 40.sp,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
+            Column(
+                modifier = Modifier
+                        .fillMaxWidth()
+                        .height(550.dp)
+                        .clip(shape = RoundedCornerShape(topStart = 100.dp))
+                        .background(Color.VeryLightGray),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = "Login",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 35.sp
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                Box(
+                    modifier = Modifier.padding(start = 40.dp, end = 40.dp)
+                        .height(55.dp)
+                        .fillMaxWidth()
+                        .clip(CircleShape)
+                        .background(Color.White)
+                        .padding(start = 25.dp, end = 25.dp)
+                ){
+                    BasicTextField(
+                        state = state,
+                        modifier = Modifier.fillMaxSize().padding(start = 30.dp).
+                        onFocusChanged { focusState ->
+                            if (focusState.isFocused) {
+                                userImageViewModel.statetrue()
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        onKeyboardAction = {
+                            userImageViewModel.statefalse()
+                            keyboardController?.hide()
+                            focusManager.clearFocus()
+                        },
+                        textStyle = TextStyle(
+                            fontSize = 18.sp,
+                            color = Color.Black
+                        ),
+                        decorator = { innerTextField ->
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.CenterStart // 👈 هنا بنقوله وسطن النص رأسياً وخليك على الشمال
+                            ) {
+                                innerTextField() // 👈 ده النص الخام اللي بيتكتب
+                            }
+                        }
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxHeight(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
+                    ){
+                        Icon(
+                            Icons.Default.Email,
+                            contentDescription = null,
+                            tint = Color.Gray,
+                            modifier = Modifier.padding(end = 7.dp)
+                        )
+                        if(state.text.isEmpty()){
+                            Text(
+                                text = "Email Address",
+                                color = Color.Gray,
+                                fontSize = 18.sp
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(25.dp))
+                Box(
+                    modifier = Modifier.padding(start = 40.dp, end = 40.dp)
+                        .height(55.dp)
+                        .fillMaxWidth()
+                        .clip(CircleShape)
+                        .background(Color.White)
+                        .padding(start = 25.dp, end = 25.dp)
+                ){
+                    BasicTextField(
+                        state = state,
+                        modifier = Modifier.fillMaxSize().padding(start = 30.dp).
+                        onFocusChanged { focusState ->
+                            if (focusState.isFocused) {
+                                userImageViewModel.statetrue()
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        onKeyboardAction = {
+                            userImageViewModel.statefalse()
+                            keyboardController?.hide()
+                            focusManager.clearFocus()
+                        },
+                        textStyle = TextStyle(
+                            fontSize = 18.sp,
+                            color = Color.Black
+                        ),
+                        decorator = { innerTextField ->
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.CenterStart // 👈 هنا بنقوله وسطن النص رأسياً وخليك على الشمال
+                            ) {
+                                innerTextField() // 👈 ده النص الخام اللي بيتكتب
+                            }
+                        }
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxHeight(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
+                    ){
+                        Icon(
+                            Icons.Default.Lock,
+                            contentDescription = null,
+                            tint = Color.Gray,
+                            modifier = Modifier.padding(end = 7.dp)
+                        )
+                        if(state.text.isEmpty()){
+                            Text(
+                                text = "Password",
+                                color = Color.Gray,
+                                fontSize = 18.sp
+                            )
+                        }
+                    }
+                }
+                TextButton(
+                    onClick = {},
+                    contentPadding = PaddingValues(horizontal = 5.dp),
+                    modifier = Modifier.padding(start = 40.dp).align(Alignment.Start)
+                ){
+                    Text(
+                        text = "Forget your password",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.DarkOrange,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                Box(
+                    modifier = Modifier
+                        .padding(start = 40.dp, end = 40.dp)
+                        .height(50.dp)
+                        .fillMaxWidth()
+                        .clip(CircleShape)
+                        .background(Color.DarkOrange)
+                        .clickable {  },
+                    contentAlignment = Alignment.Center
+                ){
+                    Text(
+                        text = "Login",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White,
+                        fontSize = 18.sp
+                    )
+                }
+                Spacer(modifier = Modifier.height(25.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 46.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    HorizontalDivider(
+                        modifier = Modifier.weight(1f),
+                        thickness = 1.dp,
+                        color = Color.Gray.copy(alpha = 0.5f)
+                    )
+                    Text(
+                        text = "OR",
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            color = Color.Gray,
+                            fontWeight = FontWeight.Medium
+                        )
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.weight(1f),
+                        thickness = 1.dp,
+                        color = Color.Gray.copy(alpha = 0.5f)
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 110.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ){
+                    Icon(
+                        Icons.Default.Facebook,
+                        contentDescription = null,
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Icon(
+                        Icons.Default.Facebook,
+                        contentDescription = null,
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Icon(
+                        Icons.Default.Facebook,
+                        contentDescription = null,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 60.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ){
+                    Text(
+                        text = "New user?",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.Black,
+                        fontSize = 15.sp
+                    )
+                    TextButton(
+                        onClick = {navigationController.navigate(Screens.SignUpScreen.screen)},
+                        contentPadding = PaddingValues(start = 0.dp),
+                        modifier = Modifier.padding(start = 3.dp)
+                    ){
+                        Text(
+                            text = "Sign Up",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = Color.DarkOrange,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+            }
+        }
+    }
+}

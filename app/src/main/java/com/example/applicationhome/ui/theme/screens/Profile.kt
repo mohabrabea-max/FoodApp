@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.ProfileBox
+import com.example.applicationhome.view.model.BirthdayViewModel
 import com.example.applicationhome.view.model.ProfileViewModel
 import com.example.applicationhome.view.model.UserImageViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -41,7 +42,14 @@ import kotlinx.coroutines.CoroutineScope
 )
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Profile(drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, userImageViewModel: UserImageViewModel, profileViewModel: ProfileViewModel){
+fun Profile(
+    drawerState : DrawerState,
+    coroutineScope : CoroutineScope,
+    navigationController : NavHostController,
+    userImageViewModel: UserImageViewModel,
+    profileViewModel: ProfileViewModel,
+    birthdayViewModel: BirthdayViewModel
+){
     var edite by mutableStateOf(false)
     var stat = userImageViewModel.stat
     var pading = if(stat) 210.dp else 0.dp
@@ -81,7 +89,7 @@ fun Profile(drawerState : DrawerState, coroutineScope : CoroutineScope, navigati
     ){
         LazyColumn(modifier = Modifier.statusBarsPadding()){
             item {
-                ProfileBox(userImageViewModel, profileViewModel)
+                ProfileBox(userImageViewModel, profileViewModel, birthdayViewModel)
             }
             item { Spacer(modifier = Modifier.height(pading)) }
         }

@@ -1,7 +1,6 @@
 package com.example.applicationhome.ui.theme.components
 
 import android.annotation.SuppressLint
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Login
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.applicationhome.data.models.Drawer
+import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.DrawerViewModel
@@ -129,7 +129,7 @@ fun Options(
                     label = {
                         if(state) Text(
                             text = "Logout",
-                            color = Color.Red,
+                            color = Color.Green,
                             modifier = Modifier.layout { measurable, constraints ->
                             val placeable = measurable.measure(
                                 constraints.copy(
@@ -144,10 +144,11 @@ fun Options(
                         )
                     },
                 selected = false,
-                icon = {Icon(imageVector = Icons.Default.ExitToApp, contentDescription = "Logout", tint = Color.Red, modifier = Modifier.padding(start = 5.dp))},
+                icon = {Icon(imageVector = Icons.Default.Login, contentDescription = "Login", tint = Color.Green, modifier = Modifier.padding(start = 5.dp))},
                 onClick = {
                     coroutineScope.launch{drawerState.close()}
-                    Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()
+                    navigationController.navigate(Screens.LoginScreen.screen)
+                    //Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()
                 }
             )}
         }

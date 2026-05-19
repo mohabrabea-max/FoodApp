@@ -59,6 +59,7 @@ import com.example.applicationhome.ui.theme.components.Options
 import com.example.applicationhome.ui.theme.components.UserImage
 import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.AddBoxViewModel
+import com.example.applicationhome.view.model.BirthdayViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.CategoriesBoxViewModel
 import com.example.applicationhome.view.model.DrawerViewModel
@@ -82,7 +83,8 @@ fun FinalScreen(
     drawerViewModel: DrawerViewModel,
     categoriesBoxViewModel : CategoriesBoxViewModel,
     profileViewModel : ProfileViewModel,
-    apiData : APIData
+    apiData : APIData,
+    birthdayViewModel: BirthdayViewModel
 ){
     val density = LocalDensity.current
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} }
@@ -107,7 +109,9 @@ fun FinalScreen(
         Screens.ItemScreen,
         Screens.Notifications,
         Screens.Favorite,
-        Screens.Cart
+        Screens.Cart,
+        Screens.LoginScreen,
+        Screens.SignUpScreen
     )
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -205,7 +209,7 @@ fun FinalScreen(
                     ) {
                         when(item){
                             is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, apiData)
-                            is Screens.Profile -> Profile(drawerState, coroutineScope, navigationController, userImageViewModel, profileViewModel)
+                            is Screens.Profile -> Profile(drawerState, coroutineScope, navigationController, userImageViewModel, profileViewModel, birthdayViewModel)
                             is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel)
                             is Screens.Search -> Search()
                             is Screens.Menu -> Menu(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, apiData)
@@ -214,6 +218,8 @@ fun FinalScreen(
                             is Screens.Notifications -> Notifications()
                             is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, viewModelForBottomBar, viewModel, addBoxViewModel, favoriteViewModel, apiData)
                             is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, viewModelForBottomBar, viewModel, addBoxViewModel)
+                            is Screens.LoginScreen -> LoginScreen(navigationController)
+                            is Screens.SignUpScreen -> SignUpScreen(navigationController)
                         }
                     }
                 }
