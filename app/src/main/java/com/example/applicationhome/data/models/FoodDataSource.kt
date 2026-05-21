@@ -30,7 +30,7 @@ import java.util.Calendar
 
 
 object RetrofitInstance{
-    private const val BASE_URL = "https://food-app-9d163-default-rtdb.firebaseio.com/"
+    private const val BASE_URL = "https://food-app-9d163-default-rtdb.firebaseio.com/food_app/"
     private val retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -429,6 +429,12 @@ object RetrofitInstance{
 //        return restaurants
 //    }
 //}
+
+
+
+
+
+
 
 
 object ProfileData {

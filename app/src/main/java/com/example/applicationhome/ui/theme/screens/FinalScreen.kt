@@ -65,6 +65,7 @@ import com.example.applicationhome.view.model.CategoriesBoxViewModel
 import com.example.applicationhome.view.model.DrawerViewModel
 import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
+import com.example.applicationhome.view.model.LoginViewModel
 import com.example.applicationhome.view.model.ProfileViewModel
 import com.example.applicationhome.view.model.UserImageViewModel
 import kotlinx.coroutines.launch
@@ -84,7 +85,8 @@ fun FinalScreen(
     categoriesBoxViewModel : CategoriesBoxViewModel,
     profileViewModel : ProfileViewModel,
     apiData : APIData,
-    birthdayViewModel: BirthdayViewModel
+    birthdayViewModel: BirthdayViewModel,
+    loginViewModel: LoginViewModel
 ){
     val density = LocalDensity.current
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} }
@@ -111,7 +113,7 @@ fun FinalScreen(
         Screens.Favorite,
         Screens.Cart,
         Screens.LoginScreen,
-        Screens.SignUpScreen
+        Screens.SignUpScreen,
     )
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -132,8 +134,13 @@ fun FinalScreen(
                     clip(RoundedCornerShape(40.dp)).
                     background(Color.VeryLightGray).
                     clickable{
-                        coroutineScope.launch{drawerState.close()}
-                        navigationController.navigate(Screens.Profile.screen)
+                        if(loginViewModel.isLogin){
+                            coroutineScope.launch{drawerState.close()}
+                            navigationController.navigate(Screens.Profile.screen)
+                        }else{
+                            coroutineScope.launch{drawerState.close()}
+                            navigationController.navigate(Screens.LoginScreen.screen)
+                        }
                     }
                 ){
                     Row(
@@ -162,14 +169,14 @@ fun FinalScreen(
                         if(stat){
                             Column(modifier = Modifier.weight(2.5f),horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center){
                                 Text(
-                                    text = "Mohab Rabea",
+                                    text = loginViewModel.userData.firstname.toString() + if(loginViewModel.userData.lastname != null) loginViewModel.userData.lastname.toString() else "",
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Black
                                 )
                                 Spacer(modifier = Modifier.height(5.dp))
                                 Text(
-                                    text = "01011223344",
+                                    text = if(loginViewModel.userData.email != null) loginViewModel.userData.email.toString() else "Login",
                                     fontSize = 12.sp,
                                     color = Color.DarkGray
                                 )
@@ -180,7 +187,7 @@ fun FinalScreen(
 //                Box(modifier = Modifier.fillMaxWidth()){
 //                    Divider(color = Color.LightGray, modifier = Modifier.width(100.dp).align(Alignment.Center))
 //                }
-                Options(navigationController, drawerState, coroutineScope, viewModelForBottomBar, drawerViewModel)
+                Options(navigationController, drawerState, coroutineScope, viewModelForBottomBar, drawerViewModel, loginViewModel)
             }
         }
     ){
@@ -218,8 +225,8 @@ fun FinalScreen(
                             is Screens.Notifications -> Notifications()
                             is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, viewModelForBottomBar, viewModel, addBoxViewModel, favoriteViewModel, apiData)
                             is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, viewModelForBottomBar, viewModel, addBoxViewModel)
-                            is Screens.LoginScreen -> LoginScreen(navigationController)
-                            is Screens.SignUpScreen -> SignUpScreen(navigationController)
+                            is Screens.LoginScreen -> LoginScreen(navigationController, loginViewModel)
+                            is Screens.SignUpScreen -> SignUpScreen(navigationController, loginViewModel)
                         }
                     }
                 }

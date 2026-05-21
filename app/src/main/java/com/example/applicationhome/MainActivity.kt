@@ -23,6 +23,7 @@ import com.example.applicationhome.view.model.CategoriesBoxViewModel
 import com.example.applicationhome.view.model.DrawerViewModel
 import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
+import com.example.applicationhome.view.model.LoginViewModel
 import com.example.applicationhome.view.model.ProfileViewModel
 import com.example.applicationhome.view.model.UserImageViewModel
 
@@ -53,6 +54,7 @@ class MainActivity : ComponentActivity() {
                 }
             )
             val birthdayViewModel : BirthdayViewModel = viewModel()
+            val loginViewModel: LoginViewModel = viewModel()
             FinalScreen(
                 scrollBehavior,
                 drawerState,
@@ -65,7 +67,8 @@ class MainActivity : ComponentActivity() {
                 categoriesBoxViewModel,
                 profileViewModel,
                 apiData,
-                birthdayViewModel
+                birthdayViewModel,
+                loginViewModel
             )
         }
     }

@@ -1,6 +1,7 @@
 package com.example.applicationhome.ui.theme.components
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Login
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +38,7 @@ import com.example.applicationhome.data.models.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.DrawerViewModel
+import com.example.applicationhome.view.model.LoginViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -47,7 +50,8 @@ fun Options(
     drawerState : DrawerState,
     coroutineScope : CoroutineScope,
     bottomBarViewModel: BottomBarViewModel,
-    drawerViewModel: DrawerViewModel
+    drawerViewModel: DrawerViewModel,
+    loginViewModel: LoginViewModel
 ){
     val density = LocalDensity.current     //هنا بناخد قياس شاشة الموبايل
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} } // بنجبر الـ Measurable يشوف إن عرضه دايماً 250dp
@@ -128,8 +132,8 @@ fun Options(
                 NavigationDrawerItem(
                     label = {
                         if(state) Text(
-                            text = "Logout",
-                            color = Color.Green,
+                            text = if(loginViewModel.isLogin) "Logout" else "Login",
+                            color = if(loginViewModel.isLogin) Color.Red else Color.Green,
                             modifier = Modifier.layout { measurable, constraints ->
                             val placeable = measurable.measure(
                                 constraints.copy(
@@ -144,11 +148,22 @@ fun Options(
                         )
                     },
                 selected = false,
-                icon = {Icon(imageVector = Icons.Default.Login, contentDescription = "Login", tint = Color.Green, modifier = Modifier.padding(start = 5.dp))},
+                icon = {
+                    Icon(
+                        imageVector = if(loginViewModel.isLogin) Icons.Default.Logout else Icons.Default.Login,
+                        contentDescription = if(loginViewModel.isLogin) "Logout" else "Login",
+                        tint = if(loginViewModel.isLogin) Color.Red else Color.Green,
+                        modifier = Modifier.padding(start = 5.dp)
+                    )
+                },
                 onClick = {
                     coroutineScope.launch{drawerState.close()}
-                    navigationController.navigate(Screens.LoginScreen.screen)
-                    //Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()
+                    if(loginViewModel.isLogin){
+                        loginViewModel.logout()
+                        Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()
+                    }else{
+                        navigationController.navigate(Screens.LoginScreen.screen)
+                    }
                 }
             )}
         }

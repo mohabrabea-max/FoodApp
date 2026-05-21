@@ -3,25 +3,41 @@ package com.example.applicationhome.data.models
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.google.gson.annotations.SerializedName
+import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Query
 
 enum class CategoryType { PIZZA, BURGER, CHICKEN, SWEET, ALL }
 
 
 interface FoodAppAPIs{
-    @GET("food_app/food_menu.json")
+
+    @POST("users.json")
+    suspend fun signUp(
+        @Body user : UserClass
+    ): Response<FirebasePostResponse>
+
+    @GET("users.json")
+    suspend fun getUserEmail(
+        @Query("orderBy") orderBy : String = "\"email\"",
+        @Query("equalTo") email : String,
+    ): Response<Map<String, UserClass>>
+
+    @GET("food_menu.json")
     suspend fun foodmenu():List<FoodItem>
 
-    @GET("food_app/snacks.json")
+    @GET("snacks.json")
     suspend fun snacksMenu():List<Snack>
 
-    @GET("food_app/categories.json")
+    @GET("categories.json")
     suspend fun categorieslist():List<Categories>
 
-    @GET("food_app/restaurants.json")
+    @GET("restaurants.json")
     suspend fun restaurants():List<Restaurants>
 
-    @GET("food_app/offers.json")
+    @GET("offers.json")
     suspend fun offers():List<Offers>
 }
 
@@ -121,14 +137,20 @@ data class ProfileOptions(
 
 data class CartKey(val food : Food, val size : String)
 
+data class UserClass(
+    val firstname : String?,
+    val lastname : String?,
+    val email : String?,
+    val password : String?,
+    val phonenumber : String?,
+    val address : String?
+)
 
+data class Birthday(val day : Int, val month : Int, val year : Int)
 
+data class FirebasePostResponse(val name : String)
 
-
-
-
-data class BottomBar(
-    val title : String,
-    val icon : ImageVector,
-    val screens : String
+data class SignupCompose(
+    val stateText : String,
+    val icon : ImageVector
 )
