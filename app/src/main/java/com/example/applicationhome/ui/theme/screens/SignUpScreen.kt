@@ -43,7 +43,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
-import com.example.applicationhome.data.models.Screens
+import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.models.repository.UserRepository
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.MyTopBar
@@ -249,7 +250,7 @@ fun SignUpButton(signUpViewModel: SignUpViewModel, navigationController: NavHost
                     signUpViewModel.nextPage()
                 }else if(page == 2){
                     signUpViewModel.signUpButton()
-                    loginViewModel.login(signUpViewModel.userRequest)
+                    loginViewModel.login(UserRepository.userData, UserRepository.userId)
                     navigationController.navigate(Screens.HomeScreen.screen){ navigationController.popBackStack() }
                     signUpViewModel.lastPage()
                 }

@@ -18,8 +18,8 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.applicationhome.data.models.Favorite
-import com.example.applicationhome.data.models.Food
+import com.example.applicationhome.data.models.repository.Favorite
+import com.example.applicationhome.data.models.model.Food
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.view.model.FavoriteViewModel
 import kotlinx.coroutines.launch

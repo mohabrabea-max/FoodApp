@@ -55,7 +55,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.applicationhome.data.models.ProfileData
+import com.example.applicationhome.data.models.repository.ProfileData
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle

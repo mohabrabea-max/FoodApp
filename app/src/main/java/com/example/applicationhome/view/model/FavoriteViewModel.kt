@@ -2,9 +2,9 @@ package com.example.applicationhome.view.model
 
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
-import com.example.applicationhome.data.models.Favorite
-import com.example.applicationhome.data.models.Food
-import com.example.applicationhome.data.models.Restaurants
+import com.example.applicationhome.data.models.repository.Favorite
+import com.example.applicationhome.data.models.model.Food
+import com.example.applicationhome.data.models.model.Restaurants
 
 class FavoriteViewModel : ViewModel(){
     var itemsCount = mutableStateMapOf<Int, Boolean>()

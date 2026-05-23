@@ -75,7 +75,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.R
-import com.example.applicationhome.data.models.Screens
+import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.VeryLightGray

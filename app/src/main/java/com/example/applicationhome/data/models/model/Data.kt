@@ -1,46 +1,10 @@
-package com.example.applicationhome.data.models
+package com.example.applicationhome.data.models.model
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.google.gson.annotations.SerializedName
-import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
 
 enum class CategoryType { PIZZA, BURGER, CHICKEN, SWEET, ALL }
-
-
-interface FoodAppAPIs{
-
-    @POST("users.json")
-    suspend fun signUp(
-        @Body user : UserClass
-    ): Response<FirebasePostResponse>
-
-    @GET("users.json")
-    suspend fun getUserEmail(
-        @Query("orderBy") orderBy : String = "\"email\"",
-        @Query("equalTo") email : String,
-    ): Response<Map<String, UserClass>>
-
-    @GET("food_menu.json")
-    suspend fun foodmenu():List<FoodItem>
-
-    @GET("snacks.json")
-    suspend fun snacksMenu():List<Snack>
-
-    @GET("categories.json")
-    suspend fun categorieslist():List<Categories>
-
-    @GET("restaurants.json")
-    suspend fun restaurants():List<Restaurants>
-
-    @GET("offers.json")
-    suspend fun offers():List<Offers>
-}
-
 
 sealed interface Food{
     val id: Int
@@ -135,7 +99,10 @@ data class ProfileOptions(
     val screen : Screens
 )
 
-data class CartKey(val food : Food, val size : String)
+data class CartClass(
+    val size : String?,
+    val number : Int?
+)
 
 data class UserClass(
     val firstname : String?,
@@ -146,11 +113,4 @@ data class UserClass(
     val address : String?
 )
 
-data class Birthday(val day : Int, val month : Int, val year : Int)
-
 data class FirebasePostResponse(val name : String)
-
-data class SignupCompose(
-    val stateText : String,
-    val icon : ImageVector
-)

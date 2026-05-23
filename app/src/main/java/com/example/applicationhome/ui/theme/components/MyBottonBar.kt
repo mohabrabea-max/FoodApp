@@ -30,7 +30,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import com.example.applicationhome.data.models.Screens
+import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.view.model.AddBoxViewModel

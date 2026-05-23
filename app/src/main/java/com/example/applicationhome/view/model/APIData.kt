@@ -11,12 +11,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.data.models.Categories
-import com.example.applicationhome.data.models.FoodItem
-import com.example.applicationhome.data.models.Offers
-import com.example.applicationhome.data.models.Restaurants
-import com.example.applicationhome.data.models.RetrofitInstance
-import com.example.applicationhome.data.models.Snack
+import com.example.applicationhome.data.models.model.Categories
+import com.example.applicationhome.data.models.model.FoodItem
+import com.example.applicationhome.data.models.model.Offers
+import com.example.applicationhome.data.models.model.Restaurants
+import com.example.applicationhome.data.models.model.Snack
+import com.example.applicationhome.data.models.remote.RetrofitInstance
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

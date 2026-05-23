@@ -42,7 +42,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
-import com.example.applicationhome.data.models.Screens
+import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.models.repository.UserRepository
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.LoginTextField
@@ -242,7 +243,7 @@ fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostCon
                 if(isEmailTrue && isPasswordTrue){
                     println("true")
                     navigationController.navigate(Screens.HomeScreen.screen) {navigationController.popBackStack()}
-                    loginViewModel.login(loginViewModel.userData)
+                    loginViewModel.login(UserRepository.userData, UserRepository.userId)
                     loginViewModel.bottonstate()
                 }else if(isEmailTrue && isPasswordTrue == false){
                     println("true false")

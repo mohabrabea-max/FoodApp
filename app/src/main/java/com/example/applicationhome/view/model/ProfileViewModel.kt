@@ -6,8 +6,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.applicationhome.data.models.Account
-import com.example.applicationhome.data.models.ProfileData
+import com.example.applicationhome.data.models.repository.ProfileData
+import com.example.applicationhome.data.models.model.Account
 
 class ProfileViewModel : ViewModel(){
     var profile = mutableStateListOf<Account>().apply {

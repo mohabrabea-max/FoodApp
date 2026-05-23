@@ -52,7 +52,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.applicationhome.data.models.Screens
+import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.Options
@@ -95,7 +95,6 @@ fun FinalScreen(
     val navBackStackEntry by navigationController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     var stat = drawerViewModel.state
-    //var drawer = if(stat) 250.dp else 70.dp
     val drawerWidth by animateDpAsState(
         targetValue = if (stat) 250.dp else 70.dp,
         animationSpec = spring(1F), // تقدر تتحكم في السرعة من هنا

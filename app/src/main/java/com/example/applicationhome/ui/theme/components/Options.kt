@@ -33,8 +33,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.applicationhome.data.models.Drawer
-import com.example.applicationhome.data.models.Screens
+import com.example.applicationhome.data.models.repository.Drawer
+import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.DrawerViewModel

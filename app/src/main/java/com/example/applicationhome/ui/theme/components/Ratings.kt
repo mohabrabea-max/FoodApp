@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.models.FoodItem
+import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.ui.theme.BrandBlue
 import com.example.applicationhome.ui.theme.DarkOrange
 

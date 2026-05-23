@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.example.applicationhome.data.models.CategoryType
-import com.example.applicationhome.data.models.Screens
+import com.example.applicationhome.data.models.model.CategoryType
+import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.VeryLightGray

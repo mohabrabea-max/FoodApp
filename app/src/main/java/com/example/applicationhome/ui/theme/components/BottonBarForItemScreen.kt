@@ -37,11 +37,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.models.Cart
-import com.example.applicationhome.data.models.CartKey
-import com.example.applicationhome.data.models.Food
-import com.example.applicationhome.data.models.FoodItem
-import com.example.applicationhome.data.models.Snack
+import com.example.applicationhome.data.models.repository.Cart
+import com.example.applicationhome.data.models.model.CartKey
+import com.example.applicationhome.data.models.model.Food
+import com.example.applicationhome.data.models.model.FoodItem
+import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.view.model.AddBoxViewModel

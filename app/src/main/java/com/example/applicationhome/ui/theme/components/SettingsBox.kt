@@ -26,8 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.applicationhome.data.models.ProfileData.settings
-import com.example.applicationhome.data.models.ProfileOptions
+import com.example.applicationhome.data.models.repository.ProfileData.settings
+import com.example.applicationhome.data.models.model.ProfileOptions
 import com.example.applicationhome.ui.theme.BrownForFont
 
 @Composable

@@ -4,8 +4,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.applicationhome.data.models.FoodItem
-import com.example.applicationhome.data.models.Snack
+import com.example.applicationhome.data.models.model.FoodItem
+import com.example.applicationhome.data.models.model.Snack
 
 class ItemScreenViewModel : ViewModel() {
     var selectedSnak by mutableStateOf<Snack?>(null)

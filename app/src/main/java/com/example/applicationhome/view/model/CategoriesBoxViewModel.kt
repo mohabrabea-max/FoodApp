@@ -4,10 +4,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.applicationhome.data.models.Categories
-import com.example.applicationhome.data.models.CategoryType
-import com.example.applicationhome.data.models.FoodItem
-import com.example.applicationhome.data.models.Restaurants
+import com.example.applicationhome.data.models.model.Categories
+import com.example.applicationhome.data.models.model.CategoryType
+import com.example.applicationhome.data.models.model.FoodItem
+import com.example.applicationhome.data.models.model.Restaurants
 
 class CategoriesBoxViewModel(private val apiData: APIData): ViewModel(){
     var selected by mutableStateOf(0)

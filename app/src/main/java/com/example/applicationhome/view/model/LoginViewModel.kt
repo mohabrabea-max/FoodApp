@@ -7,30 +7,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.data.models.RetrofitInstance
-import com.example.applicationhome.data.models.UserClass
+import com.example.applicationhome.data.models.model.UserClass
+import com.example.applicationhome.data.models.repository.UserRepository
+import com.example.applicationhome.data.models.repository.UserRepository.isLogin
+import com.example.applicationhome.data.models.repository.UserRepository.userData
+import com.example.applicationhome.data.models.repository.UserRepository.userId
 import kotlinx.coroutines.launch
 
 class LoginViewModel : ViewModel() {
-    var isLogin by mutableStateOf(false)
-    var userData by mutableStateOf(
-        UserClass(
-            "Guest",
-            null,
-            null,
-            null,
-            null,
-            null
-        )
-    ); private set
-
     val emailstate = TextFieldState()
     val passwordstate = TextFieldState()
-
-    var isEmailTrue by mutableStateOf(false)
-    var isPasswordTrue by mutableStateOf(false)
-
-
+    var isEmailTrue by mutableStateOf(true)
+    var isPasswordTrue by mutableStateOf(true)
 
     fun getDataInScreen(){
         getData(emailstate.text.toString(), passwordstate.text.toString())
@@ -41,27 +29,14 @@ class LoginViewModel : ViewModel() {
         passwordstate.clearText()
     }
 
-    fun getData(emailstate : String, passwordstate : String){
+    fun getData(emailstate : String, passwordstate : String?){
         viewModelScope.launch {
-            try {
-                val formatEmail = "\"$emailstate\""
-                val response = RetrofitInstance.api.getUserEmail(email = formatEmail)
-                if(response.isSuccessful && response.body() != null){
-                    val userMap = response.body()!!
-                    if(userMap.isNotEmpty()){
-                        isEmailTrue = true
-                        if(passwordstate == userMap.values.first().password){
-                            isPasswordTrue = true
-                            userData = userMap.values.first()
-                        }else{
-                            isPasswordTrue = false
-                        }
-                    }else{
-                        isEmailTrue = false
-                    }
-                }
-            } catch (e : Exception){
-                println("خطأ في الشبكة: ${e.message}")
+            val dataState = UserRepository.getUserData(emailstate, passwordstate)
+            when(dataState){
+                "Email is true" -> {isEmailTrue = true}
+                "Email is false" -> {isEmailTrue = false}
+                "Password is true" -> {isPasswordTrue = true}
+                "Password is false" -> {isPasswordTrue = false}
             }
         }
     }
@@ -78,8 +53,9 @@ class LoginViewModel : ViewModel() {
         )
     }
 
-    fun login(userdata : UserClass){
+    fun login(userdata : UserClass, userid : String){
         userData = userdata
+        userId = userid
         isLogin = true
     }
 }

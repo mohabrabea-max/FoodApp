@@ -46,8 +46,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.Favorite
-import com.example.applicationhome.data.models.Restaurants
+import com.example.applicationhome.data.models.repository.Favorite
+import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.view.model.APIData

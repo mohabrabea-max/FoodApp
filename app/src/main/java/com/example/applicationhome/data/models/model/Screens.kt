@@ -1,4 +1,4 @@
-package com.example.applicationhome.data.models
+package com.example.applicationhome.data.models.model
 
 sealed class Screens (val screen : String){
     data object ItemScreen : Screens("itemScreen")
