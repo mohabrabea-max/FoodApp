@@ -33,8 +33,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.applicationhome.data.models.repository.Drawer
 import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.models.repository.Drawer
+import com.example.applicationhome.data.models.repository.UserRepository
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.view.model.BottomBarViewModel
 import com.example.applicationhome.view.model.DrawerViewModel
@@ -132,8 +133,8 @@ fun Options(
                 NavigationDrawerItem(
                     label = {
                         if(state) Text(
-                            text = if(loginViewModel.isLogin) "Logout" else "Login",
-                            color = if(loginViewModel.isLogin) Color.Red else Color.Green,
+                            text = if(UserRepository.isLogin) "Logout" else "Login",
+                            color = if(UserRepository.isLogin) Color.Red else Color.Green,
                             modifier = Modifier.layout { measurable, constraints ->
                             val placeable = measurable.measure(
                                 constraints.copy(
@@ -150,15 +151,15 @@ fun Options(
                 selected = false,
                 icon = {
                     Icon(
-                        imageVector = if(loginViewModel.isLogin) Icons.Default.Logout else Icons.Default.Login,
-                        contentDescription = if(loginViewModel.isLogin) "Logout" else "Login",
-                        tint = if(loginViewModel.isLogin) Color.Red else Color.Green,
+                        imageVector = if(UserRepository.isLogin) Icons.Default.Logout else Icons.Default.Login,
+                        contentDescription = if(UserRepository.isLogin) "Logout" else "Login",
+                        tint = if(UserRepository.isLogin) Color.Red else Color.Green,
                         modifier = Modifier.padding(start = 5.dp)
                     )
                 },
                 onClick = {
                     coroutineScope.launch{drawerState.close()}
-                    if(loginViewModel.isLogin){
+                    if(UserRepository.isLogin){
                         loginViewModel.logout()
                         Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()
                     }else{

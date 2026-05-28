@@ -250,6 +250,7 @@ fun SignUpButton(signUpViewModel: SignUpViewModel, navigationController: NavHost
                     signUpViewModel.nextPage()
                 }else if(page == 2){
                     signUpViewModel.signUpButton()
+                    loginViewModel.bottonstate()
                     loginViewModel.login(UserRepository.userData, UserRepository.userId)
                     navigationController.navigate(Screens.HomeScreen.screen){ navigationController.popBackStack() }
                     signUpViewModel.lastPage()

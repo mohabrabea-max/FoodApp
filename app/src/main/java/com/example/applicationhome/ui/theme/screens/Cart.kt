@@ -3,6 +3,7 @@ package com.example.applicationhome.ui.theme.screens
 import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -45,12 +46,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import coil.size.Precision
 import com.example.applicationhome.R
-import com.example.applicationhome.data.models.repository.Cart
 import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.models.repository.CartRepository.cartItems
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightBrownForBackground
@@ -64,7 +62,8 @@ import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnrememberedMutableState",
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter",
+    "UnrememberedMutableState",
     "ContextCastToActivity"
 )
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,7 +76,7 @@ fun Cart(
     viewModel: ItemScreenViewModel = viewModel(),
     addBoxViewModel : AddBoxViewModel
 ){
-    var cart = Cart.cartMap()
+    var cart = cartItems
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) {
         // ده بيمسح الأبلكيشن من الـ Background ويقفله تماماً
@@ -130,8 +129,8 @@ fun Cart(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ){
                         item{Spacer(modifier = Modifier.height(100.dp))}
-                        items(cart.keys.toList(), key = { it.food.id.toString() + it.size}) { item ->
-                            CartBox(item.food, item.size, navigationController, viewModel, addBoxViewModel)
+                        items(cartItems.values.toList(), key = { it.id.toString() + it.size}) { item ->
+                            CartBox(item.id, item.size, navigationController, viewModel, addBoxViewModel)
                         }
                         item{
                             PaymentSummary(addBoxViewModel)
@@ -141,14 +140,9 @@ fun Cart(
                 }else{
                     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
                         Spacer(modifier = Modifier.height(300.dp))
-                        AsyncImage(
+                        Image(
                             modifier = Modifier.size(120.dp),
-                            model = ImageRequest.Builder(LocalContext.current).
-                            data(R.drawable.cartemptyimage).
-                            crossfade(true).
-                            size(400, 400).
-                            precision(Precision.EXACT).
-                            build(),
+                            painter = painterResource(R.drawable.cartemptyimage),
                             contentDescription = null
                         )
                         Spacer(modifier = Modifier.height(30.dp))

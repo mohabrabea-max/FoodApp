@@ -8,6 +8,7 @@ import com.example.applicationhome.data.models.model.Categories
 import com.example.applicationhome.data.models.model.CategoryType
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Restaurants
+import com.example.applicationhome.data.models.repository.MenuRepository
 
 class CategoriesBoxViewModel(private val apiData: APIData): ViewModel(){
     var selected by mutableStateOf(0)
@@ -15,28 +16,28 @@ class CategoriesBoxViewModel(private val apiData: APIData): ViewModel(){
 
     val filterMenu: List<FoodItem> // (تأكد من اسم كلاس الوجبة عندك بدل FoodItem)
         get() = if (typ == CategoryType.ALL) {
-            apiData.foodMenuList
+            MenuRepository.foodMenuList
         } else {
-            apiData.foodMenuList.filter { it.typ == typ }
+            MenuRepository.foodMenuList.filter { it.typ == typ }
         }
 
     val filterrestaurants: List<Restaurants> // (تأكد من اسم كلاس المطعم عندك)
         get() = if (typ == CategoryType.ALL) {
-            apiData.restaurantsMenu
+            MenuRepository.restaurantsMenu
         } else {
-            apiData.restaurantsMenu.filter { it.typ.contains(typ) }
+            MenuRepository.restaurantsMenu.filter { it.typ.contains(typ) }
         }
 
 
 
 
 
-    fun selected(item : Categories, apiData : APIData){
+    fun selected(item : Categories){
         selected = item.id
         typ = item.typ
     }
 
-    fun unSelected(apiData : APIData){
+    fun unSelected(){
         selected = 0
         typ = CategoryType.ALL
     }

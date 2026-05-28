@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.models.model.UserClass
 import com.example.applicationhome.data.models.repository.UserRepository
+import com.example.applicationhome.data.models.repository.UserRepository.isEmailDone
 import com.example.applicationhome.data.models.repository.UserRepository.userData
 import kotlinx.coroutines.launch
 
@@ -21,10 +22,9 @@ class SignUpViewModel : ViewModel(){
     val phonenumberstate = TextFieldState()
     val addressstate = TextFieldState()
 
-
     var bottonState by mutableStateOf(false)
 
-    var isEmailDone by mutableStateOf(false)
+
 
     private val _signUpResult = MutableLiveData<String>()
 
@@ -47,7 +47,7 @@ class SignUpViewModel : ViewModel(){
     fun bottonstate(){
         val allowedEmail = "^[A-Za-z0-9._%+-]+@(gmail|yahoo|outlook)\\.(com|net)$".toRegex(RegexOption.IGNORE_CASE)
         val isEmailValid = emailstate.text.matches(allowedEmail)
-        searchForEmail(emailstate.text.toString())
+
         if(
             firstnamestate.text.isNotEmpty()
             && lastnamestate.text.isNotEmpty()
@@ -58,14 +58,21 @@ class SignUpViewModel : ViewModel(){
             && passwordstate.text == confirmpasswordstate.text
         ){
             bottonState = true
-        }else{
+        } else {
             bottonState = false
         }
     }
 
     fun nextPage(){
-        if(isEmailDone){
-            signupPages += 1
+        viewModelScope.launch {
+            val result = UserRepository.getUserData(emailstate.text.toString(), null)
+            if (result == "Email is false") {
+                isEmailDone = true
+                signupPages += 1
+            } else if (result == "Email is true") {
+                isEmailDone = false
+            } else {
+            }
         }
     }
 
@@ -74,20 +81,8 @@ class SignUpViewModel : ViewModel(){
     }
 
     fun registerUserInFirebase(userRequest : UserClass) {
-
-        // بنفتح السكوب بتاع الكوروتين عشان نشتغل في الخلفية
         viewModelScope.launch {
-            val signup = UserRepository.signUp(userRequest)
-        }
-    }
-
-    fun searchForEmail(useremail : String){
-        viewModelScope.launch {
-            val dataState = UserRepository.getUserData(useremail, null)
-            when(dataState){
-                "Email is true" ->{isEmailDone = false}
-                "Email is false" -> {isEmailDone = true}
-            }
+            UserRepository.signUp(userRequest)
         }
     }
 }

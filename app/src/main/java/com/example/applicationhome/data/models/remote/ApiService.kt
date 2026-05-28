@@ -10,6 +10,7 @@ import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.data.models.model.UserClass
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
@@ -24,26 +25,36 @@ interface FoodAppAPIs{
         @Body user : UserClass
     ): Response<FirebasePostResponse>
 
-    @GET("{nodeName}.json")
-    suspend fun <T> getAnyData(
-        @Path("nodeName") nodename : String,
+    @GET("users.json")
+    suspend fun getUserData(
         @Query("orderBy") order : String,
         @Query("equalTo") value : String
-    ): Response<Map<String, T>>
+    ): Response<Map<String, UserClass>>
 
-    @PUT("cart/{userId}/{mealId}.json")
+    @PUT("cart/{userId}/{mealKey}.json")
     suspend fun addToCart(
         @Path("userId") userId : String,
-        @Path("mealId") mealId : String,
+        @Path("mealKey") mealKey : String,
         @Body data : CartClass
     ): Response<CartClass>
 
-    @PATCH("carts/{userId}/{mealId}.json")
+    @PATCH("cart/{userId}/{mealKey}.json")
     suspend fun updateQuantity(
         @Path("userId") userId: String,
-        @Path("mealId") mealId: String,
+        @Path("mealKey") mealKey: String,
         @Body updates: Map<String, Int>
     ): Response<Map<String, Int>>
+
+    @GET("cart/{userId}.json")
+    suspend fun getCartItems(
+        @Path("userId") userId: String,
+    ): Response<Map<String, CartClass>>
+
+    @DELETE("cart/{userId}/{mealKey}.json")
+    suspend fun deleteItemFromCart(
+        @Path("userId") userId: String,
+        @Path("mealKey") mealKey: String,
+    ): Response<Unit>
 
     @GET("food_menu.json")
     suspend fun foodmenu():List<FoodItem>

@@ -57,6 +57,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
@@ -106,7 +107,7 @@ fun ItemScreen(
         }
     }
     val menu = categoriesBoxViewModel.filterMenu
-    val snacks = apiData.snacks
+    val snacks = MenuRepository.snacks
     val item = viewModel.selectedItem
     val size = viewModel.selectedSize
     val images = item?.image?.size ?: 0
@@ -425,7 +426,7 @@ fun ItemScreen(
                                                             food = item,
                                                             favoriteState = favoriteState
                                                         )
-                                                        AddBox(color = Color.VeryLightGray, food = item, ordernumber = addBoxViewModel)
+                                                        AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
                                                     }
                                                 )
                                             }
@@ -467,7 +468,7 @@ fun ItemScreen(
                                                             food = item,
                                                             favoriteState = favoriteState
                                                         )
-                                                        AddBox(color = Color.VeryLightGray, food = item, ordernumber = addBoxViewModel)
+                                                        AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
                                                     }
                                                 )
                                             }

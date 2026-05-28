@@ -100,8 +100,9 @@ data class ProfileOptions(
 )
 
 data class CartClass(
-    val size : String?,
-    val number : Int?
+    val id : Int,
+    val size : String,
+    val number : Int
 )
 
 data class UserClass(

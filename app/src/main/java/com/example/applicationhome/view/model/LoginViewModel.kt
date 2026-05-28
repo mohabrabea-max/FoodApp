@@ -8,6 +8,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.models.model.UserClass
+import com.example.applicationhome.data.models.repository.CartRepository.cartItems
+import com.example.applicationhome.data.models.repository.CartRepository.getcartitems
 import com.example.applicationhome.data.models.repository.UserRepository
 import com.example.applicationhome.data.models.repository.UserRepository.isLogin
 import com.example.applicationhome.data.models.repository.UserRepository.userData
@@ -33,10 +35,21 @@ class LoginViewModel : ViewModel() {
         viewModelScope.launch {
             val dataState = UserRepository.getUserData(emailstate, passwordstate)
             when(dataState){
-                "Email is true" -> {isEmailTrue = true}
-                "Email is false" -> {isEmailTrue = false}
-                "Password is true" -> {isPasswordTrue = true}
-                "Password is false" -> {isPasswordTrue = false}
+                "Password is true" -> {
+                    isEmailTrue = true
+                    isPasswordTrue = true
+                }
+                "Password is false" -> {
+                    isEmailTrue = true
+                    isPasswordTrue = false
+                }
+                "Email is false" -> {
+                    isEmailTrue = false
+                    isPasswordTrue = true
+                }
+                "Network error" -> {
+                   println("Error")
+                }
             }
         }
     }
@@ -51,9 +64,13 @@ class LoginViewModel : ViewModel() {
             null,
             null
         )
+        cartItems.clear()
     }
 
     fun login(userdata : UserClass, userid : String){
+        viewModelScope.launch {
+            getcartitems()
+        }
         userData = userdata
         userId = userid
         isLogin = true

@@ -36,6 +36,7 @@ import coil.size.Precision
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.model.Snack
+import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
@@ -47,7 +48,7 @@ fun ItemsBox(
     apiData: APIData,
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
-    if (apiData.foodMenuListisLoading) {
+    if (MenuRepository.foodMenuListisLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -132,7 +133,7 @@ fun SnaksBox(
     apiData: APIData,
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
-    if (apiData.snacksisLoading) {
+    if (MenuRepository.snacksisLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center

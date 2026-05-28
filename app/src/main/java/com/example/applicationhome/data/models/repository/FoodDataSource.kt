@@ -146,14 +146,6 @@ object Cart {
 object Favorite {
     var favoritelist = mutableStateListOf<Food>()
     var favoriteRestaurantslist = mutableStateListOf<Restaurants>()
-
-    fun favoriteList(): List<Food>{
-        return favoritelist
-    }
-
-    fun favoriteRestaurantsList(): List<Restaurants>{
-        return favoriteRestaurantslist
-    }
 }
 
 object Drawer {

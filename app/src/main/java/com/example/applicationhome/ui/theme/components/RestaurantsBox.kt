@@ -46,8 +46,9 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.repository.Favorite
 import com.example.applicationhome.data.models.model.Restaurants
+import com.example.applicationhome.data.models.repository.Favorite
+import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.view.model.APIData
@@ -56,7 +57,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun RestaurantsBox(item : Restaurants, favoriteState : FavoriteViewModel, apiData : APIData){
-    if (apiData.restaurantsMenuisLoading) {
+    if (MenuRepository.restaurantsMenuisLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center

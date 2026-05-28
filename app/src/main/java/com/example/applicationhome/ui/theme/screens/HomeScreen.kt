@@ -76,6 +76,7 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -160,10 +161,10 @@ fun HomeScreen(
         }
     }
 
-    val snacks = apiData.snacks
+    val snacks = MenuRepository.snacks
     val menu = categoriesBoxViewModel.filterMenu
     val restaurants = categoriesBoxViewModel.filterrestaurants
-    val offers = apiData.offers
+    val offers = MenuRepository.offers
     val pagerState = rememberPagerState(pageCount = {offers.size})
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) {
@@ -415,7 +416,7 @@ fun HomeScreen(
                                             food = item,
                                             favoriteState = favoriteState
                                         )
-                                        AddBox(color = Color.VeryLightGray, food = item, ordernumber = addBoxViewModel)
+                                        AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
                                     }
                                 )
                             }
@@ -442,7 +443,7 @@ fun HomeScreen(
                                     food = item,
                                     favoriteState = favoriteState
                                 )
-                                AddBox(color = Color.VeryLightGray, food = item, ordernumber = addBoxViewModel)
+                                AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
                             }
                         )
                     }

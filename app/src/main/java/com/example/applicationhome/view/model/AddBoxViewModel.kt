@@ -1,99 +1,79 @@
 package com.example.applicationhome.view.model
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.data.models.repository.Cart
-import com.example.applicationhome.data.models.model.CartKey
-import com.example.applicationhome.data.models.model.Food
-import com.example.applicationhome.data.models.model.FoodItem
-import com.example.applicationhome.data.models.model.Snack
-import com.example.applicationhome.data.models.repository.Cart.cartMap
+import com.example.applicationhome.data.models.repository.CartRepository.addMealToCart
+import com.example.applicationhome.data.models.repository.CartRepository.cartItems
+import com.example.applicationhome.data.models.repository.CartRepository.deleteFromCart
+import com.example.applicationhome.data.models.repository.CartRepository.minusFromCart
 import com.example.applicationhome.data.models.repository.CartRepository.totalCart
-import com.example.applicationhome.data.models.repository.CartRepository.totalNumber
 import com.example.applicationhome.data.models.repository.CartRepository.totalPrice
+import com.example.applicationhome.data.models.repository.CartRepository.updateTotals
 import kotlinx.coroutines.launch
 
 class AddBoxViewModel : ViewModel(){
     var activId by mutableStateOf<Int?>(null)
 
-
-
-    fun addBoxNumberPlus(foodId: Int, size : String, number : Int){
+    fun plus(foodId: Int, size : String){
         viewModelScope.launch {
-
-        }
-    }
-
-
-
-    fun updateTotals() {
-        totalNumber.value = 0
-        totalPrice.value = 0.0
-        // بنلف على كل العناصر اللي في السلة ونحسبها من الصفر
-        for ((key, value) in cartMap) {
-            val food = key.food
-            val size = key.size
-            when(food){
-                is FoodItem -> {
-                    totalNumber.value += value
-                    val priceForSize = food.sizeOptions.find { it.size == size }?.price ?: 0.0
-                    totalPrice.value += priceForSize * value
+            val mealKey = "${foodId}_$size"
+            val currentItem = cartItems[mealKey]
+            val finalNumber = if (currentItem != null){
+                if(currentItem.number == 99){
+                    99
+                }else{
+                    currentItem.number + 1
                 }
-                is Snack -> {
-                    totalNumber.value += value
-                    val priceForSize = food.priceANDsize[size] ?: 0.0
-                    totalPrice.value += priceForSize * value
-                }
-            }
-        }
-    }
-//    fun addBoxNumberPlus(food: Food, size : String){
-//        val key = CartKey(food, size)
-//        if((cartMap[key] ?: 0) < 99){
-//            totalCart = totalCart + 1
-//            activId = food.id
-//            if(cartMap.containsKey(key)){
-//                cartMap[key] = (cartMap[key] ?: 0) + 1
-//            }else{
-//                cartMap[key] = 1
-//            }
-//            updateTotals()
-//        }
-//    }
-
-    fun addBoxNumberMinus(food: Food, size : String){
-        val key = CartKey(food, size)
-        if((cartMap[key] ?: 0) > 0){
-            if(cartMap[key] == 1){
-                cartMap.remove(key)
             }else{
-                cartMap[key] = (cartMap[key] ?: 0) - 1
+                1
+            }
+            addMealToCart(foodId, size, finalNumber)
+            updateTotals()
+        }
+    }
+
+    fun minus(foodId: Int, size : String){
+        viewModelScope.launch {
+            val mealKey = "${foodId}_$size"
+            var finalNumber by mutableStateOf(0)
+            if(cartItems[mealKey]?.number == 1){
+                deleteFromCart(foodId, size)
+            }else{
+                finalNumber = cartItems[mealKey]!!.number - 1
+                minusFromCart(foodId, size, finalNumber)
             }
             updateTotals()
         }
     }
-    fun updateCount(food: Food, size : String, newCount: Int) {
-        val key = CartKey(food, size)
-        cartMap[key] = newCount
-        updateTotals()
+
+    fun updateCount(foodId: Int, size : String, newCount: Int) {
+        viewModelScope.launch {
+            val mealKey = "${foodId}_$size"
+            val currentItem = cartItems[mealKey]
+            if (currentItem != null) cartItems[mealKey] = currentItem.copy(number = newCount)
+            addMealToCart(foodId, size, newCount)
+            updateTotals()
+        }
     }
-    fun delete(food : Food, size: String){
-        var key = CartKey(food, size)
-        cartMap.remove(key)
+
+    fun delete(foodId: Int, size : String){
+        viewModelScope.launch {
+            deleteFromCart(foodId, size)
+        }
         totalCart = 0
         updateTotals()
     }
+
     fun bay(){
         totalPrice.value = 0.0
-        cartMap.clear()
+        cartItems.clear()
         totalCart = 0
         updateTotals()
     }
-    fun activ(food : Food){
-        activId = food.id
+    fun active(foodId : Int){
+        activId = foodId
     }
 }

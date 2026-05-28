@@ -43,7 +43,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.UserRepository
+import com.example.applicationhome.data.models.repository.UserRepository.userData
+import com.example.applicationhome.data.models.repository.UserRepository.userId
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.LoginTextField
@@ -70,7 +71,10 @@ fun LoginScreen(
                 null,
                 {
                     IconButton(
-                        onClick = {if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() } },
+                        onClick = {
+                            if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
+                            loginViewModel.bottonstate()
+                            },
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
                     ) {
                         Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.White)
@@ -241,9 +245,9 @@ fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostCon
             .background(if(loginViewModel.emailstate.text.isNotEmpty() && loginViewModel.passwordstate.text.isNotEmpty()) Color.DarkOrange else Color.Gray)
             .clickable {
                 if(isEmailTrue && isPasswordTrue){
-                    println("true")
+                    println(userId)
                     navigationController.navigate(Screens.HomeScreen.screen) {navigationController.popBackStack()}
-                    loginViewModel.login(UserRepository.userData, UserRepository.userId)
+                    loginViewModel.login(userData, userId)
                     loginViewModel.bottonstate()
                 }else if(isEmailTrue && isPasswordTrue == false){
                     println("true false")
@@ -252,6 +256,7 @@ fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostCon
                 }
             },
         contentAlignment = Alignment.Center
+
     ){
         Text(
             text = "Login",

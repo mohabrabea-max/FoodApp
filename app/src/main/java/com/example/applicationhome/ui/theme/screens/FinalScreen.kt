@@ -53,6 +53,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.models.repository.UserRepository
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.Options
@@ -133,7 +134,7 @@ fun FinalScreen(
                     clip(RoundedCornerShape(40.dp)).
                     background(Color.VeryLightGray).
                     clickable{
-                        if(loginViewModel.isLogin){
+                        if(UserRepository.isLogin){
                             coroutineScope.launch{drawerState.close()}
                             navigationController.navigate(Screens.Profile.screen)
                         }else{
@@ -168,14 +169,14 @@ fun FinalScreen(
                         if(stat){
                             Column(modifier = Modifier.weight(2.5f),horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center){
                                 Text(
-                                    text = loginViewModel.userData.firstname.toString() + if(loginViewModel.userData.lastname != null) loginViewModel.userData.lastname.toString() else "",
+                                    text = UserRepository.userData.firstname.toString() + " " + if(UserRepository.userData.lastname != null) UserRepository.userData.lastname.toString() else "",
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Black
                                 )
                                 Spacer(modifier = Modifier.height(5.dp))
                                 Text(
-                                    text = if(loginViewModel.userData.email != null) loginViewModel.userData.email.toString() else "Login",
+                                    text = if(UserRepository.userData.email != null) UserRepository.userData.email.toString() else "Login",
                                     fontSize = 12.sp,
                                     color = Color.DarkGray
                                 )

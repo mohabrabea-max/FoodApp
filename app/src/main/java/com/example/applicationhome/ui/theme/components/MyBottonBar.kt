@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.models.repository.CartRepository
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.view.model.AddBoxViewModel
@@ -149,12 +150,12 @@ fun MyBottonBar(
                 ){
                     BadgedBox(
                         badge = {
-                            if(addBoxViewModel.totalNumber.value > 0){
+                            if(CartRepository.totalNumber.value > 0){
                                 Badge(
                                     containerColor = Color.DarkOrange,
                                     contentColor = Color.White
                                 ){
-                                    Text(text = addBoxViewModel.totalNumber.value.toString())
+                                    Text(text = CartRepository.totalNumber.value.toString())
                                 }
                             }
                         }

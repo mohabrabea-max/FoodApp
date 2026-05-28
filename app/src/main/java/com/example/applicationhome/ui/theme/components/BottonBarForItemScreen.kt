@@ -37,11 +37,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.models.repository.Cart
-import com.example.applicationhome.data.models.model.CartKey
 import com.example.applicationhome.data.models.model.Food
-import com.example.applicationhome.data.models.model.FoodItem
-import com.example.applicationhome.data.models.model.Snack
+import com.example.applicationhome.data.models.repository.CartRepository
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.view.model.AddBoxViewModel
@@ -56,17 +53,10 @@ fun BottonBarForItemScreen(
     food : Food,
     size : String
 ){
-    var cart = Cart.cartmap
-    val item = viewModel.selectedItem
-    var key: CartKey? = null
-    when (item) {
-        is FoodItem , is Snack-> {
-            key = CartKey(item, size)
-        }
-    }
+    val cart = CartRepository.cartItems
     val context = LocalContext.current
-    var cartkey = CartKey(food, size)
-    var count = ordernumber.cartMap[cartkey] ?: 0
+    val cartkey = "${food.id}_Small"
+    val count = CartRepository.cartItems[cartkey]?.number ?: 0
     var color : Color
     var fontColor : Color
     if(count == 0){
@@ -82,7 +72,7 @@ fun BottonBarForItemScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ){
-        if(cart.containsKey(key)){
+        if(cart.containsKey(cartkey)){
             Box(
                 modifier = Modifier.width(170.dp).
                 height(25.dp).
@@ -94,7 +84,7 @@ fun BottonBarForItemScreen(
                 }
             ){
                 Text(
-                    text = "${cart[key]} added in your cart",
+                    text = "${cart[cartkey]} added in your cart",
                     modifier = Modifier.padding(top = 5.dp, start = 5.dp, end = 5.dp).align(Alignment.TopCenter)
                 )
             }
@@ -126,7 +116,7 @@ fun BottonBarForItemScreen(
                         fillMaxSize(),
                         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
                     ){
-                        IconButton(onClick = {ordernumber.addBoxNumberMinus(food, size)}, modifier = Modifier.weight(1f).fillMaxHeight()){
+                        IconButton(onClick = {ordernumber.minus(food.id, size)}, modifier = Modifier.weight(1f).fillMaxHeight()){
                             Icon(
                                 Icons.Default.Remove,
                                 contentDescription = null,
@@ -148,7 +138,7 @@ fun BottonBarForItemScreen(
                                 textAlign = TextAlign.Center
                             )
                         }
-                        IconButton(onClick = {ordernumber.addBoxNumberPlus(food, size)}, modifier = Modifier.weight(1f).fillMaxHeight()){
+                        IconButton(onClick = {ordernumber.plus(food.id, size)}, modifier = Modifier.weight(1f).fillMaxHeight()){
                             Icon(
                                 Icons.Default.Add,
                                 contentDescription = null,
@@ -160,7 +150,7 @@ fun BottonBarForItemScreen(
                 }
                 Box(modifier = Modifier.weight(1f)){
                     IconButton(onClick = {
-                        ordernumber.delete(food, size)
+                        ordernumber.delete(food.id, size)
                         if(count > 0) Toast.makeText(context, "Removed from cart", Toast.LENGTH_SHORT).show()}){
                         Icon(
                             Icons.Default.Delete,

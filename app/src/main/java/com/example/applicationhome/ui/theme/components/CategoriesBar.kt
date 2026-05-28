@@ -17,12 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.CategoriesBoxViewModel
 
 @Composable
 fun CategoriesBar(categoriesBoxViewModel : CategoriesBoxViewModel, apiData: APIData){
-    val categories = apiData.categories
+    val categories = MenuRepository.categories
     Row(
         modifier = Modifier.padding(start = 5.dp, end = 5.dp).fillMaxWidth().
         height(60.dp).
@@ -35,7 +36,7 @@ fun CategoriesBar(categoriesBoxViewModel : CategoriesBoxViewModel, apiData: APID
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ){
             item { Spacer(modifier = Modifier.width(4.dp)) }
-            items(categories) { category -> CategoriesBox(category, categoriesBoxViewModel, apiData) }
+            items(categories) { category -> CategoriesBox(category, categoriesBoxViewModel) }
             item { Spacer(modifier = Modifier.width(4.dp)) }
         }
     }

@@ -3,6 +3,7 @@ package com.example.applicationhome.ui.theme.screens
 import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -46,14 +47,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import coil.size.Precision
 import com.example.applicationhome.R
-import com.example.applicationhome.data.models.repository.Favorite
-import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.model.FoodItem
+import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.model.Snack
+import com.example.applicationhome.data.models.repository.Favorite
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -83,7 +81,7 @@ fun Favorite(
     favoriteState : FavoriteViewModel,
     apiData : APIData
 ){
-    var favorite = Favorite.favoriteList()
+    var favorite = Favorite.favoritelist
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) {
         // ده بيمسح الأبلكيشن من الـ Background ويقفله تماماً
@@ -146,7 +144,7 @@ fun Favorite(
                                                 food = item,
                                                 favoriteState = favoriteState
                                             )
-                                            AddBox(color = Color.White, food = item, ordernumber = addBoxViewModel)
+                                            AddBox(color = Color.White, food = item, addBoxViewModel)
                                         }
                                     )
                                 }
@@ -169,7 +167,7 @@ fun Favorite(
                                                 food = item,
                                                 favoriteState = favoriteState
                                             )
-                                            AddBox(color = Color.VeryLightGray, food = item, ordernumber = addBoxViewModel)
+                                            AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
                                         }
                                     )
                                 }
@@ -179,14 +177,9 @@ fun Favorite(
                 }else{
                     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
                         Spacer(modifier = Modifier.height(300.dp))
-                        AsyncImage(
+                        Image(
                             modifier = Modifier.size(120.dp),
-                            model = ImageRequest.Builder(LocalContext.current).
-                            data(R.drawable.favoriteemptyimage).
-                            crossfade(true).
-                            size(400, 400).
-                            precision(Precision.EXACT).
-                            build(),
+                            painter = painterResource(R.drawable.favoriteemptyimage),
                             contentDescription = null
                         )
                         Spacer(modifier = Modifier.height(30.dp))

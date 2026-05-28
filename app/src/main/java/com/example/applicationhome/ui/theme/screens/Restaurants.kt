@@ -56,6 +56,7 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
@@ -75,8 +76,8 @@ fun Restaurants(
     favoriteState : FavoriteViewModel,
     apiData : APIData
 ){
-    val restaurantsMenu = apiData.restaurantsMenu
-    if (apiData.restaurantsMenuisLoading) {
+    val restaurantsMenu = MenuRepository.restaurantsMenu
+    if (MenuRepository.restaurantsMenuisLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center

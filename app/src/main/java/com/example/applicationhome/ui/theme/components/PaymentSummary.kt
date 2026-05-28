@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.data.models.repository.CartRepository
 import com.example.applicationhome.view.model.AddBoxViewModel
 
 @Composable
@@ -47,7 +48,7 @@ fun PaymentSummary(
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = "EGP ${addBoxViewModel.totalPrice.value}",
+                text = "EGP ${CartRepository.totalPrice.value}",
                 fontSize = 14.sp,
                 color = Color.Black,
                 style = MaterialTheme.typography.bodySmall,
@@ -101,7 +102,7 @@ fun PaymentSummary(
                 style = MaterialTheme.typography.labelLarge
             )
             Text(
-                text = "EGP ${addBoxViewModel.totalPrice.value}",
+                text = "EGP ${CartRepository.totalPrice.value}",
                 fontSize = 17.sp,
                 color = Color.Black,
                 style = MaterialTheme.typography.labelLarge

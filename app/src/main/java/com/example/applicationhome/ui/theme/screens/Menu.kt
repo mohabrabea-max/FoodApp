@@ -42,6 +42,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.model.CategoryType
 import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -68,8 +69,8 @@ fun Menu(
     apiData : APIData
 ){
     val typ = categoriesBoxViewModel.typ
-    val restaurants = apiData.restaurantsMenu
-    val menu = apiData.foodMenuList
+    val restaurants = MenuRepository.restaurantsMenu
+    val menu = MenuRepository.foodMenuList
     Scaffold(
         modifier = Modifier.fillMaxSize().background(Color.LightBrownForBackground),
         topBar = {
@@ -163,7 +164,7 @@ fun Menu(
                                     food = item,
                                     favoriteState = favoriteState
                                 )
-                                AddBox(color = Color.White, food = item, ordernumber = addBoxViewModel)
+                                AddBox(color = Color.White, food = item, addBoxViewModel)
                             }
                         )
                     }
