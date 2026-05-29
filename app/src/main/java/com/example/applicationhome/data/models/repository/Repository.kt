@@ -2,19 +2,24 @@ package com.example.applicationhome.data.models.repository
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.applicationhome.data.models.model.CartClass
 import com.example.applicationhome.data.models.model.Categories
+import com.example.applicationhome.data.models.model.FavoriteClass
 import com.example.applicationhome.data.models.model.FirebasePostResponse
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Offers
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.Snack
+import com.example.applicationhome.data.models.model.Type
 import com.example.applicationhome.data.models.model.UserClass
 import com.example.applicationhome.data.models.remote.RetrofitInstance
 import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuList
+import com.example.applicationhome.data.models.repository.MenuRepository.restaurantsMenu
+import com.example.applicationhome.data.models.repository.MenuRepository.snacks
 import com.example.applicationhome.data.models.repository.UserRepository.userId
 import retrofit2.Response
 
@@ -36,10 +41,7 @@ object UserRepository {
     suspend fun getUserData(emailstate : String, passwordstate : String?): String {
         return try {
             val formatEmail = "\"$emailstate\""
-            val response = RetrofitInstance.api.getUserData(
-                order = "\"email\"",
-                value = formatEmail
-            )
+            val response = RetrofitInstance.api.getUserData(order = "\"email\"", value = formatEmail)
             if(response.isSuccessful && response.body() != null){
                 val userMap = response.body()!!
                 if(userMap.isNotEmpty()){
@@ -152,7 +154,7 @@ object CartRepository {
         }else{
             return try {
                 val updatesMap = mapOf("number" to number)
-                val response = RetrofitInstance.api.updateQuantity(userId, mealKey, updatesMap)
+                val response = RetrofitInstance.api.updateCart(userId, mealKey, updatesMap)
 
                 if(response.isSuccessful && response.body()!= null){
                     val currentItem = cartItems[mealKey]
@@ -173,7 +175,7 @@ object CartRepository {
         var mealKey by mutableStateOf("${foodId}_$size")
         return try {
             val updatesMap = mapOf("number" to number)
-            val response = RetrofitInstance.api.updateQuantity(userId, mealKey, updatesMap)
+            val response = RetrofitInstance.api.updateCart(userId, mealKey, updatesMap)
             val currentItem = cartItems[mealKey]
             if (response.isSuccessful && currentItem != null){
                 cartItems[mealKey] = currentItem.copy(number = number)
@@ -192,6 +194,82 @@ object CartRepository {
             val response = RetrofitInstance.api.deleteItemFromCart(userId, mealKey)
             if(response.isSuccessful){
                 cartItems.keys.remove(mealKey)
+                "Success"
+            }else{
+                "Network error"
+            }
+        }catch (e : Exception){
+            "خطأ في الشبكة: ${e.message}"
+        }
+    }
+}
+
+object FavoriteRepository {
+    var favoritList = mutableStateListOf<FavoriteClass>()
+
+    var mealsFavorite = mutableStateListOf<FoodItem?>()
+
+    var snacksFavorite = mutableStateListOf<Snack?>()
+
+    var restaurantsFavorite = mutableStateListOf<Restaurants?>()
+
+    fun viewFavorite(){
+        mealsFavorite.clear()
+        snacksFavorite.clear()
+        restaurantsFavorite.clear()
+        favoritList.forEach { item ->
+            if(item.typ == Type.MEAL){
+                mealsFavorite.add(foodMenuList.find { it.id == item.id })
+            }else if(item.typ == Type.SNACK){
+                snacksFavorite.add(snacks.find { it.id == item.id })
+            }else{
+                restaurantsFavorite.add(restaurantsMenu.find { it.id == item.id })
+            }
+        }
+    }
+
+
+    suspend fun addToFavorite(id : Int, typ : Type, restaurants : String) : String{
+        val favoriteObject = FavoriteClass(id, typ, restaurants)
+        val mealKey = id
+        return try {
+            val response = RetrofitInstance.api.addToFavorite(userId, mealKey, favoriteObject)
+            if(response.isSuccessful && response.body() != null){
+                favoritList.add(favoriteObject)
+                viewFavorite()
+                "Success"
+            }else{
+                "Network error"
+            }
+        } catch (e : Exception){
+            "خطأ في الشبكة: ${e.message}"
+        }
+    }
+
+    suspend fun getFavorite() : String{
+        return try {
+            val favoriteItems = RetrofitInstance.api.getFavoriteItems(userId)
+
+            if(favoriteItems != null && favoriteItems.isNotEmpty()){
+                favoritList.clear()
+                favoritList += favoriteItems
+                viewFavorite()
+                    "Success"
+            }else{
+                "Favorite is empty"
+            }
+        }catch (e : Exception){
+            "خطأ في الشبكة: ${e.message}"
+        }
+    }
+
+    suspend fun deleteFavorite(id : Int): String{
+        val mealKey = id
+        return try {
+            val response = RetrofitInstance.api.deleteFromFavorite(userId, mealKey)
+            if(response.isSuccessful){
+                favoritList.remove(favoritList.find { it.id == id })
+                viewFavorite()
                 "Success"
             }else{
                 "Network error"

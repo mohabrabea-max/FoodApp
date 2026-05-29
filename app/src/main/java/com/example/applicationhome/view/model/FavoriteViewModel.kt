@@ -1,37 +1,34 @@
 package com.example.applicationhome.view.model
 
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
-import com.example.applicationhome.data.models.repository.Favorite
+import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.models.model.Food
 import com.example.applicationhome.data.models.model.Restaurants
+import com.example.applicationhome.data.models.model.Type
+import com.example.applicationhome.data.models.repository.FavoriteRepository.addToFavorite
+import com.example.applicationhome.data.models.repository.FavoriteRepository.deleteFavorite
+import kotlinx.coroutines.launch
 
 class FavoriteViewModel : ViewModel(){
-    var itemsCount = mutableStateMapOf<Int, Boolean>()
-    var favoriteList = Favorite.favoritelist
-
-    var itemsrestaurantsCount = mutableStateMapOf<Int, Boolean>()
-    var favoriterestaurantsList = Favorite.favoriteRestaurantslist
-
-
-    fun addFavorite(food :  Food){
-        itemsCount[food.id] = true
-        favoriteList.add(food)
-
+    fun addFavorite(food : Food){
+        viewModelScope.launch {
+            addToFavorite(food.id, Type.MEAL, "food.restaurants")
+        }
     }
-    fun removeFavorite(food :  Food){
-        itemsCount[food.id] = false
-        favoriteList.remove(food)
+    fun removeFavorite(food : Food){
+        viewModelScope.launch {
+            deleteFavorite(food.id)
+        }
     }
-
 
     fun addRestaurantsFavorite(restaurants: Restaurants){
-        itemsrestaurantsCount[restaurants.id] = true
-        favoriterestaurantsList.add(restaurants)
-
+        viewModelScope.launch {
+            addToFavorite(restaurants.id, Type.RESTAURANTS, restaurants.name)
+        }
     }
     fun removeRestaurantsFavorite(restaurants: Restaurants){
-        itemsrestaurantsCount[restaurants.id] = false
-        favoriterestaurantsList.remove(restaurants)
+        viewModelScope.launch {
+            deleteFavorite(restaurants.id)
+        }
     }
 }

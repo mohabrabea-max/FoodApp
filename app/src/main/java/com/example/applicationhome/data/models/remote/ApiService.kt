@@ -2,6 +2,7 @@ package com.example.applicationhome.data.models.remote
 
 import com.example.applicationhome.data.models.model.CartClass
 import com.example.applicationhome.data.models.model.Categories
+import com.example.applicationhome.data.models.model.FavoriteClass
 import com.example.applicationhome.data.models.model.FirebasePostResponse
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Offers
@@ -31,6 +32,9 @@ interface FoodAppAPIs{
         @Query("equalTo") value : String
     ): Response<Map<String, UserClass>>
 
+
+
+
     @PUT("cart/{userId}/{mealKey}.json")
     suspend fun addToCart(
         @Path("userId") userId : String,
@@ -39,22 +43,46 @@ interface FoodAppAPIs{
     ): Response<CartClass>
 
     @PATCH("cart/{userId}/{mealKey}.json")
-    suspend fun updateQuantity(
-        @Path("userId") userId: String,
-        @Path("mealKey") mealKey: String,
+    suspend fun updateCart(
+        @Path("userId") userId : String,
+        @Path("mealKey") mealKey : String,
         @Body updates: Map<String, Int>
     ): Response<Map<String, Int>>
 
     @GET("cart/{userId}.json")
     suspend fun getCartItems(
-        @Path("userId") userId: String,
+        @Path("userId") userId : String,
     ): Response<Map<String, CartClass>>
 
     @DELETE("cart/{userId}/{mealKey}.json")
     suspend fun deleteItemFromCart(
-        @Path("userId") userId: String,
-        @Path("mealKey") mealKey: String,
+        @Path("userId") userId : String,
+        @Path("mealKey") mealKey : String,
     ): Response<Unit>
+
+
+
+
+    @PUT("favorite/{userId}/{mealKey}.json")
+    suspend fun addToFavorite(
+        @Path("userId") userId : String,
+        @Path("mealKey") mealKey : Int,
+        @Body data : FavoriteClass
+    ): Response<FavoriteClass>
+
+    @DELETE("favorite/{userId}/{mealKey}.json")
+    suspend fun deleteFromFavorite(
+        @Path("userId") userId : String,
+        @Path("mealKey") mealKey : Int,
+    ): Response<Unit>
+
+    @GET("favorite/{userId}.json")
+    suspend fun getFavoriteItems(
+        @Path("userId") userId : String,
+    ): List<FavoriteClass>
+
+
+
 
     @GET("food_menu.json")
     suspend fun foodmenu():List<FoodItem>

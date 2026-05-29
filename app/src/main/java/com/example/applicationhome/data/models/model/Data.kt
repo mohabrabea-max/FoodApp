@@ -6,10 +6,15 @@ import com.google.gson.annotations.SerializedName
 
 enum class CategoryType { PIZZA, BURGER, CHICKEN, SWEET, ALL }
 
+enum class Type { MEAL, SNACK, RESTAURANTS }
+
+enum class FoodSizes{ SMALL, MEDIUM, LARGE }
+
 sealed interface Food{
     val id: Int
     val name : String
     val image : List<String>
+    //val restaurants : String
     val review : Double
 }
 
@@ -21,7 +26,8 @@ sealed interface Food{
         @SerializedName("images")
         override val image : List<String> = listOf(""),
         @SerializedName("sizes")
-        val sizeOptions: List<MealSizeDetail>,
+        val sizeOptions : List<MealSizeDetail>,
+        //override val restaurants : String,
         @SerializedName("rating")
         override val review : Double = 0.0
     ): Food
@@ -33,6 +39,7 @@ sealed interface Food{
         override val image : List<String> = listOf(""),
         @SerializedName("prices")
         val priceANDsize : Map<String, Double>,
+        //override val restaurants : String,
         @SerializedName("rating")
         override val review : Double = 0.0
     ): Food
@@ -103,6 +110,12 @@ data class CartClass(
     val id : Int,
     val size : String,
     val number : Int
+)
+
+data class FavoriteClass(
+    val id : Int,
+    val typ : Type,
+    val restaurants : String
 )
 
 data class UserClass(

@@ -47,7 +47,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Restaurants
-import com.example.applicationhome.data.models.repository.Favorite
+import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
 import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -169,11 +169,10 @@ fun Favorite2(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
-    val favorite = favoriteState.itemsCount[restaurants.id] ?: false
-    val favorite2 = if(restaurants in Favorite.favoriteRestaurantslist) true else false
+    val favorite = favoritList.any{ it.id == restaurants.id }
     fun favorite1(){
 
-        if(favorite == true || favorite2 == true){
+        if(favorite == true){
             favoriteState.removeRestaurantsFavorite(restaurants)
             Toast.makeText(context, "Remove From Favorite", Toast.LENGTH_SHORT).show()
         }else{
@@ -190,7 +189,7 @@ fun Favorite2(
     }
 
     IconButton(modifier = modifier, onClick = {favorite1()}){
-        if(favorite == false && favorite2 == false) {
+        if(favorite == false) {
             Icon(
                 imageVector = Icons.Default.BookmarkBorder,
                 contentDescription = "More",

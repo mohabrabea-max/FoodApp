@@ -51,7 +51,8 @@ import com.example.applicationhome.R
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.model.Snack
-import com.example.applicationhome.data.models.repository.Favorite
+import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
+import com.example.applicationhome.data.models.repository.FavoriteRepository.mealsFavorite
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -81,7 +82,6 @@ fun Favorite(
     favoriteState : FavoriteViewModel,
     apiData : APIData
 ){
-    var favorite = Favorite.favoritelist
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) {
         // ده بيمسح الأبلكيشن من الـ Background ويقفله تماماً
@@ -120,14 +120,14 @@ fun Favorite(
     ){
         Box(modifier = Modifier.background(Color.White)){
             Box(modifier = Modifier.fillMaxSize()){
-                if(favorite.size > 0){
+                if(favoritList.size > 0){
                     LazyVerticalGrid (
                         modifier = Modifier.fillMaxSize(),
                         columns = GridCells.Fixed(2),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ){
                         item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
-                        items(favorite) { item ->
+                        items(mealsFavorite) { item ->
                             when (item) {
                                 is FoodItem -> {
                                     ItemsBox(

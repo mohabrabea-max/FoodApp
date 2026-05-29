@@ -23,7 +23,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SettingsBrightness
 import androidx.compose.material.icons.filled.ShoppingCartCheckout
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
 import com.example.applicationhome.data.models.model.Account
 import com.example.applicationhome.data.models.model.Food
 import com.example.applicationhome.data.models.model.Options
@@ -133,13 +132,6 @@ object ProfileData {
 
     fun settingsata(): List<Settings>{
         return settings
-    }
-}
-
-object Cart {
-    var cartmap = mutableStateMapOf<Cart, Int>()
-    fun cartMap(): Map<Cart, Int>{
-        return cartmap
     }
 }
 
