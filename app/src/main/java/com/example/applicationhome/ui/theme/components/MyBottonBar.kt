@@ -97,6 +97,7 @@ fun MyBottonBar(
                         if(selected == "Favorite"){
                             navigationController.navigate(Screens.Favorite.screen)
                         }else{
+                            println(favoritList)
                             viewModel.favorite()
                             navigationController.navigate(Screens.Favorite.screen){
                                 popUpTo(navigationController.graph.findStartDestination().id) {

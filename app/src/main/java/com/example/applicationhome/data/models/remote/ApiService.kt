@@ -33,7 +33,11 @@ interface FoodAppAPIs{
     ): Response<Map<String, UserClass>>
 
 
-
+    @PUT("food_menu/restaurantId/{mealId}.json")
+    suspend fun addToMeals(
+        @Path("mealId") userId : String,
+        @Body data : String = ""
+    ): Response<CartClass>
 
     @PUT("cart/{userId}/{mealKey}.json")
     suspend fun addToCart(
@@ -66,20 +70,20 @@ interface FoodAppAPIs{
     @PUT("favorite/{userId}/{mealKey}.json")
     suspend fun addToFavorite(
         @Path("userId") userId : String,
-        @Path("mealKey") mealKey : Int,
+        @Path("mealKey") mealKey : String,
         @Body data : FavoriteClass
     ): Response<FavoriteClass>
 
     @DELETE("favorite/{userId}/{mealKey}.json")
     suspend fun deleteFromFavorite(
         @Path("userId") userId : String,
-        @Path("mealKey") mealKey : Int,
+        @Path("mealKey") mealKey : String,
     ): Response<Unit>
 
     @GET("favorite/{userId}.json")
     suspend fun getFavoriteItems(
         @Path("userId") userId : String,
-    ): List<FavoriteClass>
+    ): Response<Map<String, FavoriteClass>>
 
 
 

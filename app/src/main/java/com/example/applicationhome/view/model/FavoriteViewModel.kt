@@ -7,9 +7,15 @@ import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.Type
 import com.example.applicationhome.data.models.repository.FavoriteRepository.addToFavorite
 import com.example.applicationhome.data.models.repository.FavoriteRepository.deleteFavorite
+import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
 import kotlinx.coroutines.launch
 
 class FavoriteViewModel : ViewModel(){
+
+    fun isMealInFavorite(foodId : Int?): Boolean{
+        return favoritList.any{ it.value?.id == foodId }
+    }
+
     fun addFavorite(food : Food){
         viewModelScope.launch {
             addToFavorite(food.id, Type.MEAL, "food.restaurants")

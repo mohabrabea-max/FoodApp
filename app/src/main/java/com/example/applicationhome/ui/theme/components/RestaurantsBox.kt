@@ -47,7 +47,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Restaurants
-import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
 import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -169,7 +168,7 @@ fun Favorite2(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
-    val favorite = favoritList.any{ it.id == restaurants.id }
+    val favorite = favoriteState.isMealInFavorite(restaurants?.id)
     fun favorite1(){
 
         if(favorite == true){

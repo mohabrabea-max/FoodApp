@@ -14,32 +14,32 @@ sealed interface Food{
     val id: Int
     val name : String
     val image : List<String>
-    //val restaurants : String
+    val restaurantId : Int
     val review : Double
 }
 
     data class FoodItem(
         override val id : Int = 0,
-        @SerializedName("category")
-        val typ : CategoryType = CategoryType.ALL,
+        val category : CategoryType = CategoryType.ALL,
         override val name : String = "",
         @SerializedName("images")
         override val image : List<String> = listOf(""),
         @SerializedName("sizes")
         val sizeOptions : List<MealSizeDetail>,
-        //override val restaurants : String,
+        override val restaurantId : Int = 0,
         @SerializedName("rating")
         override val review : Double = 0.0
     ): Food
 
     data class Snack(
         override val id : Int = 0,
+        val category : CategoryType = CategoryType.ALL,
         override val name : String = "",
         @SerializedName("images")
         override val image : List<String> = listOf(""),
         @SerializedName("prices")
         val priceANDsize : Map<String, Double>,
-        //override val restaurants : String,
+        override val restaurantId : Int = 0,
         @SerializedName("rating")
         override val review : Double = 0.0
     ): Food
@@ -114,7 +114,7 @@ data class CartClass(
 
 data class FavoriteClass(
     val id : Int,
-    val typ : Type,
+    val typ : String,
     val restaurants : String
 )
 

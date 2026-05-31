@@ -18,7 +18,7 @@ class CategoriesBoxViewModel(private val apiData: APIData): ViewModel(){
         get() = if (typ == CategoryType.ALL) {
             MenuRepository.foodMenuList
         } else {
-            MenuRepository.foodMenuList.filter { it.typ == typ }
+            MenuRepository.foodMenuList.filter { it.category == typ }
         }
 
     val filterrestaurants: List<Restaurants> // (تأكد من اسم كلاس المطعم عندك)

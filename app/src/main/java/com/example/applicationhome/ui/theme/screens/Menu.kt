@@ -148,7 +148,7 @@ fun Menu(
                     }
                 }
                 items(menu){ item ->
-                    if(item.typ == typ || typ == CategoryType.ALL){
+                    if(item.category == typ || typ == CategoryType.ALL){
                         ItemsBox(
                             item,
                             navigationController,

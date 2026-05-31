@@ -76,7 +76,7 @@ fun AddBox(
     //  بيراقب الـ isExpanded
     LaunchedEffect(key1 = count, key2 = active) {
         if (isExpanded && active == id) {
-            delay(2000)
+            delay(1000)
             isExpanded = false
         }
     }

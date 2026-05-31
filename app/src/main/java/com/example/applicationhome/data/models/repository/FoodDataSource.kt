@@ -22,12 +22,9 @@ import androidx.compose.material.icons.filled.RestaurantMenu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SettingsBrightness
 import androidx.compose.material.icons.filled.ShoppingCartCheckout
-import androidx.compose.runtime.mutableStateListOf
 import com.example.applicationhome.data.models.model.Account
-import com.example.applicationhome.data.models.model.Food
 import com.example.applicationhome.data.models.model.Options
 import com.example.applicationhome.data.models.model.ProfileOptions
-import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.model.Settings
 import java.util.Calendar
@@ -133,11 +130,6 @@ object ProfileData {
     fun settingsata(): List<Settings>{
         return settings
     }
-}
-
-object Favorite {
-    var favoritelist = mutableStateListOf<Food>()
-    var favoriteRestaurantslist = mutableStateListOf<Restaurants>()
 }
 
 object Drawer {

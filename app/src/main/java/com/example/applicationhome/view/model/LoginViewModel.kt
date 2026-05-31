@@ -10,6 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.models.model.UserClass
 import com.example.applicationhome.data.models.repository.CartRepository.cartItems
 import com.example.applicationhome.data.models.repository.CartRepository.getcartitems
+import com.example.applicationhome.data.models.repository.CartRepository.totalNumber
+import com.example.applicationhome.data.models.repository.CartRepository.totalPrice
 import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
 import com.example.applicationhome.data.models.repository.FavoriteRepository.getFavorite
 import com.example.applicationhome.data.models.repository.FavoriteRepository.mealsFavorite
@@ -74,15 +76,20 @@ class LoginViewModel : ViewModel() {
         mealsFavorite.clear()
         snacksFavorite.clear()
         restaurantsFavorite.clear()
+        totalPrice.value = 0.0
+        totalNumber.value = 0
     }
 
     fun login(userdata : UserClass, userid : String){
-        viewModelScope.launch {
-            getcartitems()
-            getFavorite()
-        }
         userData = userdata
         userId = userid
         isLogin = true
+        viewModelScope.launch {
+            //addToMeals()
+            getcartitems()
+        }
+        viewModelScope.launch {
+            getFavorite()
+        }
     }
 }
