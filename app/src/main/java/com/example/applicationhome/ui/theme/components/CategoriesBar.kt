@@ -18,11 +18,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.applicationhome.data.models.repository.MenuRepository
-import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.CategoriesBoxViewModel
 
 @Composable
-fun CategoriesBar(categoriesBoxViewModel : CategoriesBoxViewModel, apiData: APIData){
+fun CategoriesBar(categoriesBoxViewModel : CategoriesBoxViewModel){
     val categories = MenuRepository.categories
     Row(
         modifier = Modifier.padding(start = 5.dp, end = 5.dp).fillMaxWidth().

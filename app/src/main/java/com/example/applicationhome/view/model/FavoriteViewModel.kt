@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.models.model.Food
 import com.example.applicationhome.data.models.model.Restaurants
-import com.example.applicationhome.data.models.model.Type
 import com.example.applicationhome.data.models.repository.FavoriteRepository.addToFavorite
 import com.example.applicationhome.data.models.repository.FavoriteRepository.deleteFavorite
 import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
@@ -18,7 +17,7 @@ class FavoriteViewModel : ViewModel(){
 
     fun addFavorite(food : Food){
         viewModelScope.launch {
-            addToFavorite(food.id, Type.MEAL, "food.restaurants")
+            addToFavorite(food.id, "MEAL", "food.restaurants")
         }
     }
     fun removeFavorite(food : Food){
@@ -29,7 +28,7 @@ class FavoriteViewModel : ViewModel(){
 
     fun addRestaurantsFavorite(restaurants: Restaurants){
         viewModelScope.launch {
-            addToFavorite(restaurants.id, Type.RESTAURANTS, restaurants.name)
+            addToFavorite(restaurants.id, "RESTAURANTS", restaurants.name)
         }
     }
     fun removeRestaurantsFavorite(restaurants: Restaurants){

@@ -106,8 +106,8 @@ fun ItemScreen(
             }
         }
     }
-    val menu = categoriesBoxViewModel.filterMenu
-    val snacks = MenuRepository.snacks
+    val menu = categoriesBoxViewModel.filterMenu.toList()
+    val snacks = MenuRepository.snacks.values.toList()
     val item = viewModel.selectedItem
     val size = viewModel.selectedSize
     val images = item?.image?.size ?: 0
@@ -314,9 +314,7 @@ fun ItemScreen(
                                             item{
                                                 val selectedDetail = item.sizeOptions.find { it.size == size }
                                                 selectedDetail?.snack?.forEach { (snakeId, snakeSize) ->
-                                                    println(snakeId)
                                                     val snake2 = snacks.find { it.id == snakeId }
-                                                    println(snake2?.name)
                                                     snake2?.let { safeSnake ->
                                                         SnaksBox(
                                                             modifier = Modifier.size(170.dp),
@@ -457,7 +455,6 @@ fun ItemScreen(
                                                     item,
                                                     navigationController,
                                                     viewModel,
-                                                    apiData,
                                                     {
                                                         Favorite(
                                                             modifier = Modifier.

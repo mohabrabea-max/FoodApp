@@ -6,7 +6,6 @@ import com.google.gson.annotations.SerializedName
 
 enum class CategoryType { PIZZA, BURGER, CHICKEN, SWEET, ALL }
 
-enum class Type { MEAL, SNACK, RESTAURANTS }
 
 enum class FoodSizes{ SMALL, MEDIUM, LARGE }
 
@@ -14,32 +13,31 @@ sealed interface Food{
     val id: Int
     val name : String
     val image : List<String>
-    val restaurantId : Int
+    var restaurantId : Int
     val review : Double
 }
 
     data class FoodItem(
         override val id : Int = 0,
-        val category : CategoryType = CategoryType.ALL,
+        val category : String = CategoryType.ALL.toString(),
         override val name : String = "",
         @SerializedName("images")
         override val image : List<String> = listOf(""),
         @SerializedName("sizes")
         val sizeOptions : List<MealSizeDetail>,
-        override val restaurantId : Int = 0,
+        override var restaurantId : Int = 0,
         @SerializedName("rating")
         override val review : Double = 0.0
     ): Food
 
     data class Snack(
         override val id : Int = 0,
-        val category : CategoryType = CategoryType.ALL,
         override val name : String = "",
         @SerializedName("images")
         override val image : List<String> = listOf(""),
         @SerializedName("prices")
         val priceANDsize : Map<String, Double>,
-        override val restaurantId : Int = 0,
+        override var restaurantId : Int = 0,
         @SerializedName("rating")
         override val review : Double = 0.0
     ): Food
@@ -53,13 +51,13 @@ data class MealSizeDetail(
 data class Categories(
     val id : Int = 0,
     val name : String = "",
-    @SerializedName("type")
-    val typ : CategoryType = CategoryType.ALL,
+    val type : String = CategoryType.ALL.toString(),
     val image : String = "",
     val icon : String = ""
 )
 
 data class Offers(
+    val restaurantId : Int = 0,
     val id : Int = 0,
     @SerializedName("title")
     val name : String = "",

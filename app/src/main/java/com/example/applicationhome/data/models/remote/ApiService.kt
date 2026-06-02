@@ -33,11 +33,11 @@ interface FoodAppAPIs{
     ): Response<Map<String, UserClass>>
 
 
-    @PUT("food_menu/restaurantId/{mealId}.json")
-    suspend fun addToMeals(
-        @Path("mealId") userId : String,
-        @Body data : String = ""
-    ): Response<CartClass>
+//    @PATCH("snacks/{mealId}.json")
+//    suspend fun addToMeals(
+//        @Path("mealId") mealId : String,
+//        @Body data : Map<String, Int>
+//    ): Response<CartClass>
 
     @PUT("cart/{userId}/{mealKey}.json")
     suspend fun addToCart(
@@ -88,18 +88,18 @@ interface FoodAppAPIs{
 
 
 
-    @GET("food_menu.json")
-    suspend fun foodmenu():List<FoodItem>
+    @GET("meals.json")
+    suspend fun foodmenu(): Response<Map<String, FoodItem>>
 
     @GET("snacks.json")
-    suspend fun snacksMenu():List<Snack>
+    suspend fun snacksMenu(): Response<Map<String, Snack>>
 
     @GET("categories.json")
-    suspend fun categorieslist():List<Categories>
+    suspend fun categorieslist(): List<Categories>
 
     @GET("restaurants.json")
-    suspend fun restaurants():List<Restaurants>
+    suspend fun restaurants(): Response<Map<String, Restaurants>>
 
     @GET("offers.json")
-    suspend fun offers():List<Offers>
+    suspend fun offers(): List<Offers>
 }

@@ -76,7 +76,7 @@ fun Restaurants(
     favoriteState : FavoriteViewModel,
     apiData : APIData
 ){
-    val restaurantsMenu = MenuRepository.restaurantsMenu
+    val restaurantsMenu = MenuRepository.restaurantsMenu.values.toList()
     if (MenuRepository.restaurantsMenuisLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),

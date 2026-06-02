@@ -43,19 +43,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Restaurants
+import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.FavoriteViewModel
+import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun RestaurantsBox(item : Restaurants, favoriteState : FavoriteViewModel, apiData : APIData){
+fun RestaurantsBox(
+    item : Restaurants,
+    favoriteState : FavoriteViewModel,
+    itemScreenViewModel: ItemScreenViewModel,
+    navigationController : NavHostController
+){
     if (MenuRepository.restaurantsMenuisLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -68,10 +75,14 @@ fun RestaurantsBox(item : Restaurants, favoriteState : FavoriteViewModel, apiDat
             modifier = Modifier.width(194.dp).
             height(230.dp).
             padding(10.dp).
-            shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
-            clickable{}
+            shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp))
         ){
-            Box(modifier = Modifier.clickable {  }){
+            Box(
+                modifier = Modifier.clickable {
+                    itemScreenViewModel.selectRestaurant(item)
+                    navigationController.navigate(Screens.Menu.screen)
+                }
+            ){
                 Box(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray)){
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(),

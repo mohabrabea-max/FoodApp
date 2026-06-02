@@ -15,7 +15,6 @@ import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Offers
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.Snack
-import com.example.applicationhome.data.models.model.Type
 import com.example.applicationhome.data.models.model.UserClass
 import com.example.applicationhome.data.models.remote.RetrofitInstance
 import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuList
@@ -40,9 +39,8 @@ object UserRepository {
     )
 //    suspend fun addToMeals(){
 //        try {
-//            val response = RetrofitInstance.api.addToMeals()
-//            if(response.isSuccessful){
-//                println(response.body())
+//            snacks.forEach { (key, value) ->
+//                RetrofitInstance.api.addToMeals(key, mapOf("restaurantId" to 0))
 //            }
 //        }catch (e : Exception){
 //            println("")
@@ -116,8 +114,8 @@ object CartRepository {
         cartItems.forEach { (key, value) ->
             val foodId = value.id
             val size = value.size
-            val foodMenu = foodMenuList.find { it.id == foodId }
-            val snacksMenu = snacks.find { it.id == foodId }
+            val foodMenu = foodMenuList.values.find { it.id == foodId }
+            val snacksMenu = snacks.values.find { it.id == foodId }
             if(foodMenu != null){
                 totalNumber.value += value.number
                 val priceForSize = foodMenu.sizeOptions.find { it.size == size }
@@ -241,20 +239,20 @@ object FavoriteRepository {
         restaurantsFavorite.clear()
         favoritList.forEach { item ->
             if(item != null){
-                if(item.value.typ == Type.MEAL.toString()){
-                    mealsFavorite.add(foodMenuList.find { it.id == item.value.id })
-                }else if(item.value.typ == Type.SNACK.toString()){
-                    snacksFavorite.add(snacks.find { it.id == item.value.id })
+                if(item.value.typ == "MEAL"){
+                    mealsFavorite.add(foodMenuList.values.find { it.id == item.value.id })
+                }else if(item.value.typ == "SNACK"){
+                    snacksFavorite.add(snacks.values.find { it.id == item.value.id })
                 }else{
-                    restaurantsFavorite.add(restaurantsMenu.find { it.id == item.value.id })
+                    restaurantsFavorite.add(restaurantsMenu.values.find { it.id == item.value.id })
                 }
             }
         }
     }
 
 
-    suspend fun addToFavorite(id : Int, typ : Type, restaurants : String) : String{
-        val favoriteObject = FavoriteClass(id, typ.toString(), restaurants)
+    suspend fun addToFavorite(id : Int, typ : String, restaurants : String) : String{
+        val favoriteObject = FavoriteClass(id, typ, restaurants)
         val mealKey = "Meal_$id"
         return try {
             val response = RetrofitInstance.api.addToFavorite(userId, mealKey, favoriteObject)
@@ -315,11 +313,11 @@ object FavoriteRepository {
 
 
 object MenuRepository {
-    var foodMenuList by mutableStateOf<List<FoodItem>>(emptyList()); private set
+    var foodMenuList = mutableStateMapOf<String, FoodItem>()//; private set
     var foodMenuListisLoading by mutableStateOf(true)
 
 
-    var restaurantsMenu by mutableStateOf<List<Restaurants>>(emptyList()); private set
+    var restaurantsMenu = mutableStateMapOf<String, Restaurants>()//; private set
     var restaurantsMenuisLoading by mutableStateOf(true)
 
 
@@ -327,7 +325,7 @@ object MenuRepository {
     var categoriesisLoading by mutableStateOf(true)
 
 
-    var snacks by mutableStateOf<List<Snack>>(emptyList()); private set
+    var snacks = mutableStateMapOf<String, Snack>()//; private set
     var snacksisLoading by mutableStateOf(true)
 
 
@@ -340,8 +338,15 @@ object MenuRepository {
         return try {
             foodMenuListisLoading = true
             // بنجيب الأكل والمطاعم باستخدام الـ RetrofitInstance المطور بتاعنا
-            foodMenuList = RetrofitInstance.api.foodmenu()
-            "Success"
+            val response = RetrofitInstance.api.foodmenu()
+            val foodMenu = response.body()
+            if(response.isSuccessful && foodMenu != null){
+                foodMenuList.clear()
+                foodMenuList.putAll(foodMenu)
+                "Success"
+            }else{
+                "foodMenuList Is empty"
+            }
         } catch (e: Exception) {
             // معالجة الخطأ لو النت قطع
             e.printStackTrace()
@@ -353,8 +358,15 @@ object MenuRepository {
     suspend fun uploadRestaurantsFromApi(): String {
         return try {
             restaurantsMenuisLoading = true
-            restaurantsMenu = RetrofitInstance.api.restaurants()
-            "Success"
+            val response = RetrofitInstance.api.restaurants()
+            val restaurants = response.body()
+            if(response.isSuccessful && restaurants != null){
+                restaurantsMenu.clear()
+                restaurantsMenu.putAll(restaurants)
+                "Success"
+            }else{
+                "restaurantsMenu Is empty"
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             "Network error"
@@ -377,8 +389,15 @@ object MenuRepository {
     suspend fun uploadSnacksMenuFromApi(): String {
         return try {
             snacksisLoading = true
-            snacks = RetrofitInstance.api.snacksMenu()
-            "Success"
+            val response = RetrofitInstance.api.snacksMenu()
+            val snacksMenu = response.body()
+            if(response.isSuccessful && snacksMenu != null){
+                snacks.clear()
+                snacks.putAll(snacksMenu)
+                "Success"
+            }else{
+                "snacksMenu Is empty"
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             "Network error"

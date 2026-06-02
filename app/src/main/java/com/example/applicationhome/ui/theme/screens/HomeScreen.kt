@@ -161,9 +161,9 @@ fun HomeScreen(
         }
     }
 
-    val snacks = MenuRepository.snacks
-    val menu = categoriesBoxViewModel.filterMenu
-    val restaurants = categoriesBoxViewModel.filterrestaurants
+    val snacks = MenuRepository.snacks.values.toList()
+    val menu = categoriesBoxViewModel.filterMenu.toList()
+    val restaurants = categoriesBoxViewModel.filterrestaurants.toList()
     val offers = MenuRepository.offers
     val pagerState = rememberPagerState(pageCount = {offers.size})
     val context = LocalContext.current as? Activity
@@ -180,7 +180,7 @@ fun HomeScreen(
                 Column{
                     var height = if(showcategories == true) 105.dp else 0.dp
                     Spacer(modifier = Modifier.animateContentSize().height(height))
-                    if(showCategoriesBox == true) CategoriesBar(categoriesBoxViewModel, apiData)
+                    if(showCategoriesBox == true) CategoriesBar(categoriesBoxViewModel)
                 }
                 Column{
                     MyTopBar(
@@ -290,16 +290,16 @@ fun HomeScreen(
                     item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
                     item(span = { GridItemSpan(2) }){
                         Box(modifier = Modifier.height(60.dp).fillMaxWidth()){
-                            if(showCategoriesBox == false)CategoriesBar(categoriesBoxViewModel, apiData)
+                            if(showCategoriesBox == false)CategoriesBar(categoriesBoxViewModel)
                         }
                     }
                     item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
                     item(span = { GridItemSpan(2) }){
-                        Box(modifier = Modifier.fillMaxWidth().height(180.dp)){
+                        Box(modifier = Modifier.fillMaxWidth().height(120.dp)){
                             HorizontalPager(
                                 state = pagerState,
                                 modifier = Modifier.fillMaxSize(),
-                                contentPadding = PaddingValues(horizontal = 10.dp), // عشان تبين طرف الصورة اللي قبلها واللي بعدها (شكلها بيبقى أشيك)
+                                contentPadding = PaddingValues(horizontal = 10.dp),
                                 pageSpacing = 10.dp
                             ) {page ->
                                 val currentOffer = offers[page]
@@ -357,7 +357,7 @@ fun HomeScreen(
                             horizontalArrangement = Arrangement.spacedBy(5.dp)
                         ){
                             items(restaurants){item ->
-                                RestaurantsBox(item, favoriteState, apiData)
+                                RestaurantsBox(item, favoriteState, viewModel, navigationController)
                             }
                         }
                     }
@@ -434,7 +434,6 @@ fun HomeScreen(
                             item,
                             navigationController,
                             viewModel,
-                            apiData,
                             {
                                 Favorite(
                                     modifier = Modifier.

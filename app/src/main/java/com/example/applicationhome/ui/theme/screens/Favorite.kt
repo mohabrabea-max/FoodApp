@@ -134,7 +134,6 @@ fun Favorite(
                                         item,
                                         navigationController,
                                         viewModel,
-                                        apiData,
                                         {
                                             Favorite(
                                                 modifier = Modifier.

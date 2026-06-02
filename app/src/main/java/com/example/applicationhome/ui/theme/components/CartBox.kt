@@ -63,8 +63,8 @@ fun CartBox(
     viewModel: ItemScreenViewModel,
     ordernumber : AddBoxViewModel,
 ){
-    val fooditem = MenuRepository.foodMenuList.find { it.id == id }
-    val snackitem = MenuRepository.snacks.find { it.id == id }
+    val fooditem = MenuRepository.foodMenuList.values.find { it.id == id }
+    val snackitem = MenuRepository.snacks.values.find { it.id == id }
     val cartkey : String
     val count : Int
     val focusManager = LocalFocusManager.current
