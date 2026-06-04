@@ -89,16 +89,28 @@ interface FoodAppAPIs{
 
 
     @GET("meals.json")
-    suspend fun foodmenu(): Response<Map<String, FoodItem>>
+    suspend fun foodmenu(
+        @Query("orderBy") order : String,
+        @Query("equalTo") value : Int
+    ): Response<Map<String, FoodItem>>
 
     @GET("snacks.json")
-    suspend fun snacksMenu(): Response<Map<String, Snack>>
+    suspend fun snacksMenu(
+        @Query("orderBy") order : String,
+        @Query("equalTo") value : Int
+    ): Response<Map<String, Snack>>
 
     @GET("categories.json")
     suspend fun categorieslist(): List<Categories>
 
     @GET("restaurants.json")
     suspend fun restaurants(): Response<Map<String, Restaurants>>
+
+    @GET("offers.json")
+    suspend fun restaurantOffers(
+        @Query("orderBy") order : String,
+        @Query("equalTo") value : Int
+    ): Map<String, Offers>
 
     @GET("offers.json")
     suspend fun offers(): List<Offers>

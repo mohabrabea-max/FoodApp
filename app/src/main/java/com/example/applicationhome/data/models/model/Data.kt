@@ -42,6 +42,14 @@ sealed interface Food{
         override val review : Double = 0.0
     ): Food
 
+data class Drink(
+    val id : Int,
+    val name : String,
+    val image : List<String>,
+    val priceANDsize : Map<String, Double>,
+    var restaurantId : Int
+)
+
 data class MealSizeDetail(
     val size : String = "",
     val price : Double = 0.0,
@@ -67,7 +75,7 @@ data class Offers(
 data class Restaurants(
     val id : Int = 0,
     @SerializedName("types")
-    val typ : List<CategoryType>,
+    val typ : List<String>,
     val name : String = "",
     @SerializedName("logo")
     val image : String = "",
@@ -113,7 +121,7 @@ data class CartClass(
 data class FavoriteClass(
     val id : Int,
     val typ : String,
-    val restaurants : String
+    val restaurants : Int
 )
 
 data class UserClass(

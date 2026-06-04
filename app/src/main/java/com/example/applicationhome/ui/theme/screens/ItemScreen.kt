@@ -322,8 +322,7 @@ fun ItemScreen(
                                                             safeSnake,
                                                             snakeSize,
                                                             navigationController,
-                                                            viewModel,
-                                                            apiData
+                                                            viewModel
                                                         )
                                                     }
                                                 }
@@ -413,7 +412,6 @@ fun ItemScreen(
                                                     null,
                                                     navigationController,
                                                     viewModel,
-                                                    apiData,
                                                     {
                                                         Favorite(
                                                             modifier = Modifier.

@@ -4,11 +4,11 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -61,6 +61,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -76,7 +77,8 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.MenuRepository
+import com.example.applicationhome.data.models.repository.MenuRepository.offers
+import com.example.applicationhome.data.models.repository.MenuRepository.snacks
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -97,25 +99,21 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
     drawerState : DrawerState,
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
-    viewModel: ItemScreenViewModel,
+    itemScreenViewModel: ItemScreenViewModel,
     addBoxViewModel: AddBoxViewModel,
     favoriteState : FavoriteViewModel,
     categoriesBoxViewModel : CategoriesBoxViewModel,
     apiData: APIData
 ){
     val density = LocalDensity.current
-    val thresholdPx = with(density) { 60.dp.toPx() }
     val minOffsetToShowBox = with(density) { 147.dp.toPx() }
-    val minOffsetPx = remember(density) { with(density) { 170.dp.toPx() } }
 
-    var showCategoriesBox by remember { mutableStateOf(false) }
-    var showcategories by remember { mutableStateOf(true) }
     val scrollState = rememberLazyGridState()
     val alpha by remember {
         derivedStateOf {
@@ -130,41 +128,29 @@ fun HomeScreen(
     var scal by remember { mutableStateOf(false) }
     LaunchedEffect(scrollState){
         var previousOffset = 0
-        var previousIndex = 0
         var accumulatedScrollUp = 0f
         snapshotFlow{ scrollState.firstVisibleItemIndex to scrollState.firstVisibleItemScrollOffset }.
         collect{ (currentIndex, currentOffset) ->
             val delta = previousOffset - currentOffset
             accumulatedScrollUp += delta
-            if(accumulatedScrollUp > thresholdPx && currentIndex == previousIndex){    //السكرول اللي لفوق
-                showcategories = currentOffset <= previousOffset
-                accumulatedScrollUp = thresholdPx
-            }else if (accumulatedScrollUp <= -thresholdPx && scrollState.firstVisibleItemScrollOffset > minOffsetPx){   //          السكرول اللي لتحت
-                showcategories = currentIndex < previousIndex
-                accumulatedScrollUp = -thresholdPx
-            }
-            if((currentOffset > minOffsetToShowBox || scrollState.firstVisibleItemIndex > 0)){   //        الجزء المسؤول عن ظهور بار الاصناف
-                showCategoriesBox = true
-
-            }else{
-                showCategoriesBox = false
-            }
-            previousIndex = currentIndex
             previousOffset = currentOffset
-            if ((currentOffset > minOffsetToShowBox * 1.7 || scrollState.firstVisibleItemIndex > 0) && showcategories == false) {
+            if ((currentOffset > minOffsetToShowBox * 1.7 || scrollState.firstVisibleItemIndex > 0)) {
                 scal = true
-            }else if((currentOffset > minOffsetToShowBox * 1.7 / 2 || scrollState.firstVisibleItemIndex > 0) && showcategories == true){
+            }else if((currentOffset > minOffsetToShowBox * 1.7 / 2 || scrollState.firstVisibleItemIndex > 0)){
                 scal = true
             }else{
                 scal = false
             }
         }
     }
+    val topBarHeightPx = with(LocalDensity.current) { 100.dp.toPx() }
+    val layoutInfo = scrollState.layoutInfo
+    val itemInfo = layoutInfo.visibleItemsInfo.find { it.key == "categories_header" }
 
-    val snacks = MenuRepository.snacks.values.toList()
-    val menu = categoriesBoxViewModel.filterMenu.toList()
-    val restaurants = categoriesBoxViewModel.filterrestaurants.toList()
-    val offers = MenuRepository.offers
+    val snacks = snacks.values.toList()
+    val menu = categoriesBoxViewModel.filterMenu
+    val restaurants = categoriesBoxViewModel.filterrestaurants
+    val offers = offers
     val pagerState = rememberPagerState(pageCount = {offers.size})
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) {
@@ -178,16 +164,11 @@ fun HomeScreen(
         topBar = {
             Box{
                 Column{
-                    var height = if(showcategories == true) 105.dp else 0.dp
-                    Spacer(modifier = Modifier.animateContentSize().height(height))
-                    if(showCategoriesBox == true) CategoriesBar(categoriesBoxViewModel)
-                }
-                Column{
                     MyTopBar(
                         Color.DarkOrange.copy(alpha = alpha),
                         modifier = Modifier.
                         fillMaxWidth().
-                        height(100.dp).shadow(elevation = if(showcategories == false && scal == true) 5.dp else 0.dp),
+                        height(100.dp),
                         null,
                         {
                             IconButton(
@@ -276,7 +257,9 @@ fun HomeScreen(
                     }
                     item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp).background(Color.DarkOrange)) }
                     item(span = { GridItemSpan(2) }){
-                        Box{
+                        Box(
+                            modifier = Modifier.background(Color.White)
+                        ){
                             Box(
                                 modifier = Modifier.fillMaxWidth().
                                 height(25.dp).
@@ -287,12 +270,33 @@ fun HomeScreen(
                             SearchBox()
                         }
                     }
-                    item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
-                    item(span = { GridItemSpan(2) }){
-                        Box(modifier = Modifier.height(60.dp).fillMaxWidth()){
-                            if(showCategoriesBox == false)CategoriesBar(categoriesBoxViewModel)
+                    item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp).background(Color.White)) }
+
+                    stickyHeader(key = "categories_header"){
+                        Box(
+                            modifier = Modifier.height(50.dp).
+                            fillMaxWidth().
+                            graphicsLayer {
+                            if (itemInfo != null) {
+                                // لو العنصر لزق عند الـ 0، الـ offset بتاعه هيبقى أقل من طول التوب بار
+                                // ساعتها بنجبره ينزل لتحت يدوي وميطلعش فوق النقطة اللي حددناها
+                                if (itemInfo.offset.y < topBarHeightPx) {
+                                    translationY = topBarHeightPx - itemInfo.offset.y
+                                }
+                            }
+                        }.shadow( elevation =
+                                if (itemInfo != null){
+                                    if (itemInfo.offset.y < topBarHeightPx) 3.dp else 0.dp
+                                }else{
+                                    0.dp
+                                }
+                            )
+                        ){
+                            CategoriesBar(categoriesBoxViewModel)
+                            Divider(color = Color.LightGray.copy(alpha = 0.7f), modifier = Modifier.height(1.dp).align(Alignment.BottomCenter))
                         }
                     }
+
                     item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
                     item(span = { GridItemSpan(2) }){
                         Box(modifier = Modifier.fillMaxWidth().height(120.dp)){
@@ -357,7 +361,7 @@ fun HomeScreen(
                             horizontalArrangement = Arrangement.spacedBy(5.dp)
                         ){
                             items(restaurants){item ->
-                                RestaurantsBox(item, favoriteState, viewModel, navigationController)
+                                RestaurantsBox(item, favoriteState, itemScreenViewModel, navigationController, apiData, categoriesBoxViewModel)
                             }
                         }
                     }
@@ -404,8 +408,7 @@ fun HomeScreen(
                                     item,
                                     null,
                                     navigationController,
-                                    viewModel,
-                                    apiData,
+                                    itemScreenViewModel,
                                     {
                                         Favorite(
                                             modifier = Modifier.
@@ -433,7 +436,7 @@ fun HomeScreen(
                         ItemsBox(
                             item,
                             navigationController,
-                            viewModel,
+                            itemScreenViewModel,
                             {
                                 Favorite(
                                     modifier = Modifier.

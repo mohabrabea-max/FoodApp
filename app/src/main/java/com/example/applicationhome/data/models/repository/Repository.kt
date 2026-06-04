@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.applicationhome.data.models.model.CartClass
 import com.example.applicationhome.data.models.model.Categories
+import com.example.applicationhome.data.models.model.Drink
 import com.example.applicationhome.data.models.model.FavoriteClass
 import com.example.applicationhome.data.models.model.FirebasePostResponse
 import com.example.applicationhome.data.models.model.FoodItem
@@ -239,9 +240,9 @@ object FavoriteRepository {
         restaurantsFavorite.clear()
         favoritList.forEach { item ->
             if(item != null){
-                if(item.value.typ == "MEAL"){
+                if(item.key.contains("Meal")){
                     mealsFavorite.add(foodMenuList.values.find { it.id == item.value.id })
-                }else if(item.value.typ == "SNACK"){
+                }else if(item.key.contains("Snack")){
                     snacksFavorite.add(snacks.values.find { it.id == item.value.id })
                 }else{
                     restaurantsFavorite.add(restaurantsMenu.values.find { it.id == item.value.id })
@@ -251,9 +252,9 @@ object FavoriteRepository {
     }
 
 
-    suspend fun addToFavorite(id : Int, typ : String, restaurants : String) : String{
+    suspend fun addToFavorite(id : Int, typ : String, restaurants : Int) : String{
         val favoriteObject = FavoriteClass(id, typ, restaurants)
-        val mealKey = "Meal_$id"
+        val mealKey = "${typ}_$id"
         return try {
             val response = RetrofitInstance.api.addToFavorite(userId, mealKey, favoriteObject)
             if(response.isSuccessful && response.body() != null){
@@ -329,16 +330,20 @@ object MenuRepository {
     var snacksisLoading by mutableStateOf(true)
 
 
+    var drinkMenu = mutableStateMapOf<String, Drink>()//; private set
+    var drinkMenuisLoading by mutableStateOf(true)
+
+
     var offers by mutableStateOf<List<Offers>>(emptyList()); private set
     var offersisLoading by mutableStateOf(true)
 
     var isNetworkAvailable by mutableStateOf(true)
 
-    suspend fun uploadFoodMenuFromApi(): String {
+    suspend fun uploadFoodMenuFromApi(resId : Int): String {
         return try {
             foodMenuListisLoading = true
             // بنجيب الأكل والمطاعم باستخدام الـ RetrofitInstance المطور بتاعنا
-            val response = RetrofitInstance.api.foodmenu()
+            val response = RetrofitInstance.api.foodmenu("\"restaurantId\"", resId)
             val foodMenu = response.body()
             if(response.isSuccessful && foodMenu != null){
                 foodMenuList.clear()
@@ -386,10 +391,10 @@ object MenuRepository {
             categoriesisLoading = false
         }
     }
-    suspend fun uploadSnacksMenuFromApi(): String {
+    suspend fun uploadSnacksMenuFromApi(resId : Int): String {
         return try {
             snacksisLoading = true
-            val response = RetrofitInstance.api.snacksMenu()
+            val response = RetrofitInstance.api.snacksMenu("\"restaurantId\"", resId)
             val snacksMenu = response.body()
             if(response.isSuccessful && snacksMenu != null){
                 snacks.clear()
@@ -409,6 +414,18 @@ object MenuRepository {
         return try {
             offersisLoading = true
             offers = RetrofitInstance.api.offers()
+            "Success"
+        } catch (e: Exception) {
+            e.printStackTrace()
+            "Network error"
+        } finally {
+            offersisLoading = false
+        }
+    }
+    suspend fun uploadRestaurantOffersFromApi(resId : Int): String {
+        return try {
+            offersisLoading = true
+            offers = RetrofitInstance.api.restaurantOffers("\"restaurantId\"", resId).values.toList()
             "Success"
         } catch (e: Exception) {
             e.printStackTrace()

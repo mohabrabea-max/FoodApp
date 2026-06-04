@@ -48,11 +48,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
-import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
 import com.example.applicationhome.data.models.repository.FavoriteRepository.mealsFavorite
+import com.example.applicationhome.data.models.repository.FavoriteRepository.restaurantsFavorite
+import com.example.applicationhome.data.models.repository.FavoriteRepository.snacksFavorite
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -60,10 +60,12 @@ import com.example.applicationhome.ui.theme.components.AddBox
 import com.example.applicationhome.ui.theme.components.Favorite
 import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyTopBar
+import com.example.applicationhome.ui.theme.components.RestaurantsBox
 import com.example.applicationhome.ui.theme.components.SnaksBox
 import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.BottomBarViewModel
+import com.example.applicationhome.view.model.CategoriesBoxViewModel
 import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -77,10 +79,11 @@ fun Favorite(
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
     viewModelForBottomBar: BottomBarViewModel,
-    viewModel : ItemScreenViewModel,
+    itemScreenViewModel : ItemScreenViewModel,
     addBoxViewModel: AddBoxViewModel,
     favoriteState : FavoriteViewModel,
-    apiData : APIData
+    apiData : APIData,
+    categoriesBoxViewModel : CategoriesBoxViewModel
 ){
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) {
@@ -128,48 +131,61 @@ fun Favorite(
                     ){
                         item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
                         items(mealsFavorite) { item ->
-                            when (item) {
-                                is FoodItem -> {
-                                    ItemsBox(
-                                        item,
-                                        navigationController,
-                                        viewModel,
-                                        {
-                                            Favorite(
-                                                modifier = Modifier.
-                                                clip(CircleShape).
-                                                size(35.dp).
-                                                background(Color.White.copy(alpha = 1f)),
-                                                food = item,
-                                                favoriteState = favoriteState
-                                            )
-                                            AddBox(color = Color.White, food = item, addBoxViewModel)
-                                        }
-                                    )
-                                }
-                                is Snack -> {
-                                    SnaksBox(
-                                        modifier = Modifier.size(200.dp),
-                                        false,
-                                        item,
-                                        null,
-                                        navigationController,
-                                        viewModel,
-                                        apiData,
-                                        {
-                                            Favorite(
-                                                modifier = Modifier.
-                                                clip(CircleShape).
-                                                border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
-                                                size(35.dp).
-                                                background(Color.VeryLightGray),
-                                                food = item,
-                                                favoriteState = favoriteState
-                                            )
-                                            AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
-                                        }
-                                    )
-                                }
+                            if(item != null){
+                                ItemsBox(
+                                    item,
+                                    navigationController,
+                                    itemScreenViewModel,
+                                    {
+                                        Favorite(
+                                            modifier = Modifier.
+                                            clip(CircleShape).
+                                            size(35.dp).
+                                            background(Color.White.copy(alpha = 1f)),
+                                            food = item,
+                                            favoriteState = favoriteState
+                                        )
+                                        AddBox(color = Color.White, food = item, addBoxViewModel)
+                                    }
+                                )
+                            }
+                        }
+                        item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(15.dp))}
+                        items(snacksFavorite) { item ->
+                            if(item != null){
+                                SnaksBox(
+                                    modifier = Modifier.size(200.dp),
+                                    false,
+                                    item,
+                                    null,
+                                    navigationController,
+                                    itemScreenViewModel,
+                                    {
+                                        Favorite(
+                                            modifier = Modifier.
+                                            clip(CircleShape).
+                                            border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
+                                            size(35.dp).
+                                            background(Color.VeryLightGray),
+                                            food = item,
+                                            favoriteState = favoriteState
+                                        )
+                                        AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
+                                    }
+                                )
+                            }
+                        }
+                        item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(15.dp))}
+                        items(restaurantsFavorite) { item ->
+                            if(item != null){
+                                RestaurantsBox(
+                                    item,
+                                    favoriteState,
+                                    itemScreenViewModel,
+                                    navigationController,
+                                    apiData,
+                                    categoriesBoxViewModel
+                                )
                             }
                         }
                     }

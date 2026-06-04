@@ -32,7 +32,6 @@ import coil.size.Precision
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.data.models.repository.MenuRepository
-import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
 @Composable
@@ -43,7 +42,6 @@ fun SnaksBox(
     size : String?,
     navigationController : NavHostController,
     itemScreenViewModel: ItemScreenViewModel,
-    apiData: APIData,
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
     if (MenuRepository.snacksisLoading) {

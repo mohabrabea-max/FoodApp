@@ -13,6 +13,7 @@ import com.example.applicationhome.data.models.repository.MenuRepository.isNetwo
 import com.example.applicationhome.data.models.repository.MenuRepository.uploadCategorieslistFromApi
 import com.example.applicationhome.data.models.repository.MenuRepository.uploadFoodMenuFromApi
 import com.example.applicationhome.data.models.repository.MenuRepository.uploadOffersFromApi
+import com.example.applicationhome.data.models.repository.MenuRepository.uploadRestaurantOffersFromApi
 import com.example.applicationhome.data.models.repository.MenuRepository.uploadRestaurantsFromApi
 import com.example.applicationhome.data.models.repository.MenuRepository.uploadSnacksMenuFromApi
 import kotlinx.coroutines.Dispatchers
@@ -51,23 +52,25 @@ class APIData(application : Application) : AndroidViewModel(application){
 
     fun loadDataFromApi() {
         viewModelScope.launch(Dispatchers.IO) {
-            uploadFoodMenuFromApi()
-        }
-
-        viewModelScope.launch(Dispatchers.IO) {
             uploadRestaurantsFromApi()
         }
-
         viewModelScope.launch(Dispatchers.IO) {
             uploadCategorieslistFromApi()
         }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            uploadSnacksMenuFromApi()
-        }
-
         viewModelScope.launch(Dispatchers.IO) {
             uploadOffersFromApi()
+        }
+    }
+
+    fun loadRestaurantData(resId : Int){
+        viewModelScope.launch(Dispatchers.IO) {
+            uploadFoodMenuFromApi(resId)
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            uploadSnacksMenuFromApi(resId)
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            uploadRestaurantOffersFromApi(resId)
         }
     }
 }

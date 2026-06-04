@@ -2,6 +2,7 @@ package com.example.applicationhome.ui.theme.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,7 +22,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -43,25 +46,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.data.models.repository.MenuRepository.offers
+import com.example.applicationhome.data.models.repository.MenuRepository.snacks
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
+import com.example.applicationhome.ui.theme.components.AddBox
+import com.example.applicationhome.ui.theme.components.CategoriesBarForRestaurantsScreen
+import com.example.applicationhome.ui.theme.components.Favorite
 import com.example.applicationhome.ui.theme.components.Favorite2
+import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyTopBar
+import com.example.applicationhome.ui.theme.components.SnaksBox
 import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.CategoriesBoxViewModel
@@ -69,17 +80,17 @@ import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun Menu(
     navigationController : NavHostController,
     itemScreenViewModel: ItemScreenViewModel,
     addBoxViewModel: AddBoxViewModel,
     favoriteState : FavoriteViewModel,
-    categoriesBoxViewModel: CategoriesBoxViewModel,
+    categoriesBoxViewModel: CategoriesBoxViewModel = viewModel(),
     apiData : APIData
 ){
-    val scrollState = rememberLazyListState()
+    val scrollState = rememberLazyGridState()
     val alpha by remember {
         derivedStateOf {
             if(scrollState.firstVisibleItemIndex >= 1){
@@ -98,8 +109,14 @@ fun Menu(
             }
         }
     }
-    val menu = categoriesBoxViewModel.filterMenu.toList()
-    val snacks = MenuRepository.snacks.values.toList()
+    val topBarHeightPx = with(LocalDensity.current) { 100.dp.toPx() }
+    val layoutInfo = scrollState.layoutInfo
+    val itemInfo = layoutInfo.visibleItemsInfo.find { it.key == "categories_header" }
+
+
+    val menu = categoriesBoxViewModel.filterMenu
+    //println(menu)
+    val snacks = snacks.values.toList()
     val item = itemScreenViewModel.selectedRestaurant
     val logo = item?.image
     val background = item?.image2
@@ -184,7 +201,7 @@ fun Menu(
             }
         ){
             LazyVerticalGrid (
-                //state = scrollState,
+                state = scrollState,
                 modifier = Modifier.fillMaxSize().
                 background(Color.White),
                 columns = GridCells.Fixed(2)
@@ -284,16 +301,17 @@ fun Menu(
                     }
                 }
                 item(span = { GridItemSpan(2) }){
-                    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp).height(120.dp)){
+                    Box{
                         LazyRow (
                             modifier = Modifier.fillMaxSize(),
                         ){
                             item{ Spacer(modifier = Modifier.width(15.dp)) }
-                            item{
+
+                            items(offers.toList()){ item ->
                                 AsyncImage(
-                                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)).clickable {  },
+                                    modifier = Modifier.fillMaxWidth().height(120.dp).padding(vertical = 10.dp).clip(RoundedCornerShape(10.dp)).clickable {  },
                                     model = ImageRequest.Builder(LocalContext.current).
-                                    data(offers).
+                                    data(item.image).
                                     crossfade(true).
                                     size(400, 400).
                                     precision(Precision.EXACT).
@@ -305,6 +323,73 @@ fun Menu(
                         }
                     }
                 }
+                stickyHeader(key = "categories_header"){
+                    Box(
+                        modifier = Modifier.height(50.dp).
+                        fillMaxWidth().
+                        graphicsLayer {
+                            if (itemInfo != null) {
+                                if (itemInfo.offset.y < topBarHeightPx) {
+                                    translationY = topBarHeightPx - itemInfo.offset.y
+                                }
+                            }
+                        }.shadow( elevation =
+                            if (itemInfo != null){
+                                if (itemInfo.offset.y < topBarHeightPx) 3.dp else 0.dp
+                            }else{
+                                0.dp
+                            }
+                        )
+                    ){
+                        CategoriesBarForRestaurantsScreen(item, categoriesBoxViewModel)
+
+                    }
+                }
+                if(categoriesBoxViewModel.typeInRestaurantScreen == "Snacks"){
+                    items(snacks){ item ->
+                        SnaksBox(
+                            modifier = Modifier.size(200.dp),
+                            false,
+                            item,
+                            null,
+                            navigationController,
+                            itemScreenViewModel,
+                            {
+                                Favorite(
+                                    modifier = Modifier.
+                                    clip(CircleShape).
+                                    border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
+                                    size(35.dp).
+                                    background(Color.VeryLightGray),
+                                    food = item,
+                                    favoriteState = favoriteState
+                                )
+                                AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
+                            }
+                        )
+                    }
+                }else if(categoriesBoxViewModel.typeInRestaurantScreen == "Drink"){
+                    println("")
+                }else{
+                    items(menu){ item ->
+                        ItemsBox(
+                            item,
+                            navigationController,
+                            itemScreenViewModel,
+                            {
+                                Favorite(
+                                    modifier = Modifier.
+                                    clip(CircleShape).
+                                    size(35.dp),
+                                    food = item,
+                                    favoriteState = favoriteState
+                                )
+                                AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
+                            }
+                        )
+                    }
+                }
+                item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
             }
 
 

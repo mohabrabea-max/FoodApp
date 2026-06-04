@@ -52,6 +52,8 @@ import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
+import com.example.applicationhome.view.model.APIData
+import com.example.applicationhome.view.model.CategoriesBoxViewModel
 import com.example.applicationhome.view.model.FavoriteViewModel
 import com.example.applicationhome.view.model.ItemScreenViewModel
 import kotlinx.coroutines.launch
@@ -61,7 +63,9 @@ fun RestaurantsBox(
     item : Restaurants,
     favoriteState : FavoriteViewModel,
     itemScreenViewModel: ItemScreenViewModel,
-    navigationController : NavHostController
+    navigationController : NavHostController,
+    apiData: APIData,
+    categoriesBoxViewModel: CategoriesBoxViewModel
 ){
     if (MenuRepository.restaurantsMenuisLoading) {
         Box(
@@ -79,7 +83,9 @@ fun RestaurantsBox(
         ){
             Box(
                 modifier = Modifier.clickable {
+                    apiData.loadRestaurantData(item.id)
                     itemScreenViewModel.selectRestaurant(item)
+                    categoriesBoxViewModel.selectedtype(0, item.typ.first())
                     navigationController.navigate(Screens.Menu.screen)
                 }
             ){
