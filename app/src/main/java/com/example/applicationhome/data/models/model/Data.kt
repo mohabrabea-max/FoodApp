@@ -114,6 +114,7 @@ data class ProfileOptions(
 
 data class CartClass(
     val id : Int,
+    val type : String,
     val size : String,
     val number : Int
 )

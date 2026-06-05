@@ -55,14 +55,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.MenuRepository.offers
+import com.example.applicationhome.data.models.repository.MenuRepository.restaurantOffers
 import com.example.applicationhome.data.models.repository.MenuRepository.snacks
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -87,7 +86,7 @@ fun Menu(
     itemScreenViewModel: ItemScreenViewModel,
     addBoxViewModel: AddBoxViewModel,
     favoriteState : FavoriteViewModel,
-    categoriesBoxViewModel: CategoriesBoxViewModel = viewModel(),
+    categoriesBoxViewModel: CategoriesBoxViewModel,
     apiData : APIData
 ){
     val scrollState = rememberLazyGridState()
@@ -307,7 +306,7 @@ fun Menu(
                         ){
                             item{ Spacer(modifier = Modifier.width(15.dp)) }
 
-                            items(offers.toList()){ item ->
+                            items(restaurantOffers.toList()){ item ->
                                 AsyncImage(
                                     modifier = Modifier.fillMaxWidth().height(120.dp).padding(vertical = 10.dp).clip(RoundedCornerShape(10.dp)).clickable {  },
                                     model = ImageRequest.Builder(LocalContext.current).
@@ -371,6 +370,23 @@ fun Menu(
                 }else if(categoriesBoxViewModel.typeInRestaurantScreen == "Drink"){
                     println("")
                 }else{
+                    items(menu){ item ->
+                        ItemsBox(
+                            item,
+                            navigationController,
+                            itemScreenViewModel,
+                            {
+                                Favorite(
+                                    modifier = Modifier.
+                                    clip(CircleShape).
+                                    size(35.dp),
+                                    food = item,
+                                    favoriteState = favoriteState
+                                )
+                                AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
+                            }
+                        )
+                    }
                     items(menu){ item ->
                         ItemsBox(
                             item,

@@ -219,7 +219,7 @@ fun FinalScreen(
                             is Screens.Profile -> Profile(drawerState, coroutineScope, navigationController, userImageViewModel, profileViewModel, birthdayViewModel)
                             is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel)
                             is Screens.Search -> Search()
-                            is Screens.Menu -> Menu(navigationController, viewModel, addBoxViewModel, favoriteViewModel, apiData = apiData)
+                            is Screens.Menu -> Menu(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, apiData)
                             is Screens.Restaurants -> Restaurants(drawerState, coroutineScope, navigationController, favoriteViewModel, apiData)
                             is Screens.ItemScreen -> ItemScreen(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, apiData)
                             is Screens.Notifications -> Notifications()

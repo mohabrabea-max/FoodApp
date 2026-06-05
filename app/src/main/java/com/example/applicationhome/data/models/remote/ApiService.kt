@@ -54,9 +54,21 @@ interface FoodAppAPIs{
     ): Response<Map<String, Int>>
 
     @GET("cart/{userId}.json")
-    suspend fun getCartItems(
+    suspend fun getCart(
         @Path("userId") userId : String,
     ): Response<Map<String, CartClass>>
+
+    @GET("meals.json")
+    suspend fun getCartMeals(
+        @Query("orderBy") order : String,
+        @Query("equalTo") value : Int
+    ): Response<Map<String, FoodItem>>
+
+    @GET("snacks.json")
+    suspend fun getCartSnacks(
+        @Query("orderBy") order : String,
+        @Query("equalTo") value : Int
+    ): Response<Map<String, Snack>>
 
     @DELETE("cart/{userId}/{mealKey}.json")
     suspend fun deleteItemFromCart(

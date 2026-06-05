@@ -49,7 +49,8 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.CartRepository
-import com.example.applicationhome.data.models.repository.MenuRepository
+import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuList
+import com.example.applicationhome.data.models.repository.MenuRepository.snacks
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.view.model.AddBoxViewModel
@@ -63,8 +64,8 @@ fun CartBox(
     viewModel: ItemScreenViewModel,
     ordernumber : AddBoxViewModel,
 ){
-    val fooditem = MenuRepository.foodMenuList.values.find { it.id == id }
-    val snackitem = MenuRepository.snacks.values.find { it.id == id }
+    val fooditem = foodMenuList.values.find { it.id == id }
+    val snackitem = snacks.values.find { it.id == id }
     val cartkey : String
     val count : Int
     val focusManager = LocalFocusManager.current
@@ -81,9 +82,9 @@ fun CartBox(
     }else{
         cartkey = "${id}_${size}"
         count = CartRepository.cartItems[cartkey]?.number ?: 0
-        name = snackitem!!.name
-        price = "EGP " + snackitem.priceANDsize[size].toString()
-        image = snackitem.image.first()
+        name = snackitem?.name ?: ""
+        price = "EGP " + snackitem?.priceANDsize[size].toString()
+        image = snackitem?.image?.first() ?: ""
     }
     Box(
         modifier = Modifier.padding(start = 10.dp, end = 10.dp).

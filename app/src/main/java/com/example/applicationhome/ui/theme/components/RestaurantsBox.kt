@@ -50,6 +50,7 @@ import coil.size.Precision
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.MenuRepository
+import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuList
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.view.model.APIData
@@ -84,8 +85,11 @@ fun RestaurantsBox(
             Box(
                 modifier = Modifier.clickable {
                     apiData.loadRestaurantData(item.id)
+                    categoriesBoxViewModel.selectedtype(0, item.typ.toList().first())
                     itemScreenViewModel.selectRestaurant(item)
-                    categoriesBoxViewModel.selectedtype(0, item.typ.first())
+                    println(item.typ.toList().first())
+                    println(categoriesBoxViewModel.filterMenu)
+                    println(foodMenuList.values.toList())
                     navigationController.navigate(Screens.Menu.screen)
                 }
             ){

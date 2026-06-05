@@ -1,10 +1,14 @@
 package com.example.applicationhome.view.model
 
+import android.R.attr.type
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.data.models.model.Food
+import com.example.applicationhome.data.models.model.FoodItem
+import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.data.models.repository.CartRepository.addMealToCart
 import com.example.applicationhome.data.models.repository.CartRepository.cartItems
 import com.example.applicationhome.data.models.repository.CartRepository.deleteFromCart
@@ -17,9 +21,9 @@ import kotlinx.coroutines.launch
 class AddBoxViewModel : ViewModel(){
     var activId by mutableStateOf<Int?>(null)
 
-    fun plus(foodId: Int, size : String){
+    fun plus(food: Food, size : String){
         viewModelScope.launch {
-            val mealKey = "${foodId}_$size"
+            val mealKey = "${food.id}_$size"
             val currentItem = cartItems[mealKey]
             val finalNumber = if (currentItem != null){
                 if(currentItem.number == 99){
@@ -30,7 +34,11 @@ class AddBoxViewModel : ViewModel(){
             }else{
                 1
             }
-            addMealToCart(foodId, size, finalNumber)
+            val type = when(food){
+                is FoodItem -> {"Meal"}
+                is Snack -> {"Snack"}
+            }
+            addMealToCart(food.id, size, finalNumber, type)
             updateTotals()
         }
     }

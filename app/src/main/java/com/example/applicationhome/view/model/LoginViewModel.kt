@@ -9,7 +9,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.models.model.UserClass
 import com.example.applicationhome.data.models.repository.CartRepository.cartItems
-import com.example.applicationhome.data.models.repository.CartRepository.getcartitems
+import com.example.applicationhome.data.models.repository.CartRepository.cartMeals
+import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
+import com.example.applicationhome.data.models.repository.CartRepository.cartSnacks
+import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
+import com.example.applicationhome.data.models.repository.CartRepository.foodMenu
+import com.example.applicationhome.data.models.repository.CartRepository.getcart
+import com.example.applicationhome.data.models.repository.CartRepository.snacksMenu
 import com.example.applicationhome.data.models.repository.CartRepository.totalNumber
 import com.example.applicationhome.data.models.repository.CartRepository.totalPrice
 import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
@@ -86,7 +92,9 @@ class LoginViewModel : ViewModel() {
         isLogin = true
         viewModelScope.launch {
             //addToMeals()
-            getcartitems()
+            getcart()
+            cartMealsMenu = cartMeals(foodMenu)
+            cartSnacksMenu = cartSnacks(snacksMenu)
         }
         viewModelScope.launch {
             getFavorite()

@@ -74,7 +74,10 @@ fun CategoriesBarForRestaurantsScreen(res : Restaurants, categoriesBoxViewModel 
             val isSelected = categoriesBoxViewModel.selectedTypeIndex == index
             Tab(
                 selected = isSelected,
-                onClick = { categoriesBoxViewModel.selectedtype(index, typ) },
+                onClick = {
+                    categoriesBoxViewModel.selectedtype(index, typ)
+                    println(index)
+                          },
                 text = {
                     Text(
                         text = typ,

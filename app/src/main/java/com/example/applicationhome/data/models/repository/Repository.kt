@@ -1,5 +1,6 @@
 package com.example.applicationhome.data.models.repository
 
+import android.R.attr.type
 import android.annotation.SuppressLint
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
@@ -22,6 +23,9 @@ import com.example.applicationhome.data.models.repository.MenuRepository.foodMen
 import com.example.applicationhome.data.models.repository.MenuRepository.restaurantsMenu
 import com.example.applicationhome.data.models.repository.MenuRepository.snacks
 import com.example.applicationhome.data.models.repository.UserRepository.userId
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import retrofit2.Response
 
 object UserRepository {
@@ -104,7 +108,10 @@ object UserRepository {
 object CartRepository {
     var totalCart by mutableStateOf(0)
     var cartItems = mutableStateMapOf<String, CartClass>()
-
+    var foodMenu : List<CartClass> = mutableStateListOf()
+    var snacksMenu : List<CartClass> = mutableStateListOf()
+    var cartMealsMenu : List<FoodItem> = mutableStateListOf()
+    var cartSnacksMenu : List<Snack> = mutableStateListOf()
     var totalPrice = mutableDoubleStateOf(0.0)
     var totalNumber = mutableStateOf(0)
 
@@ -112,26 +119,26 @@ object CartRepository {
     fun updateTotals() {
         totalNumber.value = 0
         totalPrice.value = 0.0
+        foodMenu = cartItems.values.filter { it.type == "Meal" }
+        snacksMenu = cartItems.values.filter { it.type == "Snack" }
         cartItems.forEach { (key, value) ->
-            val foodId = value.id
             val size = value.size
-            val foodMenu = foodMenuList.values.find { it.id == foodId }
-            val snacksMenu = snacks.values.find { it.id == foodId }
-            if(foodMenu != null){
+            if(cartMealsMenu != null){
                 totalNumber.value += value.number
-                val priceForSize = foodMenu.sizeOptions.find { it.size == size }
+                val priceForSize = cartMealsMenu.sizeOptions.find { it.size == size }
                 totalPrice.value += priceForSize?.price!! * value.number
-            }else if(snacksMenu != null){
+            }
+            if(cartSnacksMenu != null){
                 totalNumber.value += value.number
-                snacksMenu.priceANDsize.forEach { (size, price) ->
+                cartSnacksMenu.priceANDsize.forEach { (size, price) ->
                     totalPrice.value += price * value.number
                 }
             }
         }
     }
-    suspend fun getcartitems(): String {
+    suspend fun getcart(): String {
         return try {
-            val response = RetrofitInstance.api.getCartItems(userId)
+            val response = RetrofitInstance.api.getCart(userId)
             if(response.isSuccessful){
                 val cartItem = response.body()
                 if(cartItem != null){
@@ -151,16 +158,58 @@ object CartRepository {
         }
     }
 
-    suspend fun addMealToCart(foodId: Int, size : String, number: Int): String{
+    suspend fun cartMeals(mealId : List<CartClass>): List<FoodItem> {
+        return coroutineScope {
+            val deferredRequests = mealId.map { item ->
+                async {
+                    try {
+                        val response = RetrofitInstance.api.getCartMeals("\"id\"", item.id)
+                        if(response.isSuccessful){
+                            val resultMap = response.body()
+                            resultMap?.values?.firstOrNull()
+                        }else{
+                            null
+                        }
+                    } catch (e : Exception){
+                        null
+                    }
+                }
+            }
+            deferredRequests.awaitAll().filterNotNull()
+        }
+    }
+
+    suspend fun cartSnacks(snackId : List<CartClass>): List<Snack> {
+        return coroutineScope {
+            val deferredRequests = snackId.map { item ->
+                async {
+                    try {
+                        val response = RetrofitInstance.api.getCartSnacks("\"id\"", item.id)
+                        if(response.isSuccessful){
+                            val resultMap = response.body()
+                            resultMap?.values?.firstOrNull()
+                        }else{
+                            null
+                        }
+                    } catch (e : Exception){
+                        null
+                    }
+                }
+            }
+            deferredRequests.awaitAll().filterNotNull()
+        }
+    }
+
+    suspend fun addMealToCart(foodId: Int, size : String, number: Int, type : String): String{
         var mealKey by mutableStateOf("${foodId}_$size")
 
         if(!cartItems.keys.contains(mealKey)){
-            val cartObject = CartClass(foodId, size, 1)
+            val cartObject = CartClass(foodId, type, size, 1)
             return try {
                 val response = RetrofitInstance.api.addToCart(userId, mealKey, cartObject)
                 if(response.isSuccessful){
                     val cartItem = response.body()
-                    cartItems[mealKey] = CartClass(cartItem!!.id, cartItem.size, cartItem.number)
+                    cartItems[mealKey] = CartClass(cartItem!!.id, cartItem.type, cartItem.size, cartItem.number)
                     updateTotals()
                     "Success"
                 }else{
@@ -337,6 +386,9 @@ object MenuRepository {
     var offers by mutableStateOf<List<Offers>>(emptyList()); private set
     var offersisLoading by mutableStateOf(true)
 
+    var restaurantOffers by mutableStateOf<List<Offers>>(emptyList()); private set
+    var restaurantOffersLoading by mutableStateOf(true)
+
     var isNetworkAvailable by mutableStateOf(true)
 
     suspend fun uploadFoodMenuFromApi(resId : Int): String {
@@ -425,7 +477,7 @@ object MenuRepository {
     suspend fun uploadRestaurantOffersFromApi(resId : Int): String {
         return try {
             offersisLoading = true
-            offers = RetrofitInstance.api.restaurantOffers("\"restaurantId\"", resId).values.toList()
+            restaurantOffers = RetrofitInstance.api.restaurantOffers("\"restaurantId\"", resId).values.toList()
             "Success"
         } catch (e: Exception) {
             e.printStackTrace()

@@ -10,7 +10,6 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,7 +27,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -82,14 +80,10 @@ import com.example.applicationhome.data.models.repository.MenuRepository.snacks
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.components.AddBox
 import com.example.applicationhome.ui.theme.components.CategoriesBar
-import com.example.applicationhome.ui.theme.components.Favorite
-import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.RestaurantsBox
 import com.example.applicationhome.ui.theme.components.SearchBox
-import com.example.applicationhome.ui.theme.components.SnaksBox
 import com.example.applicationhome.view.model.APIData
 import com.example.applicationhome.view.model.AddBoxViewModel
 import com.example.applicationhome.view.model.CategoriesBoxViewModel
@@ -113,7 +107,6 @@ fun HomeScreen(
 ){
     val density = LocalDensity.current
     val minOffsetToShowBox = with(density) { 147.dp.toPx() }
-
     val scrollState = rememberLazyGridState()
     val alpha by remember {
         derivedStateOf {
@@ -365,90 +358,90 @@ fun HomeScreen(
                             }
                         }
                     }
-                    item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
-                    item(span = { GridItemSpan(2) }){
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Divider(color = Color.LightOrange.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(start = 20.dp, end = 20.dp))
-                        Spacer(modifier = Modifier.height(20.dp))
-                    }
-                    item(span = { GridItemSpan(2) }) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Snacks :",
-                                style = MaterialTheme.typography.titleLarge,
-                                color = Color.Black,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(start = 15.dp)
-                            )
-                            TextButton(
-                                onClick = {navigationController.navigate(Screens.Menu.screen)},
-                                contentPadding = PaddingValues(end = 15.dp)
-                            ){
-                                Text(
-                                    text = "See all",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    color = Color.DarkOrange,
-                                    fontSize = 13.sp
-                                )
-                                Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, tint = Color.DarkOrange)
-                            }
-                        }
-                    }
-                    item(span = { GridItemSpan(2) }){
-                        LazyRow(horizontalArrangement = Arrangement.spacedBy(5.dp)){
-                            items(snacks){ item ->
-                                SnaksBox(
-                                    modifier = Modifier.size(200.dp),
-                                    false,
-                                    item,
-                                    null,
-                                    navigationController,
-                                    itemScreenViewModel,
-                                    {
-                                        Favorite(
-                                            modifier = Modifier.
-                                            clip(CircleShape).
-                                            border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
-                                            size(35.dp).
-                                            background(Color.VeryLightGray),
-                                            food = item,
-                                            favoriteState = favoriteState
-                                        )
-                                        AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
-                                    }
-                                )
-                            }
-                        }
-                    }
-                    item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
-                    item(span = { GridItemSpan(2) }){
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Divider(color = Color.LightOrange.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(start = 20.dp, end = 20.dp))
-                        Spacer(modifier = Modifier.height(20.dp))
-                    }
-                    item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
-                    items(menu){ item ->
-                        ItemsBox(
-                            item,
-                            navigationController,
-                            itemScreenViewModel,
-                            {
-                                Favorite(
-                                    modifier = Modifier.
-                                    clip(CircleShape).
-                                    size(35.dp),
-                                    food = item,
-                                    favoriteState = favoriteState
-                                )
-                                AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
-                            }
-                        )
-                    }
+//                    item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
+//                    item(span = { GridItemSpan(2) }){
+//                        Spacer(modifier = Modifier.height(20.dp))
+//                        Divider(color = Color.LightOrange.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(start = 20.dp, end = 20.dp))
+//                        Spacer(modifier = Modifier.height(20.dp))
+//                    }
+//                    item(span = { GridItemSpan(2) }) {
+//                        Row(
+//                            modifier = Modifier.fillMaxWidth(),
+//                            verticalAlignment = Alignment.CenterVertically,
+//                            horizontalArrangement = Arrangement.SpaceBetween
+//                        ) {
+//                            Text(
+//                                text = "Snacks :",
+//                                style = MaterialTheme.typography.titleLarge,
+//                                color = Color.Black,
+//                                fontSize = 20.sp,
+//                                fontWeight = FontWeight.Bold,
+//                                modifier = Modifier.padding(start = 15.dp)
+//                            )
+//                            TextButton(
+//                                onClick = {navigationController.navigate(Screens.Menu.screen)},
+//                                contentPadding = PaddingValues(end = 15.dp)
+//                            ){
+//                                Text(
+//                                    text = "See all",
+//                                    style = MaterialTheme.typography.titleLarge,
+//                                    color = Color.DarkOrange,
+//                                    fontSize = 13.sp
+//                                )
+//                                Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, tint = Color.DarkOrange)
+//                            }
+//                        }
+//                    }
+//                    item(span = { GridItemSpan(2) }){
+//                        LazyRow(horizontalArrangement = Arrangement.spacedBy(5.dp)){
+//                            items(snacks){ item ->
+//                                SnaksBox(
+//                                    modifier = Modifier.size(200.dp),
+//                                    false,
+//                                    item,
+//                                    null,
+//                                    navigationController,
+//                                    itemScreenViewModel,
+//                                    {
+//                                        Favorite(
+//                                            modifier = Modifier.
+//                                            clip(CircleShape).
+//                                            border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
+//                                            size(35.dp).
+//                                            background(Color.VeryLightGray),
+//                                            food = item,
+//                                            favoriteState = favoriteState
+//                                        )
+//                                        AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
+//                                    }
+//                                )
+//                            }
+//                        }
+//                    }
+//                    item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
+//                    item(span = { GridItemSpan(2) }){
+//                        Spacer(modifier = Modifier.height(20.dp))
+//                        Divider(color = Color.LightOrange.copy(alpha = 0.5f), modifier = Modifier.width(300.dp).padding(start = 20.dp, end = 20.dp))
+//                        Spacer(modifier = Modifier.height(20.dp))
+//                    }
+//                    item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
+//                    items(menu){ item ->
+//                        ItemsBox(
+//                            item,
+//                            navigationController,
+//                            itemScreenViewModel,
+//                            {
+//                                Favorite(
+//                                    modifier = Modifier.
+//                                    clip(CircleShape).
+//                                    size(35.dp),
+//                                    food = item,
+//                                    favoriteState = favoriteState
+//                                )
+//                                AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
+//                            }
+//                        )
+//                    }
                     item(span = { GridItemSpan(2) }){ Spacer(modifier = Modifier.height(16.dp)) }
                     item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(80.dp))}
                 }

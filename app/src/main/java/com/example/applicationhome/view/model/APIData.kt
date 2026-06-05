@@ -8,7 +8,6 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuList
 import com.example.applicationhome.data.models.repository.MenuRepository.isNetworkAvailable
 import com.example.applicationhome.data.models.repository.MenuRepository.uploadCategorieslistFromApi
 import com.example.applicationhome.data.models.repository.MenuRepository.uploadFoodMenuFromApi
@@ -39,9 +38,7 @@ class APIData(application : Application) : AndroidViewModel(application){
             override fun onAvailable(network: Network) {
                 super.onAvailable(network)
                 isNetworkAvailable = true
-                if(foodMenuList.isEmpty()){
-                    loadDataFromApi()
-                }
+                loadDataFromApi()
             }
             override fun onLost(network: Network){
                 super.onLost(network)
