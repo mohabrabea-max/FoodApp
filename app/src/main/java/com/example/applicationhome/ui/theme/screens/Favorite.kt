@@ -130,23 +130,15 @@ fun Favorite(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ){
                         item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
-                        items(mealsFavorite) { item ->
+                        items(restaurantsFavorite) { item ->
                             if(item != null){
-                                ItemsBox(
+                                RestaurantsBox(
                                     item,
-                                    navigationController,
+                                    favoriteState,
                                     itemScreenViewModel,
-                                    {
-                                        Favorite(
-                                            modifier = Modifier.
-                                            clip(CircleShape).
-                                            size(35.dp).
-                                            background(Color.White.copy(alpha = 1f)),
-                                            food = item,
-                                            favoriteState = favoriteState
-                                        )
-                                        AddBox(color = Color.White, food = item, addBoxViewModel)
-                                    }
+                                    navigationController,
+                                    apiData,
+                                    categoriesBoxViewModel
                                 )
                             }
                         }
@@ -176,18 +168,27 @@ fun Favorite(
                             }
                         }
                         item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(15.dp))}
-                        items(restaurantsFavorite) { item ->
+                        items(mealsFavorite) { item ->
                             if(item != null){
-                                RestaurantsBox(
+                                ItemsBox(
                                     item,
-                                    favoriteState,
-                                    itemScreenViewModel,
                                     navigationController,
-                                    apiData,
-                                    categoriesBoxViewModel
+                                    itemScreenViewModel,
+                                    {
+                                        Favorite(
+                                            modifier = Modifier.
+                                            clip(CircleShape).
+                                            size(35.dp).
+                                            background(Color.White.copy(alpha = 1f)),
+                                            food = item,
+                                            favoriteState = favoriteState
+                                        )
+                                        AddBox(color = Color.White, food = item, addBoxViewModel)
+                                    }
                                 )
                             }
                         }
+                        item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
                     }
                 }else{
                     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){

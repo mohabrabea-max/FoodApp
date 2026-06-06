@@ -49,6 +49,8 @@ import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.CartRepository.cartItems
+import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
+import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightBrownForBackground
@@ -129,8 +131,11 @@ fun Cart(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ){
                         item{Spacer(modifier = Modifier.height(100.dp))}
-                        items(cartItems.values.toList(), key = { it.id.toString() + it.size}) { item ->
-                            CartBox(item.id, item.size, navigationController, viewModel, addBoxViewModel)
+                        items(cartMealsMenu) { item ->
+                            CartBox(item, navigationController, viewModel, addBoxViewModel)
+                        }
+                        items(cartSnacksMenu) { item ->
+                            CartBox(item, navigationController, viewModel, addBoxViewModel)
                         }
                         item{
                             PaymentSummary(addBoxViewModel)

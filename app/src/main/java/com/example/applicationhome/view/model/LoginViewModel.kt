@@ -19,14 +19,19 @@ import com.example.applicationhome.data.models.repository.CartRepository.snacksM
 import com.example.applicationhome.data.models.repository.CartRepository.totalNumber
 import com.example.applicationhome.data.models.repository.CartRepository.totalPrice
 import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
+import com.example.applicationhome.data.models.repository.FavoriteRepository.favoriteMeals
+import com.example.applicationhome.data.models.repository.FavoriteRepository.favoriteSnacks
 import com.example.applicationhome.data.models.repository.FavoriteRepository.getFavorite
 import com.example.applicationhome.data.models.repository.FavoriteRepository.mealsFavorite
+import com.example.applicationhome.data.models.repository.FavoriteRepository.mealsFavoriteMenu
 import com.example.applicationhome.data.models.repository.FavoriteRepository.restaurantsFavorite
 import com.example.applicationhome.data.models.repository.FavoriteRepository.snacksFavorite
+import com.example.applicationhome.data.models.repository.FavoriteRepository.snacksFavoriteMenu
 import com.example.applicationhome.data.models.repository.UserRepository
 import com.example.applicationhome.data.models.repository.UserRepository.isLogin
 import com.example.applicationhome.data.models.repository.UserRepository.userData
 import com.example.applicationhome.data.models.repository.UserRepository.userId
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class LoginViewModel : ViewModel() {
@@ -79,9 +84,9 @@ class LoginViewModel : ViewModel() {
         )
         cartItems.clear()
         favoritList.clear()
-        mealsFavorite.clear()
-        snacksFavorite.clear()
-        restaurantsFavorite.clear()
+        mealsFavorite = emptyList()
+        snacksFavorite = emptyList()
+        restaurantsFavorite = emptyList()
         totalPrice.value = 0.0
         totalNumber.value = 0
     }
@@ -91,13 +96,16 @@ class LoginViewModel : ViewModel() {
         userId = userid
         isLogin = true
         viewModelScope.launch {
-            //addToMeals()
-            getcart()
-            cartMealsMenu = cartMeals(foodMenu)
-            cartSnacksMenu = cartSnacks(snacksMenu)
-        }
-        viewModelScope.launch {
             getFavorite()
         }
+        viewModelScope.launch {
+            //addToMeals()
+            getcart()
+            cartMealsMenu = async { cartMeals(foodMenu) }.await()
+            cartSnacksMenu = async { cartSnacks(snacksMenu) }.await()
+            mealsFavorite = async { favoriteMeals(mealsFavoriteMenu) }.await()
+            snacksFavorite = async { favoriteSnacks(snacksFavoriteMenu) }.await()
+        }
+
     }
 }

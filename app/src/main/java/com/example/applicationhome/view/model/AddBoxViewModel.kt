@@ -1,6 +1,5 @@
 package com.example.applicationhome.view.model
 
-import android.R.attr.type
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,11 +10,16 @@ import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.data.models.repository.CartRepository.addMealToCart
 import com.example.applicationhome.data.models.repository.CartRepository.cartItems
+import com.example.applicationhome.data.models.repository.CartRepository.cartMeals
+import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
+import com.example.applicationhome.data.models.repository.CartRepository.cartSnacks
+import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
 import com.example.applicationhome.data.models.repository.CartRepository.deleteFromCart
+import com.example.applicationhome.data.models.repository.CartRepository.foodMenu
 import com.example.applicationhome.data.models.repository.CartRepository.minusFromCart
-import com.example.applicationhome.data.models.repository.CartRepository.totalCart
-import com.example.applicationhome.data.models.repository.CartRepository.totalPrice
+import com.example.applicationhome.data.models.repository.CartRepository.snacksMenu
 import com.example.applicationhome.data.models.repository.CartRepository.updateTotals
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class AddBoxViewModel : ViewModel(){
@@ -39,6 +43,8 @@ class AddBoxViewModel : ViewModel(){
                 is Snack -> {"Snack"}
             }
             addMealToCart(food.id, size, finalNumber, type)
+            cartMealsMenu = async { cartMeals(foodMenu) }.await().filterNotNull()
+            cartSnacksMenu = async { cartSnacks(snacksMenu) }.await().filterNotNull()
             updateTotals()
         }
     }
@@ -47,22 +53,29 @@ class AddBoxViewModel : ViewModel(){
         viewModelScope.launch {
             val mealKey = "${foodId}_$size"
             var finalNumber by mutableStateOf(0)
-            if(cartItems[mealKey]?.number == 1){
-                deleteFromCart(foodId, size)
-            }else{
-                finalNumber = cartItems[mealKey]!!.number - 1
-                minusFromCart(foodId, size, finalNumber)
+            val cartItem = cartItems[mealKey]
+            if(cartItem != null){
+                if(cartItem.number == 1){
+                    deleteFromCart(foodId, size)
+                }else{
+                    finalNumber = cartItem.number - 1
+                    minusFromCart(foodId, size, finalNumber)
+                }
+                updateTotals()
             }
-            updateTotals()
         }
     }
 
-    fun updateCount(foodId: Int, size : String, newCount: Int) {
+    fun updateCount(food: Food, size : String, newCount: Int) {
         viewModelScope.launch {
-            val mealKey = "${foodId}_$size"
+            val mealKey = "${food.id}_$size"
             val currentItem = cartItems[mealKey]
             if (currentItem != null) cartItems[mealKey] = currentItem.copy(number = newCount)
-            addMealToCart(foodId, size, newCount)
+            val type = when(food){
+                is FoodItem -> {"Meal"}
+                is Snack -> {"Snack"}
+            }
+            addMealToCart(food.id, size, newCount, type)
             updateTotals()
         }
     }
@@ -71,14 +84,11 @@ class AddBoxViewModel : ViewModel(){
         viewModelScope.launch {
             deleteFromCart(foodId, size)
         }
-        totalCart = 0
         updateTotals()
     }
 
     fun bay(){
-        totalPrice.value = 0.0
         cartItems.clear()
-        totalCart = 0
         updateTotals()
     }
     fun active(foodId : Int){

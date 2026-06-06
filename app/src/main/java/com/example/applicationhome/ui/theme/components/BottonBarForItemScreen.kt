@@ -84,7 +84,7 @@ fun BottonBarForItemScreen(
                 }
             ){
                 Text(
-                    text = "${cart[cartkey]} added in your cart",
+                    text = "${cart[cartkey]?.number} added in your cart",
                     modifier = Modifier.padding(top = 5.dp, start = 5.dp, end = 5.dp).align(Alignment.TopCenter)
                 )
             }
@@ -138,7 +138,7 @@ fun BottonBarForItemScreen(
                                 textAlign = TextAlign.Center
                             )
                         }
-                        IconButton(onClick = {ordernumber.plus(food.id, size)}, modifier = Modifier.weight(1f).fillMaxHeight()){
+                        IconButton(onClick = {ordernumber.plus(food, size)}, modifier = Modifier.weight(1f).fillMaxHeight()){
                             Icon(
                                 Icons.Default.Add,
                                 contentDescription = null,

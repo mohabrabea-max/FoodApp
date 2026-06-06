@@ -19,6 +19,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.applicationhome.data.models.model.Food
+import com.example.applicationhome.data.models.model.FoodItem
+import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.view.model.FavoriteViewModel
 import kotlinx.coroutines.launch
@@ -34,11 +36,15 @@ fun Favorite(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
-    val favorite = favoriteState.isMealInFavorite(food?.id)
+    val favorite = favoriteState.isMealInFavorite(food.id)
+    val type = when(food){
+        is FoodItem -> {"Meal"}
+        is Snack -> {"Snack"}
+    }
     fun favorite1(){
 
         if(favorite == true){
-            favoriteState.removeFavorite(food)
+            favoriteState.removeFavorite(food, type)
             Toast.makeText(context, "Remove From Favorite", Toast.LENGTH_SHORT).show()
         }else{
             favoriteState.addFavorite(food)

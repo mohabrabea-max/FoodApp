@@ -30,9 +30,9 @@ class FavoriteViewModel : ViewModel(){
 
         }
     }
-    fun removeFavorite(food : Food){
+    fun removeFavorite(food : Food, type : String){
         viewModelScope.launch {
-            deleteFavorite(food.id)
+            deleteFavorite(food.id, type)
         }
     }
 
@@ -43,7 +43,7 @@ class FavoriteViewModel : ViewModel(){
     }
     fun removeRestaurantsFavorite(restaurants: Restaurants){
         viewModelScope.launch {
-            deleteFavorite(restaurants.id)
+            deleteFavorite(restaurants.id, "Restaurant")
         }
     }
 }

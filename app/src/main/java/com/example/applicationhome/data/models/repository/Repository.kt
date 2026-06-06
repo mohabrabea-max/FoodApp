@@ -1,10 +1,7 @@
 package com.example.applicationhome.data.models.repository
 
-import android.R.attr.type
-import android.annotation.SuppressLint
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -19,9 +16,6 @@ import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.data.models.model.UserClass
 import com.example.applicationhome.data.models.remote.RetrofitInstance
-import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuList
-import com.example.applicationhome.data.models.repository.MenuRepository.restaurantsMenu
-import com.example.applicationhome.data.models.repository.MenuRepository.snacks
 import com.example.applicationhome.data.models.repository.UserRepository.userId
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -106,35 +100,37 @@ object UserRepository {
 }
 
 object CartRepository {
-    var totalCart by mutableStateOf(0)
-    var cartItems = mutableStateMapOf<String, CartClass>()
-    var foodMenu : List<CartClass> = mutableStateListOf()
-    var snacksMenu : List<CartClass> = mutableStateListOf()
-    var cartMealsMenu : List<FoodItem> = mutableStateListOf()
-    var cartSnacksMenu : List<Snack> = mutableStateListOf()
     var totalPrice = mutableDoubleStateOf(0.0)
     var totalNumber = mutableStateOf(0)
+    var cartItems = mutableStateMapOf<String, CartClass>()
+    val foodMenu get() = cartItems.filter { it.value.type == "Meal" }
+    val snacksMenu get() = cartItems.filter { it.value.type == "Snack" }
+    var cartMealsMenu by mutableStateOf<List<FoodItem>>(emptyList())
+    var cartSnacksMenu by mutableStateOf<List<Snack>>(emptyList())
 
-    @SuppressLint("AutoboxingStateValueProperty")
+
+
     fun updateTotals() {
         totalNumber.value = 0
         totalPrice.value = 0.0
-        foodMenu = cartItems.values.filter { it.type == "Meal" }
-        snacksMenu = cartItems.values.filter { it.type == "Snack" }
         cartItems.forEach { (key, value) ->
-            val size = value.size
-            if(cartMealsMenu != null){
-                totalNumber.value += value.number
-                val priceForSize = cartMealsMenu.sizeOptions.find { it.size == size }
-                totalPrice.value += priceForSize?.price!! * value.number
-            }
-            if(cartSnacksMenu != null){
-                totalNumber.value += value.number
-                cartSnacksMenu.priceANDsize.forEach { (size, price) ->
-                    totalPrice.value += price * value.number
+            if(value.type == "Meal"){
+                val meal = cartMealsMenu.find { it.id == value.id }
+                val number = foodMenu.values.find { it.id == value.id }?.number ?: 0
+                if(meal != null){
+                    totalPrice.value = totalPrice.value + (meal.sizeOptions.find { it.size == value.size }?.price ?: 0.0) * number
                 }
+                totalNumber.value += 1
+            }else if(value.type == "Snack"){
+                val snack = cartSnacksMenu.find { it.id == value.id }?.priceANDsize
+                val number = snacksMenu.values.find { it.id == value.id }?.number ?: 0
+                if(snack != null){
+                    totalPrice.value = totalPrice.value + (snack[value.size] ?: 0.0) * number
+                }
+                totalNumber.value += 1
             }
         }
+
     }
     suspend fun getcart(): String {
         return try {
@@ -158,12 +154,12 @@ object CartRepository {
         }
     }
 
-    suspend fun cartMeals(mealId : List<CartClass>): List<FoodItem> {
+    suspend fun cartMeals(meal : Map<String, CartClass>): List<FoodItem> {
         return coroutineScope {
-            val deferredRequests = mealId.map { item ->
+            val deferredRequests = meal.map { (key, value) ->
                 async {
                     try {
-                        val response = RetrofitInstance.api.getCartMeals("\"id\"", item.id)
+                        val response = RetrofitInstance.api.getCartMeals("\"id\"", value.id)
                         if(response.isSuccessful){
                             val resultMap = response.body()
                             resultMap?.values?.firstOrNull()
@@ -179,19 +175,24 @@ object CartRepository {
         }
     }
 
-    suspend fun cartSnacks(snackId : List<CartClass>): List<Snack> {
+    suspend fun cartSnacks(snack : Map<String, CartClass>): List<Snack> {
         return coroutineScope {
-            val deferredRequests = snackId.map { item ->
+            val deferredRequests = snack.map { (key, value) ->
                 async {
                     try {
-                        val response = RetrofitInstance.api.getCartSnacks("\"id\"", item.id)
+                        val response = RetrofitInstance.api.getCartSnacks("\"id\"", value.id)
                         if(response.isSuccessful){
                             val resultMap = response.body()
+                            println("isSuccessful")
                             resultMap?.values?.firstOrNull()
                         }else{
+                            println("Error in response")
+                            println("Firebase Error Code: ${response.code()}")
+                            println("Firebase Error Body: ${response.errorBody()?.string()}")
                             null
                         }
                     } catch (e : Exception){
+                        println("Error in catch")
                         null
                     }
                 }
@@ -263,6 +264,8 @@ object CartRepository {
             val response = RetrofitInstance.api.deleteItemFromCart(userId, mealKey)
             if(response.isSuccessful){
                 cartItems.keys.remove(mealKey)
+                cartMealsMenu = cartMealsMenu.filterNot { it.id == foodId }
+                cartSnacksMenu = cartSnacksMenu.filterNot { it.id == foodId }
                 updateTotals()
                 "Success"
             }else{
@@ -277,29 +280,79 @@ object CartRepository {
 object FavoriteRepository {
     var favoritList = mutableStateMapOf<String, FavoriteClass>()
 
-    var mealsFavorite = mutableStateListOf<FoodItem?>()
+    val mealsFavoriteMenu get() = favoritList.filter { it.value.typ == "Meal" }.values.toList()
 
-    var snacksFavorite = mutableStateListOf<Snack?>()
+    val snacksFavoriteMenu get() = favoritList.filter { it.value.typ == "Snack" }.values.toList()
 
-    var restaurantsFavorite = mutableStateListOf<Restaurants?>()
+    var mealsFavorite by mutableStateOf<List<FoodItem>>(emptyList())
 
-    fun viewFavorite(){
-        mealsFavorite.clear()
-        snacksFavorite.clear()
-        restaurantsFavorite.clear()
-        favoritList.forEach { item ->
-            if(item != null){
-                if(item.key.contains("Meal")){
-                    mealsFavorite.add(foodMenuList.values.find { it.id == item.value.id })
-                }else if(item.key.contains("Snack")){
-                    snacksFavorite.add(snacks.values.find { it.id == item.value.id })
-                }else{
-                    restaurantsFavorite.add(restaurantsMenu.values.find { it.id == item.value.id })
+    var snacksFavorite by mutableStateOf<List<Snack>>(emptyList())
+
+    var restaurantsFavorite by mutableStateOf<List<Restaurants>>(emptyList())
+
+//    fun viewFavorite(){
+//        mealsFavorite = emptyList()
+//        snacksFavorite = emptyList()
+//        restaurantsFavorite = emptyList()
+//        favoritList.forEach { (key, value) ->
+//            if(key != null){
+//                if(key.contains("Meal")){
+//                    mealsFavorite.add(foodMenuList.values.find { it.id == item.value.id })
+//                }else if(item.key.contains("Snack")){
+//                    snacksFavorite.add(snacks.values.find { it.id == item.value.id })
+//                }else{
+//                    restaurantsFavorite.add(restaurantsMenu.values.find { it.id == item.value.id })
+//                }
+//            }
+//        }
+//    }
+
+    suspend fun favoriteMeals(meal : List<FavoriteClass>): List<FoodItem> {
+        return coroutineScope {
+            val deferredRequests = meal.map { item ->
+                async {
+                    try {
+                        val response = RetrofitInstance.api.getCartMeals("\"id\"", item.id)
+                        if(response.isSuccessful){
+                            val resultMap = response.body()
+                            resultMap?.values?.firstOrNull()
+                        }else{
+                            null
+                        }
+                    } catch (e : Exception){
+                        null
+                    }
                 }
             }
+            deferredRequests.awaitAll().filterNotNull()
         }
     }
 
+    suspend fun favoriteSnacks(snack : List<FavoriteClass>): List<Snack> {
+        return coroutineScope {
+            val deferredRequests = snack.map { item ->
+                async {
+                    try {
+                        val response = RetrofitInstance.api.getCartSnacks("\"id\"", item.id)
+                        if(response.isSuccessful){
+                            val resultMap = response.body()
+                            println("isSuccessful")
+                            resultMap?.values?.firstOrNull()
+                        }else{
+                            println("Error in response")
+                            println("Firebase Error Code: ${response.code()}")
+                            println("Firebase Error Body: ${response.errorBody()?.string()}")
+                            null
+                        }
+                    } catch (e : Exception){
+                        println("Error in catch")
+                        null
+                    }
+                }
+            }
+            deferredRequests.awaitAll().filterNotNull()
+        }
+    }
 
     suspend fun addToFavorite(id : Int, typ : String, restaurants : Int) : String{
         val favoriteObject = FavoriteClass(id, typ, restaurants)
@@ -308,7 +361,7 @@ object FavoriteRepository {
             val response = RetrofitInstance.api.addToFavorite(userId, mealKey, favoriteObject)
             if(response.isSuccessful && response.body() != null){
                 favoritList[mealKey] = favoriteObject
-                viewFavorite()
+                //viewFavorite()
                 "Success"
             }else{
                 "Network error"
@@ -327,7 +380,7 @@ object FavoriteRepository {
                 if (favoriteItems != null) {
                     favoritList.clear()
                     favoritList.putAll(favoriteItems)
-                    viewFavorite()
+                    //viewFavorite()
                     "Success"
                 } else {
                     favoritList.clear()
@@ -343,13 +396,13 @@ object FavoriteRepository {
         }
     }
 
-    suspend fun deleteFavorite(id : Int): String{
-        val mealKey = "Meal_$id"
+    suspend fun deleteFavorite(id : Int, type : String): String{
+        val mealKey = "${type}_$id"
         return try {
             val response = RetrofitInstance.api.deleteFromFavorite(userId, mealKey)
             if(response.isSuccessful){
                 favoritList.keys.remove(mealKey)
-                viewFavorite()
+                //viewFavorite()
                 "Success"
             }else{
                 "Network error"

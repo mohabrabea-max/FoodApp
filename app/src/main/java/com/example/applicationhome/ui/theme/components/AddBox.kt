@@ -101,7 +101,7 @@ fun AddBox(
                 onClick = {
                     isExpanded = true
                     addBoxViewModel.active(id)
-                    addBoxViewModel.plus(food.id, selectedSize.value.toString())
+                    addBoxViewModel.plus(food, selectedSize.value.toString())
                           },
                 modifier = Modifier.fillMaxSize()
             ){
@@ -126,7 +126,7 @@ fun AddBox(
                         addBoxViewModel.active(id)
                     }else{
                         addBoxViewModel.active(id)
-                        addBoxViewModel.plus(food.id, selectedSize.value.toString())
+                        addBoxViewModel.plus(food, selectedSize.value.toString())
                     }
                 },
                 contentAlignment = Alignment.Center
@@ -154,7 +154,7 @@ fun AddBox(
                     clip(CircleShape).
                     background(color).
                     clickable {
-                        addBoxViewModel.plus(food.id, selectedSize.value.toString())
+                        addBoxViewModel.plus(food, selectedSize.value.toString())
                     },
                     contentAlignment = Alignment.Center
                 ){
@@ -186,7 +186,7 @@ fun AddBox(
                                 textAlign = TextAlign.Center
                             )
                         }
-                        IconButton(onClick = {addBoxViewModel.plus(food.id, selectedSize.value.toString())}, modifier = Modifier.weight(1f).fillMaxHeight()){
+                        IconButton(onClick = {addBoxViewModel.plus(food, selectedSize.value.toString())}, modifier = Modifier.weight(1f).fillMaxHeight()){
                             Icon(
                                 Icons.Default.Add,
                                 contentDescription = null,

@@ -189,7 +189,7 @@ fun Favorite2(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
-    val favorite = favoriteState.isMealInFavorite(restaurants?.id)
+    val favorite = favoriteState.isMealInFavorite(restaurants.id)
     fun favorite1(){
 
         if(favorite == true){

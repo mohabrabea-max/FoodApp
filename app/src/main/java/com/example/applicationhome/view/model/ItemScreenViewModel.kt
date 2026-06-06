@@ -16,11 +16,11 @@ class ItemScreenViewModel : ViewModel() {
     var selectedRestaurant by mutableStateOf<Restaurants?>(null)
 
 
-    fun selectItem(item: FoodItem, size : String) {
+    fun selectItem(item: FoodItem?, size : String) {
         selectedItem = item
         selectedSize = size
     }
-    fun selectSnak(item: Snack, size : String){
+    fun selectSnak(item: Snack?, size : String){
         selectedSnak = item
         selectedSnackSize = size
     }

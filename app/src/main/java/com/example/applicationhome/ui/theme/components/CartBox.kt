@@ -47,10 +47,15 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import com.example.applicationhome.data.models.model.Food
+import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.data.models.repository.CartRepository
-import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuList
-import com.example.applicationhome.data.models.repository.MenuRepository.snacks
+import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
+import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
+import com.example.applicationhome.data.models.repository.CartRepository.foodMenu
+import com.example.applicationhome.data.models.repository.CartRepository.snacksMenu
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.view.model.AddBoxViewModel
@@ -58,14 +63,22 @@ import com.example.applicationhome.view.model.ItemScreenViewModel
 
 @Composable
 fun CartBox(
-    id: Int,
-    size : String,
+    food: Food,
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel,
     ordernumber : AddBoxViewModel,
 ){
-    val fooditem = foodMenuList.values.find { it.id == id }
-    val snackitem = snacks.values.find { it.id == id }
+    val fooditem = foodMenu.values.find { it.id == food.id }
+    val foodSize = fooditem?.size
+    val snackitem = snacksMenu.values.find { it.id == food.id }
+    val snackSize = snackitem?.size
+    val size = when(food){
+        is FoodItem -> { foodSize }
+        is Snack -> { snackSize }
+    }
+    val meal = cartMealsMenu.find { it?.id == fooditem?.id }
+    val snack = cartSnacksMenu.find { it?.id == snackitem?.id }
+
     val cartkey : String
     val count : Int
     val focusManager = LocalFocusManager.current
@@ -74,24 +87,24 @@ fun CartBox(
     val name : String
     val price : String
     if(fooditem != null){
-        cartkey = "${id}_${size}"
+        cartkey = "${food.id}_${size}"
         count = CartRepository.cartItems[cartkey]?.number ?: 0
-        name = fooditem.name
-        price = "EGP " + fooditem.sizeOptions.find { it.size == size }?.price.toString()
-        image = fooditem.image.first()
+        name = meal?.name ?: ""
+        price = "EGP " + meal?.sizeOptions?.find { it.size == size }?.price.toString()
+        image = meal?.image?.first() ?: ""
     }else{
-        cartkey = "${id}_${size}"
+        cartkey = "${food.id}_${size}"
         count = CartRepository.cartItems[cartkey]?.number ?: 0
-        name = snackitem?.name ?: ""
-        price = "EGP " + snackitem?.priceANDsize[size].toString()
-        image = snackitem?.image?.first() ?: ""
+        name = snack?.name ?: ""
+        price = "EGP " + snack?.priceANDsize[size].toString()
+        image = snack?.image?.first() ?: ""
     }
     Box(
         modifier = Modifier.padding(start = 10.dp, end = 10.dp).
         fillMaxWidth().height(100.dp).
         background(Color.White).
         clickable {
-            if(fooditem != null) viewModel.run { selectItem(fooditem, fooditem.sizeOptions.find { it.size == size }?.size.toString()) }
+            if(fooditem != null) viewModel.run { selectItem(meal, meal?.sizeOptions?.find { it.size == size }?.size.toString()) }
             navigationController.navigate(Screens.ItemScreen.screen)
         }
     ){
@@ -140,7 +153,7 @@ fun CartBox(
                     weight(1.8f),
                     verticalAlignment = Alignment.CenterVertically
                 ){
-                    IconButton(onClick = { ordernumber.delete(id, size) }, modifier = Modifier.weight(1f)){
+                    IconButton(onClick = { if(size != null) ordernumber.delete(food.id, size) }, modifier = Modifier.weight(1f)){
                         Icon(Icons.Default.Delete, contentDescription = null, tint = Color.Red)
                     }
                     Box(
@@ -159,7 +172,7 @@ fun CartBox(
                                 modifier = Modifier.size(30.dp).clip(CircleShape).background(Color.White),
                                 contentAlignment = Alignment.Center
                             ){
-                                IconButton(onClick = {ordernumber.minus(id, size)}){
+                                IconButton(onClick = { if(size != null) ordernumber.minus(food.id, size) }){
                                     Icon(Icons.Default.Remove, contentDescription = null, tint = Color.DarkOrange)
                                 }
                             }
@@ -172,11 +185,11 @@ fun CartBox(
                                         if (newValue.isNotEmpty()) {
                                             if(newValue.all {it.isDigit()} && newValue.length <= 2){
                                                 val newCount = newValue.toIntOrNull() ?: count
-                                                ordernumber.updateCount(id, size, newCount as Int)
+                                                if(size != null) ordernumber.updateCount(food, size, newCount)
                                             }
                                         }else{
                                             val newCount = newValue.toIntOrNull() ?: 0
-                                            ordernumber.updateCount(id, size, newCount)
+                                            if(size != null) ordernumber.updateCount(food, size, newCount)
                                         }
                                     },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
@@ -198,7 +211,7 @@ fun CartBox(
                                 modifier = Modifier.size(30.dp).clip(CircleShape).background(Color.DarkOrange),
                                 contentAlignment = Alignment.Center
                             ){
-                                IconButton(onClick = {ordernumber.plus(id, size)}){
+                                IconButton(onClick = { if(size != null) ordernumber.plus(food, size) }){
                                     Icon(Icons.Default.Add, contentDescription = null, tint = Color.White)
                                 }
                             }
