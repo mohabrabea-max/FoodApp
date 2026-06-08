@@ -58,8 +58,8 @@ import com.example.applicationhome.data.models.repository.CartRepository.foodMen
 import com.example.applicationhome.data.models.repository.CartRepository.snacksMenu
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
-import com.example.applicationhome.view.model.AddBoxViewModel
-import com.example.applicationhome.view.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @Composable
 fun CartBox(

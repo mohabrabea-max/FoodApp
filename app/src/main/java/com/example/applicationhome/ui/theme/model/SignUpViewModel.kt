@@ -1,4 +1,4 @@
-package com.example.applicationhome.view.model
+package com.example.applicationhome.ui.theme.model
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.getValue

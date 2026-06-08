@@ -70,11 +70,11 @@ import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.Ratings
 import com.example.applicationhome.ui.theme.components.SnaksBox
-import com.example.applicationhome.view.model.APIData
-import com.example.applicationhome.view.model.AddBoxViewModel
-import com.example.applicationhome.view.model.CategoriesBoxViewModel
-import com.example.applicationhome.view.model.FavoriteViewModel
-import com.example.applicationhome.view.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.APIData
+import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
+import com.example.applicationhome.ui.theme.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)

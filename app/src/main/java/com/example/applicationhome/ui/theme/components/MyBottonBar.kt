@@ -37,9 +37,9 @@ import com.example.applicationhome.data.models.repository.CartRepository.totalNu
 import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
-import com.example.applicationhome.view.model.AddBoxViewModel
-import com.example.applicationhome.view.model.BottomBarViewModel
-import com.example.applicationhome.view.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -99,7 +99,6 @@ fun MyBottonBar(
                         if(selected == "Favorite"){
                             navigationController.navigate(Screens.Favorite.screen)
                         }else{
-                            println(favoritList)
                             viewModel.favorite()
                             navigationController.navigate(Screens.Favorite.screen){
                                 popUpTo(navigationController.graph.findStartDestination().id) {

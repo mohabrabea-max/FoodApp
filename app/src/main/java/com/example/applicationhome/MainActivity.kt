@@ -11,18 +11,19 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.applicationhome.ui.theme.model.APIData
+import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.BirthdayViewModel
+import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
+import com.example.applicationhome.ui.theme.model.DrawerViewModel
+import com.example.applicationhome.ui.theme.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.LoginViewModel
+import com.example.applicationhome.ui.theme.model.ProfileViewModel
+import com.example.applicationhome.ui.theme.model.RestaurantViewModel
+import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import com.example.applicationhome.ui.theme.screens.FinalScreen
-import com.example.applicationhome.view.model.APIData
-import com.example.applicationhome.view.model.AddBoxViewModel
-import com.example.applicationhome.view.model.BirthdayViewModel
-import com.example.applicationhome.view.model.BottomBarViewModel
-import com.example.applicationhome.view.model.CategoriesBoxViewModel
-import com.example.applicationhome.view.model.DrawerViewModel
-import com.example.applicationhome.view.model.FavoriteViewModel
-import com.example.applicationhome.view.model.ItemScreenViewModel
-import com.example.applicationhome.view.model.LoginViewModel
-import com.example.applicationhome.view.model.ProfileViewModel
-import com.example.applicationhome.view.model.UserImageViewModel
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -44,6 +45,7 @@ class MainActivity : ComponentActivity() {
             val categoriesBoxViewModel : CategoriesBoxViewModel = viewModel()
             val birthdayViewModel : BirthdayViewModel = viewModel()
             val loginViewModel: LoginViewModel = viewModel()
+            val restaurantViewModel: RestaurantViewModel = viewModel()
             FinalScreen(
                 scrollBehavior,
                 drawerState,
@@ -57,7 +59,8 @@ class MainActivity : ComponentActivity() {
                 profileViewModel,
                 apiData,
                 birthdayViewModel,
-                loginViewModel
+                loginViewModel,
+                restaurantViewModel
             )
         }
     }

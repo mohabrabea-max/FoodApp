@@ -41,8 +41,8 @@ import com.example.applicationhome.data.models.model.Food
 import com.example.applicationhome.data.models.repository.CartRepository
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.view.model.AddBoxViewModel
-import com.example.applicationhome.view.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)

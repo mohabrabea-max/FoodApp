@@ -62,12 +62,12 @@ import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.RestaurantsBox
 import com.example.applicationhome.ui.theme.components.SnaksBox
-import com.example.applicationhome.view.model.APIData
-import com.example.applicationhome.view.model.AddBoxViewModel
-import com.example.applicationhome.view.model.BottomBarViewModel
-import com.example.applicationhome.view.model.CategoriesBoxViewModel
-import com.example.applicationhome.view.model.FavoriteViewModel
-import com.example.applicationhome.view.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
+import com.example.applicationhome.ui.theme.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -82,8 +82,8 @@ fun Favorite(
     itemScreenViewModel : ItemScreenViewModel,
     addBoxViewModel: AddBoxViewModel,
     favoriteState : FavoriteViewModel,
-    apiData : APIData,
-    categoriesBoxViewModel : CategoriesBoxViewModel
+    categoriesBoxViewModel : CategoriesBoxViewModel,
+    restaurantViewModel: RestaurantViewModel
 ){
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) {
@@ -131,20 +131,18 @@ fun Favorite(
                     ){
                         item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
                         items(restaurantsFavorite) { item ->
-                            if(item != null){
-                                RestaurantsBox(
-                                    item,
-                                    favoriteState,
-                                    itemScreenViewModel,
-                                    navigationController,
-                                    apiData,
-                                    categoriesBoxViewModel
-                                )
-                            }
+                            RestaurantsBox(
+                                item,
+                                favoriteState,
+                                itemScreenViewModel,
+                                navigationController,
+                                categoriesBoxViewModel,
+                                restaurantViewModel
+                            )
                         }
-                        item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(15.dp))}
-                        items(snacksFavorite) { item ->
-                            if(item != null){
+                        if(snacksFavorite != null) {
+                            item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
+                            items(snacksFavorite) { item ->
                                 SnaksBox(
                                     modifier = Modifier.size(200.dp),
                                     false,
@@ -154,32 +152,34 @@ fun Favorite(
                                     itemScreenViewModel,
                                     {
                                         Favorite(
-                                            modifier = Modifier.
-                                            clip(CircleShape).
-                                            border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
-                                            size(35.dp).
-                                            background(Color.VeryLightGray),
+                                            modifier = Modifier.clip(CircleShape).border(
+                                                width = 0.5.dp,
+                                                color = Color.Gray.copy(alpha = 0.2f),
+                                                shape = RoundedCornerShape(30.dp)
+                                            ).size(35.dp).background(Color.VeryLightGray),
                                             food = item,
                                             favoriteState = favoriteState
                                         )
-                                        AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
+                                        AddBox(
+                                            color = Color.VeryLightGray,
+                                            food = item,
+                                            addBoxViewModel
+                                        )
                                     }
                                 )
                             }
                         }
-                        item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(15.dp))}
-                        items(mealsFavorite) { item ->
-                            if(item != null){
+                        if(mealsFavorite != null) {
+                            item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
+                            items(mealsFavorite) { item ->
                                 ItemsBox(
                                     item,
                                     navigationController,
                                     itemScreenViewModel,
                                     {
                                         Favorite(
-                                            modifier = Modifier.
-                                            clip(CircleShape).
-                                            size(35.dp).
-                                            background(Color.White.copy(alpha = 1f)),
+                                            modifier = Modifier.clip(CircleShape).size(35.dp)
+                                                .background(Color.White.copy(alpha = 1f)),
                                             food = item,
                                             favoriteState = favoriteState
                                         )

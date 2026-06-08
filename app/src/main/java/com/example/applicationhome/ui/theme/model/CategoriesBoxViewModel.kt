@@ -1,4 +1,4 @@
-package com.example.applicationhome.view.model
+package com.example.applicationhome.ui.theme.model
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,13 +16,13 @@ class CategoriesBoxViewModel: ViewModel(){
     var typ by mutableStateOf("All")
     var typeInRestaurantScreen by mutableStateOf("Pizza")
     val filterMenu : List<FoodItem>
-        get() = foodMenuList.values.toList().filter { it.category == typeInRestaurantScreen }
+        get() = foodMenuList.toList().filter { it.category == typeInRestaurantScreen }
 
     val filterrestaurants : List<Restaurants>
         get() = if(typ == "All"){
-            restaurantsMenu.values.toList()
+            restaurantsMenu.toList()
         }else{
-            restaurantsMenu.values.toList().filter { it.typ.contains(typ) }
+            restaurantsMenu.toList().filter { it.typ.contains(typ) }
         }
 
 

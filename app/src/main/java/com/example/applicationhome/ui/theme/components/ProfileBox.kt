@@ -60,10 +60,10 @@ import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.view.model.BirthdayViewModel
-import com.example.applicationhome.view.model.DrawerViewModel
-import com.example.applicationhome.view.model.ProfileViewModel
-import com.example.applicationhome.view.model.UserImageViewModel
+import com.example.applicationhome.ui.theme.model.BirthdayViewModel
+import com.example.applicationhome.ui.theme.model.DrawerViewModel
+import com.example.applicationhome.ui.theme.model.ProfileViewModel
+import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import kotlinx.coroutines.coroutineScope
 
 @OptIn(ExperimentalMaterial3Api::class)

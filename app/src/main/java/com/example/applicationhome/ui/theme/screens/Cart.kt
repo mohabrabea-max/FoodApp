@@ -58,9 +58,9 @@ import com.example.applicationhome.ui.theme.components.CartBox
 import com.example.applicationhome.ui.theme.components.CartButton
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.PaymentSummary
-import com.example.applicationhome.view.model.AddBoxViewModel
-import com.example.applicationhome.view.model.BottomBarViewModel
-import com.example.applicationhome.view.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

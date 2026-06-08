@@ -22,7 +22,7 @@ import com.example.applicationhome.data.models.model.Food
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.ui.theme.DarkOrange
-import com.example.applicationhome.view.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState")

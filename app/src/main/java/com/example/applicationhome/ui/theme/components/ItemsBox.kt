@@ -34,7 +34,7 @@ import coil.size.Precision
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.MenuRepository
-import com.example.applicationhome.view.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @Composable
 fun ItemsBox(

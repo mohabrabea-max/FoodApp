@@ -58,17 +58,18 @@ import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.Options
 import com.example.applicationhome.ui.theme.components.UserImage
-import com.example.applicationhome.view.model.APIData
-import com.example.applicationhome.view.model.AddBoxViewModel
-import com.example.applicationhome.view.model.BirthdayViewModel
-import com.example.applicationhome.view.model.BottomBarViewModel
-import com.example.applicationhome.view.model.CategoriesBoxViewModel
-import com.example.applicationhome.view.model.DrawerViewModel
-import com.example.applicationhome.view.model.FavoriteViewModel
-import com.example.applicationhome.view.model.ItemScreenViewModel
-import com.example.applicationhome.view.model.LoginViewModel
-import com.example.applicationhome.view.model.ProfileViewModel
-import com.example.applicationhome.view.model.UserImageViewModel
+import com.example.applicationhome.ui.theme.model.APIData
+import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.BirthdayViewModel
+import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
+import com.example.applicationhome.ui.theme.model.DrawerViewModel
+import com.example.applicationhome.ui.theme.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.LoginViewModel
+import com.example.applicationhome.ui.theme.model.ProfileViewModel
+import com.example.applicationhome.ui.theme.model.RestaurantViewModel
+import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -87,7 +88,8 @@ fun FinalScreen(
     profileViewModel : ProfileViewModel,
     apiData : APIData,
     birthdayViewModel: BirthdayViewModel,
-    loginViewModel: LoginViewModel
+    loginViewModel: LoginViewModel,
+    restaurantViewModel: RestaurantViewModel
 ){
     val density = LocalDensity.current
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} }
@@ -215,15 +217,15 @@ fun FinalScreen(
                         popExitTransition = { ExitTransition.None }
                     ) {
                         when(item){
-                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, apiData)
+                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, apiData, restaurantViewModel)
                             is Screens.Profile -> Profile(drawerState, coroutineScope, navigationController, userImageViewModel, profileViewModel, birthdayViewModel)
                             is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel)
                             is Screens.Search -> Search()
-                            is Screens.Menu -> Menu(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, apiData)
-                            is Screens.Restaurants -> Restaurants(drawerState, coroutineScope, navigationController, favoriteViewModel, apiData)
+                            is Screens.Menu -> Menu(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel)
+                            is Screens.Restaurants -> Restaurants(drawerState, coroutineScope, navigationController, favoriteViewModel)
                             is Screens.ItemScreen -> ItemScreen(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, apiData)
                             is Screens.Notifications -> Notifications()
-                            is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, viewModelForBottomBar, viewModel, addBoxViewModel, favoriteViewModel, apiData, categoriesBoxViewModel)
+                            is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, viewModelForBottomBar, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel)
                             is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, viewModelForBottomBar, viewModel, addBoxViewModel)
                             is Screens.LoginScreen -> LoginScreen(navigationController, loginViewModel)
                             is Screens.SignUpScreen -> SignUpScreen(navigationController, loginViewModel)

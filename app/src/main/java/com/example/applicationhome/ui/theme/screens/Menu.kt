@@ -38,6 +38,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -72,11 +73,11 @@ import com.example.applicationhome.ui.theme.components.Favorite2
 import com.example.applicationhome.ui.theme.components.ItemsBox
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.SnaksBox
-import com.example.applicationhome.view.model.APIData
-import com.example.applicationhome.view.model.AddBoxViewModel
-import com.example.applicationhome.view.model.CategoriesBoxViewModel
-import com.example.applicationhome.view.model.FavoriteViewModel
-import com.example.applicationhome.view.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
+import com.example.applicationhome.ui.theme.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -87,8 +88,13 @@ fun Menu(
     addBoxViewModel: AddBoxViewModel,
     favoriteState : FavoriteViewModel,
     categoriesBoxViewModel: CategoriesBoxViewModel,
-    apiData : APIData
+    restaurantViewModel : RestaurantViewModel
 ){
+    LaunchedEffect(key1 = restaurantViewModel.isNetworkAvailable, key2 = restaurantViewModel.resid) {
+        if(restaurantViewModel.isNetworkAvailable && restaurantViewModel.resid != 0){
+            restaurantViewModel.restaurantData()
+        }
+    }
     val scrollState = rememberLazyGridState()
     val alpha by remember {
         derivedStateOf {
@@ -113,9 +119,9 @@ fun Menu(
     val itemInfo = layoutInfo.visibleItemsInfo.find { it.key == "categories_header" }
 
 
-    val menu = categoriesBoxViewModel.filterMenu
+    val menu = categoriesBoxViewModel.filterMenu.filter { it.restaurantId == restaurantViewModel.resid }
     //println(menu)
-    val snacks = snacks.values.toList()
+    val snacks = snacks.values.toList().filter { it.restaurantId == restaurantViewModel.resid }
     val item = itemScreenViewModel.selectedRestaurant
     val logo = item?.image
     val background = item?.image2
@@ -135,7 +141,10 @@ fun Menu(
                         null,
                         {
                             IconButton(
-                                onClick = {if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() } },
+                                onClick = {
+                                    if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
+                                    restaurantViewModel.resid = 0
+                                },
                                 modifier = Modifier.padding(5.dp).
                                 border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
                                 shadow(elevation = if(searchSize < 1) 7.dp else 0.dp, spotColor = Color.LightGray, shape = CircleShape).clip(CircleShape).size(40.dp).

@@ -26,7 +26,7 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Categories
 import com.example.applicationhome.data.models.repository.MenuRepository
-import com.example.applicationhome.view.model.CategoriesBoxViewModel
+import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 
 @Composable
 fun CategoriesBox(category : Categories, categoriesBoxViewModel : CategoriesBoxViewModel){

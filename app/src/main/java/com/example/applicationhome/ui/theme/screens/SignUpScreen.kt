@@ -51,8 +51,8 @@ import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.NameTextField
 import com.example.applicationhome.ui.theme.components.SignupTextField
 import com.example.applicationhome.ui.theme.components.SignupTextFieldPage2
-import com.example.applicationhome.view.model.LoginViewModel
-import com.example.applicationhome.view.model.SignUpViewModel
+import com.example.applicationhome.ui.theme.model.LoginViewModel
+import com.example.applicationhome.ui.theme.model.SignUpViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

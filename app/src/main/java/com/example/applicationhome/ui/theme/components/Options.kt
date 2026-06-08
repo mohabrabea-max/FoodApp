@@ -37,9 +37,9 @@ import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.Drawer
 import com.example.applicationhome.data.models.repository.UserRepository
 import com.example.applicationhome.ui.theme.DarkOrange
-import com.example.applicationhome.view.model.BottomBarViewModel
-import com.example.applicationhome.view.model.DrawerViewModel
-import com.example.applicationhome.view.model.LoginViewModel
+import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.DrawerViewModel
+import com.example.applicationhome.ui.theme.model.LoginViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

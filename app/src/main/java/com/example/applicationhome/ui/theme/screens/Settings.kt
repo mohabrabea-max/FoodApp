@@ -55,7 +55,7 @@ import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.SettingsBox
 import com.example.applicationhome.ui.theme.components.SettingsOptionsBox
 import com.example.applicationhome.ui.theme.components.UserImage
-import com.example.applicationhome.view.model.UserImageViewModel
+import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

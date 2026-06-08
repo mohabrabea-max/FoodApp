@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.data.models.repository.CartRepository
-import com.example.applicationhome.view.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 
 @Composable
 fun PaymentSummary(

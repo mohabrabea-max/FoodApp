@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.ui.theme.DarkOrange
-import com.example.applicationhome.view.model.CategoriesBoxViewModel
+import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 
 @Composable
 fun CategoriesBar(categoriesBoxViewModel : CategoriesBoxViewModel){

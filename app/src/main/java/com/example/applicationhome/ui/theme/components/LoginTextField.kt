@@ -34,8 +34,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.applicationhome.view.model.LoginViewModel
-import com.example.applicationhome.view.model.UserImageViewModel
+import com.example.applicationhome.ui.theme.model.LoginViewModel
+import com.example.applicationhome.ui.theme.model.UserImageViewModel
 
 @Composable
 fun LoginTextField(loginViewModel: LoginViewModel, userImageViewModel : UserImageViewModel = viewModel()){
@@ -54,7 +54,7 @@ fun LoginTextField(loginViewModel: LoginViewModel, userImageViewModel : UserImag
         LaunchedEffect(emailstate) {
             snapshotFlow { emailstate.text.toString() }
                 .collect {
-                    loginViewModel.getDataInScreen()
+                    loginViewModel.getData()
                 }
         }
         BasicTextField(
@@ -118,7 +118,7 @@ fun LoginTextField(loginViewModel: LoginViewModel, userImageViewModel : UserImag
         LaunchedEffect(passwordstate) {
             snapshotFlow { passwordstate.text.toString() }
                 .collect {
-                    loginViewModel.getDataInScreen()
+                    loginViewModel.getData()
                 }
         }
         BasicTextField(

@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.Orange
-import com.example.applicationhome.view.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @Composable
 fun ItemSize(viewModel: ItemScreenViewModel){

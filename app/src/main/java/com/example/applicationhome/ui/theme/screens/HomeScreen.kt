@@ -84,11 +84,12 @@ import com.example.applicationhome.ui.theme.components.CategoriesBar
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.RestaurantsBox
 import com.example.applicationhome.ui.theme.components.SearchBox
-import com.example.applicationhome.view.model.APIData
-import com.example.applicationhome.view.model.AddBoxViewModel
-import com.example.applicationhome.view.model.CategoriesBoxViewModel
-import com.example.applicationhome.view.model.FavoriteViewModel
-import com.example.applicationhome.view.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.APIData
+import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
+import com.example.applicationhome.ui.theme.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -103,7 +104,8 @@ fun HomeScreen(
     addBoxViewModel: AddBoxViewModel,
     favoriteState : FavoriteViewModel,
     categoriesBoxViewModel : CategoriesBoxViewModel,
-    apiData: APIData
+    apiData: APIData,
+    restaurantViewModel: RestaurantViewModel
 ){
     val density = LocalDensity.current
     val minOffsetToShowBox = with(density) { 147.dp.toPx() }
@@ -354,7 +356,7 @@ fun HomeScreen(
                             horizontalArrangement = Arrangement.spacedBy(5.dp)
                         ){
                             items(restaurants){item ->
-                                RestaurantsBox(item, favoriteState, itemScreenViewModel, navigationController, apiData, categoriesBoxViewModel)
+                                RestaurantsBox(item, favoriteState, itemScreenViewModel, navigationController, categoriesBoxViewModel, restaurantViewModel)
                             }
                         }
                     }

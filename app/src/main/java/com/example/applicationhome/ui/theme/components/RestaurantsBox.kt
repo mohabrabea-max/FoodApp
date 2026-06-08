@@ -50,13 +50,12 @@ import coil.size.Precision
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.MenuRepository
-import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuList
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.view.model.APIData
-import com.example.applicationhome.view.model.CategoriesBoxViewModel
-import com.example.applicationhome.view.model.FavoriteViewModel
-import com.example.applicationhome.view.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
+import com.example.applicationhome.ui.theme.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -65,8 +64,8 @@ fun RestaurantsBox(
     favoriteState : FavoriteViewModel,
     itemScreenViewModel: ItemScreenViewModel,
     navigationController : NavHostController,
-    apiData: APIData,
-    categoriesBoxViewModel: CategoriesBoxViewModel
+    categoriesBoxViewModel: CategoriesBoxViewModel,
+    restaurantViewModel: RestaurantViewModel
 ){
     if (MenuRepository.restaurantsMenuisLoading) {
         Box(
@@ -84,12 +83,9 @@ fun RestaurantsBox(
         ){
             Box(
                 modifier = Modifier.clickable {
-                    apiData.loadRestaurantData(item.id)
+                    restaurantViewModel.loadRestaurantId(item.id)
                     categoriesBoxViewModel.selectedtype(0, item.typ.toList().first())
                     itemScreenViewModel.selectRestaurant(item)
-                    println(item.typ.toList().first())
-                    println(categoriesBoxViewModel.filterMenu)
-                    println(foodMenuList.values.toList())
                     navigationController.navigate(Screens.Menu.screen)
                 }
             ){

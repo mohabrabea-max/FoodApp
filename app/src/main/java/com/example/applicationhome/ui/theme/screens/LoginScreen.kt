@@ -49,8 +49,8 @@ import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.LoginTextField
 import com.example.applicationhome.ui.theme.components.MyTopBar
-import com.example.applicationhome.view.model.LoginViewModel
-import com.example.applicationhome.view.model.UserImageViewModel
+import com.example.applicationhome.ui.theme.model.LoginViewModel
+import com.example.applicationhome.ui.theme.model.UserImageViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -244,15 +244,17 @@ fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostCon
             .clip(CircleShape)
             .background(if(loginViewModel.emailstate.text.isNotEmpty() && loginViewModel.passwordstate.text.isNotEmpty()) Color.DarkOrange else Color.Gray)
             .clickable {
-                if(isEmailTrue && isPasswordTrue){
-                    println(userId)
-                    navigationController.navigate(Screens.HomeScreen.screen) {navigationController.popBackStack()}
-                    loginViewModel.login(userData, userId)
-                    loginViewModel.bottonstate()
-                }else if(isEmailTrue && isPasswordTrue == false){
-                    println("true false")
-                }else{
-                    println("false false")
+                if(loginViewModel.isNetworkAvailable){
+                    if(isEmailTrue && isPasswordTrue){
+                        println(userId)
+                        navigationController.navigate(Screens.HomeScreen.screen) {navigationController.popBackStack()}
+                        loginViewModel.login(userData, userId)
+                        loginViewModel.bottonstate()
+                    }else if(isEmailTrue && isPasswordTrue == false){
+                        println("true false")
+                    }else{
+                        println("false false")
+                    }
                 }
             },
         contentAlignment = Alignment.Center

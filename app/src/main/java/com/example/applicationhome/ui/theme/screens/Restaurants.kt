@@ -62,8 +62,7 @@ import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.MyTopBar
-import com.example.applicationhome.view.model.APIData
-import com.example.applicationhome.view.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -74,7 +73,6 @@ fun Restaurants(
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
     favoriteState : FavoriteViewModel,
-    apiData : APIData
 ){
     val restaurantsMenu = MenuRepository.restaurantsMenu.values.toList()
     if (MenuRepository.restaurantsMenuisLoading) {
