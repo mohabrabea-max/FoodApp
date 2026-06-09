@@ -10,11 +10,11 @@ import com.example.applicationhome.data.models.repository.FavoriteRepository.add
 import com.example.applicationhome.data.models.repository.FavoriteRepository.deleteFavorite
 import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
 import com.example.applicationhome.data.models.repository.FavoriteRepository.favoriteMeals
+import com.example.applicationhome.data.models.repository.FavoriteRepository.favoriteRestaurants
 import com.example.applicationhome.data.models.repository.FavoriteRepository.favoriteSnacks
 import com.example.applicationhome.data.models.repository.FavoriteRepository.mealsFavorite
-import com.example.applicationhome.data.models.repository.FavoriteRepository.mealsFavoriteMenu
+import com.example.applicationhome.data.models.repository.FavoriteRepository.restaurantsFavorite
 import com.example.applicationhome.data.models.repository.FavoriteRepository.snacksFavorite
-import com.example.applicationhome.data.models.repository.FavoriteRepository.snacksFavoriteMenu
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
@@ -55,8 +55,9 @@ class FavoriteViewModel : ViewModel(){
     }
     fun getFavorite(){
         viewModelScope.launch {
-            mealsFavorite = async { favoriteMeals(mealsFavoriteMenu) }.await()
-            snacksFavorite = async { favoriteSnacks(snacksFavoriteMenu) }.await()
+            mealsFavorite += async { favoriteMeals() }.await()
+            snacksFavorite += async { favoriteSnacks() }.await()
+            restaurantsFavorite += async { favoriteRestaurants() }.await()
         }
     }
 }

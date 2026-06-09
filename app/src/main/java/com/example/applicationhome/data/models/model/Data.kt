@@ -125,6 +125,13 @@ data class FavoriteClass(
     val restaurants : Int
 )
 
+data class RestaurantsCount(
+    val meals : Int,
+    val snacks : Int,
+    val drinks : Int,
+    val offers : Int
+)
+
 data class UserClass(
     val firstname : String?,
     val lastname : String?,

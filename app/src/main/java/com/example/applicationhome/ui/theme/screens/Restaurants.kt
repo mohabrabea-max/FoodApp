@@ -74,7 +74,7 @@ fun Restaurants(
     navigationController : NavHostController,
     favoriteState : FavoriteViewModel,
 ){
-    val restaurantsMenu = MenuRepository.restaurantsMenu.values.toList()
+    val restaurantsMenu = MenuRepository.restaurantsMenu.toList()
     if (MenuRepository.restaurantsMenuisLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),

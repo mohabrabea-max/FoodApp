@@ -75,7 +75,12 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.models.repository.CartRepository.cartItems
+import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
+import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
+import com.example.applicationhome.data.models.repository.CartRepository.updateTotals
 import com.example.applicationhome.data.models.repository.MenuRepository.offers
+import com.example.applicationhome.data.models.repository.MenuRepository.restaurantsMenuisLoading
 import com.example.applicationhome.data.models.repository.MenuRepository.snacks
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
@@ -107,6 +112,15 @@ fun HomeScreen(
     apiData: APIData,
     restaurantViewModel: RestaurantViewModel
 ){
+    LaunchedEffect(
+        key1 = cartItems.values,
+        key2 = cartMealsMenu,
+        key3 = cartSnacksMenu
+    ){
+        if (cartItems.isNotEmpty()) {
+            updateTotals()
+        }
+    }
     val density = LocalDensity.current
     val minOffsetToShowBox = with(density) { 147.dp.toPx() }
     val scrollState = rememberLazyGridState()
@@ -142,7 +156,7 @@ fun HomeScreen(
     val layoutInfo = scrollState.layoutInfo
     val itemInfo = layoutInfo.visibleItemsInfo.find { it.key == "categories_header" }
 
-    val snacks = snacks.values.toList()
+    val snacks = snacks.toList()
     val menu = categoriesBoxViewModel.filterMenu
     val restaurants = categoriesBoxViewModel.filterrestaurants
     val offers = offers
@@ -356,7 +370,15 @@ fun HomeScreen(
                             horizontalArrangement = Arrangement.spacedBy(5.dp)
                         ){
                             items(restaurants){item ->
-                                RestaurantsBox(item, favoriteState, itemScreenViewModel, navigationController, categoriesBoxViewModel, restaurantViewModel)
+                                RestaurantsBox(
+                                    restaurantsMenuisLoading,
+                                    item,
+                                    favoriteState,
+                                    itemScreenViewModel,
+                                    navigationController,
+                                    categoriesBoxViewModel,
+                                    restaurantViewModel
+                                )
                             }
                         }
                     }

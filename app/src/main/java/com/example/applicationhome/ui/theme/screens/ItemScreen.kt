@@ -58,6 +58,8 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.MenuRepository
+import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuListisLoading
+import com.example.applicationhome.data.models.repository.MenuRepository.snacksisLoading
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
@@ -107,7 +109,7 @@ fun ItemScreen(
         }
     }
     val menu = categoriesBoxViewModel.filterMenu.toList()
-    val snacks = MenuRepository.snacks.values.toList()
+    val snacks = MenuRepository.snacks.toList()
     val item = viewModel.selectedItem
     val size = viewModel.selectedSize
     val images = item?.image?.size ?: 0
@@ -317,6 +319,7 @@ fun ItemScreen(
                                                     val snake2 = snacks.find { it.id == snakeId }
                                                     snake2?.let { safeSnake ->
                                                         SnaksBox(
+                                                            snacksisLoading,
                                                             modifier = Modifier.size(170.dp),
                                                             true,
                                                             safeSnake,
@@ -406,6 +409,7 @@ fun ItemScreen(
                                             item{Spacer(modifier = Modifier.width(7.dp))}
                                             items(snacks){ item ->
                                                 SnaksBox(
+                                                    snacksisLoading,
                                                     modifier = Modifier.size(200.dp),
                                                     false,
                                                     item,
@@ -450,6 +454,7 @@ fun ItemScreen(
                                             item{Spacer(modifier = Modifier.width(7.dp))}
                                             items(menu){ item ->
                                                 ItemsBox(
+                                                    foodMenuListisLoading,
                                                     item,
                                                     navigationController,
                                                     viewModel,

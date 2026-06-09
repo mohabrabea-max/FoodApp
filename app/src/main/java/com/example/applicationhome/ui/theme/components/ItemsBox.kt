@@ -33,17 +33,18 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @Composable
 fun ItemsBox(
+    foodMenuIsLoading : Boolean,
     item: FoodItem,
     navigationController : NavHostController,
     itemScreenViewModel: ItemScreenViewModel,
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
-    if (MenuRepository.foodMenuListisLoading) {
+
+    if (foodMenuIsLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center

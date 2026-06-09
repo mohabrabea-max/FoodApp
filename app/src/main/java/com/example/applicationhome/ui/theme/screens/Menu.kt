@@ -62,8 +62,10 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuListisLoading
 import com.example.applicationhome.data.models.repository.MenuRepository.restaurantOffers
 import com.example.applicationhome.data.models.repository.MenuRepository.snacks
+import com.example.applicationhome.data.models.repository.MenuRepository.snacksisLoading
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.AddBox
@@ -119,9 +121,9 @@ fun Menu(
     val itemInfo = layoutInfo.visibleItemsInfo.find { it.key == "categories_header" }
 
 
-    val menu = categoriesBoxViewModel.filterMenu.filter { it.restaurantId == restaurantViewModel.resid }
+    val menu = categoriesBoxViewModel.filterMenu.filter { it.restaurantId == restaurantViewModel.resid }.toSet().toList()
     //println(menu)
-    val snacks = snacks.values.toList().filter { it.restaurantId == restaurantViewModel.resid }
+    val snacks = snacks.toList().filter { it.restaurantId == restaurantViewModel.resid }.toSet().toList()
     val item = itemScreenViewModel.selectedRestaurant
     val logo = item?.image
     val background = item?.image2
@@ -356,6 +358,7 @@ fun Menu(
                 if(categoriesBoxViewModel.typeInRestaurantScreen == "Snacks"){
                     items(snacks){ item ->
                         SnaksBox(
+                            snacksisLoading,
                             modifier = Modifier.size(200.dp),
                             false,
                             item,
@@ -381,6 +384,7 @@ fun Menu(
                 }else{
                     items(menu){ item ->
                         ItemsBox(
+                            foodMenuListisLoading,
                             item,
                             navigationController,
                             itemScreenViewModel,
@@ -398,6 +402,7 @@ fun Menu(
                     }
                     items(menu){ item ->
                         ItemsBox(
+                            foodMenuListisLoading,
                             item,
                             navigationController,
                             itemScreenViewModel,

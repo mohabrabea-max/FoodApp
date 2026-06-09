@@ -49,7 +49,6 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
@@ -60,6 +59,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun RestaurantsBox(
+    restaurantsIsLoading : Boolean,
     item : Restaurants,
     favoriteState : FavoriteViewModel,
     itemScreenViewModel: ItemScreenViewModel,
@@ -67,7 +67,7 @@ fun RestaurantsBox(
     categoriesBoxViewModel: CategoriesBoxViewModel,
     restaurantViewModel: RestaurantViewModel
 ){
-    if (MenuRepository.restaurantsMenuisLoading) {
+    if (restaurantsIsLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center

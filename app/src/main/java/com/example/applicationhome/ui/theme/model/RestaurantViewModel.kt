@@ -7,6 +7,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.core.NetworkObserver
+import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuList
+import com.example.applicationhome.data.models.repository.MenuRepository.restaurantOffers
+import com.example.applicationhome.data.models.repository.MenuRepository.restaurantcount
+import com.example.applicationhome.data.models.repository.MenuRepository.snacks
 import com.example.applicationhome.data.models.repository.MenuRepository.uploadFoodMenuFromApi
 import com.example.applicationhome.data.models.repository.MenuRepository.uploadRestaurantOffersFromApi
 import com.example.applicationhome.data.models.repository.MenuRepository.uploadSnacksMenuFromApi
@@ -30,14 +34,19 @@ class RestaurantViewModel (application : Application) : AndroidViewModel(applica
     }
 
     fun restaurantData(){
-        viewModelScope.launch {
-            uploadFoodMenuFromApi(resid)
-        }
-        viewModelScope.launch {
-            uploadSnacksMenuFromApi(resid)
-        }
-        viewModelScope.launch {
-            uploadRestaurantOffersFromApi(resid)
+        val restaurantscount = restaurantcount?.get(resid)
+        if(restaurantscount != null){
+            viewModelScope.launch {
+                if(foodMenuList.distinctBy { it.id }.count { it.restaurantId == resid } < restaurantscount.meals){
+                    uploadFoodMenuFromApi(resid)
+                }
+                if(snacks.distinctBy { it.id }.count { it.restaurantId == resid } < restaurantscount.snacks){
+                    uploadSnacksMenuFromApi(resid)
+                }
+                if(restaurantOffers.distinctBy { it.id }.count { it.restaurantId == resid } < restaurantscount.offers){
+                    uploadRestaurantOffersFromApi(resid)
+                }
+            }
         }
     }
 }

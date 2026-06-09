@@ -7,10 +7,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.core.NetworkObserver
+import com.example.applicationhome.data.models.repository.MenuRepository.restaurantCount
+import com.example.applicationhome.data.models.repository.MenuRepository.restaurantcount
 import com.example.applicationhome.data.models.repository.MenuRepository.uploadCategorieslistFromApi
 import com.example.applicationhome.data.models.repository.MenuRepository.uploadOffersFromApi
 import com.example.applicationhome.data.models.repository.MenuRepository.uploadRestaurantsFromApi
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class APIData(application : Application) : AndroidViewModel(application){
@@ -30,14 +31,17 @@ class APIData(application : Application) : AndroidViewModel(application){
     }
 
     fun loadDataFromApi() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             uploadRestaurantsFromApi()
         }
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             uploadCategorieslistFromApi()
         }
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             uploadOffersFromApi()
+        }
+        viewModelScope.launch {
+            restaurantcount = restaurantCount()?.toMutableMap()
         }
     }
 }

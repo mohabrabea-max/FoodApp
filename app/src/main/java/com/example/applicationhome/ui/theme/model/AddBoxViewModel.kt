@@ -15,9 +15,7 @@ import com.example.applicationhome.data.models.repository.CartRepository.cartMea
 import com.example.applicationhome.data.models.repository.CartRepository.cartSnacks
 import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
 import com.example.applicationhome.data.models.repository.CartRepository.deleteFromCart
-import com.example.applicationhome.data.models.repository.CartRepository.foodMenu
 import com.example.applicationhome.data.models.repository.CartRepository.minusFromCart
-import com.example.applicationhome.data.models.repository.CartRepository.snacksMenu
 import com.example.applicationhome.data.models.repository.CartRepository.updateTotals
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -43,8 +41,12 @@ class AddBoxViewModel : ViewModel(){
                 is Snack -> {"Snack"}
             }
             addMealToCart(food.id, size, finalNumber, type)
-            cartMealsMenu = async { cartMeals(foodMenu) }.await().filterNotNull()
-            cartSnacksMenu = async { cartSnacks(snacksMenu) }.await().filterNotNull()
+            val deferredMeals = async { cartMeals() }
+            val deferredSnacks = async { cartSnacks() }
+            val mealsResult = deferredMeals.await()
+            val snacksResult = deferredSnacks.await()
+            cartMealsMenu = mealsResult.toSet().toList()
+            cartSnacksMenu = snacksResult.toSet().toList()
             updateTotals()
         }
     }

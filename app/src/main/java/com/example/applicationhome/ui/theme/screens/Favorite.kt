@@ -51,8 +51,11 @@ import com.example.applicationhome.R
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
 import com.example.applicationhome.data.models.repository.FavoriteRepository.mealsFavorite
+import com.example.applicationhome.data.models.repository.FavoriteRepository.mealsFavoriteIsLoading
 import com.example.applicationhome.data.models.repository.FavoriteRepository.restaurantsFavorite
+import com.example.applicationhome.data.models.repository.FavoriteRepository.restaurantsFavoriteIsLoading
 import com.example.applicationhome.data.models.repository.FavoriteRepository.snacksFavorite
+import com.example.applicationhome.data.models.repository.FavoriteRepository.snacksFavoriteIsLoading
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -132,6 +135,7 @@ fun Favorite(
                         item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
                         items(restaurantsFavorite) { item ->
                             RestaurantsBox(
+                                restaurantsFavoriteIsLoading,
                                 item,
                                 favoriteState,
                                 itemScreenViewModel,
@@ -144,6 +148,7 @@ fun Favorite(
                             item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
                             items(snacksFavorite) { item ->
                                 SnaksBox(
+                                    snacksFavoriteIsLoading,
                                     modifier = Modifier.size(200.dp),
                                     false,
                                     item,
@@ -173,6 +178,7 @@ fun Favorite(
                             item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
                             items(mealsFavorite) { item ->
                                 ItemsBox(
+                                    mealsFavoriteIsLoading,
                                     item,
                                     navigationController,
                                     itemScreenViewModel,

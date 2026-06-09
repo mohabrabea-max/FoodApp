@@ -31,11 +31,11 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.model.Snack
-import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @Composable
 fun SnaksBox(
+    snackIsLoading : Boolean,
     modifier: Modifier = Modifier,
     inItemScreen : Boolean,
     item: Snack,
@@ -44,7 +44,7 @@ fun SnaksBox(
     itemScreenViewModel: ItemScreenViewModel,
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
-    if (MenuRepository.snacksisLoading) {
+    if (snackIsLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center

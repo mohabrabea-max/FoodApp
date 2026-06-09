@@ -35,6 +35,7 @@ import com.example.applicationhome.data.models.repository.CartRepository.cartMea
 import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
 import com.example.applicationhome.data.models.repository.CartRepository.totalNumber
 import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
+import com.example.applicationhome.data.models.repository.MenuRepository.restaurantcount
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.model.AddBoxViewModel
@@ -137,6 +138,7 @@ fun MyBottonBar(
                     onClick = {
                         println(cartMealsMenu)
                         println(cartSnacksMenu)
+                        println(restaurantcount)
                         if(selected == "Cart"){
                             navigationController.navigate(Screens.Cart.screen)
                         }else{

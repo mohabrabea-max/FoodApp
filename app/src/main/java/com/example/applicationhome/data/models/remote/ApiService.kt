@@ -7,6 +7,7 @@ import com.example.applicationhome.data.models.model.FirebasePostResponse
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Offers
 import com.example.applicationhome.data.models.model.Restaurants
+import com.example.applicationhome.data.models.model.RestaurantsCount
 import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.data.models.model.UserClass
 import retrofit2.Response
@@ -70,6 +71,12 @@ interface FoodAppAPIs{
         @Query("equalTo") value : Int
     ): Response<Map<String, Snack>>
 
+    @GET("restaurants.json")
+    suspend fun getCartRestaurants(
+        @Query("orderBy") order : String,
+        @Query("equalTo") value : Int
+    ): Response<Map<String, Restaurants>>
+
     @DELETE("cart/{userId}/{mealKey}.json")
     suspend fun deleteItemFromCart(
         @Path("userId") userId : String,
@@ -99,6 +106,9 @@ interface FoodAppAPIs{
 
 
 
+
+    @GET("restaurants_count.json")
+    suspend fun getRestaurantCount(): Response<Map<Int, RestaurantsCount>>
 
     @GET("meals.json")
     suspend fun foodmenu(

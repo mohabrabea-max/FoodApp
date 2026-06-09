@@ -20,6 +20,7 @@ import com.example.applicationhome.data.models.repository.CartRepository.totalNu
 import com.example.applicationhome.data.models.repository.CartRepository.totalPrice
 import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
 import com.example.applicationhome.data.models.repository.FavoriteRepository.favoriteMeals
+import com.example.applicationhome.data.models.repository.FavoriteRepository.favoriteRestaurants
 import com.example.applicationhome.data.models.repository.FavoriteRepository.favoriteSnacks
 import com.example.applicationhome.data.models.repository.FavoriteRepository.getFavorite
 import com.example.applicationhome.data.models.repository.FavoriteRepository.mealsFavorite
@@ -96,7 +97,7 @@ class LoginViewModel(application : Application) : AndroidViewModel(application) 
         mealsFavorite = emptyList()
         snacksFavorite = emptyList()
         restaurantsFavorite = emptyList()
-        totalPrice.value = 0.0
+        totalPrice = 0.0
         totalNumber.value = 0
     }
 
@@ -110,11 +111,11 @@ class LoginViewModel(application : Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             //addToMeals()
             getcart()
-            cartMealsMenu += async { cartMeals() }.await()
-            cartSnacksMenu += async { cartSnacks() }.await()
-            mealsFavorite += async { favoriteMeals() }.await()
-            snacksFavorite += async { favoriteSnacks() }.await()
+            cartMealsMenu = async { cartMeals() }.await().toSet().toList()
+            cartSnacksMenu = async { cartSnacks() }.await().toSet().toList()
+            mealsFavorite = async { favoriteMeals() }.await().toSet().toList()
+            snacksFavorite = async { favoriteSnacks() }.await().toSet().toList()
+            restaurantsFavorite = async { favoriteRestaurants() }.await().toSet().toList()
         }
-
     }
 }

@@ -48,7 +48,7 @@ fun PaymentSummary(
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = "EGP ${CartRepository.totalPrice.value}",
+                text = "EGP ${CartRepository.totalPrice}",
                 fontSize = 14.sp,
                 color = Color.Black,
                 style = MaterialTheme.typography.bodySmall,
@@ -102,7 +102,7 @@ fun PaymentSummary(
                 style = MaterialTheme.typography.labelLarge
             )
             Text(
-                text = "EGP ${CartRepository.totalPrice.value}",
+                text = "EGP ${CartRepository.totalPrice}",
                 fontSize = 17.sp,
                 color = Color.Black,
                 style = MaterialTheme.typography.labelLarge
