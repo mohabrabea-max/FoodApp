@@ -127,6 +127,7 @@ fun ItemScreen(
                         fillMaxWidth().
                         height(100.dp),
                         null,
+                        Color.White,
                         {
                             IconButton(
                                 onClick = {if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() } },
@@ -183,7 +184,8 @@ fun ItemScreen(
                                 food = item,
                                 favoriteState = favoriteState
                             )
-                        }
+                        },
+                        weight = 2f
                     )
                 }
             }

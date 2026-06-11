@@ -71,6 +71,7 @@ fun SignUpScreen(
                 fillMaxWidth().
                 height(100.dp),
                 null,
+                Color.White,
                 {
                     IconButton(
                         onClick = {

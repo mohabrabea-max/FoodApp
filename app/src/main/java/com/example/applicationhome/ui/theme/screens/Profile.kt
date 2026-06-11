@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.ProfileBox
 import com.example.applicationhome.ui.theme.model.BirthdayViewModel
@@ -66,12 +67,13 @@ fun Profile(
                     height(100.dp).
                     shadow(elevation = 5.dp),
                     "Profile",
+                    Color.DeepMatteBlack,
                     {
                         IconButton(
                             onClick = {if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() } },
                             modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
                         ) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)
+                            Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.DeepMatteBlack)
                         }
                     },
                     actions = {
@@ -79,7 +81,7 @@ fun Profile(
                             Icon(
                                 Icons.Default.Done,
                                 contentDescription = null,
-                                tint = if(edite == false) Color.Black else Color.Green
+                                tint = if(edite == false) Color.DeepMatteBlack else Color.Green
                             )
                         }
                     }

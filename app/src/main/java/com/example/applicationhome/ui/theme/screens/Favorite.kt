@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -25,7 +27,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -39,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -57,14 +59,16 @@ import com.example.applicationhome.data.models.repository.FavoriteRepository.res
 import com.example.applicationhome.data.models.repository.FavoriteRepository.snacksFavorite
 import com.example.applicationhome.data.models.repository.FavoriteRepository.snacksFavoriteIsLoading
 import com.example.applicationhome.ui.theme.BrownForFont
-import com.example.applicationhome.ui.theme.DarkOrange
+import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.AddBox
 import com.example.applicationhome.ui.theme.components.Favorite
 import com.example.applicationhome.ui.theme.components.ItemsBox
+import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.RestaurantsBox
 import com.example.applicationhome.ui.theme.components.SnaksBox
+import com.example.applicationhome.ui.theme.components.favoriteBar
 import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
@@ -84,9 +88,10 @@ fun Favorite(
     viewModelForBottomBar: BottomBarViewModel,
     itemScreenViewModel : ItemScreenViewModel,
     addBoxViewModel: AddBoxViewModel,
-    favoriteState : FavoriteViewModel,
+    favoriteViewModel : FavoriteViewModel,
     categoriesBoxViewModel : CategoriesBoxViewModel,
-    restaurantViewModel: RestaurantViewModel
+    restaurantViewModel: RestaurantViewModel,
+    bottomBarViewModel: BottomBarViewModel
 ){
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) {
@@ -98,30 +103,45 @@ fun Favorite(
         fillMaxSize().
         background(Color.White),
         topBar = {
-            MyTopBar(
-                Color.DarkOrange,
-                modifier = Modifier.
-                fillMaxWidth().
-                height(100.dp).
-                shadow(elevation = 5.dp),
-                "Favorite",
-                {
-                    IconButton(
-                        onClick = {coroutineScope.launch{drawerState.open()}},
-                        modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
-                    ) {
-                        Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.White)
+            Column(
+                modifier = Modifier.fillMaxWidth().height(146.dp).
+                shadow(elevation = 3.dp)
+            ){
+                MyTopBar(
+                    Color.White,
+                    modifier = Modifier.
+                    fillMaxWidth().
+                    height(100.dp).
+                    shadow(elevation = 5.dp),
+                    "Favorite",
+                    Color.DeepMatteBlack,
+                    {
+                        IconButton(
+                            onClick = {coroutineScope.launch{drawerState.open()}},
+                            modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
+                        ) {
+                            Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.DeepMatteBlack)
+                        }
+                    },
+                    {
+                        IconButton(onClick = {
+                            navigationController.navigate(Screens.Search.screen)
+                        }) {
+                            Icon(Icons.Default.Search, contentDescription = null, tint = Color.DeepMatteBlack)
+                        }
                     }
-                },
-                {
-                    IconButton(onClick = {
-                        navigationController.navigate(Screens.Search.screen)
-                    }) {
-                        Icon(Icons.Default.Search, contentDescription = null, tint = Color.White)
-                    }
-                }
-            )
-            Divider(color = Color.LightGray.copy(alpha = 0.5f))
+                )
+                favoriteBar(categoriesBoxViewModel)
+            }
+        },
+        bottomBar = {
+            Box(
+                modifier = Modifier.navigationBarsPadding().fillMaxWidth().
+                pointerInput(Unit) { detectTapGestures { } },
+                contentAlignment = Alignment.BottomCenter
+            ){
+                MyBottonBar(navigationController, bottomBarViewModel, addBoxViewModel, favoriteViewModel)
+            }
         }
     ){
         Box(modifier = Modifier.background(Color.White)){
@@ -132,19 +152,21 @@ fun Favorite(
                         columns = GridCells.Fixed(2),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ){
-                        item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
-                        items(restaurantsFavorite) { item ->
-                            RestaurantsBox(
-                                restaurantsFavoriteIsLoading,
-                                item,
-                                favoriteState,
-                                itemScreenViewModel,
-                                navigationController,
-                                categoriesBoxViewModel,
-                                restaurantViewModel
-                            )
+                        item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(146.dp))}
+                        if(categoriesBoxViewModel.selectedCategorieInFavoriteScreen == 2) {
+                            items(restaurantsFavorite) { item ->
+                                RestaurantsBox(
+                                    restaurantsFavoriteIsLoading,
+                                    item,
+                                    favoriteViewModel,
+                                    itemScreenViewModel,
+                                    navigationController,
+                                    categoriesBoxViewModel,
+                                    restaurantViewModel
+                                )
+                            }
                         }
-                        if(snacksFavorite != null) {
+                        if(categoriesBoxViewModel.selectedCategorieInFavoriteScreen == 1) {
                             item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
                             items(snacksFavorite) { item ->
                                 SnaksBox(
@@ -163,7 +185,7 @@ fun Favorite(
                                                 shape = RoundedCornerShape(30.dp)
                                             ).size(35.dp).background(Color.VeryLightGray),
                                             food = item,
-                                            favoriteState = favoriteState
+                                            favoriteState = favoriteViewModel
                                         )
                                         AddBox(
                                             color = Color.VeryLightGray,
@@ -174,7 +196,7 @@ fun Favorite(
                                 )
                             }
                         }
-                        if(mealsFavorite != null) {
+                        if(categoriesBoxViewModel.selectedCategorieInFavoriteScreen == 0) {
                             item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
                             items(mealsFavorite) { item ->
                                 ItemsBox(
@@ -187,7 +209,7 @@ fun Favorite(
                                             modifier = Modifier.clip(CircleShape).size(35.dp)
                                                 .background(Color.White.copy(alpha = 1f)),
                                             food = item,
-                                            favoriteState = favoriteState
+                                            favoriteState = favoriteViewModel
                                         )
                                         AddBox(color = Color.White, food = item, addBoxViewModel)
                                     }

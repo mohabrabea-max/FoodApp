@@ -48,30 +48,30 @@ object FavoriteRepository {
             }
         }
         if(missingItems.isNotEmpty()){
-            coroutineScope {
-                val deferredRequests = missingItems.map { item ->
-                    async {
-                        try {
-                            mealsFavoriteIsLoading = true
-                            val response = RetrofitInstance.api.getCartMeals("\"id\"", item)
-                            if(response.isSuccessful){
-                                val resultMap = response.body()
-                                if(resultMap != null){
-                                    foodMenuList = foodMenuList + resultMap.values
-                                }
-                                resultMap?.values?.firstOrNull()
-                            }else{
-                                null
-                            }
-                        } catch (e : Exception){
-                            null
-                        } finally {
-                            mealsFavoriteIsLoading = false
+            mealsFavoriteIsLoading = true
+            try {
+                coroutineScope {
+                    val deferredRequests = missingItems.map { item ->
+                        async {
+                            try {
+                                val response = RetrofitInstance.api.getCartMeals("\"id\"", item)
+                                if(response.isSuccessful){
+                                    val resultMap = response.body()
+                                    if(resultMap != null){
+                                        foodMenuList = foodMenuList + resultMap.values
+                                    }
+                                    resultMap?.values?.firstOrNull()
+                                }else{ null }
+                            } catch (e : Exception){ null }
                         }
                     }
+                    finalMealsList += deferredRequests.awaitAll().filterNotNull()
                 }
-                finalMealsList += deferredRequests.awaitAll().filterNotNull()
+            } finally {
+                mealsFavoriteIsLoading = false
             }
+        }else{
+            mealsFavoriteIsLoading = false
         }
         return finalMealsList
     }
@@ -88,35 +88,31 @@ object FavoriteRepository {
             }
         }
         if(missingItems.isNotEmpty()){
-            coroutineScope {
-                val deferredRequests = missingItems.map { item ->
-                    async {
-                        try {
-                            snacksFavoriteIsLoading = true
-                            val response = RetrofitInstance.api.getCartSnacks("\"id\"", item)
-                            if(response.isSuccessful){
-                                val resultMap = response.body()
-                                println("isSuccessful")
-                                if(resultMap != null){
-                                    snacks = snacks +resultMap.values
-                                }
-                                resultMap?.values?.firstOrNull()
-                            }else{
-                                println("Error in response")
-                                println("Firebase Error Code: ${response.code()}")
-                                println("Firebase Error Body: ${response.errorBody()?.string()}")
-                                null
-                            }
-                        } catch (e : Exception){
-                            println("Error in catch")
-                            null
-                        } finally {
-                            snacksFavoriteIsLoading = false
+            snacksFavoriteIsLoading = true
+            try {
+                coroutineScope {
+                    val deferredRequests = missingItems.map { item ->
+                        async {
+                            try {
+                                val response = RetrofitInstance.api.getCartSnacks("\"id\"", item)
+                                if(response.isSuccessful){
+                                    val resultMap = response.body()
+                                    println("isSuccessful")
+                                    if(resultMap != null){
+                                        snacks = snacks +resultMap.values
+                                    }
+                                    resultMap?.values?.firstOrNull()
+                                }else{null}
+                            } catch (e : Exception){ null }
                         }
                     }
+                    finalSnacksList += deferredRequests.awaitAll().filterNotNull()
                 }
-                finalSnacksList += deferredRequests.awaitAll().filterNotNull()
+            } finally {
+                snacksFavoriteIsLoading = false
             }
+        }else{
+            snacksFavoriteIsLoading = false
         }
         return finalSnacksList
     }
@@ -132,35 +128,31 @@ object FavoriteRepository {
             }
         }
         if(missingItems.isNotEmpty()){
-            coroutineScope {
-                val deferredRequests = missingItems.map { item ->
-                    async {
-                        try {
-                            restaurantsFavoriteIsLoading = true
-                            val response = RetrofitInstance.api.getCartRestaurants("\"id\"", item)
-                            if(response.isSuccessful){
-                                val resultMap = response.body()
-                                println("isSuccessful")
-                                if(resultMap != null){
-                                    restaurantsMenu += resultMap.values
-                                }
-                                resultMap?.values?.firstOrNull()
-                            }else{
-                                println("Error in response")
-                                println("Firebase Error Code: ${response.code()}")
-                                println("Firebase Error Body: ${response.errorBody()?.string()}")
-                                null
-                            }
-                        } catch (e : Exception){
-                            println("Error in catch")
-                            null
-                        } finally {
-                            restaurantsFavoriteIsLoading = false
+            restaurantsFavoriteIsLoading = true
+            try {
+                coroutineScope {
+                    val deferredRequests = missingItems.map { item ->
+                        async {
+                            try {
+                                val response = RetrofitInstance.api.getCartRestaurants("\"id\"", item)
+                                if(response.isSuccessful){
+                                    val resultMap = response.body()
+                                    println("isSuccessful")
+                                    if(resultMap != null){
+                                        restaurantsMenu = restaurantsMenu + resultMap.values
+                                    }
+                                    resultMap?.values?.firstOrNull()
+                                }else{ null }
+                            } catch (e : Exception){ null }
                         }
                     }
+                    finalRestaurantsList += deferredRequests.awaitAll().filterNotNull()
                 }
-                finalRestaurantsList += deferredRequests.awaitAll().filterNotNull()
+            } finally {
+                restaurantsFavoriteIsLoading = false
             }
+        }else{
+            restaurantsFavoriteIsLoading = false
         }
         return finalRestaurantsList
     }

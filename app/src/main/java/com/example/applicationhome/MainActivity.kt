@@ -16,6 +16,7 @@ import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BirthdayViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
+import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.DrawerViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
@@ -46,6 +47,7 @@ class MainActivity : ComponentActivity() {
             val birthdayViewModel : BirthdayViewModel = viewModel()
             val loginViewModel: LoginViewModel = viewModel()
             val restaurantViewModel: RestaurantViewModel = viewModel()
+            val confirmOrderScreenViewModel : ConfirmOrderScreenViewModel = viewModel()
             FinalScreen(
                 scrollBehavior,
                 drawerState,
@@ -60,7 +62,8 @@ class MainActivity : ComponentActivity() {
                 apiData,
                 birthdayViewModel,
                 loginViewModel,
-                restaurantViewModel
+                restaurantViewModel,
+                confirmOrderScreenViewModel
             )
         }
     }

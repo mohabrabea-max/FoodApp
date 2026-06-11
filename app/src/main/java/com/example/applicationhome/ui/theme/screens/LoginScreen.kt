@@ -69,6 +69,7 @@ fun LoginScreen(
                 fillMaxWidth().
                 height(100.dp),
                 null,
+                Color.White,
                 {
                     IconButton(
                         onClick = {

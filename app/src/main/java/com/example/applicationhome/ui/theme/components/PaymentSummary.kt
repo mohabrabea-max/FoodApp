@@ -18,12 +18,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.data.models.repository.CartRepository
-import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 
 @Composable
-fun PaymentSummary(
-    addBoxViewModel : AddBoxViewModel
-){
+fun PaymentSummary(){
+    val delivery = 51.00
+    val service = 8.00
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier.fillMaxWidth().background(Color.White).padding(20.dp)
@@ -66,7 +65,7 @@ fun PaymentSummary(
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = "EGP 51.00",
+                text = "EGP ${delivery}",
                 fontSize = 14.sp,
                 color = Color.Black,
                 style = MaterialTheme.typography.bodySmall
@@ -84,12 +83,48 @@ fun PaymentSummary(
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = "EGP 8.00",
+                text = "EGP ${service}",
                 fontSize = 14.sp,
                 color = Color.Black,
                 style = MaterialTheme.typography.bodySmall
             )
         }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Text(
+                text = "Total amount",
+                fontSize = 17.sp,
+                color = Color.Black,
+                style = MaterialTheme.typography.labelLarge
+            )
+            Text(
+                text = "EGP ${CartRepository.totalPrice + service + delivery}",
+                fontSize = 17.sp,
+                color = Color.Black,
+                style = MaterialTheme.typography.labelLarge
+            )
+        }
+    }
+}
+
+
+@Composable
+fun PaymentSummaryCartScreen(){
+    Column(
+        horizontalAlignment = Alignment.Start,
+        modifier = Modifier.fillMaxWidth().background(Color.White).padding(20.dp)
+    ){
+        Text(
+            text = "Payment summary",
+            fontSize = 20.sp,
+            color = Color.Black,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(20.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,

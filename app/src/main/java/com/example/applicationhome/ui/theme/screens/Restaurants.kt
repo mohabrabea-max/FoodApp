@@ -92,7 +92,8 @@ fun Restaurants(
                     fillMaxWidth().
                     height(100.dp).
                     shadow(elevation = 5.dp),
-                    "Home",
+                    "Restaurants",
+                    Color.White,
                     {
                         IconButton(
                             onClick = {coroutineScope.launch{drawerState.open()}},

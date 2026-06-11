@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -24,7 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.repository.MenuRepository
+import com.example.applicationhome.data.models.repository.TapRowData.FavoriteTapRow
 import com.example.applicationhome.ui.theme.DarkOrange
+import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 
 @Composable
@@ -63,7 +66,6 @@ fun CategoriesBarForRestaurantsScreen(res : Restaurants, categoriesBoxViewModel 
         indicator = { tabPositions ->
             if (categoriesBoxViewModel.selectedTypeIndex < tabPositions.size) {
                 TabRowDefaults.SecondaryIndicator(
-
                     modifier = Modifier.tabIndicatorOffset(tabPositions[categoriesBoxViewModel.selectedTypeIndex]),
                     color = Color.DarkOrange
                 )
@@ -74,13 +76,48 @@ fun CategoriesBarForRestaurantsScreen(res : Restaurants, categoriesBoxViewModel 
             val isSelected = categoriesBoxViewModel.selectedTypeIndex == index
             Tab(
                 selected = isSelected,
-                onClick = {
-                    categoriesBoxViewModel.selectedtype(index, typ)
-                    println(index)
-                          },
+                onClick = { categoriesBoxViewModel.selectedtype(index, typ) },
                 text = {
                     Text(
                         text = typ,
+                        fontSize = 15.sp,
+                        style = if(isSelected) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodySmall,
+                        color = if(isSelected) Color.Black else Color.Gray,
+                        textAlign = TextAlign.Center
+                    )
+                },
+                selectedContentColor = Color.DarkOrange
+            )
+        }
+    }
+}
+
+
+@Composable
+fun favoriteBar(categoriesBoxViewModel: CategoriesBoxViewModel){
+    TabRow(
+        modifier = Modifier.fillMaxWidth().
+        height(50.dp),
+        selectedTabIndex = categoriesBoxViewModel.selectedCategorieInFavoriteScreen,
+        containerColor = Color.White,
+        contentColor = Color.DeepMatteBlack,
+        indicator = { tabPositions ->
+            if (categoriesBoxViewModel.selectedCategorieInFavoriteScreen < tabPositions.size) {
+                TabRowDefaults.SecondaryIndicator(
+                    modifier = Modifier.tabIndicatorOffset(tabPositions[categoriesBoxViewModel.selectedCategorieInFavoriteScreen]),
+                    color = Color.DarkOrange
+                )
+            }
+        }
+    ){
+        FavoriteTapRow.forEachIndexed { index, title ->
+            val isSelected = index == categoriesBoxViewModel.selectedCategorieInFavoriteScreen
+            Tab(
+                selected = true,
+                onClick = { categoriesBoxViewModel.selectedFavoriteScreen(index) },
+                text = {
+                    Text(
+                        text = title,
                         fontSize = 15.sp,
                         style = if(isSelected) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodySmall,
                         color = if(isSelected) Color.Black else Color.Gray,

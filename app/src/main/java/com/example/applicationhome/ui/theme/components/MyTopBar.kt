@@ -25,8 +25,11 @@ fun MyTopBar(
     color : Color,
     modifier : Modifier,
     title : String?,
+    titleColor : Color,
     startaction : @Composable BoxScope.() -> Unit = {},
-    actions : @Composable RowScope.() -> Unit = {}
+    actions : @Composable RowScope.() -> Unit = {},
+    arrangement : Arrangement.Horizontal = Arrangement.Center,
+    weight : Float = 1f
 ){
     Surface(
         modifier = modifier,
@@ -37,16 +40,31 @@ fun MyTopBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically){
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ){
                 Box(content = startaction)
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = arrangement,
+                modifier = Modifier.weight(1f)
+            ){
                 Text(
                     text = if(title != null) title else "",
                     fontSize = 18.sp,
                     style = MaterialTheme.typography.headlineMedium,
-                    color = Color.White
+                    color = titleColor
                 )
             }
-            Row(verticalAlignment = Alignment.CenterVertically, content = actions)
+            Row(
+                modifier = Modifier.weight(weight),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End,
+                content = actions
+            )
         }
     }
 }

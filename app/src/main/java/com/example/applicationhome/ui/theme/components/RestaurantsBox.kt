@@ -59,7 +59,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun RestaurantsBox(
-    restaurantsIsLoading : Boolean,
+    loading : Boolean,
     item : Restaurants,
     favoriteState : FavoriteViewModel,
     itemScreenViewModel: ItemScreenViewModel,
@@ -67,7 +67,7 @@ fun RestaurantsBox(
     categoriesBoxViewModel: CategoriesBoxViewModel,
     restaurantViewModel: RestaurantViewModel
 ){
-    if (restaurantsIsLoading) {
+    if (loading) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -171,7 +171,6 @@ fun RestaurantsBox(
             }
         }
     }
-
 }
 
 @SuppressLint("UnrememberedMutableState")

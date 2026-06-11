@@ -11,6 +11,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -60,6 +62,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -86,11 +89,13 @@ import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.CategoriesBar
+import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.RestaurantsBox
 import com.example.applicationhome.ui.theme.components.SearchBox
 import com.example.applicationhome.ui.theme.model.APIData
 import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
@@ -107,10 +112,11 @@ fun HomeScreen(
     navigationController : NavHostController,
     itemScreenViewModel: ItemScreenViewModel,
     addBoxViewModel: AddBoxViewModel,
-    favoriteState : FavoriteViewModel,
+    favoriteViewModel : FavoriteViewModel,
     categoriesBoxViewModel : CategoriesBoxViewModel,
     apiData: APIData,
-    restaurantViewModel: RestaurantViewModel
+    restaurantViewModel: RestaurantViewModel,
+    bottomBarViewModel : BottomBarViewModel
 ){
     LaunchedEffect(
         key1 = cartItems.values,
@@ -179,6 +185,7 @@ fun HomeScreen(
                         fillMaxWidth().
                         height(100.dp),
                         null,
+                        Color.White,
                         {
                             IconButton(
                                 onClick = {coroutineScope.launch{drawerState.open()}},
@@ -235,6 +242,15 @@ fun HomeScreen(
                         }
                     )
                 }
+            }
+        },
+        bottomBar = {
+            Box(
+                modifier = Modifier.navigationBarsPadding().fillMaxWidth().
+                pointerInput(Unit) { detectTapGestures { } },
+                contentAlignment = Alignment.BottomCenter
+            ){
+                MyBottonBar(navigationController, bottomBarViewModel, addBoxViewModel, favoriteViewModel)
             }
         }
     ){
@@ -373,7 +389,7 @@ fun HomeScreen(
                                 RestaurantsBox(
                                     restaurantsMenuisLoading,
                                     item,
-                                    favoriteState,
+                                    favoriteViewModel,
                                     itemScreenViewModel,
                                     navigationController,
                                     categoriesBoxViewModel,

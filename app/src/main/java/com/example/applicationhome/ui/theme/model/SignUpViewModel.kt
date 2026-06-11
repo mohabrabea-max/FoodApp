@@ -40,7 +40,7 @@ class SignUpViewModel : ViewModel(){
             addressstate.text.toString()
         )
         if(userData != null) {
-            registerUserInFirebase(userData!!)
+            registerUserInFirebase(userData)
         }
     }
 

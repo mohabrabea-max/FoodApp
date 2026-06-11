@@ -140,7 +140,8 @@ fun Menu(
                         modifier = Modifier.
                         fillMaxWidth().
                         height(100.dp),
-                        null,
+                        item.name,
+                        Color.White,
                         {
                             IconButton(
                                 onClick = {
@@ -205,7 +206,9 @@ fun Menu(
                                 restaurants = item,
                                 favoriteState = favoriteState
                             )
-                        }
+                        },
+                        Arrangement.Start,
+                        2f
                     )
                 }
             }
@@ -335,7 +338,7 @@ fun Menu(
                 }
                 stickyHeader(key = "categories_header"){
                     Box(
-                        modifier = Modifier.height(50.dp).
+                        modifier = Modifier.height(47.dp).
                         fillMaxWidth().
                         graphicsLayer {
                             if (itemInfo != null) {

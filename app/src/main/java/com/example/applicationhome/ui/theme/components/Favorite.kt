@@ -42,7 +42,6 @@ fun Favorite(
         is Snack -> {"Snack"}
     }
     fun favorite1(){
-
         if(favorite == true){
             favoriteState.removeFavorite(food, type)
             Toast.makeText(context, "Remove From Favorite", Toast.LENGTH_SHORT).show()

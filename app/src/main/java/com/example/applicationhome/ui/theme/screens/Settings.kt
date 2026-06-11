@@ -5,6 +5,7 @@ import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -39,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -46,15 +49,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
-import com.example.applicationhome.data.models.repository.ProfileData
 import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.models.repository.ProfileData
 import com.example.applicationhome.ui.theme.BrownForFont
+import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.VeryLightGray
+import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.SettingsBox
 import com.example.applicationhome.ui.theme.components.SettingsOptionsBox
 import com.example.applicationhome.ui.theme.components.UserImage
+import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -62,7 +70,15 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigationController : NavHostController, userImageViewModel: UserImageViewModel){
+fun Settings(
+    drawerState : DrawerState,
+    coroutineScope : CoroutineScope,
+    navigationController : NavHostController,
+    userImageViewModel: UserImageViewModel,
+    bottomBarViewModel : BottomBarViewModel,
+    addBoxViewModel : AddBoxViewModel,
+    favoriteViewModel: FavoriteViewModel
+){
     val scrollState = rememberLazyGridState()
     val profileoptions = ProfileData.profileOptions()
     val context = LocalContext.current as? Activity
@@ -79,13 +95,14 @@ fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigat
                     modifier = Modifier.
                     fillMaxWidth().
                     height(100.dp),
-                    title = "Settings",
+                    "Settings",
+                    Color.DeepMatteBlack,
                     {
                         IconButton(
                             onClick = {coroutineScope.launch{drawerState.open()}},
                             modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
                         ) {
-                            Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.Black)
+                            Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.DeepMatteBlack)
                         }
                     },
                     {
@@ -93,7 +110,7 @@ fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigat
                             Icon(
                                 Icons.Default.DarkMode,
                                 contentDescription = null,
-                                tint = Color.Black
+                                tint = Color.DeepMatteBlack
                             )
                         }
                     }
@@ -133,6 +150,15 @@ fun Settings(drawerState : DrawerState, coroutineScope : CoroutineScope, navigat
                         }
                     }
                 }
+            }
+        },
+        bottomBar = {
+            Box(
+                modifier = Modifier.navigationBarsPadding().fillMaxWidth().
+                pointerInput(Unit) { detectTapGestures { } },
+                contentAlignment = Alignment.BottomCenter
+            ){
+                MyBottonBar(navigationController, bottomBarViewModel, addBoxViewModel, favoriteViewModel)
             }
         }
     ){

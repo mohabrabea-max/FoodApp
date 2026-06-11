@@ -7,7 +7,6 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -42,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -55,7 +52,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.UserRepository
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.Options
 import com.example.applicationhome.ui.theme.components.UserImage
 import com.example.applicationhome.ui.theme.model.APIData
@@ -63,6 +59,7 @@ import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BirthdayViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
+import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.DrawerViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
@@ -79,7 +76,7 @@ fun FinalScreen(
     scrollBehavior : TopAppBarScrollBehavior,
     drawerState : DrawerState,
     viewModel : ItemScreenViewModel,
-    viewModelForBottomBar : BottomBarViewModel,
+    bottomBarViewModel : BottomBarViewModel,
     addBoxViewModel : AddBoxViewModel,
     userImageViewModel : UserImageViewModel,
     favoriteViewModel : FavoriteViewModel,
@@ -89,7 +86,8 @@ fun FinalScreen(
     apiData : APIData,
     birthdayViewModel: BirthdayViewModel,
     loginViewModel: LoginViewModel,
-    restaurantViewModel: RestaurantViewModel
+    restaurantViewModel: RestaurantViewModel,
+    confirmOrderScreenViewModel : ConfirmOrderScreenViewModel
 ){
     val density = LocalDensity.current
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} }
@@ -116,10 +114,11 @@ fun FinalScreen(
         Screens.Cart,
         Screens.LoginScreen,
         Screens.SignUpScreen,
+        Screens.ConfirmOrderScreen,
+        Screens.ConfirmOrderScreen2
     )
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = currentRoute == "homescreen" || currentRoute == "favorite" || currentRoute == "cart" || currentRoute == "settings",
         drawerContent = {
             ModalDrawerSheet(drawerContainerColor = Color.White,modifier = Modifier.width(drawerWidth)){
                 IconButton(
@@ -189,23 +188,14 @@ fun FinalScreen(
 //                Box(modifier = Modifier.fillMaxWidth()){
 //                    Divider(color = Color.LightGray, modifier = Modifier.width(100.dp).align(Alignment.Center))
 //                }
-                Options(navigationController, drawerState, coroutineScope, viewModelForBottomBar, drawerViewModel, loginViewModel)
+                Options(navigationController, drawerState, coroutineScope, bottomBarViewModel, drawerViewModel, loginViewModel)
             }
         }
     ){
         Scaffold(
             modifier = Modifier.
             fillMaxSize().
-            background(Color.White),
-            bottomBar = {
-                Box(
-                    modifier = Modifier.navigationBarsPadding().fillMaxWidth().
-                    pointerInput(Unit) { detectTapGestures { } },
-                    contentAlignment = Alignment.BottomCenter
-                ){
-                    MyBottonBar(navigationController, viewModelForBottomBar, addBoxViewModel, favoriteViewModel)
-                }
-            },
+            background(Color.White)
         ){
             NavHost(navController = navigationController, startDestination = Screens.HomeScreen.screen){
                 allScreens.forEach { item ->
@@ -217,18 +207,20 @@ fun FinalScreen(
                         popExitTransition = { ExitTransition.None }
                     ) {
                         when(item){
-                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, apiData, restaurantViewModel)
+                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, apiData, restaurantViewModel, bottomBarViewModel)
                             is Screens.Profile -> Profile(drawerState, coroutineScope, navigationController, userImageViewModel, profileViewModel, birthdayViewModel)
-                            is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel)
+                            is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel, bottomBarViewModel, addBoxViewModel, favoriteViewModel)
                             is Screens.Search -> Search()
                             is Screens.Menu -> Menu(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel)
                             is Screens.Restaurants -> Restaurants(drawerState, coroutineScope, navigationController, favoriteViewModel)
                             is Screens.ItemScreen -> ItemScreen(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, apiData)
                             is Screens.Notifications -> Notifications()
-                            is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, viewModelForBottomBar, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel)
-                            is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, viewModelForBottomBar, viewModel, addBoxViewModel)
+                            is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, bottomBarViewModel, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel)
+                            is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, bottomBarViewModel, viewModel, addBoxViewModel, bottomBarViewModel, favoriteViewModel)
                             is Screens.LoginScreen -> LoginScreen(navigationController, loginViewModel)
                             is Screens.SignUpScreen -> SignUpScreen(navigationController, loginViewModel)
+                            is Screens.ConfirmOrderScreen -> ConfirmOrderScreen(navigationController, confirmOrderScreenViewModel)
+                            is Screens.ConfirmOrderScreen2 -> ConfirmOrderScreen2(navigationController)
                         }
                     }
                 }

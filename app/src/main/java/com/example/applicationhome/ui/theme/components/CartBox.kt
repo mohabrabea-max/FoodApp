@@ -52,6 +52,7 @@ import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.data.models.repository.CartRepository
+import com.example.applicationhome.data.models.repository.CartRepository.cartItems
 import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
 import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
 import com.example.applicationhome.data.models.repository.CartRepository.foodMenu
@@ -216,6 +217,93 @@ fun CartBox(
                                 }
                             }
                         }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(15.dp))
+            Divider(color = Color.LightOrange.copy(alpha = 0.5f), modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+        }
+    }
+}
+
+
+@Composable
+fun CartBox2(
+    food: Food,
+    navigationController : NavHostController,
+    viewModel: ItemScreenViewModel,
+){
+    val number = cartItems.values.find { it.id == food.id }?.number
+    val fooditem = foodMenu.values.find { it.id == food.id }
+    val foodSize = fooditem?.size
+    val snackitem = snacksMenu.values.find { it.id == food.id }
+    val snackSize = snackitem?.size
+    val size = when(food){
+        is FoodItem -> { foodSize }
+        is Snack -> { snackSize }
+    }
+    val meal = cartMealsMenu.find { it?.id == fooditem?.id }
+    val snack = cartSnacksMenu.find { it?.id == snackitem?.id }
+
+    val image : String
+    val name : String
+    val price : String
+    if(fooditem != null){
+        name = meal?.name ?: ""
+        price = "EGP " + meal?.sizeOptions?.find { it.size == size }?.price.toString()
+        image = meal?.image?.first() ?: ""
+    }else{
+        name = snack?.name ?: ""
+        price = "EGP " + snack?.priceANDsize[size].toString()
+        image = snack?.image?.first() ?: ""
+    }
+    Box(
+        modifier = Modifier.padding(start = 10.dp, end = 10.dp).
+        fillMaxWidth().height(100.dp).
+        background(Color.White).
+        clickable {
+            if(fooditem != null) viewModel.run { selectItem(meal, meal?.sizeOptions?.find { it.size == size }?.size.toString()) }
+            navigationController.navigate(Screens.ItemScreen.screen)
+        }
+    ){
+        Column(modifier = Modifier.fillMaxSize()){
+            Row(
+                modifier = Modifier.weight(4f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ){
+                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically){
+                    AsyncImage(
+                        modifier = Modifier.fillMaxHeight().weight(1f).padding(10.dp),
+                        model = ImageRequest.Builder(LocalContext.current).
+                        data(image).
+                        crossfade(true).
+                        size(400, 400).
+                        precision(Precision.EXACT).
+                        build(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop
+                    )
+                    Column(
+                        modifier = Modifier.fillMaxHeight().weight(3f),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.Center
+                    ){
+                        Text(
+                            text = name,
+                            fontSize = 18.sp,
+                            color = Color.Black,
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "${price} x ${number}" ,
+                            fontSize = 15.sp,
+                            color = Color.Red,
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             }

@@ -151,3 +151,6 @@ object Drawer {
     }
 }
 
+object TapRowData {
+    val FavoriteTapRow = listOf<String>("Meals", "Snacks", "Reastaurants")
+}

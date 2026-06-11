@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -37,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,14 +55,16 @@ import com.example.applicationhome.data.models.repository.CartRepository.cartIte
 import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
 import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
 import com.example.applicationhome.ui.theme.BrownForFont
-import com.example.applicationhome.ui.theme.DarkOrange
+import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.components.CartBox
 import com.example.applicationhome.ui.theme.components.CartButton
+import com.example.applicationhome.ui.theme.components.MyBottonBar
 import com.example.applicationhome.ui.theme.components.MyTopBar
-import com.example.applicationhome.ui.theme.components.PaymentSummary
+import com.example.applicationhome.ui.theme.components.PaymentSummaryCartScreen
 import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -76,7 +81,9 @@ fun Cart(
     coroutineScope : CoroutineScope,
     viewModelForBottomBar: BottomBarViewModel,
     viewModel: ItemScreenViewModel = viewModel(),
-    addBoxViewModel : AddBoxViewModel
+    addBoxViewModel : AddBoxViewModel,
+    bottomBarViewModel: BottomBarViewModel,
+    favoriteViewModel: FavoriteViewModel
 ){
     var cart = cartItems
     val context = LocalContext.current as? Activity
@@ -90,18 +97,19 @@ fun Cart(
         background(Color.LightBrownForBackground),
         topBar = {
             MyTopBar(
-                Color.DarkOrange,
+                Color.White,
                 modifier = Modifier.
                 fillMaxWidth().
                 height(100.dp).
                 shadow(elevation = 5.dp),
                 "Cart",
+                Color.DeepMatteBlack,
                 {
                     IconButton(
                         onClick = {coroutineScope.launch{drawerState.open()}},
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
                     ) {
-                        Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.White)
+                        Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.DeepMatteBlack)
                     }
                 },
                 {
@@ -116,11 +124,20 @@ fun Cart(
                             restoreState = true
                         }
                     }) {
-                        Icon(Icons.Default.Search, contentDescription = null, tint = Color.White)
+                        Icon(Icons.Default.Search, contentDescription = null, tint = Color.DeepMatteBlack)
                     }
                 }
             )
             Divider(color = Color.LightGray.copy(alpha = 0.5f))
+        },
+        bottomBar = {
+            Box(
+                modifier = Modifier.navigationBarsPadding().fillMaxWidth().
+                pointerInput(Unit) { detectTapGestures { } },
+                contentAlignment = Alignment.BottomCenter
+            ){
+                MyBottonBar(navigationController, bottomBarViewModel, addBoxViewModel, favoriteViewModel)
+            }
         }
     ){
         Box(modifier = Modifier.background(Color.White)){
@@ -138,7 +155,7 @@ fun Cart(
                             CartBox(item, navigationController, viewModel, addBoxViewModel)
                         }
                         item{
-                            PaymentSummary(addBoxViewModel)
+                            PaymentSummaryCartScreen()
                         }
                         item{Spacer(modifier = Modifier.height(150.dp))}
                     }
@@ -200,7 +217,7 @@ fun Cart(
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally){
                 if(cart.isNotEmpty()){
-                    CartButton(addBoxViewModel)
+                    CartButton(navigationController)
                 }
                 Spacer(modifier = Modifier.height(80.dp))
             }
