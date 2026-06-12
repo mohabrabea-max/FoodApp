@@ -1,5 +1,6 @@
 package com.example.applicationhome.data.models.model
 
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.google.gson.annotations.SerializedName
@@ -133,12 +134,42 @@ data class RestaurantsCount(
 )
 
 data class UserClass(
-    val firstname : String?,
-    val lastname : String?,
-    val email : String?,
-    val password : String?,
-    val phonenumber : String?,
-    val address : String?
+    val firstname : String = "",
+    val lastname : String = "",
+    val email : String = "",
+    val password : String = "",
+    val phonenumber : String = "",
+    val address : String = ""
 )
 
 data class FirebasePostResponse(val name : String)
+
+data class TextFieldClassFromConfirmOrderScreen(val textState : TextFieldState, val title: String)
+
+
+
+data class OrderItemsClass(
+    val mealId : Int = 0,
+    val mealName : String = "",
+    val size : String = "",
+    val price : Double = 0.0,
+    val quantity : Int = 0,
+    val image : String = ""
+)
+
+data class UserInformationInOrderClass(
+    val name : String = "",
+    val phonenumber : String = "",
+    val address : String = "",
+    val location : String = ""
+)
+
+data class OrdersClass(
+    val date : String = "",
+    val state : String = "",
+    val userInformation : UserInformationInOrderClass = UserInformationInOrderClass(),
+    val orderItems : List<OrderItemsClass> = listOf(OrderItemsClass()),
+    val restaurantName : String = "",
+    val restaurantImage : String = "",
+    val restaurantId : Int = 0
+)

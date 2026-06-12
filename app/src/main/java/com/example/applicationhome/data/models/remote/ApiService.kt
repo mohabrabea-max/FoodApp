@@ -6,6 +6,7 @@ import com.example.applicationhome.data.models.model.FavoriteClass
 import com.example.applicationhome.data.models.model.FirebasePostResponse
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Offers
+import com.example.applicationhome.data.models.model.OrdersClass
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.RestaurantsCount
 import com.example.applicationhome.data.models.model.Snack
@@ -136,4 +137,14 @@ interface FoodAppAPIs{
 
     @GET("offers.json")
     suspend fun offers(): List<Offers>
+
+
+
+
+    @PUT("orders/{userId}/{orderId}.json")
+    suspend fun putNewOrder(
+        @Path("userId") userId : String,
+        @Path("orderId") orderId : String,
+        @Body order : OrdersClass
+    ): Response<OrdersClass>
 }

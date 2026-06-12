@@ -1,6 +1,8 @@
 package com.example.applicationhome.ui.theme.screens
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -31,16 +33,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.CartRepository.cartItems
 import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
 import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
+import com.example.applicationhome.ui.theme.BrandBlue
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.components.CartBox2
-import com.example.applicationhome.ui.theme.components.ConfirmOrderBotton
+import com.example.applicationhome.ui.theme.components.CartButton
 import com.example.applicationhome.ui.theme.components.MyTopBar
 import com.example.applicationhome.ui.theme.components.PaymentSummary
+import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter",
     "UnrememberedMutableState",
     "ContextCastToActivity"
@@ -49,6 +55,7 @@ import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 @Composable
 fun ConfirmOrderScreen2(
     navigationController : NavHostController,
+    confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
     itemScreenViewModel: ItemScreenViewModel = viewModel(),
 ){
     var cart = cartItems
@@ -101,7 +108,16 @@ fun ConfirmOrderScreen2(
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally){
                 if(cart.isNotEmpty()){
-                    ConfirmOrderBotton(navigationController)
+                    CartButton(
+                        Color.BrandBlue,
+                        Color.White,
+                        "Confirm order",
+                        {
+                            confirmOrderScreenViewModel.addToOrderItems()
+                            confirmOrderScreenViewModel.uploadOrder()
+                            navigationController.navigate(Screens.HomeScreen.screen)
+                        }
+                    )
                 }
             }
         }

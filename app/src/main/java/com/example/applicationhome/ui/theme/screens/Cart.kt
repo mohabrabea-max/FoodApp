@@ -55,6 +55,7 @@ import com.example.applicationhome.data.models.repository.CartRepository.cartIte
 import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
 import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
 import com.example.applicationhome.ui.theme.BrownForFont
+import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.LightBrownForBackground
 import com.example.applicationhome.ui.theme.components.CartBox
@@ -217,7 +218,12 @@ fun Cart(
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally){
                 if(cart.isNotEmpty()){
-                    CartButton(navigationController)
+                    CartButton(
+                        Color.DarkOrange,
+                        Color.White,
+                        "Checkout",
+                        { navigationController.navigate(Screens.ConfirmOrderScreen.screen) }
+                        )
                 }
                 Spacer(modifier = Modifier.height(80.dp))
             }

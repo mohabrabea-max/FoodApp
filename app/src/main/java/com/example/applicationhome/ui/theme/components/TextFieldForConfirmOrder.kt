@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,19 +35,18 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.phoneNumberState
+import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.houseState
+import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.housetextFieldState
+import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.streetState
+import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.streettextFieldState
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 
-
 @Composable
-fun ConfirmOrderScreenTextField2(confirmOrderScreenViewModel : ConfirmOrderScreenViewModel){
+fun TextFieldForConfirmOrder(confirmOrderScreenViewModel : ConfirmOrderScreenViewModel, textState : TextFieldState, title : String){
     var color by remember { mutableStateOf(Color.Gray) }
     var alpha by remember { mutableStateOf(0.2f) }
-
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
-
-
     Box(
         modifier = Modifier.padding(start = 15.dp, end = 15.dp)
             .height(60.dp)
@@ -56,29 +56,39 @@ fun ConfirmOrderScreenTextField2(confirmOrderScreenViewModel : ConfirmOrderScree
             .background(Color.White)
             .padding(start = 15.dp, end = 15.dp)
     ){
-        LaunchedEffect(phoneNumberState) {
-            snapshotFlow { phoneNumberState.text.toString() }
+        LaunchedEffect(textState) {
+            snapshotFlow { textState.text.toString() }
                 .collect {
                     confirmOrderScreenViewModel.bottonstate()
                 }
         }
         BasicTextField(
-            state = phoneNumberState,
+            state = textState,
             modifier = Modifier.fillMaxSize().
             onFocusChanged { focusState ->
                 if (!focusState.isFocused) {
-                    if((phoneNumberState.text.isEmpty() || phoneNumberState.text.length != 11) && confirmOrderScreenViewModel.phoneNumbertextFieldState){
+                    if(textState == houseState && houseState.text.isEmpty() && housetextFieldState){
                         color = Color.Red
                         alpha = 1f
-                    }else{
+                    }else if(textState == streetState && streetState.text.isEmpty() && streettextFieldState){
+                        color = Color.Red
+                        alpha = 1f
+                    }else if(textState == houseState && houseState.text.isNotEmpty() && housetextFieldState){
+                        color = Color.Gray
+                        alpha = 0.2f
+                    }else if(textState == streetState && streetState.text.isNotEmpty() && streettextFieldState){
                         color = Color.Gray
                         alpha = 0.2f
                     }
                 }
             },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Done),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
             onKeyboardAction = {
-                confirmOrderScreenViewModel.phoneNumbertextFieldtrue()
+                if(textState == houseState) { confirmOrderScreenViewModel.housetextFieldStatetrue() }
+                else if(textState == streetState) { confirmOrderScreenViewModel.streettextFieldtrue() }
                 keyboardController?.hide()
                 focusManager.clearFocus()
             },
@@ -100,9 +110,9 @@ fun ConfirmOrderScreenTextField2(confirmOrderScreenViewModel : ConfirmOrderScree
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ){
-            if(phoneNumberState.text.isEmpty()){
+            if(textState.text.isEmpty()){
                 Text(
-                    text = "Phone number",
+                    text = title,
                     color = color,
                     fontSize = 15.sp
                 )

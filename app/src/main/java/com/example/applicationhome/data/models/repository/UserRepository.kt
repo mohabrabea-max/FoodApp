@@ -13,14 +13,7 @@ object UserRepository {
     var userId by mutableStateOf("")
     var isLogin by mutableStateOf(false)
     var userData by mutableStateOf(
-        UserClass(
-            "Guest",
-            null,
-            null,
-            null,
-            null,
-            null
-        )
+        UserClass("Guest")
     )
 //    suspend fun addToMeals(){
 //        try {
@@ -42,14 +35,16 @@ object UserRepository {
                     "Email is true"
                     if(passwordstate == userMap.values.firstOrNull()?.password){
                         val user = userMap.values.firstOrNull()
-                        userData = userData.copy(
-                            user?.firstname,
-                            user?.lastname,
-                            user?.email,
-                            user?.password,
-                            user?.phonenumber,
-                            user?.address
-                        )
+                        if(user != null){
+                            userData = userData.copy(
+                                user.firstname,
+                                user.lastname,
+                                user.email,
+                                user.password,
+                                user.phonenumber,
+                                user.address
+                            )
+                        }
                         userId = userMap.keys.first()
                         "Password is true"
                     }else{

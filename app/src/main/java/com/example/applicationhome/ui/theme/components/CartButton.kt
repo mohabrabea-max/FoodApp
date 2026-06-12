@@ -19,75 +19,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.ui.theme.BrandBlue
-import com.example.applicationhome.ui.theme.DarkOrange
 
 @Composable
-fun CartButton(
-    navigationController: NavHostController
-){
+fun CartButton(backgroundcolor : Color, fontcolor : Color, title: String, action: () -> Unit){
     Box(
         modifier = Modifier.navigationBarsPadding().padding(horizontal = 20.dp).fillMaxWidth().
         height(50.dp).
         shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(50.dp)).
-        background(Color.DarkOrange).
-        clickable{navigationController.navigate(Screens.ConfirmOrderScreen.screen)},
+        background(backgroundcolor).
+        clickable{action()},
         contentAlignment = Alignment.Center
     ){
         Text(
-            text = "Checkout",
+            text = title,
             fontSize = 15.sp,
             style = MaterialTheme.typography.labelLarge,
-            color = Color.White,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-
-@Composable
-fun ConfirmOrderBotton(
-    navigationController: NavHostController
-){
-    Box(
-        modifier = Modifier.navigationBarsPadding().padding(horizontal = 20.dp).fillMaxWidth().
-        height(50.dp).
-        shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(50.dp)).
-        background(Color.BrandBlue).
-        clickable{},
-        contentAlignment = Alignment.Center
-    ){
-        Text(
-            text = "Confirm order",
-            fontSize = 15.sp,
-            style = MaterialTheme.typography.labelLarge,
-            color = Color.White,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-@Composable
-fun SaveAddressButton(
-    navigationController: NavHostController
-){
-    Box(
-        modifier = Modifier.navigationBarsPadding().padding(horizontal = 20.dp).fillMaxWidth().
-        height(50.dp).
-        shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(50.dp)).
-        background(Color.DarkOrange).
-        clickable{navigationController.navigate(Screens.ConfirmOrderScreen2.screen)},
-        contentAlignment = Alignment.Center
-    ){
-        Text(
-            text = "Save address",
-            fontSize = 15.sp,
-            style = MaterialTheme.typography.labelLarge,
-            color = Color.White,
+            color = fontcolor,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold
         )

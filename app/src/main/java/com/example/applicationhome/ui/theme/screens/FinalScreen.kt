@@ -220,7 +220,7 @@ fun FinalScreen(
                             is Screens.LoginScreen -> LoginScreen(navigationController, loginViewModel)
                             is Screens.SignUpScreen -> SignUpScreen(navigationController, loginViewModel)
                             is Screens.ConfirmOrderScreen -> ConfirmOrderScreen(navigationController, confirmOrderScreenViewModel)
-                            is Screens.ConfirmOrderScreen2 -> ConfirmOrderScreen2(navigationController)
+                            is Screens.ConfirmOrderScreen2 -> ConfirmOrderScreen2(navigationController, confirmOrderScreenViewModel)
                         }
                     }
                 }

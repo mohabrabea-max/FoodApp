@@ -84,14 +84,7 @@ class LoginViewModel(application : Application) : AndroidViewModel(application) 
 
     fun logout(){
         isLogin = false
-        userData = UserClass(
-            "Guest",
-            null,
-            null,
-            null,
-            null,
-            null
-        )
+        userData = UserClass("Guest")
         cartItems.clear()
         favoritList.clear()
         mealsFavorite = emptyList()

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -37,12 +38,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.CartRepository.cartItems
+import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.textFieldConfirmOrderScreenList1
+import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.textFieldConfirmOrderScreenList2
 import com.example.applicationhome.ui.theme.DarkOrange
-import com.example.applicationhome.ui.theme.components.ConfirmOrderScreenTextField
+import com.example.applicationhome.ui.theme.components.CartButton
 import com.example.applicationhome.ui.theme.components.ConfirmOrderScreenTextField2
 import com.example.applicationhome.ui.theme.components.MyTopBar
-import com.example.applicationhome.ui.theme.components.SaveAddressButton
+import com.example.applicationhome.ui.theme.components.TextFieldForConfirmOrder
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
@@ -58,6 +62,8 @@ fun ConfirmOrderScreen(
     itemScreenViewModel: ItemScreenViewModel = viewModel(),
 ){
     var cart = cartItems
+    var color = if(confirmOrderScreenViewModel.bottonState) Color.DarkOrange else Color.Gray
+    var fontcolor = if(confirmOrderScreenViewModel.bottonState) Color.White else Color.Black
     Scaffold(
         modifier = Modifier.fillMaxSize().
         background(Color.White),
@@ -158,16 +164,31 @@ fun ConfirmOrderScreen(
 
                     item{Spacer(modifier = Modifier.height(15.dp))}
 
-                    item{ ConfirmOrderScreenTextField(confirmOrderScreenViewModel) }
+                    items(textFieldConfirmOrderScreenList1){item ->
+                        TextFieldForConfirmOrder(confirmOrderScreenViewModel, item.textState, item.title)
+                    }
 
                     item{ ConfirmOrderScreenTextField2(confirmOrderScreenViewModel) }
+
+                    items(textFieldConfirmOrderScreenList2){item ->
+                        TextFieldForConfirmOrder(confirmOrderScreenViewModel, item.textState, item.title)
+                    }
 
                     item{Spacer(modifier = Modifier.height(100.dp))}
                 }
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally){
                 if(cart.isNotEmpty()){
-                    SaveAddressButton(navigationController)
+                    CartButton(
+                        color,
+                        fontcolor,
+                        "Save address",
+                        {
+                            if (confirmOrderScreenViewModel.bottonState) {
+                                navigationController.navigate(Screens.ConfirmOrderScreen2.screen)
+                            }
+                        }
+                    )
                 }
             }
         }
