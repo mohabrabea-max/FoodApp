@@ -134,7 +134,7 @@ object FavoriteRepository {
                     val deferredRequests = missingItems.map { item ->
                         async {
                             try {
-                                val response = RetrofitInstance.api.getCartRestaurants("\"id\"", item)
+                                val response = RetrofitInstance.api.getFavoriteRestaurants("\"id\"", item)
                                 if(response.isSuccessful){
                                     val resultMap = response.body()
                                     println("isSuccessful")

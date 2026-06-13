@@ -14,7 +14,9 @@ import com.example.applicationhome.data.models.repository.CartRepository.cartMea
 import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
 import com.example.applicationhome.data.models.repository.CartRepository.cartSnacks
 import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
+import com.example.applicationhome.data.models.repository.CartRepository.createNewCart
 import com.example.applicationhome.data.models.repository.CartRepository.deleteFromCart
+import com.example.applicationhome.data.models.repository.CartRepository.getCartRestaurantData
 import com.example.applicationhome.data.models.repository.CartRepository.minusFromCart
 import com.example.applicationhome.data.models.repository.CartRepository.updateTotals
 import kotlinx.coroutines.async
@@ -40,13 +42,18 @@ class AddBoxViewModel : ViewModel(){
                 is FoodItem -> {"Meal"}
                 is Snack -> {"Snack"}
             }
-            addMealToCart(food.id, size, finalNumber, type)
-            val deferredMeals = async { cartMeals() }
-            val deferredSnacks = async { cartSnacks() }
-            val mealsResult = deferredMeals.await()
-            val snacksResult = deferredSnacks.await()
-            cartMealsMenu = mealsResult.toSet().toList()
-            cartSnacksMenu = snacksResult.toSet().toList()
+            if(cartItems.isNotEmpty()){
+                addMealToCart(food, size, finalNumber, type)
+            }else{
+                getCartRestaurantData(food)
+                createNewCart(food, size, type)
+            }
+
+            val mealsDeferred = async { cartMeals() }
+            val snacksDeferred = async { cartSnacks() }
+            cartMealsMenu = mealsDeferred.await().toSet().toList()
+            cartSnacksMenu = snacksDeferred.await().toSet().toList()
+
             updateTotals()
         }
     }
@@ -77,7 +84,7 @@ class AddBoxViewModel : ViewModel(){
                 is FoodItem -> {"Meal"}
                 is Snack -> {"Snack"}
             }
-            addMealToCart(food.id, size, newCount, type)
+            addMealToCart(food, size, newCount, type)
             updateTotals()
         }
     }

@@ -76,7 +76,7 @@ data class Offers(
 data class Restaurants(
     val id : Int = 0,
     @SerializedName("types")
-    val typ : List<String>,
+    val typ : List<String> = listOf(),
     val name : String = "",
     @SerializedName("logo")
     val image : String = "",
@@ -113,12 +113,6 @@ data class ProfileOptions(
     val screen : Screens
 )
 
-data class CartClass(
-    val id : Int,
-    val type : String,
-    val size : String,
-    val number : Int
-)
 
 data class FavoriteClass(
     val id : Int,
@@ -146,6 +140,19 @@ data class FirebasePostResponse(val name : String)
 
 data class TextFieldClassFromConfirmOrderScreen(val textState : TextFieldState, val title: String)
 
+
+data class CartItemsClass(
+    val id : Int = 0,
+    val type : String = "",
+    val size : String = "",
+    val number : Int = 0
+)
+data class CartClass(
+    val cartItems : Map<String, CartItemsClass> = emptyMap<String, CartItemsClass>(),
+    val restaurantId : Int = 0,
+    val restaurantName : String = "",
+    val restaurantImage : String = ""
+)
 
 
 data class OrderItemsClass(
