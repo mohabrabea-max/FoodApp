@@ -53,7 +53,7 @@ import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.UserRepository
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.Options
-import com.example.applicationhome.ui.theme.components.UserImage
+import com.example.applicationhome.ui.theme.components.profileAndSetting.UserImage
 import com.example.applicationhome.ui.theme.model.APIData
 import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BirthdayViewModel
@@ -64,6 +64,7 @@ import com.example.applicationhome.ui.theme.model.DrawerViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
+import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.ProfileViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
@@ -87,7 +88,8 @@ fun FinalScreen(
     birthdayViewModel: BirthdayViewModel,
     loginViewModel: LoginViewModel,
     restaurantViewModel: RestaurantViewModel,
-    confirmOrderScreenViewModel : ConfirmOrderScreenViewModel
+    confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
+    orderScreenViewModel : OrderScreenViewModel
 ){
     val density = LocalDensity.current
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} }
@@ -115,7 +117,9 @@ fun FinalScreen(
         Screens.LoginScreen,
         Screens.SignUpScreen,
         Screens.ConfirmOrderScreen,
-        Screens.ConfirmOrderScreen2
+        Screens.ConfirmOrderScreen2,
+        Screens.LastOrdersScreen,
+        Screens.OrderScreen
     )
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -220,7 +224,9 @@ fun FinalScreen(
                             is Screens.LoginScreen -> LoginScreen(navigationController, loginViewModel)
                             is Screens.SignUpScreen -> SignUpScreen(navigationController, loginViewModel)
                             is Screens.ConfirmOrderScreen -> ConfirmOrderScreen(navigationController, confirmOrderScreenViewModel)
-                            is Screens.ConfirmOrderScreen2 -> ConfirmOrderScreen2(navigationController, confirmOrderScreenViewModel)
+                            is Screens.ConfirmOrderScreen2 -> ConfirmOrderScreen2(navigationController, confirmOrderScreenViewModel, bottomBarViewModel)
+                            is Screens.LastOrdersScreen -> LastOrdersScreen(navigationController, orderScreenViewModel)
+                            is Screens.OrderScreen -> OrderScreen(orderScreenViewModel, navigationController)
                         }
                     }
                 }

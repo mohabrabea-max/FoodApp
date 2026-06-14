@@ -1,4 +1,4 @@
-package com.example.applicationhome.ui.theme.components
+package com.example.applicationhome.ui.theme.components.forCart
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,9 +18,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.data.models.repository.CartRepository
+import com.example.applicationhome.data.models.repository.CartRepository.totalPrice
 
 @Composable
-fun PaymentSummary(){
+fun PaymentSummary(totalprice : Double = totalPrice){
     val delivery = 51.00
     val service = 8.00
     Column(
@@ -47,7 +48,7 @@ fun PaymentSummary(){
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = "EGP ${CartRepository.totalPrice}",
+                text = "EGP ${totalprice}",
                 fontSize = 14.sp,
                 color = Color.Black,
                 style = MaterialTheme.typography.bodySmall,
@@ -101,7 +102,7 @@ fun PaymentSummary(){
                 style = MaterialTheme.typography.labelLarge
             )
             Text(
-                text = "EGP ${CartRepository.totalPrice + service + delivery}",
+                text = "EGP ${totalprice + service + delivery}",
                 fontSize = 17.sp,
                 color = Color.Black,
                 style = MaterialTheme.typography.labelLarge

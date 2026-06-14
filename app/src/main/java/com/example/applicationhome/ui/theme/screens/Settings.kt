@@ -55,11 +55,11 @@ import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.components.MyBottonBar
-import com.example.applicationhome.ui.theme.components.MyTopBar
-import com.example.applicationhome.ui.theme.components.SettingsBox
-import com.example.applicationhome.ui.theme.components.SettingsOptionsBox
-import com.example.applicationhome.ui.theme.components.UserImage
+import com.example.applicationhome.ui.theme.components.bars.MyBottonBar
+import com.example.applicationhome.ui.theme.components.bars.MyTopBar
+import com.example.applicationhome.ui.theme.components.profileAndSetting.SettingsBox
+import com.example.applicationhome.ui.theme.components.profileAndSetting.SettingsOptionsBox
+import com.example.applicationhome.ui.theme.components.profileAndSetting.UserImage
 import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel

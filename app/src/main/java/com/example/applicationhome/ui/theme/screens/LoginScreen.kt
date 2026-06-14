@@ -47,8 +47,8 @@ import com.example.applicationhome.data.models.repository.UserRepository.userDat
 import com.example.applicationhome.data.models.repository.UserRepository.userId
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.components.LoginTextField
-import com.example.applicationhome.ui.theme.components.MyTopBar
+import com.example.applicationhome.ui.theme.components.forSignUpOrLogin.LoginTextField
+import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 

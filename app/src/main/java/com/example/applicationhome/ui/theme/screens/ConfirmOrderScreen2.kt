@@ -1,8 +1,6 @@
 package com.example.applicationhome.ui.theme.screens
 
 import android.annotation.SuppressLint
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -31,7 +29,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.CartRepository.cartItems
@@ -39,14 +36,13 @@ import com.example.applicationhome.data.models.repository.CartRepository.cartMea
 import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
 import com.example.applicationhome.ui.theme.BrandBlue
 import com.example.applicationhome.ui.theme.DarkOrange
-import com.example.applicationhome.ui.theme.components.CartBox2
-import com.example.applicationhome.ui.theme.components.CartButton
-import com.example.applicationhome.ui.theme.components.MyTopBar
-import com.example.applicationhome.ui.theme.components.PaymentSummary
+import com.example.applicationhome.ui.theme.components.bars.MyTopBar
+import com.example.applicationhome.ui.theme.components.forCart.CartButton
+import com.example.applicationhome.ui.theme.components.forCart.PaymentSummary
+import com.example.applicationhome.ui.theme.components.forConfirmOrder.ConfirmOrderBox
+import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
-import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
-@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter",
     "UnrememberedMutableState",
     "ContextCastToActivity"
@@ -56,7 +52,7 @@ import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 fun ConfirmOrderScreen2(
     navigationController : NavHostController,
     confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
-    itemScreenViewModel: ItemScreenViewModel = viewModel(),
+    bottomBarViewModel : BottomBarViewModel
 ){
     var cart = cartItems
     Scaffold(
@@ -91,14 +87,14 @@ fun ConfirmOrderScreen2(
             Box(modifier = Modifier.fillMaxSize()) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ){
                     item{Spacer(modifier = Modifier.height(100.dp))}
                     items(cartMealsMenu) { item ->
-                        CartBox2(item, navigationController, itemScreenViewModel)
+                        ConfirmOrderBox(item)
                     }
                     items(cartSnacksMenu) { item ->
-                        CartBox2(item, navigationController, itemScreenViewModel)
+                        ConfirmOrderBox(item)
                     }
                     item{
                         PaymentSummary()
@@ -113,9 +109,11 @@ fun ConfirmOrderScreen2(
                         Color.White,
                         "Confirm order",
                         {
+                            bottomBarViewModel.home()
                             confirmOrderScreenViewModel.addToOrderItems()
                             confirmOrderScreenViewModel.uploadOrder()
                             navigationController.navigate(Screens.HomeScreen.screen)
+                            confirmOrderScreenViewModel.cleanTextField()
                         }
                     )
                 }

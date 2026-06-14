@@ -47,10 +47,10 @@ import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.UserRepository
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.components.MyTopBar
-import com.example.applicationhome.ui.theme.components.NameTextField
-import com.example.applicationhome.ui.theme.components.SignupTextField
-import com.example.applicationhome.ui.theme.components.SignupTextFieldPage2
+import com.example.applicationhome.ui.theme.components.bars.MyTopBar
+import com.example.applicationhome.ui.theme.components.forSignUpOrLogin.NameTextField
+import com.example.applicationhome.ui.theme.components.forSignUpOrLogin.SignupTextField
+import com.example.applicationhome.ui.theme.components.forSignUpOrLogin.SignupTextFieldPage2
 import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.SignUpViewModel
 

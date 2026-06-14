@@ -15,4 +15,6 @@ sealed class Screens (val screen : String){
     data object SignUpScreen : Screens("signup")
     data object ConfirmOrderScreen : Screens("confirmorderscreen")
     data object ConfirmOrderScreen2 : Screens("confirmorderscreen2")
+    data object LastOrdersScreen : Screens("lastordersscreen")
+    data object OrderScreen : Screens("orderscreen")
 }

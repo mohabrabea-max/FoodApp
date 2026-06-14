@@ -43,10 +43,10 @@ import com.example.applicationhome.data.models.repository.CartRepository.cartIte
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.textFieldConfirmOrderScreenList1
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.textFieldConfirmOrderScreenList2
 import com.example.applicationhome.ui.theme.DarkOrange
-import com.example.applicationhome.ui.theme.components.CartButton
-import com.example.applicationhome.ui.theme.components.ConfirmOrderScreenTextField2
-import com.example.applicationhome.ui.theme.components.MyTopBar
-import com.example.applicationhome.ui.theme.components.TextFieldForConfirmOrder
+import com.example.applicationhome.ui.theme.components.bars.MyTopBar
+import com.example.applicationhome.ui.theme.components.forCart.CartButton
+import com.example.applicationhome.ui.theme.components.forConfirmOrder.ConfirmOrderScreenTextField2
+import com.example.applicationhome.ui.theme.components.forConfirmOrder.TextFieldForConfirmOrder
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
@@ -80,6 +80,7 @@ fun ConfirmOrderScreen(
                     IconButton(
                         onClick = {
                             if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
+                            confirmOrderScreenViewModel.cleanTextField()
                         },
                         modifier = Modifier.padding(5.dp).
                         border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
@@ -178,18 +179,16 @@ fun ConfirmOrderScreen(
                 }
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally){
-                if(cart.isNotEmpty()){
-                    CartButton(
-                        color,
-                        fontcolor,
-                        "Save address",
-                        {
-                            if (confirmOrderScreenViewModel.bottonState) {
-                                navigationController.navigate(Screens.ConfirmOrderScreen2.screen)
-                            }
+                CartButton(
+                    color,
+                    fontcolor,
+                    "Save address",
+                    {
+                        if (confirmOrderScreenViewModel.bottonState) {
+                            navigationController.navigate(Screens.ConfirmOrderScreen2.screen)
                         }
-                    )
-                }
+                    }
+                )
             }
         }
     }

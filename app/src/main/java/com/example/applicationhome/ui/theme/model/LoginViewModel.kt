@@ -26,6 +26,7 @@ import com.example.applicationhome.data.models.repository.FavoriteRepository.get
 import com.example.applicationhome.data.models.repository.FavoriteRepository.mealsFavorite
 import com.example.applicationhome.data.models.repository.FavoriteRepository.restaurantsFavorite
 import com.example.applicationhome.data.models.repository.FavoriteRepository.snacksFavorite
+import com.example.applicationhome.data.models.repository.OrderRepository.getOrders
 import com.example.applicationhome.data.models.repository.UserRepository
 import com.example.applicationhome.data.models.repository.UserRepository.isLogin
 import com.example.applicationhome.data.models.repository.UserRepository.userData
@@ -104,6 +105,7 @@ class LoginViewModel(application : Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             //addToMeals()
             getcart()
+            getOrders()
             cartMealsMenu = async { cartMeals() }.await().toSet().toList()
             cartSnacksMenu = async { cartSnacks() }.await().toSet().toList()
             mealsFavorite = async { favoriteMeals() }.await().toSet().toList()

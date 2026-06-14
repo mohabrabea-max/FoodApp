@@ -167,4 +167,9 @@ interface FoodAppAPIs{
         @Path("orderId") orderId : String,
         @Body order : OrdersClass
     ): Response<OrdersClass>
+
+    @GET("orders/{userId}.json")
+    suspend fun getLastOrders(
+        @Path("userId") userId : String
+    ): Response<Map<String, OrdersClass>>
 }

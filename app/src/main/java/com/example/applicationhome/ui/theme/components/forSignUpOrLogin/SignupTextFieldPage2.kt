@@ -1,4 +1,4 @@
-package com.example.applicationhome.ui.theme.components
+package com.example.applicationhome.ui.theme.components.forSignUpOrLogin
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,8 +14,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,15 +34,17 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.applicationhome.ui.theme.model.LoginViewModel
+import com.example.applicationhome.ui.theme.model.SignUpViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 
 @Composable
-fun LoginTextField(loginViewModel: LoginViewModel, userImageViewModel : UserImageViewModel = viewModel()){
-    val emailstate = loginViewModel.emailstate
-    val passwordstate = loginViewModel.passwordstate
+fun SignupTextFieldPage2(signUpViewModel : SignUpViewModel, userImageViewModel : UserImageViewModel = viewModel()){
+    val phonenumberstate = signUpViewModel.phonenumberstate
+    val addressstate = signUpViewModel.addressstate
+
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+
     Box(
         modifier = Modifier.padding(start = 40.dp, end = 40.dp)
             .height(55.dp)
@@ -51,21 +53,20 @@ fun LoginTextField(loginViewModel: LoginViewModel, userImageViewModel : UserImag
             .background(Color.White)
             .padding(start = 25.dp, end = 25.dp)
     ){
-        LaunchedEffect(emailstate) {
-            snapshotFlow { emailstate.text.toString() }
-                .collect {
-                    loginViewModel.getData()
+        LaunchedEffect(phonenumberstate) {
+            snapshotFlow { phonenumberstate.text.toString() }
+                .collect { newValue ->
                 }
         }
         BasicTextField(
-            state = emailstate,
+            state = phonenumberstate,
             modifier = Modifier.fillMaxSize().padding(start = 30.dp).
             onFocusChanged { focusState ->
                 if (focusState.isFocused) {
                     userImageViewModel.statetrue()
                 }
             },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Done),
             onKeyboardAction = {
                 userImageViewModel.statefalse()
                 keyboardController?.hide()
@@ -78,9 +79,9 @@ fun LoginTextField(loginViewModel: LoginViewModel, userImageViewModel : UserImag
             decorator = { innerTextField ->
                 Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.CenterStart // 👈 هنا بنقوله وسطن النص رأسياً وخليك على الشمال
+                    contentAlignment = Alignment.CenterStart
                 ) {
-                    innerTextField() // 👈 ده النص الخام اللي بيتكتب
+                    innerTextField()
                 }
             }
         )
@@ -90,14 +91,14 @@ fun LoginTextField(loginViewModel: LoginViewModel, userImageViewModel : UserImag
             horizontalArrangement = Arrangement.Start
         ){
             Icon(
-                Icons.Default.Email,
+                Icons.Default.Phone,
                 contentDescription = null,
                 tint = Color.Gray,
                 modifier = Modifier.padding(end = 7.dp)
             )
-            if(emailstate.text.isEmpty()){
+            if(phonenumberstate.text.isEmpty()){
                 Text(
-                    text = "Email Address",
+                    text = "Phone number (Optional)",
                     color = Color.Gray,
                     fontSize = 18.sp
                 )
@@ -115,14 +116,13 @@ fun LoginTextField(loginViewModel: LoginViewModel, userImageViewModel : UserImag
             .background(Color.White)
             .padding(start = 25.dp, end = 25.dp)
     ){
-        LaunchedEffect(passwordstate) {
-            snapshotFlow { passwordstate.text.toString() }
-                .collect {
-                    loginViewModel.getData()
+        LaunchedEffect(addressstate) {
+            snapshotFlow { addressstate.text.toString() }
+                .collect { newValue ->
                 }
         }
         BasicTextField(
-            state = passwordstate,
+            state = addressstate,
             modifier = Modifier.fillMaxSize().padding(start = 30.dp).
             onFocusChanged { focusState ->
                 if (focusState.isFocused) {
@@ -142,9 +142,9 @@ fun LoginTextField(loginViewModel: LoginViewModel, userImageViewModel : UserImag
             decorator = { innerTextField ->
                 Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.CenterStart // 👈 هنا بنقوله وسطن النص رأسياً وخليك على الشمال
+                    contentAlignment = Alignment.CenterStart
                 ) {
-                    innerTextField() // 👈 ده النص الخام اللي بيتكتب
+                    innerTextField()
                 }
             }
         )
@@ -154,14 +154,14 @@ fun LoginTextField(loginViewModel: LoginViewModel, userImageViewModel : UserImag
             horizontalArrangement = Arrangement.Start
         ){
             Icon(
-                Icons.Default.Lock,
+                Icons.Default.LocationOn,
                 contentDescription = null,
                 tint = Color.Gray,
                 modifier = Modifier.padding(end = 7.dp)
             )
-            if(passwordstate.text.isEmpty()){
+            if(addressstate.text.isEmpty()){
                 Text(
-                    text = "Password",
+                    text = "Address (Optional)",
                     color = Color.Gray,
                     fontSize = 18.sp
                 )

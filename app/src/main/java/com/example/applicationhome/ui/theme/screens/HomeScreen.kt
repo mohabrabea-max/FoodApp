@@ -88,11 +88,11 @@ import com.example.applicationhome.data.models.repository.MenuRepository.snacks
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.components.CategoriesBar
-import com.example.applicationhome.ui.theme.components.MyBottonBar
-import com.example.applicationhome.ui.theme.components.MyTopBar
-import com.example.applicationhome.ui.theme.components.RestaurantsBox
-import com.example.applicationhome.ui.theme.components.SearchBox
+import com.example.applicationhome.ui.theme.components.bars.MyBottonBar
+import com.example.applicationhome.ui.theme.components.bars.MyTopBar
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.CategoriesBar
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantsBox
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SearchBox
 import com.example.applicationhome.ui.theme.model.APIData
 import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
@@ -164,7 +164,7 @@ fun HomeScreen(
 
     val snacks = snacks.toList()
     val menu = categoriesBoxViewModel.filterMenu
-    val restaurants = categoriesBoxViewModel.filterrestaurants
+    val restaurants = categoriesBoxViewModel.filterrestaurants.toSet().toList()
     val offers = offers
     val pagerState = rememberPagerState(pageCount = {offers.size})
     val context = LocalContext.current as? Activity

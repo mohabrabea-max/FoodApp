@@ -1,4 +1,4 @@
-package com.example.applicationhome.ui.theme.components
+package com.example.applicationhome.ui.theme.components.profileAndSetting
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest

@@ -89,7 +89,7 @@ object ProfileData {
             "Orders",
             "Manage & track",
             Icons.Default.ShoppingCartCheckout,
-            Screens.HomeScreen
+            Screens.LastOrdersScreen
         ),
         ProfileOptions(
             "Returns",

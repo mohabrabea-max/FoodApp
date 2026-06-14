@@ -1,4 +1,4 @@
-package com.example.applicationhome.ui.theme.components
+package com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

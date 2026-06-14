@@ -267,14 +267,14 @@ object CartRepository {
         }
     }
 
-    suspend fun deleteAllCart(foodId: Int, size : String): String{ // هنا بنحذف السلة كلها
-        var mealKey by mutableStateOf("${foodId}_$size")
+    suspend fun deleteAllCart(): String{ // هنا بنحذف السلة كلها
         return try {
             val response = RetrofitInstance.api.deleteAllCart(userId)
             if(response.isSuccessful){
-                cartItems.keys.remove(mealKey)
-                cartMealsMenu = cartMealsMenu.filterNot { it.id == foodId }
-                cartSnacksMenu = cartSnacksMenu.filterNot { it.id == foodId }
+                allCart.value = CartClass()
+                cartItems.clear()
+                cartMealsMenu = emptyList()
+                cartSnacksMenu = emptyList()
                 "Success"
             }else{
                 "Network error"

@@ -1,4 +1,4 @@
-package com.example.applicationhome.ui.theme.components
+package com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu
 
 import android.widget.Toast
 import androidx.compose.animation.animateContentSize

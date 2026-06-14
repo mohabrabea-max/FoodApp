@@ -9,21 +9,28 @@ import com.example.applicationhome.data.models.model.Food
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.data.models.repository.CartRepository.addMealToCart
+import com.example.applicationhome.data.models.repository.CartRepository.allCart
 import com.example.applicationhome.data.models.repository.CartRepository.cartItems
 import com.example.applicationhome.data.models.repository.CartRepository.cartMeals
 import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
 import com.example.applicationhome.data.models.repository.CartRepository.cartSnacks
 import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
 import com.example.applicationhome.data.models.repository.CartRepository.createNewCart
+import com.example.applicationhome.data.models.repository.CartRepository.deleteAllCart
 import com.example.applicationhome.data.models.repository.CartRepository.deleteFromCart
 import com.example.applicationhome.data.models.repository.CartRepository.getCartRestaurantData
 import com.example.applicationhome.data.models.repository.CartRepository.minusFromCart
+import com.example.applicationhome.data.models.repository.CartRepository.totalNumber
+import com.example.applicationhome.data.models.repository.CartRepository.totalPrice
 import com.example.applicationhome.data.models.repository.CartRepository.updateTotals
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class AddBoxViewModel : ViewModel(){
     var activId by mutableStateOf<Int?>(null)
+    var errorInCart by mutableStateOf(false)
+    var newFoodInCart by mutableStateOf<Food?>(null)
+    var newFoodInCartSize by mutableStateOf<String?>(null)
 
     fun plus(food: Food, size : String){
         viewModelScope.launch {
@@ -43,7 +50,13 @@ class AddBoxViewModel : ViewModel(){
                 is Snack -> {"Snack"}
             }
             if(cartItems.isNotEmpty()){
-                addMealToCart(food, size, finalNumber, type)
+                if(food.restaurantId == allCart.value.restaurantId){
+                    addMealToCart(food, size, finalNumber, type)
+                }else{
+                    alertDialogTrue()
+                    newFoodInCart = food
+                    newFoodInCartSize = size
+                }
             }else{
                 getCartRestaurantData(food)
                 createNewCart(food, size, type)
@@ -55,6 +68,21 @@ class AddBoxViewModel : ViewModel(){
             cartSnacksMenu = snacksDeferred.await().toSet().toList()
 
             updateTotals()
+        }
+    }
+
+    fun clearAndStartNewCart() {
+        viewModelScope.launch {
+            deleteAllCart()
+            totalPrice = 0.0
+            totalNumber.value = 0
+            val newFood = newFoodInCart
+            val newSize = newFoodInCartSize
+            if(newFood != null && newSize != null){
+                plus(newFood, newSize)
+            }
+            newFoodInCart = null
+            newFoodInCartSize = null
         }
     }
 
@@ -102,5 +130,13 @@ class AddBoxViewModel : ViewModel(){
     }
     fun active(foodId : Int){
         activId = foodId
+    }
+
+    fun alertDialogTrue(){
+        errorInCart = true
+    }
+
+    fun alertDialogFalse(){
+        errorInCart = false
     }
 }

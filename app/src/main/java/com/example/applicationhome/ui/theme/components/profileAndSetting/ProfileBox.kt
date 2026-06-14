@@ -1,4 +1,4 @@
-package com.example.applicationhome.ui.theme.components
+package com.example.applicationhome.ui.theme.components.profileAndSetting
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background

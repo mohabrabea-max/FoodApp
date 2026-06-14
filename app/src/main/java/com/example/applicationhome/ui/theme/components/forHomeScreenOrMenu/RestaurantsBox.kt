@@ -1,4 +1,4 @@
-package com.example.applicationhome.ui.theme.components
+package com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu
 
 import android.annotation.SuppressLint
 import android.widget.Toast

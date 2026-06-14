@@ -62,19 +62,21 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.models.repository.CartRepository.allCart
 import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuListisLoading
 import com.example.applicationhome.data.models.repository.MenuRepository.restaurantOffers
 import com.example.applicationhome.data.models.repository.MenuRepository.snacks
 import com.example.applicationhome.data.models.repository.MenuRepository.snacksisLoading
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.components.AddBox
-import com.example.applicationhome.ui.theme.components.CategoriesBarForRestaurantsScreen
-import com.example.applicationhome.ui.theme.components.Favorite
-import com.example.applicationhome.ui.theme.components.Favorite2
-import com.example.applicationhome.ui.theme.components.ItemsBox
-import com.example.applicationhome.ui.theme.components.MyTopBar
-import com.example.applicationhome.ui.theme.components.SnaksBox
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.AddBox
+import com.example.applicationhome.ui.theme.components.forCart.AlertDialogMessage
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.CategoriesBarForRestaurantsScreen
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Favorite
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Favorite2
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.ItemsBox
+import com.example.applicationhome.ui.theme.components.bars.MyTopBar
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
 import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
@@ -425,6 +427,19 @@ fun Menu(
                 item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
             }
 
+            if(addBoxViewModel.errorInCart){
+                AlertDialogMessage(
+                    addBoxViewModel,
+                    allCart.value.restaurantName,
+                    "Start",
+                    {
+                        addBoxViewModel.alertDialogFalse()
+                        addBoxViewModel.clearAndStartNewCart()
+                    },
+                    "Cancel",
+                    {addBoxViewModel.alertDialogFalse()}
+                )
+            }
 
 
 

@@ -1,4 +1,4 @@
-package com.example.applicationhome.ui.theme.components
+package com.example.applicationhome.ui.theme.components.forConfirmOrder
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

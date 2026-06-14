@@ -1,7 +1,6 @@
 package com.example.applicationhome.ui.theme.model
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,12 +9,19 @@ import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.models.model.OrderItemsClass
 import com.example.applicationhome.data.models.repository.CartRepository.cartItems
 import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
+import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
+import com.example.applicationhome.data.models.repository.CartRepository.deleteAllCart
+import com.example.applicationhome.data.models.repository.CartRepository.totalNumber
+import com.example.applicationhome.data.models.repository.CartRepository.totalPrice
+import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.additionalDirectionsState
+import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.addressLabelState
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.houseState
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.housetextFieldState
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.phoneNumberState
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.streetState
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.streettextFieldState
 import com.example.applicationhome.data.models.repository.MenuRepository.restaurantsMenu
+import com.example.applicationhome.data.models.repository.OrderRepository.getOrders
 import com.example.applicationhome.data.models.repository.OrderRepository.orderItems
 import com.example.applicationhome.data.models.repository.OrderRepository.restaurantId
 import com.example.applicationhome.data.models.repository.OrderRepository.restaurantImage
@@ -41,6 +47,17 @@ class ConfirmOrderScreenViewModel : ViewModel() {
         }
     }
 
+    fun cleanTextField(){
+        houseState.clearText()
+        streetState.clearText()
+        phoneNumberState.clearText()
+        additionalDirectionsState.clearText()
+        addressLabelState.clearText()
+        housetextFieldState = false
+        streettextFieldState = false
+        phoneNumbertextFieldState = false
+    }
+
     fun phoneNumbertextFieldtrue(){
         phoneNumbertextFieldState = true
     }
@@ -53,30 +70,57 @@ class ConfirmOrderScreenViewModel : ViewModel() {
 
     fun addToOrderItems(){
         val menuMap = cartMealsMenu.associateBy{ it.id }
+        val snackMap = cartSnacksMenu.associateBy{ it.id }
 
         val finalOrderItems = cartItems.values.mapNotNull { item ->
+            if(item.type == "Meal"){
+                val meal = menuMap[item.id] ?: return@mapNotNull null
+                val price = meal.sizeOptions.find { it.size == item.size }?.price ?: return@mapNotNull null
+                restaurantId = meal.restaurantId
+                OrderItemsClass(
+                    item.id,
+                    meal.name,
+                    item.size,
+                    price,
+                    item.number,
+                    meal.image[0]
+                )
+            }else{
+                val meal = snackMap[item.id] ?: return@mapNotNull null
+                val price = meal.priceANDsize[item.size] ?: return@mapNotNull null
+                restaurantId = meal.restaurantId
+                OrderItemsClass(
+                    item.id,
+                    meal.name,
+                    item.size,
+                    price,
+                    item.number,
+                    meal.image[0]
+                )
+            }
 
-            val meal = menuMap[item.id] ?: return@mapNotNull null
-            val price = meal.sizeOptions.find { it.size == item.size }?.price ?: return@mapNotNull null
-            restaurantId = meal.restaurantId
-            OrderItemsClass(
-                item.id,
-                meal.name,
-                item.size,
-                price,
-                item.number,
-                meal.image[0]
-            )
+
         }
         orderItems = orderItems + finalOrderItems
         restaurantName = restaurantsMenu.find { it.id == restaurantId }?.name ?: ""
         restaurantImage = restaurantsMenu.find { it.id == restaurantId }?.image ?: ""
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun uploadOrder(){
         viewModelScope.launch {
             uploadOrderRequest()
+            getOrders()
+            deleteAllCart()
+            if(uploadOrderRequest() == "Success"){
+                cartItems.clear()
+                cartMealsMenu = emptyList()
+                cartSnacksMenu = emptyList()
+                totalPrice = 0.0
+                totalNumber.value = 0
+                orderItems = emptyList()
+                restaurantName = ""
+                restaurantImage = ""
+            }
         }
     }
 }

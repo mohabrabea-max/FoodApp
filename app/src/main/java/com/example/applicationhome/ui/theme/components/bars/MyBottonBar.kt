@@ -1,4 +1,4 @@
-package com.example.applicationhome.ui.theme.components
+package com.example.applicationhome.ui.theme.components.bars
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.CartRepository.cartRestaurant
 import com.example.applicationhome.data.models.repository.CartRepository.totalNumber
 import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
 import com.example.applicationhome.ui.theme.DarkOrange
@@ -134,7 +133,6 @@ fun MyBottonBar(
             Box(modifier = Modifier.weight(1f)){
                 IconButton(
                     onClick = {
-                        println(cartRestaurant)
                         if(selected == "Cart"){
                             navigationController.navigate(Screens.Cart.screen)
                         }else{

@@ -174,6 +174,7 @@ data class UserInformationInOrderClass(
 data class OrdersClass(
     val date : String = "",
     val state : String = "",
+    val totalPrice : Double = 0.0,
     val userInformation : UserInformationInOrderClass = UserInformationInOrderClass(),
     val orderItems : List<OrderItemsClass> = listOf(OrderItemsClass()),
     val restaurantName : String = "",

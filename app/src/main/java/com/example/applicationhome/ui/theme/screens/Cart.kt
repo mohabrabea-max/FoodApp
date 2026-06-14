@@ -58,11 +58,11 @@ import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.LightBrownForBackground
-import com.example.applicationhome.ui.theme.components.CartBox
-import com.example.applicationhome.ui.theme.components.CartButton
-import com.example.applicationhome.ui.theme.components.MyBottonBar
-import com.example.applicationhome.ui.theme.components.MyTopBar
-import com.example.applicationhome.ui.theme.components.PaymentSummaryCartScreen
+import com.example.applicationhome.ui.theme.components.forCart.CartBox
+import com.example.applicationhome.ui.theme.components.forCart.CartButton
+import com.example.applicationhome.ui.theme.components.bars.MyBottonBar
+import com.example.applicationhome.ui.theme.components.bars.MyTopBar
+import com.example.applicationhome.ui.theme.components.forCart.PaymentSummaryCartScreen
 import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
