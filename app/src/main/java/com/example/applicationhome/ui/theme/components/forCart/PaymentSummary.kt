@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.models.repository.CartRepository
 import com.example.applicationhome.data.models.repository.CartRepository.totalPrice
 
 @Composable
@@ -138,7 +137,7 @@ fun PaymentSummaryCartScreen(){
                 style = MaterialTheme.typography.labelLarge
             )
             Text(
-                text = "EGP ${CartRepository.totalPrice}",
+                text = "EGP ${totalPrice}",
                 fontSize = 17.sp,
                 color = Color.Black,
                 style = MaterialTheme.typography.labelLarge

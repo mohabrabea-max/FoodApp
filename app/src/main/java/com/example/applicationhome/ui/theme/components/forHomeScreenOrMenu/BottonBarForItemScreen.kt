@@ -47,7 +47,7 @@ import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottonBarForItemScreen(
+fun BottomBarForItemScreen(
     ordernumber : AddBoxViewModel,
     viewModel: ItemScreenViewModel,
     food : Food,
@@ -55,7 +55,7 @@ fun BottonBarForItemScreen(
 ){
     val cart = CartRepository.cartItems
     val context = LocalContext.current
-    val cartkey = "${food.id}_Small"
+    val cartkey = "${food.id}_${size}"
     val count = CartRepository.cartItems[cartkey]?.number ?: 0
     var color : Color
     var fontColor : Color

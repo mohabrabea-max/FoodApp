@@ -5,7 +5,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,12 +13,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -45,7 +44,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -58,18 +56,15 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.MenuRepository
-import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuListisLoading
 import com.example.applicationhome.data.models.repository.MenuRepository.snacksisLoading
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.AddBox
-import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.BottonBarForItemScreen
+import com.example.applicationhome.ui.theme.components.bars.MyTopBar
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.BottomBarForItemScreen
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Favorite
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.ItemSize
-import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.ItemsBox
-import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Ratings
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
 import com.example.applicationhome.ui.theme.model.APIData
@@ -78,7 +73,7 @@ import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemScreen(
@@ -392,102 +387,101 @@ fun ItemScreen(
                                     Spacer(modifier = Modifier.height(10.dp))
                                     Ratings(item)
                                 }
-                                Spacer(modifier = Modifier.height(30.dp))
-                                Box(
-                                    modifier = Modifier.fillMaxWidth().
-                                    clip(RoundedCornerShape(20.dp)).
-                                    background(Color.White)
-                                ){
-                                    Column{
-                                        Text(
-                                            text = "Other snacks",
-                                            fontSize = 16.sp,
-                                            color = Color.Black,
-                                            style = MaterialTheme.typography.labelLarge,
-                                            fontWeight = FontWeight.Bold,
-                                            modifier = Modifier.padding(start = 15.dp, bottom = 15.dp, top = 15.dp)
-                                        )
-                                        LazyRow(horizontalArrangement = Arrangement.spacedBy(5.dp)){
-                                            item{Spacer(modifier = Modifier.width(7.dp))}
-                                            items(snacks){ item ->
-                                                SnaksBox(
-                                                    snacksisLoading,
-                                                    modifier = Modifier.size(200.dp),
-                                                    false,
-                                                    item,
-                                                    null,
-                                                    navigationController,
-                                                    viewModel,
-                                                    {
-                                                        Favorite(
-                                                            modifier = Modifier.
-                                                            clip(CircleShape).
-                                                            border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
-                                                            size(35.dp).
-                                                            background(Color.VeryLightGray),
-                                                            food = item,
-                                                            favoriteState = favoriteState
-                                                        )
-                                                        AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
-                                                    }
-                                                )
-                                            }
-                                            item{Spacer(modifier = Modifier.width(7.dp))}
-                                        }
-                                    }
-                                }
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Box(
-                                    modifier = Modifier.fillMaxWidth().
-                                    height(350.dp).
-                                    clip(RoundedCornerShape(20.dp)).
-                                    background(Color.White)
-                                ){
-                                    Column{
-                                        Text(
-                                            text = "Other meals",
-                                            fontSize = 16.sp,
-                                            color = Color.Black,
-                                            style = MaterialTheme.typography.labelLarge,
-                                            fontWeight = FontWeight.Bold,
-                                            modifier = Modifier.padding(start = 15.dp, bottom = 15.dp, top = 15.dp)
-                                        )
-                                        LazyRow(horizontalArrangement = Arrangement.spacedBy(5.dp)){
-                                            item{Spacer(modifier = Modifier.width(7.dp))}
-                                            items(menu){ item ->
-                                                ItemsBox(
-                                                    foodMenuListisLoading,
-                                                    item,
-                                                    navigationController,
-                                                    viewModel,
-                                                    {
-                                                        Favorite(
-                                                            modifier = Modifier.
-                                                            clip(CircleShape).
-                                                            border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
-                                                            size(35.dp).
-                                                            background(Color.VeryLightGray),
-                                                            food = item,
-                                                            favoriteState = favoriteState
-                                                        )
-                                                        AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
-                                                    }
-                                                )
-                                            }
-                                            item{Spacer(modifier = Modifier.width(7.dp))}
-                                        }
-                                    }
-                                }
+//                                Spacer(modifier = Modifier.height(30.dp))
+//                                Box(
+//                                    modifier = Modifier.fillMaxWidth().
+//                                    clip(RoundedCornerShape(20.dp)).
+//                                    background(Color.White)
+//                                ){
+//                                    Column{
+//                                        Text(
+//                                            text = "Other snacks",
+//                                            fontSize = 16.sp,
+//                                            color = Color.Black,
+//                                            style = MaterialTheme.typography.labelLarge,
+//                                            fontWeight = FontWeight.Bold,
+//                                            modifier = Modifier.padding(start = 15.dp, bottom = 15.dp, top = 15.dp)
+//                                        )
+//                                        LazyRow(horizontalArrangement = Arrangement.spacedBy(5.dp)){
+//                                            item{Spacer(modifier = Modifier.width(7.dp))}
+//                                            items(snacks){ item ->
+//                                                SnaksBox(
+//                                                    snacksisLoading,
+//                                                    modifier = Modifier.size(200.dp),
+//                                                    false,
+//                                                    item,
+//                                                    null,
+//                                                    navigationController,
+//                                                    viewModel,
+//                                                    {
+//                                                        Favorite(
+//                                                            modifier = Modifier.
+//                                                            clip(CircleShape).
+//                                                            border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
+//                                                            size(35.dp).
+//                                                            background(Color.VeryLightGray),
+//                                                            food = item,
+//                                                            favoriteState = favoriteState
+//                                                        )
+//                                                        AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
+//                                                    }
+//                                                )
+//                                            }
+//                                            item{Spacer(modifier = Modifier.width(7.dp))}
+//                                        }
+//                                    }
+//                                }
+//                                Spacer(modifier = Modifier.height(10.dp))
+//                                Box(
+//                                    modifier = Modifier.fillMaxWidth().
+//                                    height(350.dp).
+//                                    clip(RoundedCornerShape(20.dp)).
+//                                    background(Color.White)
+//                                ){
+//                                    Column{
+//                                        Text(
+//                                            text = "Other meals",
+//                                            fontSize = 16.sp,
+//                                            color = Color.Black,
+//                                            style = MaterialTheme.typography.labelLarge,
+//                                            fontWeight = FontWeight.Bold,
+//                                            modifier = Modifier.padding(start = 15.dp, bottom = 15.dp, top = 15.dp)
+//                                        )
+//                                        LazyRow(horizontalArrangement = Arrangement.spacedBy(5.dp)){
+//                                            item{Spacer(modifier = Modifier.width(7.dp))}
+//                                            items(menu){ item ->
+//                                                ItemsBox(
+//                                                    foodMenuListisLoading,
+//                                                    item,
+//                                                    navigationController,
+//                                                    viewModel,
+//                                                    {
+//                                                        Favorite(
+//                                                            modifier = Modifier.
+//                                                            clip(CircleShape).
+//                                                            border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
+//                                                            size(35.dp).
+//                                                            background(Color.VeryLightGray),
+//                                                            food = item,
+//                                                            favoriteState = favoriteState
+//                                                        )
+//                                                        AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
+//                                                    }
+//                                                )
+//                                            }
+//                                            item{Spacer(modifier = Modifier.width(7.dp))}
+//                                        }
+//                                    }
+//                                }
                             }
                         }
                         item{Spacer(modifier = Modifier.height(150.dp))}
                     }
                 }
-                Column(modifier = Modifier.align(Alignment.BottomCenter)){
+                Column(modifier = Modifier.navigationBarsPadding().align(Alignment.BottomCenter)){
                     Box(contentAlignment = Alignment.Center){
-                        BottonBarForItemScreen(addBoxViewModel, viewModel, item, size)
+                        BottomBarForItemScreen(addBoxViewModel, viewModel, item, size)
                     }
-                    Spacer(modifier = Modifier.height(80.dp).pointerInput(Unit) { detectTapGestures { } })
                 }
             }
         }

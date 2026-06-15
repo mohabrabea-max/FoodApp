@@ -44,7 +44,8 @@ fun ItemSize(viewModel: ItemScreenViewModel){
         contentAlignment = Alignment.Center
     ){
         Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-            price?.forEach{ (size2) ->
+            if(price != null){
+                price.forEach{ (size2) ->
                     Box(
                         modifier = Modifier.weight(1f).
                         fillMaxHeight().
@@ -62,6 +63,7 @@ fun ItemSize(viewModel: ItemScreenViewModel){
                         }
                     }
                     VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(30.dp))
+                }
             }
         }
     }

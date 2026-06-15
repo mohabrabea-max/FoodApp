@@ -69,7 +69,7 @@ class ConfirmOrderScreenViewModel : ViewModel() {
     }
 
     fun addToOrderItems(){
-        val menuMap = cartMealsMenu.associateBy{ it.id }
+        val menuMap = cartMealsMenu.associateBy{ it.id } //  هنا حولنا الليست بتاعة الوجبات لماب الkey بتاعها هو الid
         val snackMap = cartSnacksMenu.associateBy{ it.id }
 
         val finalOrderItems = cartItems.values.mapNotNull { item ->
@@ -83,7 +83,8 @@ class ConfirmOrderScreenViewModel : ViewModel() {
                     item.size,
                     price,
                     item.number,
-                    meal.image[0]
+                    meal.image[0],
+                    "Meal"
                 )
             }else{
                 val meal = snackMap[item.id] ?: return@mapNotNull null
@@ -95,11 +96,10 @@ class ConfirmOrderScreenViewModel : ViewModel() {
                     item.size,
                     price,
                     item.number,
-                    meal.image[0]
+                    meal.image[0],
+                    "Snack"
                 )
             }
-
-
         }
         orderItems = orderItems + finalOrderItems
         restaurantName = restaurantsMenu.find { it.id == restaurantId }?.name ?: ""
@@ -108,10 +108,12 @@ class ConfirmOrderScreenViewModel : ViewModel() {
 
     fun uploadOrder(){
         viewModelScope.launch {
-            uploadOrderRequest()
-            getOrders()
-            deleteAllCart()
-            if(uploadOrderRequest() == "Success"){
+            val result = uploadOrderRequest()
+
+            if(result == "Success"){
+                getOrders()
+                deleteAllCart()
+
                 cartItems.clear()
                 cartMealsMenu = emptyList()
                 cartSnacksMenu = emptyList()

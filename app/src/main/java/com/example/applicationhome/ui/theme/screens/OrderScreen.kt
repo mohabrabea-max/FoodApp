@@ -112,6 +112,7 @@ fun OrderDetelseBox(
     food: OrderItemsClass
 ){
     val price = "EGP " + food.price.toString()
+    val size = if(food.size.contains("Pieces") && food.type == "Meal") "" else "(${food.size})"
 
     Box(
         modifier = Modifier.padding(start = 10.dp, end = 10.dp).
@@ -142,7 +143,7 @@ fun OrderDetelseBox(
                         verticalArrangement = Arrangement.Center
                     ){
                         Text(
-                            text = food.mealName,
+                            text = "${food.mealName} $size",
                             fontSize = 18.sp,
                             color = Color.Black,
                             style = MaterialTheme.typography.labelLarge,

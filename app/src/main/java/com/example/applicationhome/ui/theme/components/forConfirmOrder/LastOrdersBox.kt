@@ -189,7 +189,7 @@ fun LastOrdersBox(navigationController: NavHostController, orderScreenViewModel 
                             modifier = Modifier.padding(vertical = 2.dp)
                         )
                         Text(
-                            text = order.totalPrice.toString(),
+                            text = "EGP ${order.totalPrice}",
                             fontSize = 15.sp,
                             style = MaterialTheme.typography.labelLarge,
                             color = Color.Red,

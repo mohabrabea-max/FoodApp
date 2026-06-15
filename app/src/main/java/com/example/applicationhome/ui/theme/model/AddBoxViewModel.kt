@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.data.models.model.CartItemsClass
 import com.example.applicationhome.data.models.model.Food
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Snack
@@ -51,7 +52,7 @@ class AddBoxViewModel : ViewModel(){
             }
             if(cartItems.isNotEmpty()){
                 if(food.restaurantId == allCart.value.restaurantId){
-                    addMealToCart(food, size, finalNumber, type)
+                    addMealToCart(food.id, size, finalNumber, type)
                 }else{
                     alertDialogTrue()
                     newFoodInCart = food
@@ -103,16 +104,12 @@ class AddBoxViewModel : ViewModel(){
         }
     }
 
-    fun updateCount(food: Food, size : String, newCount: Int) {
+    fun updateCount(food: CartItemsClass, size : String, newCount: Int) {
         viewModelScope.launch {
             val mealKey = "${food.id}_$size"
             val currentItem = cartItems[mealKey]
             if (currentItem != null) cartItems[mealKey] = currentItem.copy(number = newCount)
-            val type = when(food){
-                is FoodItem -> {"Meal"}
-                is Snack -> {"Snack"}
-            }
-            addMealToCart(food, size, newCount, type)
+            addMealToCart(food.id, size, newCount, food.type)
             updateTotals()
         }
     }
@@ -124,10 +121,6 @@ class AddBoxViewModel : ViewModel(){
         updateTotals()
     }
 
-    fun bay(){
-        cartItems.clear()
-        updateTotals()
-    }
     fun active(foodId : Int){
         activId = foodId
     }

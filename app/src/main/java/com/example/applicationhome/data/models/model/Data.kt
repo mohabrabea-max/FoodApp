@@ -161,7 +161,8 @@ data class OrderItemsClass(
     val size : String = "",
     val price : Double = 0.0,
     val quantity : Int = 0,
-    val image : String = ""
+    val image : String = "",
+    val type : String = ""
 )
 
 data class UserInformationInOrderClass(

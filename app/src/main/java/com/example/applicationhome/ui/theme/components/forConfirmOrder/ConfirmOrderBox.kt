@@ -26,39 +26,29 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.model.Food
-import com.example.applicationhome.data.models.model.FoodItem
-import com.example.applicationhome.data.models.model.Snack
-import com.example.applicationhome.data.models.repository.CartRepository.cartItems
+import com.example.applicationhome.data.models.model.CartItemsClass
 import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
 import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
-import com.example.applicationhome.data.models.repository.CartRepository.foodMenu
-import com.example.applicationhome.data.models.repository.CartRepository.snacksMenu
 import com.example.applicationhome.ui.theme.LightOrange
 
 @Composable
 fun ConfirmOrderBox(
-    food: Food
+    food: CartItemsClass
 ){
-    val number = cartItems.values.find { it.id == food.id }?.number
-    val fooditem = foodMenu.values.find { it.id == food.id }
-    val foodSize = fooditem?.size
-    val snackitem = snacksMenu.values.find { it.id == food.id }
-    val snackSize = snackitem?.size
-    val size = when(food){
-        is FoodItem -> { foodSize }
-        is Snack -> { snackSize }
-    }
-    val meal = cartMealsMenu.find { it?.id == fooditem?.id }
-    val snack = cartSnacksMenu.find { it?.id == snackitem?.id }
+    val number = food.number
+    val size = food.size
+
+    val meal = cartMealsMenu.find { it.id == food.id }
+    val snack = cartSnacksMenu.find { it.id == food.id }
+    val sizeInTitle = if(size.contains("Pieces")) "" else " (${size})"
 
     val image : String
     val name : String
     val price : String
-    if(fooditem != null){
-        name = meal?.name ?: ""
-        price = "EGP " + meal?.sizeOptions?.find { it.size == size }?.price.toString()
-        image = meal?.image?.first() ?: ""
+    if(meal != null){
+        name = meal.name
+        price = "EGP " + meal.sizeOptions.find { it.size == size }?.price.toString()
+        image = meal.image.first()
     }else{
         name = snack?.name ?: ""
         price = "EGP " + snack?.priceANDsize[size].toString()
@@ -93,7 +83,7 @@ fun ConfirmOrderBox(
                         verticalArrangement = Arrangement.Center
                     ){
                         Text(
-                            text = name,
+                            text = "${name}${sizeInTitle}",
                             fontSize = 18.sp,
                             color = Color.Black,
                             style = MaterialTheme.typography.labelLarge,

@@ -32,8 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.CartRepository.cartItems
-import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
-import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
+import com.example.applicationhome.data.models.repository.CartRepository.foodMenu
+import com.example.applicationhome.data.models.repository.CartRepository.snacksMenu
 import com.example.applicationhome.ui.theme.BrandBlue
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
@@ -90,10 +90,10 @@ fun ConfirmOrderScreen2(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ){
                     item{Spacer(modifier = Modifier.height(100.dp))}
-                    items(cartMealsMenu) { item ->
+                    items(foodMenu.values.toList()) { item ->
                         ConfirmOrderBox(item)
                     }
-                    items(cartSnacksMenu) { item ->
+                    items(snacksMenu.values.toList()) { item ->
                         ConfirmOrderBox(item)
                     }
                     item{

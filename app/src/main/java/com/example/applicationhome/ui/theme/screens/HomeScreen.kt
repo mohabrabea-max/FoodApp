@@ -84,7 +84,6 @@ import com.example.applicationhome.data.models.repository.CartRepository.cartSna
 import com.example.applicationhome.data.models.repository.CartRepository.updateTotals
 import com.example.applicationhome.data.models.repository.MenuRepository.offers
 import com.example.applicationhome.data.models.repository.MenuRepository.restaurantsMenuisLoading
-import com.example.applicationhome.data.models.repository.MenuRepository.snacks
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -162,8 +161,6 @@ fun HomeScreen(
     val layoutInfo = scrollState.layoutInfo
     val itemInfo = layoutInfo.visibleItemsInfo.find { it.key == "categories_header" }
 
-    val snacks = snacks.toList()
-    val menu = categoriesBoxViewModel.filterMenu
     val restaurants = categoriesBoxViewModel.filterrestaurants.toSet().toList()
     val offers = offers
     val pagerState = rememberPagerState(pageCount = {offers.size})

@@ -38,21 +38,20 @@ object CartRepository {
         cartItems.forEach { (key, value) ->
             if(value.type == "Meal"){
                 val meal = cartMealsMenu.find { it.id == value.id }
-                val number = foodMenu.values.find { it.id == value.id }?.number ?: 0
+                val number = value.number
                 if(meal != null){
-                    totalPrice = totalPrice + (meal.sizeOptions.find { it.size == value.size }?.price ?: 0.0) * number
+                    totalPrice += (meal.sizeOptions.find { it.size == value.size }?.price ?: 0.0) * number
                 }
                 totalNumber.value += 1
             }else if(value.type == "Snack"){
                 val snack = cartSnacksMenu.find { it.id == value.id }?.priceANDsize
-                val number = snacksMenu.values.find { it.id == value.id }?.number ?: 0
+                val number = value.number
                 if(snack != null){
-                    totalPrice = totalPrice + (snack[value.size] ?: 0.0) * number
+                    totalPrice += (snack[value.size] ?: 0.0) * number
                 }
                 totalNumber.value += 1
             }
         }
-
     }
 
     suspend fun getCartRestaurantData(food : Food) : String{
@@ -197,10 +196,10 @@ object CartRepository {
         return finalSnacksList
     }
 
-    suspend fun addMealToCart(food: Food, size : String, number: Int, type : String): String{
-        var mealKey by mutableStateOf("${food.id}_$size")
+    suspend fun addMealToCart(foodId: Int, size : String, number: Int, type : String): String{
+        var mealKey by mutableStateOf("${foodId}_$size")
         if(!cartItems.keys.contains(mealKey)){
-            val cartItemsObject = CartItemsClass(food.id, type, size, 1)
+            val cartItemsObject = CartItemsClass(foodId, type, size, 1)
             return try {
                 val response = RetrofitInstance.api.addToCart(userId, mealKey, cartItemsObject)
                 val cartItem = response.body()
@@ -256,8 +255,6 @@ object CartRepository {
             val response = RetrofitInstance.api.deleteItemFromCart(userId, mealKey)
             if(response.isSuccessful){
                 cartItems.keys.remove(mealKey)
-                cartMealsMenu = cartMealsMenu.filterNot { it.id == foodId }
-                cartSnacksMenu = cartSnacksMenu.filterNot { it.id == foodId }
                 "Success"
             }else{
                 "Network error"

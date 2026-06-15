@@ -52,16 +52,16 @@ import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.CartRepository.cartItems
-import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
-import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
+import com.example.applicationhome.data.models.repository.CartRepository.foodMenu
+import com.example.applicationhome.data.models.repository.CartRepository.snacksMenu
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.LightBrownForBackground
-import com.example.applicationhome.ui.theme.components.forCart.CartBox
-import com.example.applicationhome.ui.theme.components.forCart.CartButton
 import com.example.applicationhome.ui.theme.components.bars.MyBottonBar
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
+import com.example.applicationhome.ui.theme.components.forCart.CartBox
+import com.example.applicationhome.ui.theme.components.forCart.CartButton
 import com.example.applicationhome.ui.theme.components.forCart.PaymentSummaryCartScreen
 import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
@@ -86,7 +86,6 @@ fun Cart(
     bottomBarViewModel: BottomBarViewModel,
     favoriteViewModel: FavoriteViewModel
 ){
-    var cart = cartItems
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) {
         // ده بيمسح الأبلكيشن من الـ Background ويقفله تماماً
@@ -143,16 +142,16 @@ fun Cart(
     ){
         Box(modifier = Modifier.background(Color.White)){
             Box(modifier = Modifier.fillMaxSize()){
-                if(cart.isNotEmpty()){
+                if(cartItems.isNotEmpty()){
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ){
                         item{Spacer(modifier = Modifier.height(100.dp))}
-                        items(cartMealsMenu) { item ->
+                        items(foodMenu.values.toList()) { item ->
                             CartBox(item, navigationController, viewModel, addBoxViewModel)
                         }
-                        items(cartSnacksMenu) { item ->
+                        items(snacksMenu.values.toList()) { item ->
                             CartBox(item, navigationController, viewModel, addBoxViewModel)
                         }
                         item{
@@ -217,7 +216,7 @@ fun Cart(
                 }
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally){
-                if(cart.isNotEmpty()){
+                if(cartItems.isNotEmpty()){
                     CartButton(
                         Color.DarkOrange,
                         Color.White,
