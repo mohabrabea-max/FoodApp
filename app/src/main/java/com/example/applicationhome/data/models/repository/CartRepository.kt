@@ -42,14 +42,14 @@ object CartRepository {
                 if(meal != null){
                     totalPrice += (meal.sizeOptions.find { it.size == value.size }?.price ?: 0.0) * number
                 }
-                totalNumber.value += 1
+                totalNumber.value += number
             }else if(value.type == "Snack"){
                 val snack = cartSnacksMenu.find { it.id == value.id }?.priceANDsize
                 val number = value.number
                 if(snack != null){
                     totalPrice += (snack[value.size] ?: 0.0) * number
                 }
-                totalNumber.value += 1
+                totalNumber.value += number
             }
         }
     }
@@ -71,11 +71,11 @@ object CartRepository {
         }
     }
 
-    suspend fun createNewCart(food : Food, size : String, type : String) : String{
+    suspend fun createNewCart(food : Food, size : String, type : String, count : Int = 1) : String{
         val resName = cartRestaurant.name
         val resImage = cartRestaurant.image
         val mealKey = "${food.id}_$size"
-        val cartItemsObject = CartItemsClass(food.id, type, size, 1)
+        val cartItemsObject = CartItemsClass(food.id, type, size, count)
         return try {
             val response = RetrofitInstance.api.createCart(
                 userId,

@@ -44,7 +44,7 @@ fun FixedAddBox(
     count : Int,
     size : String,
     cartkey : String,
-    foodItem : Food?
+    foodItem : Food
 ){
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -70,11 +70,11 @@ fun FixedAddBox(
                     if (newValue.isNotEmpty()) {
                         if(newValue.all {it.isDigit()} && newValue.length <= 2){
                             val newCount = newValue.toIntOrNull() ?: count
-                            addBoxViewModel.updateCount(food, size, newCount)
+                            addBoxViewModel.updateCount(foodItem, size, newCount)
                         }
                     }else{
                         val newCount = newValue.toIntOrNull() ?: 0
-                        addBoxViewModel.updateCount(food, size, newCount)
+                        addBoxViewModel.updateCount(foodItem, size, newCount)
                     }
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),

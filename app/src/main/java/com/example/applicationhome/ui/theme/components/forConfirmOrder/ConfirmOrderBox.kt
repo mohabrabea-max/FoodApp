@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,12 +31,19 @@ import coil.size.Precision
 import com.example.applicationhome.data.models.model.CartItemsClass
 import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
 import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
+import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.phoneNumberState
+import com.example.applicationhome.data.models.repository.UserRepository.userData
 import com.example.applicationhome.ui.theme.LightOrange
 
 @Composable
 fun ConfirmOrderBox(
     food: CartItemsClass
 ){
+    LaunchedEffect(userData.phonenumber){
+        if(userData.phonenumber.isNotEmpty()){
+            phoneNumberState.setTextAndPlaceCursorAtEnd(userData.phonenumber)
+        }
+    }
     val number = food.number
     val size = food.size
 

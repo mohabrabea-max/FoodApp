@@ -141,7 +141,7 @@ fun CartBox(
                         clip(CircleShape).
                         background(Color.LightOrange.copy(alpha = 0.7f))
                     ){
-                        FixedAddBox(addBoxViewModel, food, count, size, cartkey, foodItem)
+                        if(foodItem != null) FixedAddBox(addBoxViewModel, food, count, size, cartkey, foodItem)
                     }
                 }
             }

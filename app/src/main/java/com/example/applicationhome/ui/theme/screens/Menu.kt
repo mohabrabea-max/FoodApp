@@ -6,7 +6,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,7 +47,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -63,21 +61,24 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.CartRepository.allCart
+import com.example.applicationhome.data.models.repository.CartRepository.cartItems
 import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuListisLoading
 import com.example.applicationhome.data.models.repository.MenuRepository.restaurantOffers
 import com.example.applicationhome.data.models.repository.MenuRepository.snacks
 import com.example.applicationhome.data.models.repository.MenuRepository.snacksisLoading
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.AddBox
+import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.forCart.AlertDialogMessage
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.AddBox
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.CategoriesBarForRestaurantsScreen
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Favorite
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Favorite2
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.ItemsBox
-import com.example.applicationhome.ui.theme.components.bars.MyTopBar
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantButton
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
 import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
@@ -92,7 +93,8 @@ fun Menu(
     addBoxViewModel: AddBoxViewModel,
     favoriteState : FavoriteViewModel,
     categoriesBoxViewModel: CategoriesBoxViewModel,
-    restaurantViewModel : RestaurantViewModel
+    restaurantViewModel : RestaurantViewModel,
+    bottomBarViewModel: BottomBarViewModel
 ){
     LaunchedEffect(key1 = restaurantViewModel.isNetworkAvailable, key2 = restaurantViewModel.resid) {
         if(restaurantViewModel.isNetworkAvailable && restaurantViewModel.resid != 0){
@@ -215,243 +217,239 @@ fun Menu(
                 }
             }
         ){
-            LazyVerticalGrid (
-                state = scrollState,
-                modifier = Modifier.fillMaxSize().
-                background(Color.White),
-                columns = GridCells.Fixed(2)
-            ){
-                item(span = { GridItemSpan(2) }){
-                    Box(
-                        modifier = Modifier.fillMaxWidth().height(270.dp),
-                        contentAlignment = Alignment.TopCenter
-                    ){
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current).
-                            data(background).
-                            crossfade(true).
-                            precision(Precision.EXACT).
-                            build(),
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxWidth().height(230.dp),
-                            contentScale = ContentScale.Crop
-                        )
+            Box(modifier = Modifier.background(Color.VeryLightGray)){
+                LazyVerticalGrid (
+                    state = scrollState,
+                    modifier = Modifier.fillMaxSize().
+                    background(Color.White),
+                    columns = GridCells.Fixed(2)
+                ){
+                    item(span = { GridItemSpan(2) }){
                         Box(
-                            modifier = Modifier.padding(horizontal = 15.dp).
-                            fillMaxWidth().
-                            height(120.dp).
-                            clip(RoundedCornerShape(15.dp)).
-                            border(width = 0.5.dp, color = Color.LightGray, shape = RoundedCornerShape(15.dp)).
-                            background(Color.White).
-                            align(Alignment.BottomCenter)
+                            modifier = Modifier.fillMaxWidth().height(270.dp),
+                            contentAlignment = Alignment.TopCenter
                         ){
-                            Row(
-                                modifier = Modifier.fillMaxSize().padding(13.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current).
+                                data(background).
+                                crossfade(true).
+                                precision(Precision.EXACT).
+                                build(),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxWidth().height(230.dp),
+                                contentScale = ContentScale.Crop
+                            )
+                            Box(
+                                modifier = Modifier.padding(horizontal = 15.dp).
+                                fillMaxWidth().
+                                height(120.dp).
+                                clip(RoundedCornerShape(15.dp)).
+                                border(width = 0.5.dp, color = Color.LightGray, shape = RoundedCornerShape(15.dp)).
+                                background(Color.White).
+                                align(Alignment.BottomCenter)
                             ){
-                                Row{
-                                    AsyncImage(
-                                        model = ImageRequest.Builder(LocalContext.current).
-                                        data(logo).
-                                        crossfade(true).
-                                        precision(Precision.EXACT).
-                                        build(),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(70.dp).
-                                        clip(RoundedCornerShape(10.dp)).
-                                        border(width = 0.5.dp, color = Color.LightGray, shape = RoundedCornerShape(10.dp)),
-                                        contentScale = ContentScale.Crop
-                                    )
-                                    Column(
-                                        modifier = Modifier.padding(start = 13.dp)
-                                    ){
-                                        Text(
-                                            text = item.name,
-                                            fontSize = 18.sp,
-                                            color = Color.Black,
-                                            style = MaterialTheme.typography.labelLarge,
-                                            fontWeight = FontWeight.Bold,
-                                            modifier = Modifier.padding(bottom = 5.dp)
+                                Row(
+                                    modifier = Modifier.fillMaxSize().padding(13.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ){
+                                    Row{
+                                        AsyncImage(
+                                            model = ImageRequest.Builder(LocalContext.current).
+                                            data(logo).
+                                            crossfade(true).
+                                            precision(Precision.EXACT).
+                                            build(),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(70.dp).
+                                            clip(RoundedCornerShape(10.dp)).
+                                            border(width = 0.5.dp, color = Color.LightGray, shape = RoundedCornerShape(10.dp)),
+                                            contentScale = ContentScale.Crop
                                         )
-                                        Text(
-                                            text = type?.joinToString(separator = " ", prefix = "", postfix = "")?: "",
-                                            fontSize = 10.sp,
-                                            color = Color.Gray,
-                                            modifier = Modifier.padding(bottom = 10.dp)
-                                        )
-                                        Row(
-                                            modifier = Modifier.width(80.dp).
-                                            height(20.dp).
-                                            clip(RoundedCornerShape(5.dp)).
-                                            background(Color.VeryLightGray).padding(horizontal = 3.dp),
-                                            horizontalArrangement = Arrangement.SpaceBetween,
-                                            verticalAlignment = Alignment.CenterVertically
+                                        Column(
+                                            modifier = Modifier.padding(start = 13.dp)
                                         ){
-                                            Icon(
-                                                Icons.Default.Star,
-                                                contentDescription = null,
-                                                tint = Color(0xFFFFD700) ,
-                                                modifier = Modifier.size(18.dp)
-                                            )
                                             Text(
-                                                text = item.review.toString(),
+                                                text = item.name,
+                                                fontSize = 18.sp,
                                                 color = Color.Black,
-                                                fontSize = 14.sp,
                                                 style = MaterialTheme.typography.labelLarge,
-                                                modifier = Modifier
+                                                fontWeight = FontWeight.Bold,
+                                                modifier = Modifier.padding(bottom = 5.dp)
                                             )
                                             Text(
-                                                text = "(1k+)",
+                                                text = type?.joinToString(separator = " ", prefix = "", postfix = "")?: "",
+                                                fontSize = 10.sp,
                                                 color = Color.Gray,
-                                                fontSize = 14.sp,
-                                                style = TextStyle(letterSpacing = (-0.7).sp),
-                                                modifier = Modifier
+                                                modifier = Modifier.padding(bottom = 10.dp)
                                             )
+                                            Row(
+                                                modifier = Modifier.width(80.dp).
+                                                height(20.dp).
+                                                clip(RoundedCornerShape(5.dp)).
+                                                background(Color.VeryLightGray).padding(horizontal = 3.dp),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ){
+                                                Icon(
+                                                    Icons.Default.Star,
+                                                    contentDescription = null,
+                                                    tint = Color(0xFFFFD700) ,
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                                Text(
+                                                    text = item.review.toString(),
+                                                    color = Color.Black,
+                                                    fontSize = 14.sp,
+                                                    style = MaterialTheme.typography.labelLarge,
+                                                    modifier = Modifier
+                                                )
+                                                Text(
+                                                    text = "(1k+)",
+                                                    color = Color.Gray,
+                                                    fontSize = 14.sp,
+                                                    style = TextStyle(letterSpacing = (-0.7).sp),
+                                                    modifier = Modifier
+                                                )
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
-                item(span = { GridItemSpan(2) }){
-                    Box{
-                        LazyRow (
-                            modifier = Modifier.fillMaxSize(),
-                        ){
-                            item{ Spacer(modifier = Modifier.width(15.dp)) }
+                    item(span = { GridItemSpan(2) }){
+                        Box{
+                            LazyRow (
+                                modifier = Modifier.fillMaxSize(),
+                            ){
+                                item{ Spacer(modifier = Modifier.width(15.dp)) }
 
-                            items(restaurantOffers.toList()){ item ->
-                                AsyncImage(
-                                    modifier = Modifier.fillMaxWidth().height(120.dp).padding(vertical = 10.dp).clip(RoundedCornerShape(10.dp)).clickable {  },
-                                    model = ImageRequest.Builder(LocalContext.current).
-                                    data(item.image).
-                                    crossfade(true).
-                                    size(400, 400).
-                                    precision(Precision.EXACT).
-                                    build(),
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop
-                                )
+                                items(restaurantOffers.toList()){ item ->
+                                    AsyncImage(
+                                        modifier = Modifier.fillMaxWidth().height(120.dp).padding(vertical = 10.dp).clip(RoundedCornerShape(10.dp)).clickable {  },
+                                        model = ImageRequest.Builder(LocalContext.current).
+                                        data(item.image).
+                                        crossfade(true).
+                                        size(400, 400).
+                                        precision(Precision.EXACT).
+                                        build(),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
                             }
                         }
                     }
-                }
-                stickyHeader(key = "categories_header"){
-                    Box(
-                        modifier = Modifier.height(47.dp).
-                        fillMaxWidth().
-                        graphicsLayer {
-                            if (itemInfo != null) {
-                                if (itemInfo.offset.y < topBarHeightPx) {
-                                    translationY = topBarHeightPx - itemInfo.offset.y
+                    stickyHeader(key = "categories_header"){
+                        Box(
+                            modifier = Modifier.height(47.dp).
+                            fillMaxWidth().
+                            graphicsLayer {
+                                if (itemInfo != null) {
+                                    if (itemInfo.offset.y < topBarHeightPx) {
+                                        translationY = topBarHeightPx - itemInfo.offset.y
+                                    }
                                 }
-                            }
-                        }.shadow( elevation =
-                            if (itemInfo != null){
-                                if (itemInfo.offset.y < topBarHeightPx) 3.dp else 0.dp
-                            }else{
-                                0.dp
-                            }
-                        )
-                    ){
-                        CategoriesBarForRestaurantsScreen(item, categoriesBoxViewModel)
+                            }.shadow( elevation =
+                                if (itemInfo != null){
+                                    if (itemInfo.offset.y < topBarHeightPx) 3.dp else 0.dp
+                                }else{
+                                    0.dp
+                                }
+                            )
+                        ){
+                            CategoriesBarForRestaurantsScreen(item, categoriesBoxViewModel)
 
+                        }
+                    }
+                    if(categoriesBoxViewModel.typeInRestaurantScreen == "Snacks"){
+                        items(snacks){ item ->
+                            SnaksBox(
+                                snacksisLoading,
+                                modifier = Modifier.size(200.dp),
+                                false,
+                                item,
+                                null,
+                                navigationController,
+                                itemScreenViewModel,
+                                {
+                                    Favorite(
+                                        modifier = Modifier.
+                                        clip(CircleShape).
+                                        border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
+                                        size(35.dp).
+                                        background(Color.VeryLightGray),
+                                        food = item,
+                                        favoriteState = favoriteState
+                                    )
+                                    AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
+                                }
+                            )
+                        }
+                    }else if(categoriesBoxViewModel.typeInRestaurantScreen == "Drink"){
+                        println("")
+                    }else{
+                        items(menu){ item ->
+                            ItemsBox(
+                                foodMenuListisLoading,
+                                item,
+                                navigationController,
+                                itemScreenViewModel,
+                                {
+                                    Favorite(
+                                        modifier = Modifier.
+                                        clip(CircleShape).
+                                        size(35.dp),
+                                        food = item,
+                                        favoriteState = favoriteState
+                                    )
+                                    AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
+                                }
+                            )
+                        }
+                        items(menu){ item ->
+                            ItemsBox(
+                                foodMenuListisLoading,
+                                item,
+                                navigationController,
+                                itemScreenViewModel,
+                                {
+                                    Favorite(
+                                        modifier = Modifier.
+                                        clip(CircleShape).
+                                        size(35.dp),
+                                        food = item,
+                                        favoriteState = favoriteState
+                                    )
+                                    AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
+                                }
+                            )
+                        }
+                    }
+                    item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
+                }
+
+                if(allCart.value.restaurantId == restaurantViewModel.resid && cartItems.isNotEmpty()){
+                    Column(modifier = Modifier.align(Alignment.BottomCenter)){
+                        Box(contentAlignment = Alignment.Center){
+                            RestaurantButton(navigationController, bottomBarViewModel)
+                        }
                     }
                 }
-                if(categoriesBoxViewModel.typeInRestaurantScreen == "Snacks"){
-                    items(snacks){ item ->
-                        SnaksBox(
-                            snacksisLoading,
-                            modifier = Modifier.size(200.dp),
-                            false,
-                            item,
-                            null,
-                            navigationController,
-                            itemScreenViewModel,
-                            {
-                                Favorite(
-                                    modifier = Modifier.
-                                    clip(CircleShape).
-                                    border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
-                                    size(35.dp).
-                                    background(Color.VeryLightGray),
-                                    food = item,
-                                    favoriteState = favoriteState
-                                )
-                                AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
-                            }
-                        )
-                    }
-                }else if(categoriesBoxViewModel.typeInRestaurantScreen == "Drink"){
-                    println("")
-                }else{
-                    items(menu){ item ->
-                        ItemsBox(
-                            foodMenuListisLoading,
-                            item,
-                            navigationController,
-                            itemScreenViewModel,
-                            {
-                                Favorite(
-                                    modifier = Modifier.
-                                    clip(CircleShape).
-                                    size(35.dp),
-                                    food = item,
-                                    favoriteState = favoriteState
-                                )
-                                AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
-                            }
-                        )
-                    }
-                    items(menu){ item ->
-                        ItemsBox(
-                            foodMenuListisLoading,
-                            item,
-                            navigationController,
-                            itemScreenViewModel,
-                            {
-                                Favorite(
-                                    modifier = Modifier.
-                                    clip(CircleShape).
-                                    size(35.dp),
-                                    food = item,
-                                    favoriteState = favoriteState
-                                )
-                                AddBox(color = Color.VeryLightGray, food = item, addBoxViewModel)
-                            }
-                        )
-                    }
-                }
-                item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
-            }
 
-            if(addBoxViewModel.errorInCart){
-                AlertDialogMessage(
-                    addBoxViewModel,
-                    allCart.value.restaurantName,
-                    "Start",
-                    {
-                        addBoxViewModel.alertDialogFalse()
-                        addBoxViewModel.clearAndStartNewCart()
-                    },
-                    "Cancel",
-                    {addBoxViewModel.alertDialogFalse()}
-                )
-            }
-
-
-
-
-
-
-            Box(modifier = Modifier.background(Color.VeryLightGray)){
-                Column(modifier = Modifier.align(Alignment.BottomCenter)){
-                    Box(contentAlignment = Alignment.Center){
-                        //BottonBarForItemScreen(addBoxViewModel, viewModel, item, size)
-                    }
-                    Spacer(modifier = Modifier.height(80.dp).pointerInput(Unit) { detectTapGestures { } })
+                if(addBoxViewModel.errorInCart){
+                    AlertDialogMessage(
+                        addBoxViewModel,
+                        allCart.value.restaurantName,
+                        "Start",
+                        {
+                            addBoxViewModel.alertDialogFalse()
+                            addBoxViewModel.clearAndStartNewCart()
+                        },
+                        "Cancel",
+                        {addBoxViewModel.alertDialogFalse()}
+                    )
                 }
             }
         }

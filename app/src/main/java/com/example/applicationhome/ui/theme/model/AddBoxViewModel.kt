@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.data.models.model.CartItemsClass
 import com.example.applicationhome.data.models.model.Food
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Snack
@@ -104,12 +103,39 @@ class AddBoxViewModel : ViewModel(){
         }
     }
 
-    fun updateCount(food: CartItemsClass, size : String, newCount: Int) {
+    fun updateCount(food : Food, size : String, newCount : Int) {
         viewModelScope.launch {
             val mealKey = "${food.id}_$size"
             val currentItem = cartItems[mealKey]
-            if (currentItem != null) cartItems[mealKey] = currentItem.copy(number = newCount)
-            addMealToCart(food.id, size, newCount, food.type)
+            val finalNumber = if (currentItem != null){
+                if(currentItem.number == 99){
+                    99
+                }else{
+                    currentItem.number + newCount
+                }
+            }else{
+                1
+            }
+            val type = when(food){
+                is FoodItem -> {"Meal"}
+                is Snack -> {"Snack"}
+            }
+            if(cartItems.isNotEmpty()){
+                if(food.restaurantId == allCart.value.restaurantId){
+                    addMealToCart(food.id, size, finalNumber, type)
+                }else{
+                    alertDialogTrue()
+                    newFoodInCart = food
+                    newFoodInCartSize = size
+                }
+            }else{
+                getCartRestaurantData(food)
+                createNewCart(food, size, type, newCount)
+            }
+            val mealsDeferred = async { cartMeals() }
+            val snacksDeferred = async { cartSnacks() }
+            cartMealsMenu = mealsDeferred.await().toSet().toList()
+            cartSnacksMenu = snacksDeferred.await().toSet().toList()
             updateTotals()
         }
     }
