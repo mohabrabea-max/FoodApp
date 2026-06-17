@@ -3,6 +3,7 @@ package com.example.applicationhome.ui.theme.model
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.models.model.Food
@@ -22,7 +23,6 @@ import com.example.applicationhome.data.models.repository.CartRepository.getCart
 import com.example.applicationhome.data.models.repository.CartRepository.minusFromCart
 import com.example.applicationhome.data.models.repository.CartRepository.totalNumber
 import com.example.applicationhome.data.models.repository.CartRepository.totalPrice
-import com.example.applicationhome.data.models.repository.CartRepository.updateTotals
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
@@ -31,6 +31,15 @@ class AddBoxViewModel : ViewModel(){
     var errorInCart by mutableStateOf(false)
     var newFoodInCart by mutableStateOf<Food?>(null)
     var newFoodInCartSize by mutableStateOf<String?>(null)
+    var newCount by mutableStateOf(0)
+
+
+    init {
+        viewModelScope.launch {
+            snapshotFlow { Triple(cartItems.size, cartMealsMenu.size, cartSnacksMenu.size) } //هنا خلينا البتاعة دي تنفذ الابديت لما ال3 حاجات دول حاجة فيهم تتغير
+                .collect { updateTotals() }
+        }
+    }
 
     fun plus(food: Food, size : String){
         viewModelScope.launch {
@@ -147,6 +156,28 @@ class AddBoxViewModel : ViewModel(){
         updateTotals()
     }
 
+    fun updateTotals() {
+        totalNumber.value = 0
+        totalPrice = 0.0
+        cartItems.forEach { (key, value) ->
+            if(value.type == "Meal"){
+                val meal = cartMealsMenu.find { it.id == value.id }
+                val number = value.number
+                if(meal != null){
+                    totalPrice += (meal.sizeOptions.find { it.size == value.size }?.price ?: 0.0) * number
+                }
+                totalNumber.value += number
+            }else if(value.type == "Snack"){
+                val snack = cartSnacksMenu.find { it.id == value.id }?.priceANDsize
+                val number = value.number
+                if(snack != null){
+                    totalPrice += (snack[value.size] ?: 0.0) * number
+                }
+                totalNumber.value += number
+            }
+        }
+    }
+
     fun active(foodId : Int){
         activId = foodId
     }
@@ -157,5 +188,17 @@ class AddBoxViewModel : ViewModel(){
 
     fun alertDialogFalse(){
         errorInCart = false
+    }
+
+    fun plusnewCount(){
+        newCount += 1
+    }
+
+    fun minusnewCount(){
+        newCount -= 1
+    }
+
+    fun deletenewCount(){
+        newCount = 0
     }
 }

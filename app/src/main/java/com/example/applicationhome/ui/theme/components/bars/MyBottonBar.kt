@@ -156,7 +156,7 @@ fun MyBottonBar(
                                     containerColor = Color.DarkOrange,
                                     contentColor = Color.White
                                 ){
-                                    Text(text = totalNumber.value.toString())
+                                    if(totalNumber.value <= 99) Text(text = totalNumber.value.toString()) else Text(text = "+99")
                                 }
                             }
                         }

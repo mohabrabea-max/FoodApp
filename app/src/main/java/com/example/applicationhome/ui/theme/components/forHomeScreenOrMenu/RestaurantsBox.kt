@@ -86,7 +86,7 @@ fun RestaurantsBox(
                     restaurantViewModel.loadRestaurantId(item.id)
                     categoriesBoxViewModel.selectedtype(0, item.typ.toList().first())
                     itemScreenViewModel.selectRestaurant(item)
-                    navigationController.navigate(Screens.Menu.screen)
+                    navigationController.navigate(Screens.RestaurantScreen.screen)
                 }
             ){
                 Box(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray)){

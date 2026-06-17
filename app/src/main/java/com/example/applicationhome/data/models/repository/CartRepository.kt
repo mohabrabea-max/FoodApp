@@ -31,29 +31,6 @@ object CartRepository {
     var cartSnacksMenu by mutableStateOf<List<Snack>>(emptyList())
 
 
-
-    fun updateTotals() {
-        totalNumber.value = 0
-        totalPrice = 0.0
-        cartItems.forEach { (key, value) ->
-            if(value.type == "Meal"){
-                val meal = cartMealsMenu.find { it.id == value.id }
-                val number = value.number
-                if(meal != null){
-                    totalPrice += (meal.sizeOptions.find { it.size == value.size }?.price ?: 0.0) * number
-                }
-                totalNumber.value += number
-            }else if(value.type == "Snack"){
-                val snack = cartSnacksMenu.find { it.id == value.id }?.priceANDsize
-                val number = value.number
-                if(snack != null){
-                    totalPrice += (snack[value.size] ?: 0.0) * number
-                }
-                totalNumber.value += number
-            }
-        }
-    }
-
     suspend fun getCartRestaurantData(food : Food) : String{
         return try {
             val response = RetrofitInstance.api.getCarRestaurant("\"id\"", food.restaurantId)
@@ -179,9 +156,6 @@ object CartRepository {
                                 println("isSuccessful")
                                 resultMap?.values?.firstOrNull()
                             }else{
-                                println("Error in response")
-                                println("Firebase Error Code: ${response.code()}")
-                                println("Firebase Error Body: ${response.errorBody()?.string()}")
                                 null
                             }
                         } catch (e : Exception){

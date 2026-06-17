@@ -61,11 +61,11 @@ import com.example.applicationhome.data.models.repository.FavoriteRepository.sna
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.VeryLightGray
+import com.example.applicationhome.ui.theme.components.bars.MyBottonBar
+import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.AddBox
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Favorite
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.ItemsBox
-import com.example.applicationhome.ui.theme.components.bars.MyBottonBar
-import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantsBox
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.favoriteBar
@@ -177,6 +177,7 @@ fun Favorite(
                                     null,
                                     navigationController,
                                     itemScreenViewModel,
+                                    addBoxViewModel,
                                     {
                                         Favorite(
                                             modifier = Modifier.clip(CircleShape).border(
@@ -204,6 +205,7 @@ fun Favorite(
                                     item,
                                     navigationController,
                                     itemScreenViewModel,
+                                    addBoxViewModel,
                                     {
                                         Favorite(
                                             modifier = Modifier.clip(CircleShape).size(35.dp)

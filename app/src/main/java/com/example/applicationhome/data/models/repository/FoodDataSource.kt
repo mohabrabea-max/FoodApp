@@ -144,7 +144,7 @@ object Drawer {
         Options("Settings", Icons.Default.Settings, Screens.Settings.screen)
     )
     private val menuOptions = listOf(
-        Options("Menu", Icons.Default.RestaurantMenu, Screens.Menu.screen),
+        Options("Menu", Icons.Default.RestaurantMenu, Screens.RestaurantScreen.screen),
         Options("Restaurants", Icons.Default.Restaurant, Screens.Restaurants.screen)
 
     )

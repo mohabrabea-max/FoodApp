@@ -1,0 +1,150 @@
+package com.example.applicationhome.ui.theme.components.bars
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import com.example.applicationhome.R
+import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.ui.theme.DarkOrange
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+
+@Composable
+fun HomeScreenTopBar(
+    scrollState : LazyGridState,
+    drawerState : DrawerState,
+    coroutineScope : CoroutineScope,
+    navigationController : NavHostController
+){
+    val density = LocalDensity.current
+    val minOffsetToShowBox = with(density) { 147.dp.toPx() }
+
+    val alpha by remember {
+        derivedStateOf {
+            val targetPx = with(density) { 85.dp.toPx() }
+            if(scrollState.firstVisibleItemIndex > 0){
+                1f
+            }else{
+                ((scrollState.firstVisibleItemScrollOffset / targetPx)).coerceIn(0f, 1f)
+            }
+        }
+    }
+
+    var scal by remember { mutableStateOf(false) }
+    LaunchedEffect(scrollState){
+        var previousOffset = 0
+        var accumulatedScrollUp = 0f
+        snapshotFlow{ scrollState.firstVisibleItemIndex to scrollState.firstVisibleItemScrollOffset }.
+        collect{ (currentIndex, currentOffset) ->
+            val delta = previousOffset - currentOffset
+            accumulatedScrollUp += delta
+            previousOffset = currentOffset
+            if ((currentOffset > minOffsetToShowBox * 1.7 || scrollState.firstVisibleItemIndex > 0)) {
+                scal = true
+            }else if((currentOffset > minOffsetToShowBox * 1.7 / 2 || scrollState.firstVisibleItemIndex > 0)){
+                scal = true
+            }else{
+                scal = false
+            }
+        }
+    }
+
+    Box{
+        Column{
+            MyTopBar(
+                Color.DarkOrange.copy(alpha = alpha),
+                modifier = Modifier.
+                fillMaxWidth().
+                height(100.dp),
+                null,
+                Color.White,
+                {
+                    IconButton(
+                        onClick = {coroutineScope.launch{drawerState.open()}},
+                        modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape).size(35.dp)
+                    ) {
+                        Icon(painterResource(id = R.drawable.custom_menu), contentDescription = null, tint = Color.White)
+                    }
+                },
+                {
+                    AnimatedVisibility(
+                        visible = scal,
+                        enter = fadeIn() + scaleIn(),
+                        exit = fadeOut() + scaleOut()
+                    ){
+                        IconButton(onClick = {
+                            navigationController.navigate(Screens.Notifications.screen){
+                                popUpTo(navigationController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+
+                                launchSingleTop = true
+
+                                restoreState = true
+                            }
+                        },
+                            modifier = Modifier.
+                            size(50.dp).
+                            padding(5.dp).
+                            clip(CircleShape).
+                            size(35.dp)
+                        ){
+                            Icon(Icons.Default.Search, contentDescription = null, tint = Color.White)
+                        }
+                    }
+
+                    IconButton(onClick = {
+                        navigationController.navigate(Screens.Search.screen){
+                            popUpTo(navigationController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+
+                            restoreState = true
+                        }
+                    },
+                        modifier = Modifier.size(50.dp).
+                        padding(5.dp).
+                        clip(CircleShape).
+                        size(35.dp)
+                    ) {
+                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.White)
+                    }
+                }
+            )
+        }
+    }
+}

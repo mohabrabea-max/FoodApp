@@ -107,7 +107,7 @@ fun FinalScreen(
         Screens.HomeScreen,
         Screens.Profile,
         Screens.Settings,
-        Screens.Menu,
+        Screens.RestaurantScreen,
         Screens.Restaurants,
         Screens.Search,
         Screens.ItemScreen,
@@ -211,17 +211,17 @@ fun FinalScreen(
                         popExitTransition = { ExitTransition.None }
                     ) {
                         when(item){
-                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, apiData, restaurantViewModel, bottomBarViewModel)
+                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel)
                             is Screens.Profile -> Profile(drawerState, coroutineScope, navigationController, userImageViewModel, profileViewModel, birthdayViewModel)
                             is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel, bottomBarViewModel, addBoxViewModel, favoriteViewModel)
                             is Screens.Search -> Search()
-                            is Screens.Menu -> Menu(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel)
+                            is Screens.RestaurantScreen -> RestaurantScreen(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel)
                             is Screens.Restaurants -> Restaurants(drawerState, coroutineScope, navigationController, favoriteViewModel)
-                            is Screens.ItemScreen -> ItemScreen(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, apiData)
+                            is Screens.ItemScreen -> ItemScreen(navigationController, viewModel, addBoxViewModel, favoriteViewModel, bottomBarViewModel)
                             is Screens.Notifications -> Notifications()
                             is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, bottomBarViewModel, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel)
                             is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, bottomBarViewModel, viewModel, addBoxViewModel, bottomBarViewModel, favoriteViewModel)
-                            is Screens.LoginScreen -> LoginScreen(navigationController, loginViewModel)
+                            is Screens.LoginScreen -> LoginScreen(navigationController, loginViewModel, addBoxViewModel)
                             is Screens.SignUpScreen -> SignUpScreen(navigationController, loginViewModel)
                             is Screens.ConfirmOrderScreen -> ConfirmOrderScreen(navigationController, confirmOrderScreenViewModel)
                             is Screens.ConfirmOrderScreen2 -> ConfirmOrderScreen2(navigationController, confirmOrderScreenViewModel, bottomBarViewModel)

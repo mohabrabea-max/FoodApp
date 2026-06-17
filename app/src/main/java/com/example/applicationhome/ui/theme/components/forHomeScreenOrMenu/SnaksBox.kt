@@ -31,6 +31,7 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.model.Snack
+import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @Composable
@@ -42,6 +43,7 @@ fun SnaksBox(
     size : String?,
     navigationController : NavHostController,
     itemScreenViewModel: ItemScreenViewModel,
+    addBoxViewModel: AddBoxViewModel,
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
     if (snackIsLoading) {
@@ -58,6 +60,7 @@ fun SnaksBox(
             clickable{
                 itemScreenViewModel.selectSnak(item, item.priceANDsize.keys.last())
                 navigationController.navigate(Screens.ItemScreen.screen)
+                addBoxViewModel.deletenewCount()
             }
         ){
             Column(modifier = Modifier.fillMaxSize().background(Color.White)){

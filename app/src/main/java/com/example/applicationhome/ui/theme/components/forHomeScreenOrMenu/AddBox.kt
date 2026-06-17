@@ -41,7 +41,8 @@ import androidx.compose.ui.unit.sp
 import com.example.applicationhome.data.models.model.Food
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Snack
-import com.example.applicationhome.data.models.repository.CartRepository
+import com.example.applicationhome.data.models.repository.CartRepository.allCart
+import com.example.applicationhome.data.models.repository.CartRepository.cartItems
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.model.AddBoxViewModel
@@ -52,6 +53,7 @@ fun AddBox(
     color : Color,
     food : Food,
     addBoxViewModel: AddBoxViewModel,
+    message : () -> Unit = {},
     modifier: Modifier = Modifier
 ){
 
@@ -68,7 +70,7 @@ fun AddBox(
         }
     }
     val cartkey = "${food.id}_${selectedSize.value.toString()}"
-    val count = CartRepository.cartItems[cartkey]?.number ?: 0
+    val count = cartItems[cartkey]?.number ?: 0
     val activid = addBoxViewModel.activId == id
     var isExpanded by remember { mutableStateOf(false) }
     val active = addBoxViewModel.activId
@@ -102,7 +104,8 @@ fun AddBox(
                     isExpanded = true
                     addBoxViewModel.active(id)
                     addBoxViewModel.plus(food, selectedSize.value.toString())
-                          },
+                    if(food.restaurantId == allCart.value.restaurantId) message()
+                },
                 modifier = Modifier.fillMaxSize()
             ){
                 Icon(
@@ -186,7 +189,12 @@ fun AddBox(
                                 textAlign = TextAlign.Center
                             )
                         }
-                        IconButton(onClick = {addBoxViewModel.plus(food, selectedSize.value.toString())}, modifier = Modifier.weight(1f).fillMaxHeight()){
+                        IconButton(
+                            onClick = {
+                                addBoxViewModel.plus(food, selectedSize.value.toString())
+                                if(food.restaurantId == allCart.value.restaurantId) message()
+                            },
+                            modifier = Modifier.weight(1f).fillMaxHeight()){
                             Icon(
                                 Icons.Default.Add,
                                 contentDescription = null,

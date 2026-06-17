@@ -39,7 +39,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.model.Screens
@@ -47,17 +46,17 @@ import com.example.applicationhome.data.models.repository.UserRepository.userDat
 import com.example.applicationhome.data.models.repository.UserRepository.userId
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.components.forSignUpOrLogin.LoginTextField
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
+import com.example.applicationhome.ui.theme.components.forSignUpOrLogin.LoginTextField
+import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
-import com.example.applicationhome.ui.theme.model.UserImageViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(
     navigationController : NavHostController,
     loginViewModel: LoginViewModel,
-    userImageViewModel: UserImageViewModel = viewModel()
+    addBoxViewModel: AddBoxViewModel
 ){
     Scaffold(
         modifier = Modifier
@@ -148,7 +147,7 @@ fun LoginScreen(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
 
-                LoginButton(loginViewModel, navigationController)
+                LoginButton(loginViewModel, navigationController, addBoxViewModel)
 
                 Spacer(modifier = Modifier.height(25.dp))
                 Row(
@@ -234,7 +233,7 @@ fun LoginScreen(
 }
 
 @Composable
-fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostController){
+fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostController, addBoxViewModel: AddBoxViewModel){
     var isEmailTrue = loginViewModel.isEmailTrue
     var isPasswordTrue = loginViewModel.isPasswordTrue
     Box(
@@ -251,6 +250,7 @@ fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostCon
                         navigationController.navigate(Screens.HomeScreen.screen) {navigationController.popBackStack()}
                         loginViewModel.login(userData, userId)
                         loginViewModel.bottonstate()
+                        addBoxViewModel.updateTotals()
                     }else if(isEmailTrue && isPasswordTrue == false){
                         println("true false")
                     }else{

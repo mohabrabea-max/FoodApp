@@ -32,11 +32,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,6 +63,7 @@ import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.data.models.repository.MenuRepository.snacksisLoading
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
+import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
@@ -68,9 +73,9 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Favor
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.ItemSize
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Ratings
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
-import com.example.applicationhome.ui.theme.model.APIData
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.showAddToCartSnackbar
 import com.example.applicationhome.ui.theme.model.AddBoxViewModel
-import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
+import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
@@ -82,9 +87,11 @@ fun ItemScreen(
     viewModel: ItemScreenViewModel,
     addBoxViewModel : AddBoxViewModel,
     favoriteState : FavoriteViewModel,
-    categoriesBoxViewModel : CategoriesBoxViewModel,
-    apiData : APIData
+    bottomBarViewModel: BottomBarViewModel
 ){
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
     val scrollState = rememberLazyListState()
     val alpha by remember {
         derivedStateOf {
@@ -104,7 +111,6 @@ fun ItemScreen(
             }
         }
     }
-    val menu = categoriesBoxViewModel.filterMenu.toList()
     val snacks = MenuRepository.snacks.toList()
     val item = viewModel.selectedItem
     val size = viewModel.selectedSize
@@ -115,6 +121,16 @@ fun ItemScreen(
         Scaffold(
             modifier = Modifier.fillMaxSize().
             background(Color.White),
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState){ data ->
+                    Snackbar(
+                        containerColor = Color.DeepMatteBlack,
+                        actionColor = Color.DarkOrange,
+                        snackbarData = data
+                    )
+                }
+                Spacer(modifier = Modifier.height(160.dp))
+            },
             topBar = {
                 Column{
                     MyTopBar(
@@ -323,7 +339,8 @@ fun ItemScreen(
                                                             safeSnake,
                                                             snakeSize,
                                                             navigationController,
-                                                            viewModel
+                                                            viewModel,
+                                                            addBoxViewModel
                                                         )
                                                     }
                                                 }
@@ -396,18 +413,34 @@ fun ItemScreen(
 
                 Column(modifier = Modifier.align(Alignment.BottomCenter)){
                     Box(contentAlignment = Alignment.Center){
-                        BottomBarForItemScreen(addBoxViewModel, item, size)
+                        BottomBarForItemScreen(
+                            addBoxViewModel,
+                            item,
+                            size,
+                            snackbarHostState,
+                            scope,
+                            navigationController,
+                            bottomBarViewModel
+                        )
                     }
                 }
 
                 if(addBoxViewModel.errorInCart){
                     AlertDialogMessage(
-                        addBoxViewModel,
                         allCart.value.restaurantName,
                         "Start",
                         {
+                            addBoxViewModel.deletenewCount()
                             addBoxViewModel.alertDialogFalse()
                             addBoxViewModel.clearAndStartNewCart()
+                            scope.showAddToCartSnackbar(
+                                snackbarHostState,
+                                {
+                                    navigationController.navigate(Screens.Cart.screen)
+                                    bottomBarViewModel.cart()
+                                }
+
+                            )
                         },
                         "Cancel",
                         {addBoxViewModel.alertDialogFalse()}
