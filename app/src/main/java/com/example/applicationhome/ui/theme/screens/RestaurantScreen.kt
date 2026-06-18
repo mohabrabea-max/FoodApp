@@ -269,7 +269,7 @@ fun RestaurantScreen(
                 if(allCart.value.restaurantId == restaurantViewModel.resid && cartItems.isNotEmpty()){
                     Column(modifier = Modifier.align(Alignment.BottomCenter)){
                         Box(contentAlignment = Alignment.Center){
-                            RestaurantButton(navigationController, bottomBarViewModel)
+                            RestaurantButton(navigationController)
                         }
                     }
                 }

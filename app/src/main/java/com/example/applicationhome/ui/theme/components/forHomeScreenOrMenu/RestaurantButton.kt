@@ -26,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -35,13 +34,10 @@ import com.example.applicationhome.data.models.repository.CartRepository.totalNu
 import com.example.applicationhome.data.models.repository.CartRepository.totalPrice
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.RedOrange
-import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 
-@Preview
 @Composable
 fun RestaurantButton(
-    navigationController: NavHostController,
-    bottomBarViewModel: BottomBarViewModel
+    navigationController: NavHostController
 ){
     Box(
         modifier = Modifier.fillMaxWidth().

@@ -138,7 +138,7 @@ object CartRepository {
     }
 
     suspend fun cartSnacks(): Map<String, Snack> {
-        var finalSnacksList = mutableStateMapOf<String, Snack>()
+        val finalSnacksList = mutableStateMapOf<String, Snack>()
         val missingItems = mutableListOf<Int>()
         snacksMenu.forEach { item ->
             val snackKey = "Meal_${item.value.id}"
@@ -175,7 +175,7 @@ object CartRepository {
     }
 
     suspend fun addMealToCart(foodId: Int, size : String, number: Int, type : String): String{
-        var mealKey by mutableStateOf("${foodId}_$size")
+        val mealKey = "${foodId}_$size"
         if(!cartItems.keys.contains(mealKey)){
             val cartItemsObject = CartItemsClass(foodId, type, size, 1)
             return try {
@@ -211,7 +211,7 @@ object CartRepository {
     }
 
     suspend fun minusFromCart(foodId: Int, size : String, number: Int): String{
-        var mealKey by mutableStateOf("${foodId}_$size")
+        val mealKey = "${foodId}_$size"
         return try {
             val updatesMap = mapOf("number" to number)
             val response = RetrofitInstance.api.updateCart(userId, mealKey, updatesMap)
@@ -228,7 +228,7 @@ object CartRepository {
     }
 
     suspend fun deleteFromCart(foodId: Int, size : String): String{  //  هنا بنحذف وجبة من السلة
-        var mealKey by mutableStateOf("${foodId}_$size")
+        val mealKey = "${foodId}_$size"
         return try {
             val response = RetrofitInstance.api.deleteItemFromCart(userId, mealKey)
             if(response.isSuccessful){

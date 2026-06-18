@@ -24,15 +24,17 @@ class FavoriteViewModel : ViewModel(){
         viewModelScope.launch {
             when(food){
                 is FoodItem -> {
+                    val mealKey = "Meal_${food.id}"
                     addToFavorite(food.id, "Meal", food.restaurantId)
-                    if(mealsFavorite.none { it.id == food.id }){
-                        mealsFavorite = mealsFavorite + food
+                    if(mealsFavorite.none { it.value.id == food.id }){
+                        mealsFavorite += (mealKey to food)
                     }
                 }
                 is Snack -> {
+                    val snackKey = "Snack_${food.id}"
                     addToFavorite(food.id, "Snack", food.restaurantId)
-                    if(snacksFavorite.none { it.id == food.id }){
-                        snacksFavorite = snacksFavorite + food
+                    if(snacksFavorite.none { it.value.id == food.id }){
+                        snacksFavorite += (snackKey to food)
                     }
                 }
             }
@@ -40,9 +42,10 @@ class FavoriteViewModel : ViewModel(){
     }
     fun addRestaurantsFavorite(restaurants: Restaurants){
         viewModelScope.launch {
+            val resKey = "Restaurant_${restaurants.id}"
             addToFavorite(restaurants.id, "Restaurant", restaurants.id)
-            if(snacksFavorite.none { it.id == restaurants.id }){
-                restaurantsFavorite = restaurantsFavorite + restaurants
+            if(snacksFavorite.none { it.value.id == restaurants.id }){
+                restaurantsFavorite += (resKey to restaurants)
             }
         }
     }
@@ -52,18 +55,21 @@ class FavoriteViewModel : ViewModel(){
             deleteFavorite(food.id, type)
             when(food){
                 is FoodItem -> {
-                    mealsFavorite = mealsFavorite.filterNot { it.id == food.id }
+                    val mealKey = "Meal_${food.id}"
+                    mealsFavorite.remove(mealKey)
                 }
                 is Snack -> {
-                    snacksFavorite = snacksFavorite.filterNot { it.id == food.id }
+                    val snackKey = "Snack_${food.id}"
+                    snacksFavorite.remove(snackKey)
                 }
             }
         }
     }
     fun removeRestaurantsFavorite(restaurants: Restaurants){
         viewModelScope.launch {
+            val resKey = "Restaurant_${restaurants.id}"
             deleteFavorite(restaurants.id, "Restaurant")
-            restaurantsFavorite = restaurantsFavorite.filterNot { it.id == restaurants.id }
+            restaurantsFavorite.remove(resKey)
         }
     }
 }
