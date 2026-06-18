@@ -76,7 +76,7 @@ fun BottomBarForItemScreen(
 
     Box(
         modifier = Modifier.fillMaxWidth().
-        height(110.dp).
+        height(100.dp).
         shadow(elevation = 7.dp).
         background(Color.White).
         pointerInput(Unit) {
@@ -147,8 +147,7 @@ fun BottomBarForItemScreen(
                             scope.showAddToCartSnackbar(
                                 snackbarHostState,
                                 {
-                                    navigationController.navigate(Screens.Cart.screen)
-                                    bottomBarViewModel.cart()
+                                    navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
                                 }
 
                             )

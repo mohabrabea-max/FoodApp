@@ -50,8 +50,8 @@ fun CartBox(
     viewModel: ItemScreenViewModel,
     addBoxViewModel : AddBoxViewModel,
 ){
-    val meal = cartMealsMenu.find { it.id == food.id }
-    val snack = cartSnacksMenu.find { it.id == food.id }
+    val meal = cartMealsMenu["Meal_${food.id}"]
+    val snack = cartSnacksMenu["Snack_${food.id}"]
     val foodItem = if(food.type == "Meal") meal else snack
 
     val size = food.size

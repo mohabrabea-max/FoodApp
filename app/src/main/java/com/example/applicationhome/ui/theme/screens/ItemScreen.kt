@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -59,7 +60,7 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.CartRepository.allCart
-import com.example.applicationhome.data.models.repository.MenuRepository
+import com.example.applicationhome.data.models.repository.MenuRepository.snacks
 import com.example.applicationhome.data.models.repository.MenuRepository.snacksisLoading
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
@@ -111,7 +112,7 @@ fun ItemScreen(
             }
         }
     }
-    val snacks = MenuRepository.snacks.toList()
+    val snacks = snacks.values.toList()
     val item = viewModel.selectedItem
     val size = viewModel.selectedSize
     val images = item?.image?.size ?: 0
@@ -119,8 +120,7 @@ fun ItemScreen(
 
     if(item != null){
         Scaffold(
-            modifier = Modifier.fillMaxSize().
-            background(Color.White),
+            modifier = Modifier.navigationBarsPadding().fillMaxSize(),
             snackbarHost = {
                 SnackbarHost(hostState = snackbarHostState){ data ->
                     Snackbar(
@@ -436,8 +436,7 @@ fun ItemScreen(
                             scope.showAddToCartSnackbar(
                                 snackbarHostState,
                                 {
-                                    navigationController.navigate(Screens.Cart.screen)
-                                    bottomBarViewModel.cart()
+                                    navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
                                 }
 
                             )

@@ -15,11 +15,11 @@ import com.example.applicationhome.data.models.remote.RetrofitInstance
 
 
 object MenuRepository {
-    var foodMenuList by mutableStateOf<List<FoodItem>>(emptyList())
+    var foodMenuList = mutableStateMapOf<String, FoodItem>()
     var foodMenuListisLoading by mutableStateOf(true)
 
 
-    var restaurantsMenu by mutableStateOf<List<Restaurants>>(emptyList())
+    var restaurantsMenu = mutableStateMapOf<String, Restaurants>()
     var restaurantsMenuisLoading by mutableStateOf(true)
 
 
@@ -27,7 +27,7 @@ object MenuRepository {
     var categoriesisLoading by mutableStateOf(true)
 
 
-    var snacks by mutableStateOf<List<Snack>>(emptyList())
+    var snacks = mutableStateMapOf<String, Snack>()
     var snacksisLoading by mutableStateOf(true)
 
 
@@ -69,7 +69,8 @@ object MenuRepository {
             val response = RetrofitInstance.api.foodmenu("\"restaurantId\"", resId)
             val foodMenu = response.body()
             if(response.isSuccessful && foodMenu != null){
-                foodMenuList = foodMenuList + foodMenu.values
+                val filteredNewItems = foodMenu.filter { it.key !in foodMenuList.keys }
+                foodMenuList += filteredNewItems
                 "Success"
             }else{
                 "foodMenuList Is empty"
@@ -88,7 +89,8 @@ object MenuRepository {
             val response = RetrofitInstance.api.restaurants()
             val restaurants = response.body()
             if(response.isSuccessful && restaurants != null){
-                restaurantsMenu = restaurantsMenu + restaurants.values
+                val filteredNewItems = restaurants.filter { it.key !in restaurantsMenu.keys }
+                restaurantsMenu += filteredNewItems
                 "Success"
             }else{
                 "restaurantsMenu Is empty"
@@ -118,7 +120,8 @@ object MenuRepository {
             val response = RetrofitInstance.api.snacksMenu("\"restaurantId\"", resId)
             val snacksMenu = response.body()
             if(response.isSuccessful && snacksMenu != null){
-                snacks = snacks + snacksMenu.values
+                val filteredNewItems = snacksMenu.filter { it.key !in snacks.keys }
+                snacks += filteredNewItems
                 "Success"
             }else{
                 "snacksMenu Is empty"

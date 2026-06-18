@@ -87,7 +87,7 @@ fun Settings(
         context?.finishAffinity()
     }
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.navigationBarsPadding().fillMaxSize(),
         topBar = {
             Column(modifier = Modifier.clip(RoundedCornerShape(30.dp)).shadow(elevation = 3.dp)){
                 MyTopBar(

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -61,11 +62,13 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Favor
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.ItemsBox
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantButton
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantHeader
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
 import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 
@@ -79,7 +82,8 @@ fun RestaurantScreen(
     favoriteViewModel : FavoriteViewModel,
     categoriesBoxViewModel: CategoriesBoxViewModel,
     restaurantViewModel : RestaurantViewModel,
-    bottomBarViewModel: BottomBarViewModel
+    bottomBarViewModel: BottomBarViewModel,
+    homeScreenViewModel: HomeScreenViewModel
 ){
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -104,14 +108,13 @@ fun RestaurantScreen(
     val layoutInfo = scrollState.layoutInfo
     val itemInfo = layoutInfo.visibleItemsInfo.find { it.key == "categories_header" }
 
-    val menu = categoriesBoxViewModel.filterMenu.filter { it.restaurantId == restaurantViewModel.resid }.toSet().toList()
-    val snacks = snacks.toList().filter { it.restaurantId == restaurantViewModel.resid }.toSet().toList()
+    val menu = categoriesBoxViewModel.filterMenu.values.filter { it.restaurantId == restaurantViewModel.resid }.toList()
+    val snacks = snacks.values.toList().filter { it.restaurantId == restaurantViewModel.resid }
     val item = itemScreenViewModel.selectedRestaurant
 
     if(item != null){
         Scaffold(
-            modifier = Modifier.fillMaxSize().
-            background(Color.White),
+            modifier = Modifier.navigationBarsPadding().fillMaxSize(),
             snackbarHost = {
 //                SnackbarHost(hostState = snackbarHostState){ data ->
 //                    Snackbar(
@@ -134,7 +137,7 @@ fun RestaurantScreen(
                     columns = GridCells.Fixed(2)
                 ){
                     item(span = { GridItemSpan(2) }){
-                        RestaurantHeader(item)
+                        RestaurantHeader(item, homeScreenViewModel)
                     }
                     item(span = { GridItemSpan(2) }){
                         Box{
@@ -177,7 +180,7 @@ fun RestaurantScreen(
                                 }
                             )
                         ){
-                            CategoriesBarForRestaurantsScreen(item, categoriesBoxViewModel)
+                            CategoriesBarForRestaurantsScreen(item.typ, categoriesBoxViewModel)
 
                         }
                     }
@@ -282,6 +285,10 @@ fun RestaurantScreen(
                         "Cancel",
                         {addBoxViewModel.alertDialogFalse()}
                     )
+                }
+
+                if(homeScreenViewModel.viewImageState){
+                    RestaurantImageView(homeScreenViewModel)
                 }
             }
         }

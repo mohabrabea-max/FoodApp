@@ -2,6 +2,7 @@ package com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,9 +35,10 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.ui.theme.VeryLightGray
+import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 
 @Composable
-fun RestaurantHeader(item : Restaurants){
+fun RestaurantHeader(item : Restaurants, homeScreenViewModel: HomeScreenViewModel){
     val background = item.image2
     val type = item.typ.toList()
     val logo = item.image
@@ -52,7 +54,9 @@ fun RestaurantHeader(item : Restaurants){
             precision(Precision.EXACT).
             build(),
             contentDescription = null,
-            modifier = Modifier.fillMaxWidth().height(230.dp),
+            modifier = Modifier.fillMaxWidth().
+            height(230.dp).
+            clickable { homeScreenViewModel.view(item.image) },
             contentScale = ContentScale.Crop
         )
         Box(

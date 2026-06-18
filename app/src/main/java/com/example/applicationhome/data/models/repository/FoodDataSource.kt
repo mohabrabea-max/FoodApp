@@ -18,7 +18,6 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.RestaurantMenu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SettingsBrightness
@@ -144,9 +143,7 @@ object Drawer {
         Options("Settings", Icons.Default.Settings, Screens.Settings.screen)
     )
     private val menuOptions = listOf(
-        Options("Menu", Icons.Default.RestaurantMenu, Screens.RestaurantScreen.screen),
-        Options("Restaurants", Icons.Default.Restaurant, Screens.Restaurants.screen)
-
+        Options("Menu", Icons.Default.RestaurantMenu, Screens.RestaurantScreen.screen)
     )
     fun optionsData(): List<Options>{
         return options

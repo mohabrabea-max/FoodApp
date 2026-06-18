@@ -27,8 +27,8 @@ object CartRepository {
     var cartRestaurant by mutableStateOf(Restaurants())
     val foodMenu get() = cartItems.filter { it.value.type == "Meal" }
     val snacksMenu get() = cartItems.filter { it.value.type == "Snack" }
-    var cartMealsMenu by mutableStateOf<List<FoodItem>>(emptyList())
-    var cartSnacksMenu by mutableStateOf<List<Snack>>(emptyList())
+    var cartMealsMenu = mutableStateMapOf<String, FoodItem>()
+    var cartSnacksMenu = mutableStateMapOf<String, Snack>()
 
 
     suspend fun getCartRestaurantData(food : Food) : String{
@@ -100,26 +100,27 @@ object CartRepository {
         }
     }
 
-    suspend fun cartMeals(): List<FoodItem> {
-        var finalMealsList = mutableListOf<FoodItem>()
+    suspend fun cartMeals(): Map<String, FoodItem> {
+        val finalMealsList = mutableStateMapOf<String, FoodItem>()
         val missingItems = mutableListOf<Int>()
         foodMenu.forEach { item ->
-            val cachedMeal = foodMenuList.find { it.id == item.value.id }
+            val mealKey = "Meal_${item.value.id}"
+            val cachedMeal = foodMenuList[mealKey]
             if(cachedMeal != null){
-                finalMealsList += cachedMeal
+                finalMealsList += (mealKey to cachedMeal)
             }else{
                 missingItems.add(item.value.id)
             }
         }
         if(missingItems.isNotEmpty()){
             coroutineScope {
-                val deferredRequests = missingItems.map { itam ->
+                val deferredRequests = missingItems.map { item ->
                     async {
                         try {
-                            val response = RetrofitInstance.api.getCartMeals("\"id\"", itam)
-                            if(response.isSuccessful){
-                                val resultMap = response.body()
-                                resultMap?.values?.firstOrNull()
+                            val response = RetrofitInstance.api.getCartMeals("\"id\"", item)
+                            val resultMap = response.body()
+                            if(response.isSuccessful && resultMap != null){
+                                resultMap
                             }else{
                                 null
                             }
@@ -128,19 +129,22 @@ object CartRepository {
                         }
                     }
                 }
-                finalMealsList += deferredRequests.awaitAll().filterNotNull()
+                deferredRequests.awaitAll().filterNotNull().forEach { itm ->
+                    finalMealsList.putAll(itm)
+                }
             }
         }
         return finalMealsList
     }
 
-    suspend fun cartSnacks(): List<Snack> {
-        var finalSnacksList = mutableListOf<Snack>()
+    suspend fun cartSnacks(): Map<String, Snack> {
+        var finalSnacksList = mutableStateMapOf<String, Snack>()
         val missingItems = mutableListOf<Int>()
         snacksMenu.forEach { item ->
-            val cachedMeal = snacks.find { it.id == item.value.id }
+            val snackKey = "Meal_${item.value.id}"
+            val cachedMeal = snacks[snackKey]
             if(cachedMeal != null){
-                finalSnacksList += cachedMeal
+                finalSnacksList += (snackKey to cachedMeal)
             }else{
                 missingItems.add(item.value.id)
             }
@@ -151,20 +155,20 @@ object CartRepository {
                     async {
                         try {
                             val response = RetrofitInstance.api.getCartSnacks("\"id\"", item)
-                            if(response.isSuccessful){
-                                val resultMap = response.body()
-                                println("isSuccessful")
-                                resultMap?.values?.firstOrNull()
+                            val resultMap = response.body()
+                            if(response.isSuccessful && resultMap != null){
+                                resultMap
                             }else{
                                 null
                             }
                         } catch (e : Exception){
-                            println("Error in catch")
                             null
                         }
                     }
                 }
-                finalSnacksList += deferredRequests.awaitAll().filterNotNull()
+                deferredRequests.awaitAll().filterNotNull().forEach { item ->
+                    finalSnacksList.putAll(item)
+                }
             }
         }
         return finalSnacksList
@@ -244,8 +248,8 @@ object CartRepository {
             if(response.isSuccessful){
                 allCart.value = CartClass()
                 cartItems.clear()
-                cartMealsMenu = emptyList()
-                cartSnacksMenu = emptyList()
+                cartMealsMenu.clear()
+                cartSnacksMenu.clear()
                 "Success"
             }else{
                 "Network error"

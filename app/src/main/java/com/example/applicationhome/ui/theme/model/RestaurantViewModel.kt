@@ -37,10 +37,10 @@ class RestaurantViewModel (application : Application) : AndroidViewModel(applica
         val restaurantscount = restaurantcount?.get(resid)
         if(restaurantscount != null){
             viewModelScope.launch {
-                if(foodMenuList.distinctBy { it.id }.count { it.restaurantId == resid } < restaurantscount.meals){
+                if(foodMenuList.values.filter { it.restaurantId == resid }.size < restaurantscount.meals){
                     uploadFoodMenuFromApi(resid)
                 }
-                if(snacks.distinctBy { it.id }.count { it.restaurantId == resid } < restaurantscount.snacks){
+                if(snacks.values.filter { it.restaurantId == resid }.size < restaurantscount.snacks){
                     uploadSnacksMenuFromApi(resid)
                 }
                 if(restaurantOffers.distinctBy { it.id }.count { it.restaurantId == resid } < restaurantscount.offers){

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,8 +39,7 @@ import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
 fun LastOrdersScreen(navigationController : NavHostController, orderScreenViewModel : OrderScreenViewModel){
     val allOrders = lastOrders.entries.toList().sortedByDescending { entry -> entry.key.toLong() }
     Scaffold(
-        modifier = Modifier.fillMaxSize().
-        background(Color.White),
+        modifier = Modifier.navigationBarsPadding().fillMaxSize(),
         topBar = {
             MyTopBar(
                 Color.White,

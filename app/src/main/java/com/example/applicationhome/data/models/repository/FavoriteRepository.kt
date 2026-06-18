@@ -26,23 +26,24 @@ object FavoriteRepository {
 
     val restaurantsFavoriteMenu get() = favoritList.filter { it.value.typ == "Restaurant" }.values.toList()
 
-    var mealsFavorite by mutableStateOf<List<FoodItem>>(emptyList())
+    var mealsFavorite = mutableStateMapOf<String, FoodItem>()
     var mealsFavoriteIsLoading by mutableStateOf(true)
 
-    var snacksFavorite by mutableStateOf<List<Snack>>(emptyList())
+    var snacksFavorite = mutableStateMapOf<String, Snack>()
     var snacksFavoriteIsLoading by mutableStateOf(true)
 
-    var restaurantsFavorite by mutableStateOf<List<Restaurants>>(emptyList())
+    var restaurantsFavorite = mutableStateMapOf<String, Restaurants>()
     var restaurantsFavoriteIsLoading by mutableStateOf(true)
 
 
-    suspend fun favoriteMeals(): List<FoodItem> {
-        var finalMealsList = mutableListOf<FoodItem>()
+    suspend fun favoriteMeals(): Map<String, FoodItem> {
+        val finalMealsList = mutableStateMapOf<String, FoodItem>()
         val missingItems = mutableListOf<Int>()
         mealsFavoriteMenu.forEach { item ->
-            val cachedMeal = foodMenuList.find { it.id == item.id }
+            val mealKey = "Meal_${item.id}"
+            val cachedMeal = foodMenuList[mealKey]
             if(cachedMeal != null){
-                finalMealsList += cachedMeal
+                finalMealsList += (mealKey to cachedMeal)
             }else{
                 missingItems.add(item.id)
             }
@@ -55,17 +56,17 @@ object FavoriteRepository {
                         async {
                             try {
                                 val response = RetrofitInstance.api.getCartMeals("\"id\"", item)
-                                if(response.isSuccessful){
-                                    val resultMap = response.body()
-                                    if(resultMap != null){
-                                        foodMenuList = foodMenuList + resultMap.values
-                                    }
-                                    resultMap?.values?.firstOrNull()
+                                val resultMap = response.body()
+                                if(response.isSuccessful && resultMap != null){
+                                    foodMenuList += resultMap
+                                    resultMap
                                 }else{ null }
                             } catch (e : Exception){ null }
                         }
                     }
-                    finalMealsList += deferredRequests.awaitAll().filterNotNull()
+                    deferredRequests.awaitAll().filterNotNull().forEach { item ->
+                        finalMealsList += item
+                    }
                 }
             } finally {
                 mealsFavoriteIsLoading = false
@@ -76,13 +77,14 @@ object FavoriteRepository {
         return finalMealsList
     }
 
-    suspend fun favoriteSnacks(): List<Snack> {
-        var finalSnacksList = mutableListOf<Snack>()
+    suspend fun favoriteSnacks(): Map<String, Snack> {
+        val finalSnacksList = mutableStateMapOf<String, Snack>()
         val missingItems = mutableListOf<Int>()
         snacksFavoriteMenu.forEach { item ->
-            val cachedMeal = snacks.find { it.id == item.id }
+            val snackKey = "Snack_${item.id}"
+            val cachedMeal = snacks[snackKey]
             if(cachedMeal != null){
-                finalSnacksList += cachedMeal
+                finalSnacksList += (snackKey to cachedMeal)
             }else{
                 missingItems.add(item.id)
             }
@@ -95,18 +97,17 @@ object FavoriteRepository {
                         async {
                             try {
                                 val response = RetrofitInstance.api.getCartSnacks("\"id\"", item)
-                                if(response.isSuccessful){
-                                    val resultMap = response.body()
-                                    println("isSuccessful")
-                                    if(resultMap != null){
-                                        snacks = snacks +resultMap.values
-                                    }
-                                    resultMap?.values?.firstOrNull()
+                                val resultMap = response.body()
+                                if(response.isSuccessful && resultMap != null){
+                                    snacks += resultMap
+                                    resultMap
                                 }else{null}
                             } catch (e : Exception){ null }
                         }
                     }
-                    finalSnacksList += deferredRequests.awaitAll().filterNotNull()
+                    deferredRequests.awaitAll().filterNotNull().forEach { item ->
+                        finalSnacksList += item
+                    }
                 }
             } finally {
                 snacksFavoriteIsLoading = false
@@ -116,13 +117,14 @@ object FavoriteRepository {
         }
         return finalSnacksList
     }
-    suspend fun favoriteRestaurants(): List<Restaurants> {
-        var finalRestaurantsList by mutableStateOf<List<Restaurants>>(emptyList())
+    suspend fun favoriteRestaurants(): Map<String, Restaurants> {
+        val finalRestaurantsList = mutableStateMapOf<String, Restaurants>()
         val missingItems = mutableListOf<Int>()
         restaurantsFavoriteMenu.forEach { item ->
-            val cachedMeal = restaurantsMenu.find { it.id == item.id }
+            val restaurantKey = "Restaurant_${item.id}"
+            val cachedMeal = restaurantsMenu[restaurantKey]
             if(cachedMeal != null){
-                finalRestaurantsList += cachedMeal
+                finalRestaurantsList += (restaurantKey to cachedMeal)
             }else{
                 missingItems.add(item.id)
             }
@@ -135,18 +137,17 @@ object FavoriteRepository {
                         async {
                             try {
                                 val response = RetrofitInstance.api.getFavoriteRestaurants("\"id\"", item)
-                                if(response.isSuccessful){
-                                    val resultMap = response.body()
-                                    println("isSuccessful")
-                                    if(resultMap != null){
-                                        restaurantsMenu = restaurantsMenu + resultMap.values
-                                    }
-                                    resultMap?.values?.firstOrNull()
+                                val resultMap = response.body()
+                                if(response.isSuccessful && resultMap != null){
+                                    restaurantsMenu += resultMap
+                                    resultMap
                                 }else{ null }
                             } catch (e : Exception){ null }
                         }
                     }
-                    finalRestaurantsList += deferredRequests.awaitAll().filterNotNull()
+                    deferredRequests.awaitAll().filterNotNull().forEach { item ->
+                        finalRestaurantsList += item
+                    }
                 }
             } finally {
                 restaurantsFavoriteIsLoading = false

@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreenTopBar(
-    scrollState : LazyGridState,
+    scrollState : LazyListState,
     drawerState : DrawerState,
     coroutineScope : CoroutineScope,
     navigationController : NavHostController
@@ -105,7 +105,7 @@ fun HomeScreenTopBar(
                         exit = fadeOut() + scaleOut()
                     ){
                         IconButton(onClick = {
-                            navigationController.navigate(Screens.Notifications.screen){
+                            navigationController.navigate(Screens.Search.screen){
                                 popUpTo(navigationController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
@@ -126,7 +126,7 @@ fun HomeScreenTopBar(
                     }
 
                     IconButton(onClick = {
-                        navigationController.navigate(Screens.Search.screen){
+                        navigationController.navigate(Screens.Notifications.screen){
                             popUpTo(navigationController.graph.findStartDestination().id) {
                                 saveState = true
                             }

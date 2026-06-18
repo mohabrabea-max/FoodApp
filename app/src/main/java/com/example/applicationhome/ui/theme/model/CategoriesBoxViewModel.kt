@@ -6,8 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.applicationhome.data.models.model.Categories
-import com.example.applicationhome.data.models.model.FoodItem
-import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuList
 import com.example.applicationhome.data.models.repository.MenuRepository.restaurantsMenu
 
@@ -17,14 +15,13 @@ class CategoriesBoxViewModel: ViewModel(){
     var selectedTypeIndex by mutableStateOf(0)
     var typ by mutableStateOf("All")
     var typeInRestaurantScreen by mutableStateOf("Pizza")
-    val filterMenu : List<FoodItem>
-        get() = foodMenuList.toList().filter { it.category == typeInRestaurantScreen }
+    val filterMenu get() = foodMenuList.filter { it.value.category == typeInRestaurantScreen }
 
-    val filterrestaurants : List<Restaurants>
-        get() = if(typ == "All"){
-            restaurantsMenu.toList()
+    val filterrestaurants get() =
+        if(typ == "All"){
+            restaurantsMenu
         }else{
-            restaurantsMenu.toList().filter { it.typ.contains(typ) }
+            restaurantsMenu.filter { it.value.typ.contains(typ) }
         }
 
 

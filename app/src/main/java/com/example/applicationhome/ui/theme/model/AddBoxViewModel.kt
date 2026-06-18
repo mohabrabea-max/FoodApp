@@ -43,7 +43,7 @@ class AddBoxViewModel : ViewModel(){
 
     fun plus(food: Food, size : String){
         viewModelScope.launch {
-            val mealKey = "${food.id}_$size"
+            val mealKey = "${food.id}_${size}"
             val currentItem = cartItems[mealKey]
             val finalNumber = if (currentItem != null){
                 if(currentItem.number == 99){
@@ -73,8 +73,8 @@ class AddBoxViewModel : ViewModel(){
 
             val mealsDeferred = async { cartMeals() }
             val snacksDeferred = async { cartSnacks() }
-            cartMealsMenu = mealsDeferred.await().toSet().toList()
-            cartSnacksMenu = snacksDeferred.await().toSet().toList()
+            cartMealsMenu += mealsDeferred.await()
+            cartSnacksMenu += snacksDeferred.await()
 
             updateTotals()
         }
@@ -97,7 +97,7 @@ class AddBoxViewModel : ViewModel(){
 
     fun minus(foodId: Int, size : String){
         viewModelScope.launch {
-            val mealKey = "${foodId}_$size"
+            val mealKey = "${foodId}_${size}"
             var finalNumber by mutableStateOf(0)
             val cartItem = cartItems[mealKey]
             if(cartItem != null){
@@ -114,7 +114,7 @@ class AddBoxViewModel : ViewModel(){
 
     fun updateCount(food : Food, size : String, newCount : Int) {
         viewModelScope.launch {
-            val mealKey = "${food.id}_$size"
+            val mealKey = "${food.id}_${size}"
             val currentItem = cartItems[mealKey]
             val finalNumber = if (currentItem != null){
                 if(currentItem.number == 99){
@@ -143,8 +143,8 @@ class AddBoxViewModel : ViewModel(){
             }
             val mealsDeferred = async { cartMeals() }
             val snacksDeferred = async { cartSnacks() }
-            cartMealsMenu = mealsDeferred.await().toSet().toList()
-            cartSnacksMenu = snacksDeferred.await().toSet().toList()
+            cartMealsMenu += mealsDeferred.await()
+            cartSnacksMenu += snacksDeferred.await()
             updateTotals()
         }
     }
@@ -161,17 +161,17 @@ class AddBoxViewModel : ViewModel(){
         totalPrice = 0.0
         cartItems.forEach { (key, value) ->
             if(value.type == "Meal"){
-                val meal = cartMealsMenu.find { it.id == value.id }
+                val meal = cartMealsMenu["Meal_${value.id}"]
                 val number = value.number
                 if(meal != null){
                     totalPrice += (meal.sizeOptions.find { it.size == value.size }?.price ?: 0.0) * number
                 }
                 totalNumber.value += number
             }else if(value.type == "Snack"){
-                val snack = cartSnacksMenu.find { it.id == value.id }?.priceANDsize
+                val snack = cartSnacksMenu["Snack_${value.id}"]
                 val number = value.number
                 if(snack != null){
-                    totalPrice += (snack[value.size] ?: 0.0) * number
+                    totalPrice += (snack.priceANDsize[value.size] ?: 0.0) * number
                 }
                 totalNumber.value += number
             }

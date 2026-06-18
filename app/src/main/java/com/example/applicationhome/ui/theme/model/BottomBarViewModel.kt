@@ -13,9 +13,6 @@ class BottomBarViewModel : ViewModel() {
     fun favorite(){
         selected = "Favorite"
     }
-    fun cart(){
-        selected = "Cart"
-    }
     fun settings(){
         selected = "Settings"
     }

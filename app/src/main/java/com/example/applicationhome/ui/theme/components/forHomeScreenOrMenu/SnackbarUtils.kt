@@ -12,7 +12,7 @@ fun CoroutineScope.showAddToCartSnackbar(
     message: String = "Item added to cart successfully!",
     actionLabel: String = "View cart"
 
-) {
+){
     this.launch {
         val result = snackbarHostState.showSnackbar(
             message = message,

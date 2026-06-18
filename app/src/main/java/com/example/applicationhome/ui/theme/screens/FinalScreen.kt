@@ -47,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.UserRepository
@@ -62,6 +61,7 @@ import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.DrawerViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
@@ -89,14 +89,13 @@ fun FinalScreen(
     loginViewModel: LoginViewModel,
     restaurantViewModel: RestaurantViewModel,
     confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
-    orderScreenViewModel : OrderScreenViewModel
+    orderScreenViewModel : OrderScreenViewModel,
+    homeScreenViewModel: HomeScreenViewModel
 ){
     val density = LocalDensity.current
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} }
     val navigationController = rememberNavController()
     val coroutineScope = rememberCoroutineScope()
-    val navBackStackEntry by navigationController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
     var stat = drawerViewModel.state
     val drawerWidth by animateDpAsState(
         targetValue = if (stat) 250.dp else 70.dp,
@@ -108,7 +107,6 @@ fun FinalScreen(
         Screens.Profile,
         Screens.Settings,
         Screens.RestaurantScreen,
-        Screens.Restaurants,
         Screens.Search,
         Screens.ItemScreen,
         Screens.Notifications,
@@ -198,8 +196,8 @@ fun FinalScreen(
     ){
         Scaffold(
             modifier = Modifier.
-            fillMaxSize().
-            background(Color.White)
+            fillMaxSize(),
+            containerColor = Color.Black
         ){
             NavHost(navController = navigationController, startDestination = Screens.HomeScreen.screen){
                 allScreens.forEach { item ->
@@ -211,12 +209,11 @@ fun FinalScreen(
                         popExitTransition = { ExitTransition.None }
                     ) {
                         when(item){
-                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel)
+                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel, homeScreenViewModel)
                             is Screens.Profile -> Profile(drawerState, coroutineScope, navigationController, userImageViewModel, profileViewModel, birthdayViewModel)
                             is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel, bottomBarViewModel, addBoxViewModel, favoriteViewModel)
                             is Screens.Search -> Search()
-                            is Screens.RestaurantScreen -> RestaurantScreen(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel)
-                            is Screens.Restaurants -> Restaurants(drawerState, coroutineScope, navigationController, favoriteViewModel)
+                            is Screens.RestaurantScreen -> RestaurantScreen(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel, homeScreenViewModel)
                             is Screens.ItemScreen -> ItemScreen(navigationController, viewModel, addBoxViewModel, favoriteViewModel, bottomBarViewModel)
                             is Screens.Notifications -> Notifications()
                             is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, bottomBarViewModel, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel)

@@ -1,12 +1,12 @@
 package com.example.applicationhome.ui.theme.screens
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -55,9 +55,8 @@ fun Profile(
     var stat = userImageViewModel.stat
     var pading = if(stat) 210.dp else 0.dp
     Scaffold(
-        modifier = Modifier.
-        fillMaxSize().
-        background(Color.White),
+        modifier = Modifier.navigationBarsPadding().
+        fillMaxSize(),
         topBar = {
             Column(modifier = Modifier.shadow(elevation = 3.dp)){
                 MyTopBar(

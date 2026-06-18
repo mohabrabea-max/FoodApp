@@ -62,8 +62,7 @@ fun SignUpScreen(
     signUpViewModel : SignUpViewModel = viewModel()
 ){
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.navigationBarsPadding().fillMaxSize(),
         topBar = {
             MyTopBar(
                 Color.DarkOrange.copy(alpha = 0f),

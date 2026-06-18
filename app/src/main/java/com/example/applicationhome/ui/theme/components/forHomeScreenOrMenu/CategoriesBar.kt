@@ -23,7 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.data.models.repository.TapRowData.FavoriteTapRow
 import com.example.applicationhome.ui.theme.DarkOrange
@@ -35,13 +34,13 @@ fun CategoriesBar(categoriesBoxViewModel : CategoriesBoxViewModel){
     val categories = MenuRepository.categories
     Row(
         modifier = Modifier.fillMaxWidth().
-        height(50.dp).
+        height(120.dp).
         background(Color.White),
         verticalAlignment = Alignment.CenterVertically
     ){
         LazyRow(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+            horizontalArrangement = Arrangement.spacedBy(20.dp),
         ){
             item { Spacer(modifier = Modifier.width(4.dp)) }
             items(categories) { category ->
@@ -55,8 +54,7 @@ fun CategoriesBar(categoriesBoxViewModel : CategoriesBoxViewModel){
 
 
 @Composable
-fun CategoriesBarForRestaurantsScreen(res : Restaurants, categoriesBoxViewModel : CategoriesBoxViewModel){
-    val categories = res.typ
+fun CategoriesBarForRestaurantsScreen(typ : List<String>, categoriesBoxViewModel : CategoriesBoxViewModel){
     ScrollableTabRow(
         modifier = Modifier.fillMaxWidth().
         height(50.dp),
@@ -72,7 +70,7 @@ fun CategoriesBarForRestaurantsScreen(res : Restaurants, categoriesBoxViewModel 
             }
         }
     ){
-        categories.forEachIndexed { index, typ ->
+        typ.forEachIndexed { index, typ ->
             val isSelected = categoriesBoxViewModel.selectedTypeIndex == index
             Tab(
                 selected = isSelected,

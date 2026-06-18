@@ -69,12 +69,9 @@ class ConfirmOrderScreenViewModel : ViewModel() {
     }
 
     fun addToOrderItems(){
-        val menuMap = cartMealsMenu.associateBy{ it.id } //  هنا حولنا الليست بتاعة الوجبات لماب الkey بتاعها هو الid
-        val snackMap = cartSnacksMenu.associateBy{ it.id }
-
         val finalOrderItems = cartItems.values.mapNotNull { item ->
             if(item.type == "Meal"){
-                val meal = menuMap[item.id] ?: return@mapNotNull null
+                val meal = cartMealsMenu["${item.id}_${item.size}"] ?: return@mapNotNull null
                 val price = meal.sizeOptions.find { it.size == item.size }?.price ?: return@mapNotNull null
                 restaurantId = meal.restaurantId
                 OrderItemsClass(
@@ -87,23 +84,23 @@ class ConfirmOrderScreenViewModel : ViewModel() {
                     "Meal"
                 )
             }else{
-                val meal = snackMap[item.id] ?: return@mapNotNull null
-                val price = meal.priceANDsize[item.size] ?: return@mapNotNull null
-                restaurantId = meal.restaurantId
+                val snack = cartSnacksMenu["${item.id}_${item.size}"] ?: return@mapNotNull null
+                val price = snack.priceANDsize[item.size]?: return@mapNotNull null
+                restaurantId = snack.restaurantId ?: 0
                 OrderItemsClass(
                     item.id,
-                    meal.name,
+                    snack.name,
                     item.size,
                     price,
                     item.number,
-                    meal.image[0],
+                    snack.image[0],
                     "Snack"
                 )
             }
         }
-        orderItems = orderItems + finalOrderItems
-        restaurantName = restaurantsMenu.find { it.id == restaurantId }?.name ?: ""
-        restaurantImage = restaurantsMenu.find { it.id == restaurantId }?.image ?: ""
+        orderItems += finalOrderItems
+        restaurantName = restaurantsMenu.values.find { it.id == restaurantId }?.name ?: ""
+        restaurantImage = restaurantsMenu.values.find { it.id == restaurantId }?.image ?: ""
     }
 
     fun uploadOrder(){
@@ -115,8 +112,8 @@ class ConfirmOrderScreenViewModel : ViewModel() {
                 deleteAllCart()
 
                 cartItems.clear()
-                cartMealsMenu = emptyList()
-                cartSnacksMenu = emptyList()
+                cartMealsMenu.clear()
+                cartSnacksMenu.clear()
                 totalPrice = 0.0
                 totalNumber.value = 0
                 orderItems = emptyList()

@@ -1,9 +1,5 @@
 package com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu
 
-import android.annotation.SuppressLint
-import android.widget.Toast
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,21 +18,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -49,13 +40,13 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.ui.theme.DarkOrange
+import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun RestaurantsBox(
@@ -173,51 +164,138 @@ fun RestaurantsBox(
     }
 }
 
-@SuppressLint("UnrememberedMutableState")
+
 @Composable
-fun Favorite2(
-    modifier: Modifier = Modifier,
-    modifier2 : Modifier = Modifier,
-    restaurants: Restaurants,
-    favoriteState : FavoriteViewModel
+fun RestaurantsBoxHomeScreen(
+    loading : Boolean,
+    item : Restaurants,
+    favoriteState : FavoriteViewModel,
+    itemScreenViewModel: ItemScreenViewModel,
+    navigationController : NavHostController,
+    categoriesBoxViewModel: CategoriesBoxViewModel,
+    restaurantViewModel: RestaurantViewModel,
+    homeScreenViewModel: HomeScreenViewModel
 ){
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val scale = remember { Animatable(1f) }
-    val favorite = favoriteState.isMealInFavorite(restaurants.id)
-    fun favorite1(){
-
-        if(favorite == true){
-            favoriteState.removeRestaurantsFavorite(restaurants)
-            Toast.makeText(context, "Remove From Favorite", Toast.LENGTH_SHORT).show()
-        }else{
-            favoriteState.addRestaurantsFavorite(restaurants)
-            Toast.makeText(context, "Add To Favorite", Toast.LENGTH_SHORT).show()
+    if (loading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator() // دايرة التحميل الافتراضية في أندرويد
         }
-
-        scope.launch {
-            // يكبر بسرعة لـ 1.3x في 100 مللي ثانية
-            scale.animateTo(1.3f, animationSpec = tween(100))
-            // يرجع لحجمه الطبيعي 1x بسرعة برضه
-            scale.animateTo(1f, animationSpec = tween(100))
-        }
-    }
-
-    IconButton(modifier = modifier, onClick = {favorite1()}){
-        if(favorite == false) {
-            Icon(
-                imageVector = Icons.Default.BookmarkBorder,
-                contentDescription = "More",
-                tint = Color.Black,
-                modifier = modifier2.size(20.dp).scale(scale.value)
-            )
-        }else{
-            Icon(
-                imageVector = Icons.Default.Bookmark,
-                contentDescription = "More",
-                tint = Color.DarkOrange,
-                modifier = modifier2.size(20.dp).scale(scale.value)
-            )
+    }else{
+        Row(
+            modifier = Modifier.padding(10.dp).
+            fillMaxWidth().
+            height(130.dp).
+            clip(RoundedCornerShape(30.dp)).
+            background(Color.White).
+            clickable {
+                restaurantViewModel.loadRestaurantId(item.id)
+                categoriesBoxViewModel.selectedtype(0, item.typ.toList().first())
+                itemScreenViewModel.selectRestaurant(item)
+                navigationController.navigate(Screens.RestaurantScreen.screen)
+            },
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Box(
+                modifier = Modifier.
+                fillMaxHeight().
+                width(150.dp).
+                shadow(elevation = 3.dp, spotColor = Color.Gray, shape = RoundedCornerShape(30.dp)).
+                clip(RoundedCornerShape(30.dp))
+            ){
+                Box(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray)){
+                    AsyncImage(
+                        modifier = Modifier.fillMaxSize(),
+                        model = ImageRequest.Builder(LocalContext.current).
+                        data(item.image2).
+                        crossfade(true).
+                        size(400, 400).
+                        precision(Precision.EXACT).
+                        build(),
+                        contentDescription = item.name,
+                        contentScale = ContentScale.Crop
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth().
+                        background(Color.Black.copy(alpha = 0f)).
+                        padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End
+                    ){
+                        Favorite2(
+                            modifier = Modifier.
+                            clip(CircleShape).
+                            size(35.dp).
+                            background(Color.Black.copy(alpha = 0.2f)),
+                            color = Color.White,
+                            restaurants = item,
+                            favoriteState = favoriteState
+                        )
+                    }
+                }
+                Divider(color = Color.LightGray.copy(alpha = 0.5f))
+                Box(
+                    modifier = Modifier.fillMaxWidth().
+                    height(50.dp).
+                    background(Color.Black.copy(alpha = 0.5f)).
+                    align(Alignment.BottomCenter)
+                )
+                Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
+                    Spacer(modifier = Modifier.height(53.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start
+                    ){
+                        Spacer(modifier = Modifier.width(20.dp))
+                        Box(
+                            modifier = Modifier.size(55.dp).
+                            clip(CircleShape).
+                            background(Color.White).
+                            clickable { homeScreenViewModel.view(item.image) }.
+                            shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(40.dp)).
+                            border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(40.dp))
+                        ){
+                            AsyncImage(
+                                modifier = Modifier.fillMaxSize(),
+                                model = ImageRequest.Builder(LocalContext.current).
+                                data(item.image).
+                                crossfade(true).
+                                size(400, 400).
+                                precision(Precision.EXACT).
+                                build(),
+                                contentDescription = item.name,
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }
+                }
+            }
+            Column(
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 20.dp).fillMaxHeight(),
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.Start
+            ){
+                Text(
+                    text = item.name,
+                    fontSize = 18.sp,
+                    color = Color.BrownForFont,
+                    fontWeight = FontWeight.Bold
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ){
+                    Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFD700) , modifier = Modifier.size(17.dp))
+                    Text(text = item.review.toString(), color = Color.Black, fontSize = 15.sp, modifier = Modifier)
+                }
+                Text(
+                    text = item.typ.joinToString(separator = " - "),
+                    fontSize = 13.sp,
+                    color = Color.Gray
+                )
+            }
         }
     }
 }

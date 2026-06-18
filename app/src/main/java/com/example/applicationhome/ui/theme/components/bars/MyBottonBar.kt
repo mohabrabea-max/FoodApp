@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.models.repository.CartRepository.cartItems
+import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
 import com.example.applicationhome.data.models.repository.CartRepository.totalNumber
 import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
 import com.example.applicationhome.ui.theme.DarkOrange
@@ -77,8 +79,8 @@ fun MyBottonBar(
                                 // 2. ميكررش نفس الصفحة لو أنا دوست عليها وأنا واقف فيها
                                 launchSingleTop = true
 
-                                // 3. يرجع الحالة اللي كانت محفوظة لما أرجع للصفحة دي تاني
-                                restoreState = true
+
+
                             }
                         }
                     }, modifier = Modifier.fillMaxSize().align(Alignment.Center)
@@ -104,7 +106,7 @@ fun MyBottonBar(
                                 }
                                 launchSingleTop = true
 
-                                restoreState = true
+                                restoreState = true  // 3. يرجع الحالة اللي كانت محفوظة لما أرجع للصفحة دي تاني
                             }
                         }
                     }, modifier = Modifier.fillMaxSize().align(Alignment.Center)
@@ -133,10 +135,11 @@ fun MyBottonBar(
             Box(modifier = Modifier.weight(1f)){
                 IconButton(
                     onClick = {
+                        println(cartItems)
+                        println(cartMealsMenu)
                         if(selected == "Cart"){
                             navigationController.navigate(Screens.Cart.screen)
                         }else{
-                            viewModel.cart()
                             navigationController.navigate(Screens.Cart.screen){
                                 popUpTo(navigationController.graph.findStartDestination().id) {
                                     saveState = true

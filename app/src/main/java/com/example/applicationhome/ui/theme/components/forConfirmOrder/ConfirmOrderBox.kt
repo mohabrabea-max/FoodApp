@@ -47,8 +47,8 @@ fun ConfirmOrderBox(
     val number = food.number
     val size = food.size
 
-    val meal = cartMealsMenu.find { it.id == food.id }
-    val snack = cartSnacksMenu.find { it.id == food.id }
+    val meal = cartMealsMenu["${food.id}_${size}"]
+    val snack = cartSnacksMenu["${food.id}_${size}"]
     val sizeInTitle = if(size.contains("Pieces")) "" else " (${size})"
 
     val image : String

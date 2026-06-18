@@ -19,6 +19,7 @@ import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.DrawerViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
@@ -36,20 +37,21 @@ class MainActivity : ComponentActivity() {
         setContent {
             val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-            val itemScreenViewModel: ItemScreenViewModel = viewModel()
+            val itemScreenViewModel : ItemScreenViewModel = viewModel()
             val viewModelForBottomBar : BottomBarViewModel = viewModel()
             val addBoxViewModel : AddBoxViewModel = viewModel()
-            val userImageViewModel: UserImageViewModel = viewModel()
+            val userImageViewModel : UserImageViewModel = viewModel()
             val favoriteViewModel : FavoriteViewModel = viewModel()
             val drawerViewModel : DrawerViewModel = viewModel()
             val profileViewModel : ProfileViewModel = viewModel()
             val apiData : APIData = viewModel()
             val categoriesBoxViewModel : CategoriesBoxViewModel = viewModel()
             val birthdayViewModel : BirthdayViewModel = viewModel()
-            val loginViewModel: LoginViewModel = viewModel()
-            val restaurantViewModel: RestaurantViewModel = viewModel()
+            val loginViewModel : LoginViewModel = viewModel()
+            val restaurantViewModel : RestaurantViewModel = viewModel()
             val confirmOrderScreenViewModel : ConfirmOrderScreenViewModel = viewModel()
             val orderScreenViewModel : OrderScreenViewModel = viewModel()
+            val homeScreenViewModel : HomeScreenViewModel = viewModel()
             FinalScreen(
                 scrollBehavior,
                 drawerState,
@@ -66,7 +68,8 @@ class MainActivity : ComponentActivity() {
                 loginViewModel,
                 restaurantViewModel,
                 confirmOrderScreenViewModel,
-                orderScreenViewModel
+                orderScreenViewModel,
+                homeScreenViewModel
             )
         }
     }

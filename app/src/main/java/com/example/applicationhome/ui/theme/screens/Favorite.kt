@@ -99,9 +99,8 @@ fun Favorite(
         context?.finishAffinity()
     }
     Scaffold(
-        modifier = Modifier.
-        fillMaxSize().
-        background(Color.White),
+        modifier = Modifier.navigationBarsPadding().
+        fillMaxSize(),
         topBar = {
             Column(
                 modifier = Modifier.fillMaxWidth().height(146.dp).
@@ -154,7 +153,7 @@ fun Favorite(
                     ){
                         item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(146.dp))}
                         if(categoriesBoxViewModel.selectedCategorieInFavoriteScreen == 2) {
-                            items(restaurantsFavorite) { item ->
+                            items(restaurantsFavorite.values.toList()) { item ->
                                 RestaurantsBox(
                                     restaurantsFavoriteIsLoading,
                                     item,
@@ -168,7 +167,7 @@ fun Favorite(
                         }
                         if(categoriesBoxViewModel.selectedCategorieInFavoriteScreen == 1) {
                             item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
-                            items(snacksFavorite) { item ->
+                            items(snacksFavorite.values.toList()) { item ->
                                 SnaksBox(
                                     snacksFavoriteIsLoading,
                                     modifier = Modifier.size(200.dp),
@@ -199,7 +198,7 @@ fun Favorite(
                         }
                         if(categoriesBoxViewModel.selectedCategorieInFavoriteScreen == 0) {
                             item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
-                            items(mealsFavorite) { item ->
+                            items(mealsFavorite.values.toList()) { item ->
                                 ItemsBox(
                                     mealsFavoriteIsLoading,
                                     item,

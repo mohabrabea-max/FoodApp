@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -65,8 +66,7 @@ fun ConfirmOrderScreen(
     var color = if(confirmOrderScreenViewModel.bottonState) Color.DarkOrange else Color.Gray
     var fontcolor = if(confirmOrderScreenViewModel.bottonState) Color.White else Color.Black
     Scaffold(
-        modifier = Modifier.fillMaxSize().
-        background(Color.White),
+        modifier = Modifier.navigationBarsPadding().fillMaxSize(),
         topBar = {
             MyTopBar(
                 Color.DarkOrange,
@@ -92,7 +92,7 @@ fun ConfirmOrderScreen(
                 },
             )
         }
-    ) {
+    ){
         Box(modifier = Modifier.background(Color.White)) {
             Box(modifier = Modifier.fillMaxSize()) {
                 LazyColumn(

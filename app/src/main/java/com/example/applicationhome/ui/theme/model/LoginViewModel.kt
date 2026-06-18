@@ -88,9 +88,9 @@ class LoginViewModel(application : Application) : AndroidViewModel(application) 
         userData = UserClass("Guest")
         cartItems.clear()
         favoritList.clear()
-        mealsFavorite = emptyList()
-        snacksFavorite = emptyList()
-        restaurantsFavorite = emptyList()
+        mealsFavorite.clear()
+        snacksFavorite.clear()
+        restaurantsFavorite.clear()
         totalPrice = 0.0
         totalNumber.value = 0
     }
@@ -106,11 +106,16 @@ class LoginViewModel(application : Application) : AndroidViewModel(application) 
             //addToMeals()
             getcart()
             getOrders()
-            cartMealsMenu = async { cartMeals() }.await().toSet().toList()
-            cartSnacksMenu = async { cartSnacks() }.await().toSet().toList()
-            mealsFavorite = async { favoriteMeals() }.await().toSet().toList()
-            snacksFavorite = async { favoriteSnacks() }.await().toSet().toList()
-            restaurantsFavorite = async { favoriteRestaurants() }.await().toSet().toList()
+            val mealsDeferred = async { cartMeals() }
+            val snacksDeferred = async { cartSnacks() }
+            cartMealsMenu += mealsDeferred.await()
+            cartSnacksMenu += snacksDeferred.await()
+            val favoriteMeals = async { favoriteMeals() }
+            val favoriteSnacks = async { favoriteSnacks() }
+            val favoriteRestaurants = async { favoriteRestaurants() }
+            mealsFavorite += favoriteMeals.await()
+            snacksFavorite += favoriteSnacks.await()
+            restaurantsFavorite += favoriteRestaurants.await()
         }
     }
 }

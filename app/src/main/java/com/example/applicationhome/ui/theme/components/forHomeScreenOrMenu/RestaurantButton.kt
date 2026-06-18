@@ -61,8 +61,7 @@ fun RestaurantButton(
             shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(50.dp)).
             background(Color.DarkOrange).
             clickable{
-                navigationController.navigate(Screens.Cart.screen)
-                bottomBarViewModel.cart()
+                navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
             }.
             padding(9.dp),
             verticalAlignment = Alignment.CenterVertically,
