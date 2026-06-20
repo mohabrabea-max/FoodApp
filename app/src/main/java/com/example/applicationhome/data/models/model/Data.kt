@@ -127,7 +127,7 @@ data class RestaurantsCount(
     val offers : Int
 )
 
-data class UserClass(
+data class UserClassFireBase(
     val firstname : String = "",
     val lastname : String = "",
     val email : String = "",

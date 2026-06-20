@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -66,4 +67,8 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")// Retrofit: المكتبة الأساسية للربط
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")// Converter: عشان يحول الـ JSON لكلاسات كوتلن أوتوماتيك
     implementation("androidx.datastore:datastore-preferences:1.1.1") // مكتبة الحفظ الدائم
+    implementation("androidx.room:room-runtime:2.8.4")
+    implementation("androidx.room:room-ktx:2.8.4")
+    ksp("androidx.room:room-compiler:2.8.4")
+
 }
