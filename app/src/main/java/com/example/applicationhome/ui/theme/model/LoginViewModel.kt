@@ -9,7 +9,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.core.NetworkObserver
-import com.example.applicationhome.data.models.model.UserClass
+import com.example.applicationhome.data.models.local.UpdateAccountState
+import com.example.applicationhome.data.models.local.UserClass
+import com.example.applicationhome.data.models.local.UsersDatabase
 import com.example.applicationhome.data.models.repository.CartRepository.cartItems
 import com.example.applicationhome.data.models.repository.CartRepository.cartMeals
 import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
@@ -42,6 +44,10 @@ class LoginViewModel(application : Application) : AndroidViewModel(application) 
     private val networkObserver = NetworkObserver(application.applicationContext)
     var isNetworkAvailable by mutableStateOf(false)
 
+    private var userDao = UsersDatabase.getDaoInstance(application).userDao
+
+    private var cartDao = UsersDatabase.getDaoInstance(application).cartDao
+
 
     init {
         viewModelScope.launch {
@@ -52,6 +58,9 @@ class LoginViewModel(application : Application) : AndroidViewModel(application) 
                 }
             }
         }
+    }
+    init {
+        fetchUserDataFromDatabase()
     }
 
 
@@ -83,8 +92,14 @@ class LoginViewModel(application : Application) : AndroidViewModel(application) 
         }
     }
 
-    fun logout(){
+    suspend fun logout(){
         isLogin = false
+        try {
+
+            userDao.updateUser(UpdateAccountState(userData.email, isActive = false))
+        }catch (e : Exception){
+            println("Error")
+        }
         userData = UserClass("Guest")
         cartItems.clear()
         favoritList.clear()
@@ -95,8 +110,14 @@ class LoginViewModel(application : Application) : AndroidViewModel(application) 
         totalNumber.value = 0
     }
 
-    fun login(userdata : UserClass, userid : String){
-        userData = userdata
+    suspend fun login(userid : String){
+        try {
+            userDao.addUser(userData)
+            userDao.updateUser(UpdateAccountState(userData.email, isActive = true))
+        }catch (e : Exception){
+            println("Error")
+        }
+
         userId = userid
         isLogin = true
         viewModelScope.launch {
@@ -116,6 +137,22 @@ class LoginViewModel(application : Application) : AndroidViewModel(application) 
             mealsFavorite += favoriteMeals.await()
             snacksFavorite += favoriteSnacks.await()
             restaurantsFavorite += favoriteRestaurants.await()
+        }
+    }
+
+    fun fetchUserDataFromDatabase(){
+        viewModelScope.launch {
+            try {
+                val usersData = userDao.getAllUsers()
+                println(usersData)
+                val user = usersData.find { it.isActive == true }
+                if(user != null){
+                    isLogin = true
+                    userData = user
+                }
+            } catch (e : Exception){
+                println("Error")
+            }
         }
     }
 }

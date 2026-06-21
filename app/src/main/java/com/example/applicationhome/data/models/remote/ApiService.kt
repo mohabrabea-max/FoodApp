@@ -11,7 +11,7 @@ import com.example.applicationhome.data.models.model.OrdersClass
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.RestaurantsCount
 import com.example.applicationhome.data.models.model.Snack
-import com.example.applicationhome.data.models.model.UserClass
+import com.example.applicationhome.data.models.model.UserClassFireBase
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -26,14 +26,14 @@ interface FoodAppAPIs{
 
     @POST("users.json")
     suspend fun signUp(
-        @Body user : UserClass
+        @Body user : UserClassFireBase
     ): Response<FirebasePostResponse>
 
     @GET("users.json")
     suspend fun getUserData(
         @Query("orderBy") order : String,
         @Query("equalTo") value : String
-    ): Response<Map<String, UserClass>>
+    ): Response<Map<String, UserClassFireBase>>
 
 
 //    @PATCH("snacks/{mealId}.json")

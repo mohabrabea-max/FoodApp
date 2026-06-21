@@ -30,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,6 +54,7 @@ import com.example.applicationhome.ui.theme.components.forSignUpOrLogin.SignupTe
 import com.example.applicationhome.ui.theme.components.forSignUpOrLogin.SignupTextFieldPage2
 import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.SignUpViewModel
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -238,6 +240,7 @@ fun SignUpScreen(
 fun SignUpButton(signUpViewModel: SignUpViewModel, navigationController: NavHostController, loginViewModel: LoginViewModel){
     val page = signUpViewModel.signupPages
     val state = signUpViewModel.bottonState
+    val scope = rememberCoroutineScope()
     Box(
         modifier = Modifier
             .padding(start = 40.dp, end = 40.dp)
@@ -249,11 +252,14 @@ fun SignUpButton(signUpViewModel: SignUpViewModel, navigationController: NavHost
                 if(state == true && page == 1){
                     signUpViewModel.nextPage()
                 }else if(page == 2){
-                    signUpViewModel.signUpButton()
-                    loginViewModel.bottonstate()
-                    loginViewModel.login(UserRepository.userData, UserRepository.userId)
-                    navigationController.navigate(Screens.HomeScreen.screen){ navigationController.popBackStack() }
-                    signUpViewModel.lastPage()
+                    scope.launch {
+                        signUpViewModel.signUpButton()
+                        loginViewModel.bottonstate()
+                        loginViewModel.login(UserRepository.userId)
+                        navigationController.navigate(Screens.HomeScreen.screen){ navigationController.popBackStack() }
+                        signUpViewModel.lastPage()
+                    }
+
                 }
             },
         contentAlignment = Alignment.Center

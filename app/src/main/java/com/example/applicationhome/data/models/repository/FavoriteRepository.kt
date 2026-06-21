@@ -37,7 +37,7 @@ object FavoriteRepository {
 
 
     suspend fun favoriteMeals(): Map<String, FoodItem> {
-        val finalMealsList = mutableStateMapOf<String, FoodItem>()
+        val finalMealsList = mutableMapOf<String, FoodItem>()
         val missingItems = mutableListOf<Int>()
         mealsFavoriteMenu.forEach { item ->
             val mealKey = "Meal_${item.id}"
@@ -78,7 +78,7 @@ object FavoriteRepository {
     }
 
     suspend fun favoriteSnacks(): Map<String, Snack> {
-        val finalSnacksList = mutableStateMapOf<String, Snack>()
+        val finalSnacksList = mutableMapOf<String, Snack>()
         val missingItems = mutableListOf<Int>()
         snacksFavoriteMenu.forEach { item ->
             val snackKey = "Snack_${item.id}"
@@ -118,7 +118,7 @@ object FavoriteRepository {
         return finalSnacksList
     }
     suspend fun favoriteRestaurants(): Map<String, Restaurants> {
-        val finalRestaurantsList = mutableStateMapOf<String, Restaurants>()
+        val finalRestaurantsList = mutableMapOf<String, Restaurants>()
         val missingItems = mutableListOf<Int>()
         restaurantsFavoriteMenu.forEach { item ->
             val restaurantKey = "Restaurant_${item.id}"

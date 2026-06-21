@@ -137,6 +137,38 @@ data class UserClass(
     val isActive : Boolean = false
 )
 
+data class UpdateAccountState(
+    val email : String = "",
+    val isActive : Boolean = false
+)
+
+data class UpdateName(
+    val email : String = "",
+    val firstname : String = "",
+    val lastname : String = ""
+)
+
+data class UpdatePhoneNumber(
+    val email : String = "",
+    val phonenumber : String = ""
+)
+
+
+@Entity(tableName = "cart")
+data class CartItems(
+    val userId : String,
+    @PrimaryKey
+    val mealId : String = "",
+    val name : String = "",
+    val size : String = "",
+    val quantity: Int = 0,
+    val priceOfOne : Double = 0.0,
+    val totalPrice : Double = 0.0,
+    val image : String = "",
+    var restaurantId : Int = 0,
+    val review : Double = 0.0
+)
+
 //data class FirebasePostResponse(val name : String)
 //
 //data class TextFieldClassFromConfirmOrderScreen(val textState : TextFieldState, val title: String)

@@ -6,25 +6,32 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [UserClass::class],
+    entities = [UserClass::class, CartItems::class],
     version = 1,
     exportSchema = false
 )
 abstract class UsersDatabase : RoomDatabase(){
-    abstract val dao : UsersDao
+    abstract val userDao : UsersDao
+    abstract val cartDao : CartDao
     companion object {
-        @Volatile
-        private var daoInstance : UsersDao? = null
+        @Volatile  // بتخلي التغيير اللي بيحصل على المتغير daoInstance نفسه في الرام يسمع فوراً في كل الـ Threads
+        private var daoInstance : UsersDatabase? = null
 
+//        val MIGRATION_1_2 = object : Migration(1, 2){   // الجزء دا عشان لو هنضيف عمود جديد في الجدول ميمسحش الداتا القديمة
+//            override fun migrate(db: SupportSQLiteDatabase) {
+//                db.execSQL("ALTER TABLE users ADD COLUMN address2 TEXT NOT NULL DEFAULT ''")
+//            }
+//        }
+
+        //  الفانكشن دي هي اللي بتخلي مكتبة Room تدي لdao قيمة
         private fun buildDatabase(context : Context): UsersDatabase =
             Room.databaseBuilder(context.applicationContext, UsersDatabase::class.java, "food_app_database").fallbackToDestructiveMigration().build()
 
-        fun getDaoInstance(context: Context) : UsersDao{
-            synchronized(this){   // دا بيخلي الفانكشن دي متتناداش مرتين في الكود
-                if(daoInstance == null){
-                    daoInstance = buildDatabase(context).dao
-                }
-                return daoInstance as UsersDao
+        fun getDaoInstance(context: Context) : UsersDatabase{
+            return daoInstance ?: synchronized(this) {
+                val instance = buildDatabase(context)
+                daoInstance = instance
+                instance
             }
         }
     }

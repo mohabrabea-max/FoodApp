@@ -209,7 +209,7 @@ fun FinalScreen(
                         popExitTransition = { ExitTransition.None }
                     ) {
                         when(item){
-                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel, homeScreenViewModel)
+                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel, homeScreenViewModel, loginViewModel)
                             is Screens.Profile -> Profile(drawerState, coroutineScope, navigationController, userImageViewModel, profileViewModel, birthdayViewModel)
                             is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel, bottomBarViewModel, addBoxViewModel, favoriteViewModel)
                             is Screens.Search -> Search()

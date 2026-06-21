@@ -101,7 +101,7 @@ object CartRepository {
     }
 
     suspend fun cartMeals(): Map<String, FoodItem> {
-        val finalMealsList = mutableStateMapOf<String, FoodItem>()
+        val finalMealsList = mutableMapOf<String, FoodItem>()
         val missingItems = mutableListOf<Int>()
         foodMenu.forEach { item ->
             val mealKey = "Meal_${item.value.id}"
@@ -138,7 +138,7 @@ object CartRepository {
     }
 
     suspend fun cartSnacks(): Map<String, Snack> {
-        val finalSnacksList = mutableStateMapOf<String, Snack>()
+        val finalSnacksList = mutableMapOf<String, Snack>()
         val missingItems = mutableListOf<Int>()
         snacksMenu.forEach { item ->
             val snackKey = "Meal_${item.value.id}"

@@ -62,6 +62,7 @@ import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import kotlinx.coroutines.CoroutineScope
 
@@ -78,9 +79,9 @@ fun HomeScreen(
     categoriesBoxViewModel : CategoriesBoxViewModel,
     restaurantViewModel: RestaurantViewModel,
     bottomBarViewModel : BottomBarViewModel,
-    homeScreenViewModel: HomeScreenViewModel
+    homeScreenViewModel: HomeScreenViewModel,
+    loginViewModel: LoginViewModel
 ){
-
     val scrollState = rememberLazyListState()
 
     val restaurants = categoriesBoxViewModel.filterrestaurants

@@ -1,19 +1,21 @@
 package com.example.applicationhome.ui.theme.model
 
+import android.app.Application
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.data.models.model.UserClass
+import com.example.applicationhome.data.models.local.UpdateAccountState
+import com.example.applicationhome.data.models.local.UsersDatabase
+import com.example.applicationhome.data.models.model.UserClassFireBase
 import com.example.applicationhome.data.models.repository.UserRepository
-import com.example.applicationhome.data.models.repository.UserRepository.isEmailDone
 import com.example.applicationhome.data.models.repository.UserRepository.userData
 import kotlinx.coroutines.launch
 
-class SignUpViewModel : ViewModel(){
+class SignUpViewModel(application : Application) : AndroidViewModel(application) {
     val firstnamestate = TextFieldState()
     val lastnamestate = TextFieldState()
     val emailstate = TextFieldState()
@@ -24,13 +26,14 @@ class SignUpViewModel : ViewModel(){
 
     var bottonState by mutableStateOf(false)
 
+    private var userDao = UsersDatabase.getDaoInstance(application).userDao
 
 
     private val _signUpResult = MutableLiveData<String>()
 
     var signupPages by mutableStateOf(1)
 
-    fun signUpButton(){
+    suspend fun signUpButton(){
         userData = userData.copy(
             firstnamestate.text.toString(),
             lastnamestate.text.toString(),
@@ -40,7 +43,21 @@ class SignUpViewModel : ViewModel(){
             addressstate.text.toString()
         )
         if(userData != null) {
-            registerUserInFirebase(userData)
+            registerUserInFirebase(UserClassFireBase(
+                userData.firstname,
+                userData.lastname,
+                userData.email,
+                userData.password,
+                userData.phonenumber,
+                userData.address
+            )
+            )
+        }
+        try {
+            userDao.addUser(userData)
+            userDao.updateUser(UpdateAccountState(userData.email, isActive = true))
+        }catch (e : Exception){
+            println("Error")
         }
     }
 
@@ -67,10 +84,9 @@ class SignUpViewModel : ViewModel(){
         viewModelScope.launch {
             val result = UserRepository.getUserData(emailstate.text.toString(), null)
             if (result == "Email is false") {
-                isEmailDone = true
                 signupPages += 1
             } else if (result == "Email is true") {
-                isEmailDone = false
+                null
             } else {
             }
         }
@@ -80,7 +96,7 @@ class SignUpViewModel : ViewModel(){
         signupPages -= 1
     }
 
-    fun registerUserInFirebase(userRequest : UserClass) {
+    fun registerUserInFirebase(userRequest : UserClassFireBase) {
         viewModelScope.launch {
             UserRepository.signUp(userRequest)
         }

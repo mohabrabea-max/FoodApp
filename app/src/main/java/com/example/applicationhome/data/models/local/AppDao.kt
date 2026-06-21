@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface UsersDao {            // دا الجزء اللي بينفذ عمليات في الداتا بيز
@@ -14,4 +15,21 @@ interface UsersDao {            // دا الجزء اللي بينفذ عملي�
     @Insert(onConflict = OnConflictStrategy.REPLACE)   // IGNORE دي بتتجاهل اي داتا عايز اضيفها فيها ايميل مطابق لايميل موجود قبل كدا
                                                        // REPLACE  بتستبدل الداتا القديمة بالجديدة لو الايميل متكرر في الداتا بيز
     suspend fun addUser(user : UserClass)
+
+    @Update(entity = UserClass::class)
+    suspend fun updateUser(updateState: UpdateAccountState)
+}
+
+@Dao
+interface CartDao {            // دا الجزء اللي بينفذ عمليات في الداتا بيز
+    @Query("SELECT * FROM cart WHERE userId = :userid")
+    suspend fun getCart(userid : String): List<CartItems>
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)   // IGNORE دي بتتجاهل اي داتا عايز اضيفها فيها ايميل مطابق لايميل موجود قبل كدا
+    // REPLACE  بتستبدل الداتا القديمة بالجديدة لو الايميل متكرر في الداتا بيز
+    suspend fun addCartItem(cartItem : CartItems)
+
+    @Query("UPDATE cart SET quantity = :newQuantity, totalPrice = :newTotalPrice WHERE userId = :userId AND mealId = :mealId")
+    suspend fun updateQuantity(newQuantity : Int, newTotalPrice : Double, userId : String, mealId : String)
 }

@@ -3,13 +3,13 @@ package com.example.applicationhome.data.models.repository
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.example.applicationhome.data.models.local.UserClass
 import com.example.applicationhome.data.models.model.FirebasePostResponse
-import com.example.applicationhome.data.models.model.UserClass
+import com.example.applicationhome.data.models.model.UserClassFireBase
 import com.example.applicationhome.data.models.remote.RetrofitInstance
 import retrofit2.Response
 
 object UserRepository {
-    var isEmailDone by mutableStateOf(false)
     var userId by mutableStateOf("")
     var isLogin by mutableStateOf(false)
     var userData by mutableStateOf(
@@ -42,7 +42,8 @@ object UserRepository {
                                 user.email,
                                 user.password,
                                 user.phonenumber,
-                                user.address
+                                user.address,
+                                isActive = true
                             )
                         }
                         userId = userMap.keys.first()
@@ -62,7 +63,7 @@ object UserRepository {
         }
     }
 
-    suspend fun signUp(userRequest : UserClass): String {
+    suspend fun signUp(userRequest : UserClassFireBase): String {
         return try {
             val response: Response<FirebasePostResponse> = RetrofitInstance.api.signUp(userRequest)
             // 🟢 الـ if الذكية بتاعتك هنا عشان تتأكد إن العملية نجحت

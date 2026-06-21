@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.UserRepository.userData
 import com.example.applicationhome.data.models.repository.UserRepository.userId
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -50,6 +50,7 @@ import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.forSignUpOrLogin.LoginTextField
 import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -235,6 +236,7 @@ fun LoginScreen(
 fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostController, addBoxViewModel: AddBoxViewModel){
     var isEmailTrue = loginViewModel.isEmailTrue
     var isPasswordTrue = loginViewModel.isPasswordTrue
+    val scope = rememberCoroutineScope()
     Box(
         modifier = Modifier
             .padding(start = 40.dp, end = 40.dp)
@@ -246,10 +248,12 @@ fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostCon
                 if(loginViewModel.isNetworkAvailable){
                     if(isEmailTrue && isPasswordTrue){
                         println(userId)
-                        navigationController.navigate(Screens.HomeScreen.screen) {navigationController.popBackStack()}
-                        loginViewModel.login(userData, userId)
-                        loginViewModel.bottonstate()
-                        addBoxViewModel.updateTotals()
+                        scope.launch {
+                            loginViewModel.login(userId)
+                            loginViewModel.bottonstate()
+                            addBoxViewModel.updateTotals()
+                            navigationController.navigate(Screens.HomeScreen.screen) {navigationController.popBackStack()}
+                        }
                     }else if(isEmailTrue && isPasswordTrue == false){
                         println("true false")
                     }else{

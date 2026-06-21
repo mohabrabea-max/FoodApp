@@ -158,12 +158,14 @@ fun Options(
                     )
                 },
                 onClick = {
-                    coroutineScope.launch{drawerState.close()}
-                    if(UserRepository.isLogin){
-                        loginViewModel.logout()
-                        Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()
-                    }else{
-                        navigationController.navigate(Screens.LoginScreen.screen)
+                    coroutineScope.launch{
+                        drawerState.close()
+                        if(UserRepository.isLogin){
+                            loginViewModel.logout()
+                            Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()
+                        }else{
+                            navigationController.navigate(Screens.LoginScreen.screen)
+                        }
                     }
                 }
             )}
