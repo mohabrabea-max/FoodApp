@@ -45,7 +45,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.UserRepository
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
@@ -255,7 +254,7 @@ fun SignUpButton(signUpViewModel: SignUpViewModel, navigationController: NavHost
                     scope.launch {
                         signUpViewModel.signUpButton()
                         loginViewModel.bottonstate()
-                        loginViewModel.login(UserRepository.userId)
+                        loginViewModel.login()
                         navigationController.navigate(Screens.HomeScreen.screen){ navigationController.popBackStack() }
                         signUpViewModel.lastPage()
                     }

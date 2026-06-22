@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [UserClass::class, CartItems::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class UsersDatabase : RoomDatabase(){
@@ -15,7 +15,7 @@ abstract class UsersDatabase : RoomDatabase(){
     abstract val cartDao : CartDao
     companion object {
         @Volatile  // بتخلي التغيير اللي بيحصل على المتغير daoInstance نفسه في الرام يسمع فوراً في كل الـ Threads
-        private var daoInstance : UsersDatabase? = null
+        private var INSTANCE : UsersDatabase? = null
 
 //        val MIGRATION_1_2 = object : Migration(1, 2){   // الجزء دا عشان لو هنضيف عمود جديد في الجدول ميمسحش الداتا القديمة
 //            override fun migrate(db: SupportSQLiteDatabase) {
@@ -28,9 +28,9 @@ abstract class UsersDatabase : RoomDatabase(){
             Room.databaseBuilder(context.applicationContext, UsersDatabase::class.java, "food_app_database").fallbackToDestructiveMigration().build()
 
         fun getDaoInstance(context: Context) : UsersDatabase{
-            return daoInstance ?: synchronized(this) {
+            return INSTANCE ?: synchronized(this) {
                 val instance = buildDatabase(context)
-                daoInstance = instance
+                INSTANCE = instance
                 instance
             }
         }

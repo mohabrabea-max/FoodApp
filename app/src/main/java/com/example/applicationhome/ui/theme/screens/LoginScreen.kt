@@ -249,7 +249,7 @@ fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostCon
                     if(isEmailTrue && isPasswordTrue){
                         println(userId)
                         scope.launch {
-                            loginViewModel.login(userId)
+                            loginViewModel.login()
                             loginViewModel.bottonstate()
                             addBoxViewModel.updateTotals()
                             navigationController.navigate(Screens.HomeScreen.screen) {navigationController.popBackStack()}

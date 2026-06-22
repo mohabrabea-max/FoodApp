@@ -19,8 +19,6 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,12 +49,6 @@ fun LoginTextField(loginViewModel: LoginViewModel, userImageViewModel : UserImag
             .background(Color.White)
             .padding(start = 25.dp, end = 25.dp)
     ){
-        LaunchedEffect(emailstate) {
-            snapshotFlow { emailstate.text.toString() }
-                .collect {
-                    loginViewModel.getData()
-                }
-        }
         BasicTextField(
             state = emailstate,
             modifier = Modifier.fillMaxSize().padding(start = 30.dp).
@@ -115,12 +107,6 @@ fun LoginTextField(loginViewModel: LoginViewModel, userImageViewModel : UserImag
             .background(Color.White)
             .padding(start = 25.dp, end = 25.dp)
     ){
-        LaunchedEffect(passwordstate) {
-            snapshotFlow { passwordstate.text.toString() }
-                .collect {
-                    loginViewModel.getData()
-                }
-        }
         BasicTextField(
             state = passwordstate,
             modifier = Modifier.fillMaxSize().padding(start = 30.dp).

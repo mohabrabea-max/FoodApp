@@ -8,9 +8,14 @@ import androidx.room.Update
 
 @Dao
 interface UsersDao {            // دا الجزء اللي بينفذ عمليات في الداتا بيز
-    @Query("SELECT * FROM users")
-    suspend fun getAllUsers(): List<UserClass>
+//    @Query("SELECT * FROM users")
+//    suspend fun getAllUsers(): List<UserClass>
 
+    @Query("SELECT * FROM users WHERE id = :userId")
+    suspend fun getOneUser(userId : String): UserClass?
+
+    @Query("SELECT * FROM users WHERE isActive = :isActive")
+    suspend fun getActiveUser(isActive : Boolean = true): UserClass?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)   // IGNORE دي بتتجاهل اي داتا عايز اضيفها فيها ايميل مطابق لايميل موجود قبل كدا
                                                        // REPLACE  بتستبدل الداتا القديمة بالجديدة لو الايميل متكرر في الداتا بيز

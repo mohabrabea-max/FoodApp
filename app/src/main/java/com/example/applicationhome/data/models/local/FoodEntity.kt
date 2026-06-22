@@ -127,6 +127,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "users")
 data class UserClass(
+    val id : String = "",
     val firstname : String = "",
     val lastname : String = "",
     @PrimaryKey                 //   عشان الايميل ميتكررش في جدول اليوزرز
@@ -154,12 +155,15 @@ data class UpdatePhoneNumber(
 )
 
 
-@Entity(tableName = "cart")
+@Entity(
+    tableName = "cart",
+    primaryKeys = ["userId", "mealId"]
+)
 data class CartItems(
-    val userId : String,
-    @PrimaryKey
+    val userId : String = "",
     val mealId : String = "",
     val name : String = "",
+    val type : String = "",
     val size : String = "",
     val quantity: Int = 0,
     val priceOfOne : Double = 0.0,
