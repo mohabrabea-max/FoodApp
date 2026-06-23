@@ -156,22 +156,31 @@ data class UpdatePhoneNumber(
 
 
 @Entity(
-    tableName = "cart",
+    tableName = "cart_items",
     primaryKeys = ["userId", "mealId"]
 )
-data class CartItems(
+data class CartItemsClass(
     val userId : String = "",
-    val mealId : String = "",
+    val mealKey : String = "",
+    val mealId : Int = 0,
     val name : String = "",
     val type : String = "",
     val size : String = "",
     val quantity: Int = 0,
     val priceOfOne : Double = 0.0,
     val totalPrice : Double = 0.0,
-    val image : String = "",
-    var restaurantId : Int = 0,
-    val review : Double = 0.0
+    val image : String = ""
 )
+
+@Entity(tableName = "cart")
+data class CartClass(
+    @PrimaryKey val userId : String = "",
+    val restaurantId : Int = 0,
+    val restaurantName : String = "",
+    val restaurantImage : String = ""
+)
+
+
 
 //data class FirebasePostResponse(val name : String)
 //

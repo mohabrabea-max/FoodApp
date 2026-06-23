@@ -41,18 +41,17 @@ import com.example.applicationhome.data.models.model.Food
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.model.Snack
-import com.example.applicationhome.data.models.repository.CartRepository.allCart
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.CartViewModel
 import kotlinx.coroutines.CoroutineScope
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomBarForItemScreen(
-    addBoxViewModel: AddBoxViewModel,
+    cartViewModel: CartViewModel,
     food : Food,
     size : String,
     snackbarHostState : SnackbarHostState,
@@ -61,12 +60,12 @@ fun BottomBarForItemScreen(
     bottomBarViewModel: BottomBarViewModel
 ){
     val price = when(food){
-        is FoodItem -> { addBoxViewModel.newCount * (food.sizeOptions.find { it.size == size }?.price ?: 0.0) }
-        is Snack -> { addBoxViewModel.newCount * (food.priceANDsize[size] ?: 0.0) }
+        is FoodItem -> { cartViewModel.newCount * (food.sizeOptions.find { it.size == size }?.price ?: 0.0) }
+        is Snack -> { cartViewModel.newCount * (food.priceANDsize[size] ?: 0.0) }
     }
     var color : Color
     var fontColor : Color
-    if(addBoxViewModel.newCount == 0){
+    if(cartViewModel.newCount == 0){
         color = Color.VeryLightGray
         fontColor = Color.Gray
     }else{
@@ -102,11 +101,11 @@ fun BottomBarForItemScreen(
                     fillMaxSize(),
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
                 ){
-                    IconButton(onClick = { if(addBoxViewModel.newCount > 0) addBoxViewModel.minusnewCount() }, modifier = Modifier.weight(1f).fillMaxHeight()){
+                    IconButton(onClick = { if(cartViewModel.newCount > 0) cartViewModel.minusnewCount() }, modifier = Modifier.weight(1f).fillMaxHeight()){
                         Icon(
                             Icons.Default.Remove,
                             contentDescription = null,
-                            tint = if(addBoxViewModel.newCount > 0) Color.DarkOrange else Color.Gray,
+                            tint = if(cartViewModel.newCount > 0) Color.DarkOrange else Color.Gray,
                             modifier = Modifier.fillMaxSize().padding(5.dp)
                         )
                     }
@@ -117,7 +116,7 @@ fun BottomBarForItemScreen(
                         contentAlignment = Alignment.Center
                     ){
                         Text(
-                            text = addBoxViewModel.newCount.toString(),
+                            text = cartViewModel.newCount.toString(),
                             fontSize = 15.sp,
                             style = MaterialTheme.typography.labelLarge,
                             color = Color.Black,
@@ -125,11 +124,11 @@ fun BottomBarForItemScreen(
                             fontWeight = FontWeight.Bold
                         )
                     }
-                    IconButton(onClick = { if(addBoxViewModel.newCount < 99) addBoxViewModel.plusnewCount() }, modifier = Modifier.weight(1f).fillMaxHeight()){
+                    IconButton(onClick = { if(cartViewModel.newCount < 99) cartViewModel.plusnewCount() }, modifier = Modifier.weight(1f).fillMaxHeight()){
                         Icon(
                             Icons.Default.Add,
                             contentDescription = null,
-                            tint = if(addBoxViewModel.newCount < 99) Color.DarkOrange else Color.Gray,
+                            tint = if(cartViewModel.newCount < 99) Color.DarkOrange else Color.Gray,
                             modifier = Modifier.fillMaxSize().padding(5.dp)
                         )
                     }
@@ -141,9 +140,9 @@ fun BottomBarForItemScreen(
                 clip(RoundedCornerShape(50.dp)).
                 background(color).
                 clickable {
-                    if(addBoxViewModel.newCount > 0){
-                        addBoxViewModel.updateCount(food, size, addBoxViewModel.newCount)
-                        if(addBoxViewModel.newCount > 0 && food.restaurantId == allCart.value.restaurantId){
+                    if(cartViewModel.newCount > 0){
+                        cartViewModel.updateCount(food, size, cartViewModel.newCount)
+                        if(cartViewModel.newCount > 0 && food.restaurantId == cartViewModel.cartInformation.value?.restaurantId){
                             scope.showAddToCartSnackbar(
                                 snackbarHostState,
                                 {
@@ -151,7 +150,7 @@ fun BottomBarForItemScreen(
                                 }
 
                             )
-                            addBoxViewModel.deletenewCount()
+                            cartViewModel.deletenewCount()
                         }
                     }
                 }.

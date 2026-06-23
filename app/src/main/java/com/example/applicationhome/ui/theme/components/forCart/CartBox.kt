@@ -1,5 +1,6 @@
 package com.example.applicationhome.ui.theme.components.forCart
 
+import android.R.attr.name
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,13 +35,10 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.model.CartItemsClass
+import com.example.applicationhome.data.models.local.CartItemsClass
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.CartRepository
-import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
-import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
 import com.example.applicationhome.ui.theme.LightOrange
-import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @Composable
@@ -48,40 +46,20 @@ fun CartBox(
     food: CartItemsClass,
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel,
-    addBoxViewModel : AddBoxViewModel,
+    cartViewModel: CartViewModel,
 ){
-    val meal = cartMealsMenu["Meal_${food.id}"]
-    val snack = cartSnacksMenu["Snack_${food.id}"]
-    val foodItem = if(food.type == "Meal") meal else snack
-
+    val meal = cartViewModel.meal
     val size = food.size
-
     val sizeInTitle = if(size.contains("Pieces")) "" else " (${size})"
 
-    val cartkey : String
-    val count : Int
+    val cartkey = "${food.mealId}_${size}"
 
-    val image : String
-    val name : String
-    val price : String
-    if(meal != null){
-        cartkey = "${food.id}_${size}"
-        count = CartRepository.cartItems[cartkey]?.number ?: 0
-        name = meal.name
-        price = "EGP " + meal.sizeOptions.find { it.size == size }?.price.toString()
-        image = meal.image.first()
-    }else{
-        cartkey = "${food.id}_${size}"
-        count = CartRepository.cartItems[cartkey]?.number ?: 0
-        name = snack?.name ?: ""
-        price = "EGP " + snack?.priceANDsize[size].toString()
-        image = snack?.image?.first() ?: ""
-    }
     Box(
         modifier = Modifier.padding(start = 10.dp, end = 10.dp).
         fillMaxWidth().height(100.dp).
         background(Color.White).
         clickable {
+            cartViewModel.getMeal(food.mealId)
             if(meal != null) viewModel.selectItem(meal, meal.sizeOptions.find { it.size == size }?.size.toString())
             navigationController.navigate(Screens.ItemScreen.screen)
         }
@@ -96,7 +74,7 @@ fun CartBox(
                     AsyncImage(
                         modifier = Modifier.fillMaxHeight().weight(1f).padding(10.dp),
                         model = ImageRequest.Builder(LocalContext.current).
-                        data(image).
+                        data(food.image).
                         crossfade(true).
                         size(400, 400).
                         precision(Precision.EXACT).
@@ -118,7 +96,7 @@ fun CartBox(
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = price,
+                            text = food.priceOfOne.toString(),
                             fontSize = 15.sp,
                             color = Color.Red,
                             style = MaterialTheme.typography.labelLarge,
@@ -131,7 +109,7 @@ fun CartBox(
                     weight(1.8f),
                     verticalAlignment = Alignment.CenterVertically
                 ){
-                    IconButton(onClick = { addBoxViewModel.delete(food.id, size) }, modifier = Modifier.weight(1f)){
+                    IconButton(onClick = { cartViewModel.delete(food.mealId, size) }, modifier = Modifier.weight(1f)){
                         Icon(Icons.Default.Delete, contentDescription = null, tint = Color.Red)
                     }
                     Box(
@@ -141,7 +119,7 @@ fun CartBox(
                         clip(CircleShape).
                         background(Color.LightOrange.copy(alpha = 0.7f))
                     ){
-                        if(foodItem != null) FixedAddBox(addBoxViewModel, food, count, size, cartkey, foodItem)
+                        if(meal != null) FixedAddBox(cartViewModel, food, food.quantity, size, cartkey, meal)
                     }
                 }
             }

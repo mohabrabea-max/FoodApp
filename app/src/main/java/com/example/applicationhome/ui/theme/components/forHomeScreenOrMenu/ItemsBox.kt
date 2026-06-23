@@ -33,7 +33,7 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @Composable
@@ -42,7 +42,7 @@ fun ItemsBox(
     item: FoodItem,
     navigationController : NavHostController,
     itemScreenViewModel: ItemScreenViewModel,
-    addBoxViewModel: AddBoxViewModel,
+    cartViewModel: CartViewModel,
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
 
@@ -63,7 +63,7 @@ fun ItemsBox(
             clickable{
                 itemScreenViewModel.selectItem(item, item.sizeOptions.last().size)
                 navigationController.navigate(Screens.ItemScreen.screen)
-                addBoxViewModel.deletenewCount()
+                cartViewModel.deletenewCount()
             }.
             padding(start = 20.dp, end = 15.dp, top = 15.dp, bottom = 20.dp)
         ){

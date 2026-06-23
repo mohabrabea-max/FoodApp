@@ -31,14 +31,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.CartRepository.cartItems
-import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
-import com.example.applicationhome.data.models.repository.CartRepository.totalNumber
 import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
-import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 
 @SuppressLint("UnrememberedMutableState")
@@ -47,7 +44,7 @@ import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 fun MyBottonBar(
     navigationController : NavController,
     viewModel: BottomBarViewModel,
-    addBoxViewModel : AddBoxViewModel,
+    cartViewModel: CartViewModel,
     favoriteViewModel: FavoriteViewModel
 ){
     var selected = viewModel.selected
@@ -135,8 +132,7 @@ fun MyBottonBar(
             Box(modifier = Modifier.weight(1f)){
                 IconButton(
                     onClick = {
-                        println(cartItems)
-                        println(cartMealsMenu)
+                        println(cartViewModel.cartItems.value)
                         if(selected == "Cart"){
                             navigationController.navigate(Screens.Cart.screen)
                         }else{
@@ -154,12 +150,12 @@ fun MyBottonBar(
                 ){
                     BadgedBox(
                         badge = {
-                            if(totalNumber.value > 0){
+                            if(cartViewModel.totalNumber.value > 0){
                                 Badge(
                                     containerColor = Color.DarkOrange,
                                     contentColor = Color.White
                                 ){
-                                    if(totalNumber.value <= 99) Text(text = totalNumber.value.toString()) else Text(text = "+99")
+                                    if(cartViewModel.totalNumber.value <= 99) Text(text = cartViewModel.totalNumber.value.toString()) else Text(text = "+99")
                                 }
                             }
                         }

@@ -12,7 +12,6 @@ import com.example.applicationhome.data.models.remote.RetrofitInstance
 import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuList
 import com.example.applicationhome.data.models.repository.MenuRepository.restaurantsMenu
 import com.example.applicationhome.data.models.repository.MenuRepository.snacks
-import com.example.applicationhome.data.models.repository.UserRepository.userId
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -162,7 +161,7 @@ object FavoriteRepository {
         val favoriteObject = FavoriteClass(id, typ, restaurants)
         val mealKey = "${typ}_$id"
         return try {
-            val response = RetrofitInstance.api.addToFavorite(userId, mealKey, favoriteObject)
+            val response = RetrofitInstance.api.addToFavorite("userId", mealKey, favoriteObject)
             if(response.isSuccessful && response.body() != null){
                 favoritList[mealKey] = favoriteObject
                 //viewFavorite()
@@ -178,7 +177,7 @@ object FavoriteRepository {
 
     suspend fun getFavorite() : String {
         return try {
-            val response = RetrofitInstance.api.getFavoriteItems(userId)
+            val response = RetrofitInstance.api.getFavoriteItems("userId")
             if (response.isSuccessful) {
                 val favoriteItems = response.body()
                 if (favoriteItems != null) {
@@ -203,7 +202,7 @@ object FavoriteRepository {
     suspend fun deleteFavorite(id : Int, type : String): String{
         val mealKey = "${type}_$id"
         return try {
-            val response = RetrofitInstance.api.deleteFromFavorite(userId, mealKey)
+            val response = RetrofitInstance.api.deleteFromFavorite("userId", mealKey)
             if(response.isSuccessful){
                 favoritList.keys.remove(mealKey)
                 //viewFavorite()

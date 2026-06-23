@@ -44,18 +44,18 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.OrderItemsClass
-import com.example.applicationhome.data.models.repository.OrderRepository.lastOrders
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.forCart.PaymentSummary
+import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun OrderScreen(orderScreenViewModel : OrderScreenViewModel, navigationController : NavHostController){
+fun OrderScreen(orderScreenViewModel : OrderScreenViewModel, navigationController : NavHostController, cartViewModel : CartViewModel){
     LaunchedEffect(
-        key1 = lastOrders
+        key1 = orderScreenViewModel.lastOrders
     ){
         orderScreenViewModel.getOrdersHistory()
     }
@@ -98,7 +98,7 @@ fun OrderScreen(orderScreenViewModel : OrderScreenViewModel, navigationControlle
                         OrderDetelseBox(item)
                     }
                     item {
-                        PaymentSummary(order.totalPrice)
+                        PaymentSummary(cartViewModel)
                     }
                     item { Spacer(modifier = Modifier.height(100.dp)) }
                 }

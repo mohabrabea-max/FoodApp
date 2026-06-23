@@ -29,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,10 +38,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.CartRepository.cartItems
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.textFieldConfirmOrderScreenList1
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.textFieldConfirmOrderScreenList2
 import com.example.applicationhome.ui.theme.DarkOrange
@@ -48,8 +47,8 @@ import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.forCart.CartButton
 import com.example.applicationhome.ui.theme.components.forConfirmOrder.ConfirmOrderScreenTextField2
 import com.example.applicationhome.ui.theme.components.forConfirmOrder.TextFieldForConfirmOrder
+import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
-import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter",
     "UnrememberedMutableState",
@@ -60,9 +59,9 @@ import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 fun ConfirmOrderScreen(
     navigationController : NavHostController,
     confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
-    itemScreenViewModel: ItemScreenViewModel = viewModel(),
+    cartViewModel : CartViewModel
 ){
-    var cart = cartItems
+    var cart = cartViewModel.cartItems.collectAsState().value
     var color = if(confirmOrderScreenViewModel.bottonState) Color.DarkOrange else Color.Gray
     var fontcolor = if(confirmOrderScreenViewModel.bottonState) Color.White else Color.Black
     Scaffold(

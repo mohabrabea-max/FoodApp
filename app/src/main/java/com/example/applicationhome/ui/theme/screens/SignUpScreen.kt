@@ -41,7 +41,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.model.Screens
@@ -60,7 +59,7 @@ import kotlinx.coroutines.launch
 fun SignUpScreen(
     navigationController : NavHostController,
     loginViewModel: LoginViewModel,
-    signUpViewModel : SignUpViewModel = viewModel()
+    signUpViewModel : SignUpViewModel
 ){
     Scaffold(
         modifier = Modifier.navigationBarsPadding().fillMaxSize(),

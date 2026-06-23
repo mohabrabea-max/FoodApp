@@ -27,7 +27,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.applicationhome.data.models.repository.OrderRepository.lastOrders
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
@@ -37,7 +36,7 @@ import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LastOrdersScreen(navigationController : NavHostController, orderScreenViewModel : OrderScreenViewModel){
-    val allOrders = lastOrders.entries.toList().sortedByDescending { entry -> entry.key.toLong() }
+    val allOrders = orderScreenViewModel.lastOrders.entries.toList().sortedByDescending { entry -> entry.key.toLong() }
     Scaffold(
         modifier = Modifier.navigationBarsPadding().fillMaxSize(),
         topBar = {

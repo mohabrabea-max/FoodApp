@@ -10,12 +10,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.models.model.UserClassFireBase
 import com.example.applicationhome.data.models.repository.UserRepository
-import com.example.applicationhome.data.models.repository.UserRepository.signUp
-import com.example.applicationhome.data.models.repository.UserRepository.userData
-import com.example.applicationhome.data.models.repository.UserRepository.userId
 import kotlinx.coroutines.launch
 
-class SignUpViewModel(application : Application) : AndroidViewModel(application) {
+class SignUpViewModel(private val userRepository: UserRepository, application : Application) : AndroidViewModel(application) {
     val firstnamestate = TextFieldState()
     val lastnamestate = TextFieldState()
     val emailstate = TextFieldState()
@@ -33,23 +30,13 @@ class SignUpViewModel(application : Application) : AndroidViewModel(application)
 
     fun signUpButton(){
         viewModelScope.launch {
-            userData = userData.copy(
-                id = userId,
-                firstname = firstnamestate.text.toString(),
-                lastname = lastnamestate.text.toString(),
-                email = emailstate.text.toString(),
-                password = passwordstate.text.toString(),
-                phonenumber = phonenumberstate.text.toString(),
-                address = addressstate.text.toString(),
-                isActive = true
-            )
-            signUp(UserClassFireBase(
-                userData.firstname,
-                userData.lastname,
-                userData.email,
-                userData.password,
-                userData.phonenumber,
-                userData.address
+            userRepository.signUp(UserClassFireBase(
+                firstnamestate.text.toString(),
+                lastnamestate.text.toString(),
+                emailstate.text.toString(),
+                passwordstate.text.toString(),
+                phonenumberstate.text.toString(),
+                addressstate.text.toString()
             )
             )
         }
@@ -76,7 +63,7 @@ class SignUpViewModel(application : Application) : AndroidViewModel(application)
 
     fun nextPage(){
         viewModelScope.launch {
-            val result = UserRepository.setUserDataToDatabase(emailstate.text.toString(), null)
+            val result = userRepository.setUserDataToDatabase(emailstate.text.toString(), null)
             if (result == "Email is false") {
                 signupPages += 1
             }

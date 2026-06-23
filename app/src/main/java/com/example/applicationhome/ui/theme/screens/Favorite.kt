@@ -69,8 +69,8 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Items
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantsBox
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.favoriteBar
-import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
@@ -87,7 +87,7 @@ fun Favorite(
     navigationController : NavHostController,
     viewModelForBottomBar: BottomBarViewModel,
     itemScreenViewModel : ItemScreenViewModel,
-    addBoxViewModel: AddBoxViewModel,
+    cartViewModel : CartViewModel,
     favoriteViewModel : FavoriteViewModel,
     categoriesBoxViewModel : CategoriesBoxViewModel,
     restaurantViewModel: RestaurantViewModel,
@@ -139,7 +139,7 @@ fun Favorite(
                 pointerInput(Unit) { detectTapGestures { } },
                 contentAlignment = Alignment.BottomCenter
             ){
-                MyBottonBar(navigationController, bottomBarViewModel, addBoxViewModel, favoriteViewModel)
+                MyBottonBar(navigationController, bottomBarViewModel, cartViewModel, favoriteViewModel)
             }
         }
     ){
@@ -176,7 +176,7 @@ fun Favorite(
                                     null,
                                     navigationController,
                                     itemScreenViewModel,
-                                    addBoxViewModel,
+                                    cartViewModel,
                                     {
                                         Favorite(
                                             modifier = Modifier.clip(CircleShape).border(
@@ -190,7 +190,7 @@ fun Favorite(
                                         AddBox(
                                             color = Color.VeryLightGray,
                                             food = item,
-                                            addBoxViewModel
+                                            cartViewModel
                                         )
                                     }
                                 )
@@ -204,7 +204,7 @@ fun Favorite(
                                     item,
                                     navigationController,
                                     itemScreenViewModel,
-                                    addBoxViewModel,
+                                    cartViewModel,
                                     {
                                         Favorite(
                                             modifier = Modifier.clip(CircleShape).size(35.dp)
@@ -212,7 +212,7 @@ fun Favorite(
                                             food = item,
                                             favoriteState = favoriteViewModel
                                         )
-                                        AddBox(color = Color.White, food = item, addBoxViewModel)
+                                        AddBox(color = Color.White, food = item, cartViewModel)
                                     }
                                 )
                             }

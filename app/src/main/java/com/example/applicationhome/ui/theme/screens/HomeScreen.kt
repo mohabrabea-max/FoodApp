@@ -56,13 +56,12 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Categ
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantsBoxHomeScreen
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SearchBox
-import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
-import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import kotlinx.coroutines.CoroutineScope
 
@@ -74,13 +73,12 @@ fun HomeScreen(
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
     itemScreenViewModel: ItemScreenViewModel,
-    addBoxViewModel: AddBoxViewModel,
+    cartViewModel : CartViewModel,
     favoriteViewModel : FavoriteViewModel,
     categoriesBoxViewModel : CategoriesBoxViewModel,
     restaurantViewModel: RestaurantViewModel,
     bottomBarViewModel : BottomBarViewModel,
-    homeScreenViewModel: HomeScreenViewModel,
-    loginViewModel: LoginViewModel
+    homeScreenViewModel: HomeScreenViewModel
 ){
     val scrollState = rememberLazyListState()
 
@@ -103,7 +101,7 @@ fun HomeScreen(
                 pointerInput(Unit) { detectTapGestures { } },
                 contentAlignment = Alignment.BottomCenter
             ){
-                MyBottonBar(navigationController, bottomBarViewModel, addBoxViewModel, favoriteViewModel)
+                MyBottonBar(navigationController, bottomBarViewModel, cartViewModel, favoriteViewModel)
             }
         }
     ){

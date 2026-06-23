@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,9 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.CartRepository.cartItems
-import com.example.applicationhome.data.models.repository.CartRepository.foodMenu
-import com.example.applicationhome.data.models.repository.CartRepository.snacksMenu
 import com.example.applicationhome.ui.theme.BrandBlue
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
@@ -42,7 +40,9 @@ import com.example.applicationhome.ui.theme.components.forCart.CartButton
 import com.example.applicationhome.ui.theme.components.forCart.PaymentSummary
 import com.example.applicationhome.ui.theme.components.forConfirmOrder.ConfirmOrderBox
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
+import com.example.applicationhome.ui.theme.model.LoginViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter",
     "UnrememberedMutableState",
@@ -53,9 +53,11 @@ import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 fun ConfirmOrderScreen2(
     navigationController : NavHostController,
     confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
-    bottomBarViewModel : BottomBarViewModel
+    bottomBarViewModel : BottomBarViewModel,
+    cartViewModel: CartViewModel,
+    loginViewModel: LoginViewModel
 ){
-    var cart = cartItems
+    val cart = cartViewModel.cartItems
     Scaffold(
         modifier = Modifier.navigationBarsPadding().fillMaxSize(),
         topBar = {
@@ -90,27 +92,23 @@ fun ConfirmOrderScreen2(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ){
                     item{Spacer(modifier = Modifier.height(100.dp))}
-                    items(foodMenu.values.toList()) { item ->
-                        ConfirmOrderBox(item)
-                    }
-                    items(snacksMenu.values.toList()) { item ->
-                        ConfirmOrderBox(item)
+                    items(cart.value) { item ->
+                        if(item != null)ConfirmOrderBox(item, loginViewModel)
                     }
                     item{
-                        PaymentSummary()
+                        PaymentSummary(cartViewModel)
                     }
                     item{Spacer(modifier = Modifier.height(100.dp))}
                 }
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally){
-                if(cart.isNotEmpty()){
+                if(cart.collectAsState().value.isNotEmpty()){
                     CartButton(
                         Color.BrandBlue,
                         Color.White,
                         "Confirm order",
                         {
                             bottomBarViewModel.home()
-                            confirmOrderScreenViewModel.addToOrderItems()
                             confirmOrderScreenViewModel.uploadOrder()
                             navigationController.navigate(Screens.HomeScreen.screen)
                             confirmOrderScreenViewModel.cleanTextField()

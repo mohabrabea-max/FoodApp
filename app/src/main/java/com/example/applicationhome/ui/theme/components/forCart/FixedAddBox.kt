@@ -19,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,15 +28,14 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.models.model.CartItemsClass
+import com.example.applicationhome.data.models.local.CartItemsClass
 import com.example.applicationhome.data.models.model.Food
-import com.example.applicationhome.data.models.repository.CartRepository.cartItems
 import com.example.applicationhome.ui.theme.DarkOrange
-import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.CartViewModel
 
 @Composable
 fun FixedAddBox(
-    addBoxViewModel : AddBoxViewModel,
+    cartViewModel : CartViewModel,
     food: CartItemsClass,
     count : Int,
     size : String,
@@ -55,7 +55,7 @@ fun FixedAddBox(
             modifier = Modifier.size(30.dp).clip(CircleShape).background(Color.White),
             contentAlignment = Alignment.Center
         ){
-            IconButton(onClick = { addBoxViewModel.minus(food.id, size) }){
+            IconButton(onClick = { cartViewModel.minus(foodItem, size) }){
                 Icon(Icons.Default.Remove, contentDescription = null, tint = Color.DarkOrange)
             }
         }
@@ -63,7 +63,7 @@ fun FixedAddBox(
             modifier = Modifier.fillMaxHeight().width(30.dp).padding(top = 4.dp, bottom = 4.dp),contentAlignment = Alignment.Center
         ){
             Text(
-                text = cartItems[cartkey]?.number.toString(),
+                text = cartViewModel.cartItems.collectAsState().value.find { it?.mealKey == cartkey }?.quantity.toString(),
                 fontSize = 15.sp,
                 style = MaterialTheme.typography.labelLarge,
                 color = Color.Black,
@@ -74,7 +74,7 @@ fun FixedAddBox(
             modifier = Modifier.size(30.dp).clip(CircleShape).background(Color.DarkOrange),
             contentAlignment = Alignment.Center
         ){
-            IconButton(onClick = { if(foodItem != null) addBoxViewModel.plus(foodItem, size) }){
+            IconButton(onClick = { if(foodItem != null) cartViewModel.plus(foodItem, size) }){
                 Icon(Icons.Default.Add, contentDescription = null, tint = Color.White)
             }
         }

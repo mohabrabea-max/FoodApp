@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
@@ -36,7 +36,6 @@ import com.example.applicationhome.ui.theme.components.profileAndSetting.Profile
 import com.example.applicationhome.ui.theme.model.BirthdayViewModel
 import com.example.applicationhome.ui.theme.model.ProfileViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
-import kotlinx.coroutines.CoroutineScope
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity",
     "UnrememberedMutableState"
@@ -44,12 +43,10 @@ import kotlinx.coroutines.CoroutineScope
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Profile(
-    drawerState : DrawerState,
-    coroutineScope : CoroutineScope,
     navigationController : NavHostController,
     userImageViewModel: UserImageViewModel,
-    profileViewModel: ProfileViewModel,
-    birthdayViewModel: BirthdayViewModel
+    profileViewModel: ProfileViewModel = viewModel(),
+    birthdayViewModel: BirthdayViewModel = viewModel()
 ){
     var edite by mutableStateOf(false)
     var stat = userImageViewModel.stat

@@ -32,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,9 +48,6 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.CartRepository.cartItems
-import com.example.applicationhome.data.models.repository.CartRepository.foodMenu
-import com.example.applicationhome.data.models.repository.CartRepository.snacksMenu
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
@@ -57,8 +55,8 @@ import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.forCart.CartBox
 import com.example.applicationhome.ui.theme.components.forCart.CartButton
 import com.example.applicationhome.ui.theme.components.forCart.PaymentSummaryCartScreen
-import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -75,7 +73,7 @@ fun Cart(
     coroutineScope : CoroutineScope,
     viewModelForBottomBar: BottomBarViewModel,
     viewModel: ItemScreenViewModel = viewModel(),
-    addBoxViewModel : AddBoxViewModel,
+    cartViewModel: CartViewModel,
     bottomBarViewModel: BottomBarViewModel,
     favoriteViewModel: FavoriteViewModel
 ){
@@ -123,20 +121,18 @@ fun Cart(
     ){
         Box(modifier = Modifier.background(Color.White)){
             Box(modifier = Modifier.fillMaxSize()){
-                if(cartItems.isNotEmpty()){
+                if(cartViewModel.cartItems.collectAsState().value.isNotEmpty()){
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ){
                         item{Spacer(modifier = Modifier.height(100.dp))}
-                        items(foodMenu.values.toList()) { item ->
-                            CartBox(item, navigationController, viewModel, addBoxViewModel)
-                        }
-                        items(snacksMenu.values.toList()) { item ->
-                            CartBox(item, navigationController, viewModel, addBoxViewModel)
+
+                        items(cartViewModel.cartItems.value) { item ->
+                            if(item != null) CartBox(item, navigationController, viewModel, cartViewModel)
                         }
                         item{
-                            PaymentSummaryCartScreen()
+                            PaymentSummaryCartScreen(cartViewModel)
                         }
                         item{Spacer(modifier = Modifier.height(100.dp))}
                     }
@@ -197,7 +193,7 @@ fun Cart(
                 }
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally){
-                if(cartItems.isNotEmpty()){
+                if(cartViewModel.cartItems.collectAsState().value.isNotEmpty()){
                     CartButton(
                         Color.DarkOrange,
                         Color.White,

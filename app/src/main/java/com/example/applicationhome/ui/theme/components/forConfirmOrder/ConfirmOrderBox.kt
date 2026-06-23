@@ -1,5 +1,6 @@
 package com.example.applicationhome.ui.theme.components.forConfirmOrder
 
+import android.R.attr.name
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,41 +30,26 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.model.CartItemsClass
-import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
-import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
+import com.example.applicationhome.data.models.local.CartItemsClass
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.phoneNumberState
-import com.example.applicationhome.data.models.repository.UserRepository.userData
 import com.example.applicationhome.ui.theme.LightOrange
+import com.example.applicationhome.ui.theme.model.LoginViewModel
 
 @Composable
 fun ConfirmOrderBox(
-    food: CartItemsClass
+    food: CartItemsClass,
+    loginViewModel: LoginViewModel
 ){
-    LaunchedEffect(userData.phonenumber){
-        if(userData.phonenumber.isNotEmpty()){
-            phoneNumberState.setTextAndPlaceCursorAtEnd(userData.phonenumber)
+    LaunchedEffect(loginViewModel.userData.collectAsState().value.phonenumber){
+        if(loginViewModel.userData.value.phonenumber.isNotEmpty()){
+            phoneNumberState.setTextAndPlaceCursorAtEnd(loginViewModel.userData.value.phonenumber)
         }
     }
-    val number = food.number
+    val number = food.quantity
     val size = food.size
 
-    val meal = cartMealsMenu["${food.id}_${size}"]
-    val snack = cartSnacksMenu["${food.id}_${size}"]
     val sizeInTitle = if(size.contains("Pieces")) "" else " (${size})"
 
-    val image : String
-    val name : String
-    val price : String
-    if(meal != null){
-        name = meal.name
-        price = "EGP " + meal.sizeOptions.find { it.size == size }?.price.toString()
-        image = meal.image.first()
-    }else{
-        name = snack?.name ?: ""
-        price = "EGP " + snack?.priceANDsize[size].toString()
-        image = snack?.image?.first() ?: ""
-    }
     Box(
         modifier = Modifier.padding(start = 10.dp, end = 10.dp).
         fillMaxWidth().height(100.dp).
@@ -78,7 +65,7 @@ fun ConfirmOrderBox(
                     AsyncImage(
                         modifier = Modifier.fillMaxHeight().weight(1f).padding(10.dp),
                         model = ImageRequest.Builder(LocalContext.current).
-                        data(image).
+                        data(food.image).
                         crossfade(true).
                         size(400, 400).
                         precision(Precision.EXACT).
@@ -100,7 +87,7 @@ fun ConfirmOrderBox(
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = "${price} x ${number}" ,
+                            text = "${food.priceOfOne} x ${number}" ,
                             fontSize = 15.sp,
                             color = Color.Red,
                             style = MaterialTheme.typography.labelLarge,

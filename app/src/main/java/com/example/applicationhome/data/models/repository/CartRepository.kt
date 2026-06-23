@@ -1,261 +1,145 @@
 package com.example.applicationhome.data.models.repository
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import com.example.applicationhome.data.models.model.CartClass
-import com.example.applicationhome.data.models.model.CartItemsClass
+import com.example.applicationhome.data.models.local.CartClass
+import com.example.applicationhome.data.models.local.CartDao
+import com.example.applicationhome.data.models.local.CartItemsClass
 import com.example.applicationhome.data.models.model.Food
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Restaurants
-import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.data.models.remote.RetrofitInstance
 import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuList
-import com.example.applicationhome.data.models.repository.MenuRepository.snacks
-import com.example.applicationhome.data.models.repository.UserRepository.userId
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 
-object CartRepository {
-    var totalPrice by mutableDoubleStateOf(0.0)
-    var totalNumber = mutableStateOf(0)
-    var allCart = mutableStateOf(CartClass())
-    var cartItems = mutableStateMapOf<String, CartItemsClass>()
-    var cartRestaurant by mutableStateOf(Restaurants())
-    val foodMenu get() = cartItems.filter { it.value.type == "Meal" }
-    val snacksMenu get() = cartItems.filter { it.value.type == "Snack" }
-    var cartMealsMenu = mutableStateMapOf<String, FoodItem>()
-    var cartSnacksMenu = mutableStateMapOf<String, Snack>()
+class CartRepository(private val cartdao: CartDao) {
 
+    var userId: String = ""
+        private set
 
-    suspend fun getCartRestaurantData(food : Food) : String{
+    fun setUserId(userid: String) {
+        userId = userid
+    }
+    fun getCartItems(): Flow<List<CartItemsClass?>> = cartdao.getCartItems(userId)
+
+    fun getCartData() : Flow<CartClass?> = cartdao.getParentCart(userId)
+
+    suspend fun getCartRestaurantData(food : Food) : Restaurants?{
         return try {
             val response = RetrofitInstance.api.getCarRestaurant("\"id\"", food.restaurantId)
             val resData = response.body()?.values?.first()
             if(response.isSuccessful && resData != null){
-                cartRestaurant = resData
-                "Success"
+                resData
             }else{
-                "Network error"
+                null
             }
         } catch (e : Exception){
-            "خطأ في الشبكة: ${e.message}"
-        } finally {
-            ""
+            null
         }
     }
 
-    suspend fun createNewCart(food : Food, size : String, type : String, count : Int = 1) : String{
-        val resName = cartRestaurant.name
-        val resImage = cartRestaurant.image
+    suspend fun createNewCart(food: Food, size : String, type : String, priceOfOne : Double, res : Restaurants, number: Int = 1) : String{
         val mealKey = "${food.id}_$size"
-        val cartItemsObject = CartItemsClass(food.id, type, size, count)
+        val cartObject = CartClass(userId, res.id, res.name, res.image)
         return try {
-            val response = RetrofitInstance.api.createCart(
+            val cartItemsObject = CartItemsClass(
                 userId,
-                CartClass(
-                    mapOf(mealKey to cartItemsObject),
-                    food.restaurantId,
-                    resName,
-                    resImage
-                )
+                mealKey,
+                food.id,
+                food.name,
+                type,
+                size,
+                number,
+                priceOfOne,
+                priceOfOne * number,
+                food.image.first()
             )
-            val finalData = response.body()
-            if(response.isSuccessful && finalData != null){
-                allCart.value = finalData
-                cartItems.putAll(finalData.cartItems)
-                "Success"
-            }else{
-                "Network error"
-            }
+            cartdao.createParentCart(cartObject)
+            cartdao.addCartItem(cartItemsObject)
+            "Success"
         } catch (e : Exception){
-            "خطأ في الشبكة: ${e.message}"
+            "Error"
         } finally {
             ""
         }
     }
 
-    suspend fun getcart(): String {
+    suspend fun addMealToCart(food: Food, size : String, type : String, priceOfOne : Double, number: Int = 1): String{
+        val mealKey = "${food.id}_$size"
+        val cartItemsObject = CartItemsClass(
+            userId,
+            mealKey,
+            food.id,
+            food.name,
+            type,
+            size,
+            number,
+            priceOfOne,
+            priceOfOne * number,
+            food.image.first()
+        )
         return try {
-            val response = RetrofitInstance.api.getCart(userId)
-            if(response.isSuccessful){
-                val cartItem = response.body()
-                if(cartItem != null){
-                    allCart.value = cartItem
-                    cartItems.clear()
-                    cartItems.putAll(cartItem.cartItems)
-                    "Success"
-                }else{
-                    cartItems.clear()
-                    "Cart is empty"
-                }
-            }else{
-                "Network error"
-            }
-        }catch (e: Exception){
+            cartdao.addCartItem(cartItemsObject)
+            "Success"
+        }catch (e : Exception){
+            "Error"
+        }
+    }
+
+    suspend fun updateQuantity(food: Food, size : String, type : String, priceOfOne : Double, number: Int): String{
+        val mealKey = "${food.id}_$size"
+        val cartItemsObject = CartItemsClass(
+            userId,
+            mealKey,
+            food.id,
+            food.name,
+            type,
+            size,
+            number,
+            priceOfOne,
+            priceOfOne * number,
+            food.image.first()
+        )
+        return try {
+            cartdao.updateCartItem(cartItemsObject)
+            "Success"
+        }catch (e : Exception){
+            "Error"
+        }
+    }
+
+    suspend fun deleteFromCart(foodId: Int, size : String): String{
+        val mealKey = "${foodId}_${size}"
+        return try {
+            cartdao.deleteItemFromCart(mealKey, userId)
+            "Success"
+        }catch (e : Exception){
+            "Error"
+        }
+    }
+
+    suspend fun deleteAllCart(): String{
+        return try {
+            cartdao.deleteParentCart(userId)
+            "Success"
+        }catch (e : Exception){
             "خطأ في الشبكة: ${e.message}"
         }
     }
 
-    suspend fun cartMeals(): Map<String, FoodItem> {
-        val finalMealsList = mutableMapOf<String, FoodItem>()
-        val missingItems = mutableListOf<Int>()
-        foodMenu.forEach { item ->
-            val mealKey = "Meal_${item.value.id}"
-            val cachedMeal = foodMenuList[mealKey]
-            if(cachedMeal != null){
-                finalMealsList += (mealKey to cachedMeal)
-            }else{
-                missingItems.add(item.value.id)
-            }
-        }
-        if(missingItems.isNotEmpty()){
-            coroutineScope {
-                val deferredRequests = missingItems.map { item ->
-                    async {
-                        try {
-                            val response = RetrofitInstance.api.getCartMeals("\"id\"", item)
-                            val resultMap = response.body()
-                            if(response.isSuccessful && resultMap != null){
-                                resultMap
-                            }else{
-                                null
-                            }
-                        } catch (e : Exception){
-                            null
-                        }
-                    }
-                }
-                deferredRequests.awaitAll().filterNotNull().forEach { itm ->
-                    finalMealsList.putAll(itm)
-                }
-            }
-        }
-        return finalMealsList
-    }
-
-    suspend fun cartSnacks(): Map<String, Snack> {
-        val finalSnacksList = mutableMapOf<String, Snack>()
-        val missingItems = mutableListOf<Int>()
-        snacksMenu.forEach { item ->
-            val snackKey = "Meal_${item.value.id}"
-            val cachedMeal = snacks[snackKey]
-            if(cachedMeal != null){
-                finalSnacksList += (snackKey to cachedMeal)
-            }else{
-                missingItems.add(item.value.id)
-            }
-        }
-        if(missingItems.isNotEmpty()){
-            coroutineScope {
-                val deferredRequests = missingItems.map { item ->
-                    async {
-                        try {
-                            val response = RetrofitInstance.api.getCartSnacks("\"id\"", item)
-                            val resultMap = response.body()
-                            if(response.isSuccessful && resultMap != null){
-                                resultMap
-                            }else{
-                                null
-                            }
-                        } catch (e : Exception){
-                            null
-                        }
-                    }
-                }
-                deferredRequests.awaitAll().filterNotNull().forEach { item ->
-                    finalSnacksList.putAll(item)
-                }
-            }
-        }
-        return finalSnacksList
-    }
-
-    suspend fun addMealToCart(foodId: Int, size : String, number: Int, type : String): String{
-        val mealKey = "${foodId}_$size"
-        if(!cartItems.keys.contains(mealKey)){
-            val cartItemsObject = CartItemsClass(foodId, type, size, 1)
-            return try {
-                val response = RetrofitInstance.api.addToCart(userId, mealKey, cartItemsObject)
-                val cartItem = response.body()
-                if(response.isSuccessful && cartItem != null){
-                    cartItems[mealKey] = CartItemsClass(cartItem.id, cartItem.type, cartItem.size, cartItem.number)
-                    "Success"
-                }else{
-                    "Network error"
-                }
-            }catch (e : Exception){
-                "خطأ في الشبكة: ${e.message}"
-            }
+    suspend fun getMeal(mealId : Int): FoodItem? {
+        val mealKey = "Meal_${mealId}"
+        if(foodMenuList[mealKey] != null){
+            return foodMenuList["Meal_${mealId}"]
         }else{
             return try {
-                val updatesMap = mapOf("number" to number)
-                val response = RetrofitInstance.api.updateCart(userId, mealKey, updatesMap)
-
-                if(response.isSuccessful && response.body()!= null){
-                    val currentItem = cartItems[mealKey]
-                    if (currentItem != null) {
-                        cartItems[mealKey] = currentItem.copy(number = number)
-                    }
-                    "Success"
+                val response = RetrofitInstance.api.getCartMeal(mealKey)
+                if(response.isSuccessful){
+                    return response.body()
                 }else{
-                    "Network error"
+                    null
                 }
             }catch (e : Exception){
-                "خطأ في الشبكة: ${e.message}"
+                null
             }
-        }
-    }
-
-    suspend fun minusFromCart(foodId: Int, size : String, number: Int): String{
-        val mealKey = "${foodId}_$size"
-        return try {
-            val updatesMap = mapOf("number" to number)
-            val response = RetrofitInstance.api.updateCart(userId, mealKey, updatesMap)
-            val currentItem = cartItems[mealKey]
-            if (response.isSuccessful && currentItem != null){
-                cartItems[mealKey] = currentItem.copy(number = number)
-                "Success"
-            }else{
-                "Network error"
-            }
-        }catch (e : Exception){
-            "خطأ في الشبكة: ${e.message}"
-        }
-    }
-
-    suspend fun deleteFromCart(foodId: Int, size : String): String{  //  هنا بنحذف وجبة من السلة
-        val mealKey = "${foodId}_$size"
-        return try {
-            val response = RetrofitInstance.api.deleteItemFromCart(userId, mealKey)
-            if(response.isSuccessful){
-                cartItems.keys.remove(mealKey)
-                "Success"
-            }else{
-                "Network error"
-            }
-        }catch (e : Exception){
-            "خطأ في الشبكة: ${e.message}"
-        }
-    }
-
-    suspend fun deleteAllCart(): String{ // هنا بنحذف السلة كلها
-        return try {
-            val response = RetrofitInstance.api.deleteAllCart(userId)
-            if(response.isSuccessful){
-                allCart.value = CartClass()
-                cartItems.clear()
-                cartMealsMenu.clear()
-                cartSnacksMenu.clear()
-                "Success"
-            }else{
-                "Network error"
-            }
-        }catch (e : Exception){
-            "خطأ في الشبكة: ${e.message}"
         }
     }
 }

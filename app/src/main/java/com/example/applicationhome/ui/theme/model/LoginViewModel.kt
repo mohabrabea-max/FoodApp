@@ -10,33 +10,14 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.core.NetworkObserver
 import com.example.applicationhome.data.models.local.UserClass
-import com.example.applicationhome.data.models.repository.CartRepository.cartItems
-import com.example.applicationhome.data.models.repository.CartRepository.cartMeals
-import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
-import com.example.applicationhome.data.models.repository.CartRepository.cartSnacks
-import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
-import com.example.applicationhome.data.models.repository.CartRepository.getcart
-import com.example.applicationhome.data.models.repository.CartRepository.totalNumber
-import com.example.applicationhome.data.models.repository.CartRepository.totalPrice
-import com.example.applicationhome.data.models.repository.FavoriteRepository.favoritList
-import com.example.applicationhome.data.models.repository.FavoriteRepository.favoriteMeals
-import com.example.applicationhome.data.models.repository.FavoriteRepository.favoriteRestaurants
-import com.example.applicationhome.data.models.repository.FavoriteRepository.favoriteSnacks
-import com.example.applicationhome.data.models.repository.FavoriteRepository.getFavorite
-import com.example.applicationhome.data.models.repository.FavoriteRepository.mealsFavorite
-import com.example.applicationhome.data.models.repository.FavoriteRepository.restaurantsFavorite
-import com.example.applicationhome.data.models.repository.FavoriteRepository.snacksFavorite
-import com.example.applicationhome.data.models.repository.OrderRepository.getOrders
 import com.example.applicationhome.data.models.repository.UserRepository
-import com.example.applicationhome.data.models.repository.UserRepository.getActiveUserFromDatabase
-import com.example.applicationhome.data.models.repository.UserRepository.getDataFromDatabase
-import com.example.applicationhome.data.models.repository.UserRepository.isLogin
-import com.example.applicationhome.data.models.repository.UserRepository.logOut
-import com.example.applicationhome.data.models.repository.UserRepository.userData
-import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class LoginViewModel(application : Application) : AndroidViewModel(application) {
+class LoginViewModel(private val userRepository: UserRepository, application : Application) : AndroidViewModel(application) {
     val emailstate = TextFieldState()
     val passwordstate = TextFieldState()
     var isEmailTrue by mutableStateOf(true)
@@ -44,7 +25,17 @@ class LoginViewModel(application : Application) : AndroidViewModel(application) 
     private val networkObserver = NetworkObserver(application.applicationContext)
     var isNetworkAvailable by mutableStateOf(false)
 
+    var isLogin by mutableStateOf(false)
 
+    val userData : StateFlow<UserClass> =
+        userRepository.getActiveUserFromDatabase()
+            .map { userInDb ->
+                userInDb ?: UserClass(firstname = "Guest")
+            }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = UserClass(firstname = "Guest")
+        )
 
     init {
         viewModelScope.launch {
@@ -52,9 +43,6 @@ class LoginViewModel(application : Application) : AndroidViewModel(application) 
                 isNetworkAvailable = available
             }
         }
-    }
-    init {
-        fetchUserDataFromDatabase()
     }
 
 
@@ -64,7 +52,7 @@ class LoginViewModel(application : Application) : AndroidViewModel(application) 
     }
 
     suspend fun getData(): String{
-        val dataState = UserRepository.setUserDataToDatabase(emailstate.text.toString(), passwordstate.text.toString())
+        val dataState = userRepository.setUserDataToDatabase(emailstate.text.toString(), passwordstate.text.toString())
         when(dataState){
             "Password is true" -> {
                 isEmailTrue = true
@@ -88,15 +76,7 @@ class LoginViewModel(application : Application) : AndroidViewModel(application) 
     fun logout(){
         viewModelScope.launch {
             isLogin = false
-            logOut()
-            userData = UserClass("Guest")
-            cartItems.clear()
-            favoritList.clear()
-            mealsFavorite.clear()
-            snacksFavorite.clear()
-            restaurantsFavorite.clear()
-            totalPrice = 0.0
-            totalNumber.value = 0
+            userRepository.logOut(userData.value.email)
         }
     }
 
@@ -104,37 +84,6 @@ class LoginViewModel(application : Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             val result = getData()
             if(result == "Password is true"){
-                userData = getDataFromDatabase()?: UserClass(firstname = "Guest")
-                isLogin = true
-
-                val favoriteDeferred = async { getFavorite() }
-                val cartDeferred = async { getcart() }
-                val ordersDeferred = async { getOrders() }
-
-                favoriteDeferred.await()
-                cartDeferred.await()
-                ordersDeferred.await()
-
-                val mealsDeferred = async { cartMeals() }
-                val snacksDeferred = async { cartSnacks() }
-                val favoriteMeals = async { favoriteMeals() }
-                val favoriteSnacks = async { favoriteSnacks() }
-                val favoriteRestaurants = async { favoriteRestaurants() }
-
-                cartMealsMenu += mealsDeferred.await()
-                cartSnacksMenu += snacksDeferred.await()
-                mealsFavorite += favoriteMeals.await()
-                snacksFavorite += favoriteSnacks.await()
-                restaurantsFavorite += favoriteRestaurants.await()
-            }
-        }
-    }
-
-    fun fetchUserDataFromDatabase(){
-        viewModelScope.launch {
-            userData = getActiveUserFromDatabase()?: UserClass(firstname = "Guest")
-            if(userData != UserClass(firstname = "Guest")){
-                println(userData)
                 isLogin = true
             }
         }

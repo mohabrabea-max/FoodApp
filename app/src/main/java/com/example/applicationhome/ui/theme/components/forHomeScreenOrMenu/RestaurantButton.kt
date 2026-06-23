@@ -30,14 +30,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.CartRepository.totalNumber
-import com.example.applicationhome.data.models.repository.CartRepository.totalPrice
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.RedOrange
+import com.example.applicationhome.ui.theme.model.CartViewModel
 
 @Composable
 fun RestaurantButton(
-    navigationController: NavHostController
+    navigationController: NavHostController,
+    cartViewModel : CartViewModel
 ){
     Box(
         modifier = Modifier.fillMaxWidth().
@@ -76,7 +76,7 @@ fun RestaurantButton(
                     contentAlignment = Alignment.Center
                 ){
                     Text(
-                        text = totalNumber.value.toString(),
+                        text = cartViewModel.totalNumber.value.toString(),
                         fontSize = 15.sp,
                         style = MaterialTheme.typography.labelLarge,
                         color = Color.White,
@@ -95,7 +95,7 @@ fun RestaurantButton(
                 )
             }
             Text(
-                text = "EGP ${totalPrice}",
+                text = "EGP ${cartViewModel.totalPrice}",
                 fontSize = 15.sp,
                 style = MaterialTheme.typography.labelLarge,
                 color = Color.White,

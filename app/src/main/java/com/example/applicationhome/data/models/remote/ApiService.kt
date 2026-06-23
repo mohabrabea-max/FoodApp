@@ -1,7 +1,5 @@
 package com.example.applicationhome.data.models.remote
 
-import com.example.applicationhome.data.models.model.CartClass
-import com.example.applicationhome.data.models.model.CartItemsClass
 import com.example.applicationhome.data.models.model.Categories
 import com.example.applicationhome.data.models.model.FavoriteClass
 import com.example.applicationhome.data.models.model.FirebasePostResponse
@@ -16,7 +14,6 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
-import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -43,31 +40,16 @@ interface FoodAppAPIs{
 //    ): Response<CartClass>
 
 
+    @GET("meals/{mealKey}.json")
+    suspend fun getCartMeal(
+        @Path("mealKey") mealKey : String
+    ): Response<FoodItem>
 
-    @PUT("cart/{userId}.json")
-    suspend fun createCart(
-        @Path("userId")userId : String,
-        @Body cartData : CartClass
-    ): Response<CartClass>
-
-    @PUT("cart/{userId}/cartItems/{mealKey}.json")
-    suspend fun addToCart(
-        @Path("userId") userId : String,
-        @Path("mealKey") mealKey : String,
-        @Body data : CartItemsClass
-    ): Response<CartItemsClass>
-
-    @PATCH("cart/{userId}/cartItems/{mealKey}.json")
-    suspend fun updateCart(
-        @Path("userId") userId : String,
-        @Path("mealKey") mealKey : String,
-        @Body updates: Map<String, Int>
-    ): Response<Map<String, Int>>
-
-    @GET("cart/{userId}.json")
-    suspend fun getCart(
-        @Path("userId") userId : String,
-    ): Response<CartClass>
+    @GET("restaurants.json")
+    suspend fun getCarRestaurant(
+        @Query("orderBy") order : String,
+        @Query("equalTo") value : Int
+    ): Response<Map<String, Restaurants>>
 
     @GET("meals.json")
     suspend fun getCartMeals(
@@ -80,26 +62,6 @@ interface FoodAppAPIs{
         @Query("orderBy") order : String,
         @Query("equalTo") value : Int
     ): Response<Map<String, Snack>>
-
-    @DELETE("cart/{userId}/cartItems/{mealKey}.json")
-    suspend fun deleteItemFromCart(
-        @Path("userId") userId : String,
-        @Path("mealKey") mealKey : String,
-    ): Response<Unit>
-
-    @DELETE("cart/{userId}.json")
-    suspend fun deleteAllCart(
-        @Path("userId") userId : String,
-    ): Response<Unit>
-
-    @GET("restaurants.json")
-    suspend fun getCarRestaurant(
-        @Query("orderBy") order : String,
-        @Query("equalTo") value : Int
-    ): Response<Map<String, Restaurants>>
-
-
-
 
     @PUT("favorite/{userId}/{mealKey}.json")
     suspend fun addToFavorite(

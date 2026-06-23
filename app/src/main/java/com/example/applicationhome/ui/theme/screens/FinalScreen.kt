@@ -45,18 +45,17 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.UserRepository
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.Options
 import com.example.applicationhome.ui.theme.components.profileAndSetting.UserImage
 import com.example.applicationhome.ui.theme.model.APIData
-import com.example.applicationhome.ui.theme.model.AddBoxViewModel
-import com.example.applicationhome.ui.theme.model.BirthdayViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.DrawerViewModel
@@ -65,8 +64,8 @@ import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
-import com.example.applicationhome.ui.theme.model.ProfileViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
+import com.example.applicationhome.ui.theme.model.SignUpViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import kotlinx.coroutines.launch
 
@@ -76,22 +75,22 @@ import kotlinx.coroutines.launch
 fun FinalScreen(
     scrollBehavior : TopAppBarScrollBehavior,
     drawerState : DrawerState,
-    viewModel : ItemScreenViewModel,
+    itemScreenViewModel: ItemScreenViewModel,
     bottomBarViewModel : BottomBarViewModel,
-    addBoxViewModel : AddBoxViewModel,
+    cartViewModel : CartViewModel,
     userImageViewModel : UserImageViewModel,
     favoriteViewModel : FavoriteViewModel,
     drawerViewModel: DrawerViewModel,
     categoriesBoxViewModel : CategoriesBoxViewModel,
-    profileViewModel : ProfileViewModel,
     apiData : APIData,
-    birthdayViewModel: BirthdayViewModel,
     loginViewModel: LoginViewModel,
     restaurantViewModel: RestaurantViewModel,
     confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
     orderScreenViewModel : OrderScreenViewModel,
-    homeScreenViewModel: HomeScreenViewModel
+    homeScreenViewModel: HomeScreenViewModel,
+    signUpViewModel : SignUpViewModel
 ){
+    val userState by loginViewModel.userData.collectAsStateWithLifecycle()
     val density = LocalDensity.current
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} }
     val navigationController = rememberNavController()
@@ -137,7 +136,7 @@ fun FinalScreen(
                     clip(RoundedCornerShape(40.dp)).
                     background(Color.VeryLightGray).
                     clickable{
-                        if(UserRepository.isLogin){
+                        if(loginViewModel.isLogin){
                             coroutineScope.launch{drawerState.close()}
                             navigationController.navigate(Screens.Profile.screen)
                         }else{
@@ -172,14 +171,14 @@ fun FinalScreen(
                         if(stat){
                             Column(modifier = Modifier.weight(2.5f),horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center){
                                 Text(
-                                    text = UserRepository.userData.firstname.toString() + " " + if(UserRepository.userData.lastname != null) UserRepository.userData.lastname.toString() else "",
+                                    text = userState.firstname + " " + if(userState.lastname != null) userState.lastname else "",
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Black
                                 )
                                 Spacer(modifier = Modifier.height(5.dp))
                                 Text(
-                                    text = if(UserRepository.userData.email != null) UserRepository.userData.email.toString() else "Login",
+                                    text = if(userState.email != null) userState.email else "Login",
                                     fontSize = 12.sp,
                                     color = Color.DarkGray
                                 )
@@ -209,21 +208,21 @@ fun FinalScreen(
                         popExitTransition = { ExitTransition.None }
                     ) {
                         when(item){
-                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel, homeScreenViewModel, loginViewModel)
-                            is Screens.Profile -> Profile(drawerState, coroutineScope, navigationController, userImageViewModel, profileViewModel, birthdayViewModel)
-                            is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel, bottomBarViewModel, addBoxViewModel, favoriteViewModel)
+                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel, homeScreenViewModel)
+                            is Screens.Profile -> Profile(navigationController, userImageViewModel)
+                            is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel, bottomBarViewModel, cartViewModel, favoriteViewModel)
                             is Screens.Search -> Search()
-                            is Screens.RestaurantScreen -> RestaurantScreen(navigationController, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel, homeScreenViewModel)
-                            is Screens.ItemScreen -> ItemScreen(navigationController, viewModel, addBoxViewModel, favoriteViewModel, bottomBarViewModel)
+                            is Screens.RestaurantScreen -> RestaurantScreen(navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel, homeScreenViewModel)
+                            is Screens.ItemScreen -> ItemScreen(navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, bottomBarViewModel)
                             is Screens.Notifications -> Notifications()
-                            is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, bottomBarViewModel, viewModel, addBoxViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel)
-                            is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, bottomBarViewModel, viewModel, addBoxViewModel, bottomBarViewModel, favoriteViewModel)
-                            is Screens.LoginScreen -> LoginScreen(navigationController, loginViewModel, addBoxViewModel)
-                            is Screens.SignUpScreen -> SignUpScreen(navigationController, loginViewModel)
-                            is Screens.ConfirmOrderScreen -> ConfirmOrderScreen(navigationController, confirmOrderScreenViewModel)
-                            is Screens.ConfirmOrderScreen2 -> ConfirmOrderScreen2(navigationController, confirmOrderScreenViewModel, bottomBarViewModel)
+                            is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, bottomBarViewModel, itemScreenViewModel, cartViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel)
+                            is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, bottomBarViewModel, itemScreenViewModel, cartViewModel, bottomBarViewModel, favoriteViewModel)
+                            is Screens.LoginScreen -> LoginScreen(navigationController, loginViewModel, cartViewModel)
+                            is Screens.SignUpScreen -> SignUpScreen(navigationController, loginViewModel, signUpViewModel)
+                            is Screens.ConfirmOrderScreen -> ConfirmOrderScreen(navigationController, confirmOrderScreenViewModel, cartViewModel)
+                            is Screens.ConfirmOrderScreen2 -> ConfirmOrderScreen2(navigationController, confirmOrderScreenViewModel, bottomBarViewModel, cartViewModel, loginViewModel)
                             is Screens.LastOrdersScreen -> LastOrdersScreen(navigationController, orderScreenViewModel)
-                            is Screens.OrderScreen -> OrderScreen(orderScreenViewModel, navigationController)
+                            is Screens.OrderScreen -> OrderScreen(orderScreenViewModel, navigationController, cartViewModel)
                         }
                     }
                 }

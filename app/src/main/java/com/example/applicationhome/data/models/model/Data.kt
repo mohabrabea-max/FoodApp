@@ -141,18 +141,18 @@ data class FirebasePostResponse(val name : String)
 data class TextFieldClassFromConfirmOrderScreen(val textState : TextFieldState, val title: String)
 
 
-data class CartItemsClass(
-    val id : Int = 0,
-    val type : String = "",
-    val size : String = "",
-    val number : Int = 0
-)
-data class CartClass(
-    val cartItems : Map<String, CartItemsClass> = emptyMap<String, CartItemsClass>(),
-    val restaurantId : Int = 0,
-    val restaurantName : String = "",
-    val restaurantImage : String = ""
-)
+//data class CartItemsClass(
+//    val id : Int = 0,
+//    val type : String = "",
+//    val size : String = "",
+//    val number : Int = 0
+//)
+//data class CartClass(
+//    val cartItems : Map<String, CartItemsClass> = emptyMap<String, CartItemsClass>(),
+//    val restaurantId : Int = 0,
+//    val restaurantName : String = "",
+//    val restaurantImage : String = ""
+//)
 
 
 data class OrderItemsClass(

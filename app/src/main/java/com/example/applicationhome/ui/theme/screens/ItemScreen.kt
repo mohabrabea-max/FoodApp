@@ -59,7 +59,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.CartRepository.allCart
 import com.example.applicationhome.data.models.repository.MenuRepository.snacks
 import com.example.applicationhome.data.models.repository.MenuRepository.snacksisLoading
 import com.example.applicationhome.ui.theme.BrownForFont
@@ -75,8 +74,8 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.ItemS
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Ratings
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.showAddToCartSnackbar
-import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
@@ -86,7 +85,7 @@ import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 fun ItemScreen(
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel,
-    addBoxViewModel : AddBoxViewModel,
+    cartViewModel: CartViewModel,
     favoriteState : FavoriteViewModel,
     bottomBarViewModel: BottomBarViewModel
 ){
@@ -340,7 +339,7 @@ fun ItemScreen(
                                                             snakeSize,
                                                             navigationController,
                                                             viewModel,
-                                                            addBoxViewModel
+                                                            cartViewModel
                                                         )
                                                     }
                                                 }
@@ -414,7 +413,7 @@ fun ItemScreen(
                 Column(modifier = Modifier.align(Alignment.BottomCenter)){
                     Box(contentAlignment = Alignment.Center){
                         BottomBarForItemScreen(
-                            addBoxViewModel,
+                            cartViewModel,
                             item,
                             size,
                             snackbarHostState,
@@ -425,14 +424,14 @@ fun ItemScreen(
                     }
                 }
 
-                if(addBoxViewModel.errorInCart){
+                if(cartViewModel.errorInCart){
                     AlertDialogMessage(
-                        allCart.value.restaurantName,
+                        cartViewModel.cartRestaurant.name,
                         "Start",
                         {
-                            addBoxViewModel.deletenewCount()
-                            addBoxViewModel.alertDialogFalse()
-                            addBoxViewModel.clearAndStartNewCart()
+                            cartViewModel.deletenewCount()
+                            cartViewModel.alertDialogFalse()
+                            cartViewModel.clearAndStartNewCart()
                             scope.showAddToCartSnackbar(
                                 snackbarHostState,
                                 {
@@ -442,7 +441,7 @@ fun ItemScreen(
                             )
                         },
                         "Cancel",
-                        {addBoxViewModel.alertDialogFalse()}
+                        {cartViewModel.alertDialogFalse()}
                     )
                 }
             }

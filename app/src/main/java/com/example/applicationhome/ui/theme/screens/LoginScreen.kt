@@ -43,12 +43,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.UserRepository.userId
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.forSignUpOrLogin.LoginTextField
-import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
 import kotlinx.coroutines.launch
 
@@ -57,7 +56,7 @@ import kotlinx.coroutines.launch
 fun LoginScreen(
     navigationController : NavHostController,
     loginViewModel: LoginViewModel,
-    addBoxViewModel: AddBoxViewModel
+    cartViewModel: CartViewModel
 ){
     Scaffold(
         modifier = Modifier.navigationBarsPadding().fillMaxSize(),
@@ -147,7 +146,7 @@ fun LoginScreen(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
 
-                LoginButton(loginViewModel, navigationController, addBoxViewModel)
+                LoginButton(loginViewModel, navigationController, cartViewModel)
 
                 Spacer(modifier = Modifier.height(25.dp))
                 Row(
@@ -233,7 +232,7 @@ fun LoginScreen(
 }
 
 @Composable
-fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostController, addBoxViewModel: AddBoxViewModel){
+fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostController, cartViewModel : CartViewModel){
     var isEmailTrue = loginViewModel.isEmailTrue
     var isPasswordTrue = loginViewModel.isPasswordTrue
     val scope = rememberCoroutineScope()
@@ -247,11 +246,10 @@ fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostCon
             .clickable {
                 if(loginViewModel.isNetworkAvailable){
                     if(isEmailTrue && isPasswordTrue){
-                        println(userId)
+                        println(loginViewModel.userData.value.id)
                         scope.launch {
                             loginViewModel.login()
                             loginViewModel.bottonstate()
-                            addBoxViewModel.updateTotals()
                             navigationController.navigate(Screens.HomeScreen.screen) {navigationController.popBackStack()}
                         }
                     }else if(isEmailTrue && isPasswordTrue == false){

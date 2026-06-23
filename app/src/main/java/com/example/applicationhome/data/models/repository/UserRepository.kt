@@ -1,16 +1,15 @@
 package com.example.applicationhome.data.models.repository
 
-import android.content.Context
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.example.applicationhome.data.models.local.UpdateAccountState
 import com.example.applicationhome.data.models.local.UserClass
 import com.example.applicationhome.data.models.local.UsersDao
-import com.example.applicationhome.data.models.local.UsersDatabase
 import com.example.applicationhome.data.models.model.FirebasePostResponse
 import com.example.applicationhome.data.models.model.UserClassFireBase
 import com.example.applicationhome.data.models.remote.RetrofitInstance
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import retrofit2.Response
 
 //    suspend fun addToMeals(){
@@ -24,15 +23,11 @@ import retrofit2.Response
 //    }
 
 
-object UserRepository {
-    private lateinit var userdao: UsersDao
-    fun initialize(context: Context) {
-        userdao = UsersDatabase.getDaoInstance(context).userDao
-    }
+class UserRepository(private val userdao: UsersDao) {
+    private val _userId = MutableStateFlow("")
+    val userId : StateFlow<String> = _userId.asStateFlow()
 
-    var userId by mutableStateOf("")
-    var isLogin by mutableStateOf(false)
-    var userData by mutableStateOf(UserClass(firstname = "Guest"))
+    fun getActiveUserFromDatabase() : Flow<UserClass?> = userdao.getActiveUser(true)
 
     suspend fun setUserDataToDatabase(emailstate : String, passwordstate : String?): String {
         try {
@@ -43,12 +38,10 @@ object UserRepository {
                 val userMap = response.body()
                 if(userMap != null){
                     val user = userMap.values.firstOrNull()
-
-                    // تأمين الـ Nullability عشان الإيرورز اللي كانت طالعة في الصورة
                     if(user != null && passwordstate != null && passwordstate == user.password){
-                        userId = userMap.keys.first()
+                        _userId.value = userMap.keys.first()
                         val data = UserClass(
-                            userId ?: "",
+                            _userId.value ?: "",
                             user.firstname ?: "",
                             user.lastname ?: "",
                             user.email ?: "",
@@ -73,18 +66,11 @@ object UserRepository {
         }
     }
 
-    suspend fun getDataFromDatabase(): UserClass?{
-        userdao.updateUser(UpdateAccountState(userData.email, isActive = true))
-        return userdao.getOneUser(userId)
-    }
 
-    suspend fun getActiveUserFromDatabase(): UserClass?{
-        return userdao.getActiveUser()
-    }
-
-    suspend fun logOut(): String{
+    suspend fun logOut(email : String): String{
         return try {
-            userdao.updateUser(UpdateAccountState(userData.email, isActive = false))
+            _userId.value = ""
+            userdao.updateUser(UpdateAccountState(email, isActive = false))
             "Success"
         } catch (e : Exception){
             "خطأ في الشبكة: ${e.message}"
@@ -95,7 +81,17 @@ object UserRepository {
         try {
             val response: Response<FirebasePostResponse> = RetrofitInstance.api.signUp(userRequest)
             if (response.isSuccessful && response.body() != null) {
-                userId = response.body()?.name.toString()
+                _userId.value = response.body()?.name.toString()
+                val userData = UserClass(
+                    _userId.value,
+                    userRequest.firstname,
+                    userRequest.lastname,
+                    userRequest.email,
+                    userRequest.password,
+                    userRequest.phonenumber,
+                    userRequest.address,
+                    isActive = true
+                )
                 userdao.addUser(userData)
                 return "The operation was successful Account created"
             } else {

@@ -60,8 +60,8 @@ import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.profileAndSetting.SettingsBox
 import com.example.applicationhome.ui.theme.components.profileAndSetting.SettingsOptionsBox
 import com.example.applicationhome.ui.theme.components.profileAndSetting.UserImage
-import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -76,7 +76,7 @@ fun Settings(
     navigationController : NavHostController,
     userImageViewModel: UserImageViewModel,
     bottomBarViewModel : BottomBarViewModel,
-    addBoxViewModel : AddBoxViewModel,
+    cartViewModel : CartViewModel,
     favoriteViewModel: FavoriteViewModel
 ){
     val scrollState = rememberLazyGridState()
@@ -158,7 +158,7 @@ fun Settings(
                 pointerInput(Unit) { detectTapGestures { } },
                 contentAlignment = Alignment.BottomCenter
             ){
-                MyBottonBar(navigationController, bottomBarViewModel, addBoxViewModel, favoriteViewModel)
+                MyBottonBar(navigationController, bottomBarViewModel, cartViewModel, favoriteViewModel)
             }
         }
     ){

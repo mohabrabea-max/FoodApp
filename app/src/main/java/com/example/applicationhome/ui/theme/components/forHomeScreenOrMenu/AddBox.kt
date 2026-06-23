@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,18 +42,16 @@ import androidx.compose.ui.unit.sp
 import com.example.applicationhome.data.models.model.Food
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Snack
-import com.example.applicationhome.data.models.repository.CartRepository.allCart
-import com.example.applicationhome.data.models.repository.CartRepository.cartItems
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.model.AddBoxViewModel
+import com.example.applicationhome.ui.theme.model.CartViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun AddBox(
     color : Color,
     food : Food,
-    addBoxViewModel: AddBoxViewModel,
+    cartViewModel: CartViewModel,
     message : () -> Unit = {},
     modifier: Modifier = Modifier
 ){
@@ -70,10 +69,10 @@ fun AddBox(
         }
     }
     val cartkey = "${food.id}_${selectedSize.value.toString()}"
-    val count = cartItems[cartkey]?.number ?: 0
-    val activid = addBoxViewModel.activId == id
+    val count = cartViewModel.cartItems.collectAsState().value.find { it?.mealKey == cartkey }?.quantity ?:0
+    val activid = cartViewModel.activId == id
     var isExpanded by remember { mutableStateOf(false) }
-    val active = addBoxViewModel.activId
+    val active = cartViewModel.activId
 
     //  بيراقب الـ isExpanded
     LaunchedEffect(key1 = count, key2 = active) {
@@ -92,7 +91,7 @@ fun AddBox(
         clip(CircleShape).
         background(cartColor).
         clickable {
-            addBoxViewModel.delete(food.id, selectedSize.value.toString())
+            cartViewModel.delete(food.id, selectedSize.value.toString())
             if( count > 0 ) Toast.makeText(context, "Removed From Cart", Toast.LENGTH_SHORT).show()
         }.
         border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)),
@@ -102,9 +101,9 @@ fun AddBox(
             IconButton(
                 onClick = {
                     isExpanded = true
-                    addBoxViewModel.active(id)
-                    addBoxViewModel.plus(food, selectedSize.value.toString())
-                    if(food.restaurantId == allCart.value.restaurantId) message()
+                    cartViewModel.active(id)
+                    cartViewModel.plus(food, selectedSize.value.toString())
+                    if(food.restaurantId == cartViewModel.cartInformation.value?.restaurantId) message()
                 },
                 modifier = Modifier.fillMaxSize()
             ){
@@ -126,10 +125,10 @@ fun AddBox(
                 clickable {
                     isExpanded = true
                     if(count > 0){
-                        addBoxViewModel.active(id)
+                        cartViewModel.active(id)
                     }else{
-                        addBoxViewModel.active(id)
-                        addBoxViewModel.plus(food, selectedSize.value.toString())
+                        cartViewModel.active(id)
+                        cartViewModel.plus(food, selectedSize.value.toString())
                     }
                 },
                 contentAlignment = Alignment.Center
@@ -157,7 +156,7 @@ fun AddBox(
                     clip(CircleShape).
                     background(color).
                     clickable {
-                        addBoxViewModel.plus(food, selectedSize.value.toString())
+                        cartViewModel.plus(food, selectedSize.value.toString())
                     },
                     contentAlignment = Alignment.Center
                 ){
@@ -167,7 +166,7 @@ fun AddBox(
                         background(color),
                         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
                     ){
-                        IconButton(onClick = {addBoxViewModel.minus(food.id, selectedSize.value.toString())}, modifier = Modifier.weight(1f).fillMaxHeight()){
+                        IconButton(onClick = {cartViewModel.minus(food, selectedSize.value.toString())}, modifier = Modifier.weight(1f).fillMaxHeight()){
                             Icon(
                                 Icons.Default.Remove,
                                 contentDescription = null,
@@ -191,8 +190,8 @@ fun AddBox(
                         }
                         IconButton(
                             onClick = {
-                                addBoxViewModel.plus(food, selectedSize.value.toString())
-                                if(food.restaurantId == allCart.value.restaurantId) message()
+                                cartViewModel.plus(food, selectedSize.value.toString())
+                                if(food.restaurantId == cartViewModel.cartInformation.value?.restaurantId) message()
                             },
                             modifier = Modifier.weight(1f).fillMaxHeight()){
                             Icon(

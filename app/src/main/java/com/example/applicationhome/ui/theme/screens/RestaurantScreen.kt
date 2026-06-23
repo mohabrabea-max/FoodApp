@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -47,8 +48,6 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.repository.CartRepository.allCart
-import com.example.applicationhome.data.models.repository.CartRepository.cartItems
 import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuListisLoading
 import com.example.applicationhome.data.models.repository.MenuRepository.restaurantOffers
 import com.example.applicationhome.data.models.repository.MenuRepository.snacks
@@ -64,8 +63,8 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Resta
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantHeader
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
-import com.example.applicationhome.ui.theme.model.AddBoxViewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
@@ -78,7 +77,7 @@ import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 fun RestaurantScreen(
     navigationController : NavHostController,
     itemScreenViewModel: ItemScreenViewModel,
-    addBoxViewModel: AddBoxViewModel,
+    cartViewModel : CartViewModel,
     favoriteViewModel : FavoriteViewModel,
     categoriesBoxViewModel: CategoriesBoxViewModel,
     restaurantViewModel : RestaurantViewModel,
@@ -194,7 +193,7 @@ fun RestaurantScreen(
                                 null,
                                 navigationController,
                                 itemScreenViewModel,
-                                addBoxViewModel,
+                                cartViewModel,
                                 {
                                     Favorite(
                                         modifier = Modifier.
@@ -208,7 +207,7 @@ fun RestaurantScreen(
                                     AddBox(
                                         color = Color.VeryLightGray,
                                         food = item,
-                                        addBoxViewModel
+                                        cartViewModel
                                     )
                                 }
                             )
@@ -222,7 +221,7 @@ fun RestaurantScreen(
                                 item,
                                 navigationController,
                                 itemScreenViewModel,
-                                addBoxViewModel,
+                                cartViewModel,
                                 {
                                     Favorite(
                                         modifier = Modifier.
@@ -234,7 +233,7 @@ fun RestaurantScreen(
                                     AddBox(
                                         color = Color.VeryLightGray,
                                         food = item,
-                                        addBoxViewModel
+                                        cartViewModel
                                     )
                                 }
                             )
@@ -245,7 +244,7 @@ fun RestaurantScreen(
                                 item,
                                 navigationController,
                                 itemScreenViewModel,
-                                addBoxViewModel,
+                                cartViewModel,
                                 {
                                     Favorite(
                                         modifier = Modifier.
@@ -257,7 +256,7 @@ fun RestaurantScreen(
                                     AddBox(
                                         color = Color.VeryLightGray,
                                         food = item,
-                                        addBoxViewModel
+                                        cartViewModel
                                     )
                                 }
                             )
@@ -266,24 +265,24 @@ fun RestaurantScreen(
                     item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
                 }
 
-                if(allCart.value.restaurantId == restaurantViewModel.resid && cartItems.isNotEmpty()){
+                if(cartViewModel.cartInformation.collectAsState().value?.restaurantId == restaurantViewModel.resid && cartViewModel.cartItems.collectAsState().value.isNotEmpty()){
                     Column(modifier = Modifier.align(Alignment.BottomCenter)){
                         Box(contentAlignment = Alignment.Center){
-                            RestaurantButton(navigationController)
+                            RestaurantButton(navigationController, cartViewModel)
                         }
                     }
                 }
 
-                if(addBoxViewModel.errorInCart){
+                if(cartViewModel.errorInCart){
                     AlertDialogMessage(
-                        allCart.value.restaurantName,
+                        cartViewModel.cartInformation.collectAsState().value?.restaurantName ?: "",
                         "Start",
                         {
-                            addBoxViewModel.alertDialogFalse()
-                            addBoxViewModel.clearAndStartNewCart()
+                            cartViewModel.alertDialogFalse()
+                            cartViewModel.clearAndStartNewCart()
                         },
                         "Cancel",
-                        {addBoxViewModel.alertDialogFalse()}
+                        {cartViewModel.alertDialogFalse()}
                     )
                 }
 

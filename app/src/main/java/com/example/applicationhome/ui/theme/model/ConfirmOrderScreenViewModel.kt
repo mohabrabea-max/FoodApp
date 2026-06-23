@@ -6,13 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.data.models.local.CartClass
+import com.example.applicationhome.data.models.local.CartItemsClass
+import com.example.applicationhome.data.models.local.UserClass
 import com.example.applicationhome.data.models.model.OrderItemsClass
-import com.example.applicationhome.data.models.repository.CartRepository.cartItems
-import com.example.applicationhome.data.models.repository.CartRepository.cartMealsMenu
-import com.example.applicationhome.data.models.repository.CartRepository.cartSnacksMenu
-import com.example.applicationhome.data.models.repository.CartRepository.deleteAllCart
-import com.example.applicationhome.data.models.repository.CartRepository.totalNumber
-import com.example.applicationhome.data.models.repository.CartRepository.totalPrice
+import com.example.applicationhome.data.models.model.OrdersClass
+import com.example.applicationhome.data.models.model.UserInformationInOrderClass
+import com.example.applicationhome.data.models.repository.CartRepository
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.additionalDirectionsState
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.addressLabelState
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.houseState
@@ -20,19 +20,53 @@ import com.example.applicationhome.data.models.repository.ConfirmOrderScreenText
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.phoneNumberState
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.streetState
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.streettextFieldState
-import com.example.applicationhome.data.models.repository.MenuRepository.restaurantsMenu
-import com.example.applicationhome.data.models.repository.OrderRepository.getOrders
-import com.example.applicationhome.data.models.repository.OrderRepository.orderItems
-import com.example.applicationhome.data.models.repository.OrderRepository.restaurantId
-import com.example.applicationhome.data.models.repository.OrderRepository.restaurantImage
-import com.example.applicationhome.data.models.repository.OrderRepository.restaurantName
-import com.example.applicationhome.data.models.repository.OrderRepository.uploadOrderRequest
+import com.example.applicationhome.data.models.repository.OrderRepository
+import com.example.applicationhome.data.models.repository.UserRepository
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
-class ConfirmOrderScreenViewModel : ViewModel() {
+class ConfirmOrderScreenViewModel(
+    private val userRepository: UserRepository,
+    private val cartRepository: CartRepository,
+    private val orderRepository : OrderRepository
+) : ViewModel() {
+    val current = LocalDateTime.now()
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    val date = current.format(formatter)
 
+
+    val cartItems : StateFlow<List<CartItemsClass?>> =
+        cartRepository.getCartItems().stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    val cartInformation : StateFlow<CartClass?> =
+        cartRepository.getCartData().stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
+
+    val userData : StateFlow<UserClass> =
+        userRepository.getActiveUserFromDatabase()
+            .map { userInDb ->
+                userInDb ?: UserClass(firstname = "Guest")
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = UserClass(firstname = "Guest")
+            )
     var bottonState by mutableStateOf(false)
     var phoneNumbertextFieldState by mutableStateOf(false)
+    val address1 = "${houseState.text} - ${streetState.text}"
+    val address2 = " - ${additionalDirectionsState.text} - ${addressLabelState.text}"
 
     fun bottonstate(){
         if(
@@ -68,57 +102,46 @@ class ConfirmOrderScreenViewModel : ViewModel() {
         streettextFieldState = true
     }
 
-    fun addToOrderItems(){
-        val finalOrderItems = cartItems.values.mapNotNull { item ->
-            if(item.type == "Meal"){
-                val meal = cartMealsMenu["${item.id}_${item.size}"] ?: return@mapNotNull null
-                val price = meal.sizeOptions.find { it.size == item.size }?.price ?: return@mapNotNull null
-                restaurantId = meal.restaurantId
-                OrderItemsClass(
-                    item.id,
-                    meal.name,
-                    item.size,
-                    price,
-                    item.number,
-                    meal.image[0],
-                    "Meal"
-                )
-            }else{
-                val snack = cartSnacksMenu["${item.id}_${item.size}"] ?: return@mapNotNull null
-                val price = snack.priceANDsize[item.size]?: return@mapNotNull null
-                restaurantId = snack.restaurantId ?: 0
-                OrderItemsClass(
-                    item.id,
-                    snack.name,
-                    item.size,
-                    price,
-                    item.number,
-                    snack.image[0],
-                    "Snack"
-                )
-            }
-        }
-        orderItems += finalOrderItems
-        restaurantName = restaurantsMenu.values.find { it.id == restaurantId }?.name ?: ""
-        restaurantImage = restaurantsMenu.values.find { it.id == restaurantId }?.image ?: ""
-    }
-
     fun uploadOrder(){
         viewModelScope.launch {
-            val result = uploadOrderRequest()
+            val orderInformation = cartInformation.value
 
-            if(result == "Success"){
-                getOrders()
-                deleteAllCart()
+            var totalPrice = 0.0
+            cartItems.value.forEach { item ->
+                totalPrice += item?.totalPrice ?: 0.0
+            }
 
-                cartItems.clear()
-                cartMealsMenu.clear()
-                cartSnacksMenu.clear()
-                totalPrice = 0.0
-                totalNumber.value = 0
-                orderItems = emptyList()
-                restaurantName = ""
-                restaurantImage = ""
+            var orderItems = listOf(OrderItemsClass())
+            cartItems.value.forEach { item ->
+                orderItems += OrderItemsClass(
+                    item?.mealId ?: 0,
+                    item?.name ?: "",
+                    item?.size ?: "",
+                    item?.priceOfOne ?: 0.0,
+                    item?.quantity ?: 0,
+                    item?.image ?: "",
+                    item?.type ?: ""
+                )
+            }
+            if(orderInformation != null){
+                val order = OrdersClass(
+                    date,
+                    "Preparing",
+                    totalPrice,
+                    UserInformationInOrderClass(
+                        "${userData.value.firstname} ${userData.value.lastname}",
+                        phoneNumberState.text.toString(),
+                        if(additionalDirectionsState.text.isNotEmpty() && addressLabelState.text.isNotEmpty())
+                            address1 + address2
+                        else address1,
+                        "30.0444,31.2357"
+                    ),
+                    orderItems,
+                    orderInformation.restaurantName,
+                    orderInformation.restaurantImage,
+                    orderInformation.restaurantId
+                    )
+                orderRepository.uploadOrderRequest(order)
             }
         }
     }

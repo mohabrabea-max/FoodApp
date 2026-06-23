@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UsersDao {            // دا الجزء اللي بينفذ عمليات في الداتا بيز
@@ -12,10 +13,10 @@ interface UsersDao {            // دا الجزء اللي بينفذ عملي�
 //    suspend fun getAllUsers(): List<UserClass>
 
     @Query("SELECT * FROM users WHERE id = :userId")
-    suspend fun getOneUser(userId : String): UserClass?
+    fun getOneUser(userId : String): Flow<UserClass?>
 
     @Query("SELECT * FROM users WHERE isActive = :isActive")
-    suspend fun getActiveUser(isActive : Boolean = true): UserClass?
+    fun getActiveUser(isActive : Boolean): Flow<UserClass?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)   // IGNORE دي بتتجاهل اي داتا عايز اضيفها فيها ايميل مطابق لايميل موجود قبل كدا
                                                        // REPLACE  بتستبدل الداتا القديمة بالجديدة لو الايميل متكرر في الداتا بيز
@@ -25,16 +26,27 @@ interface UsersDao {            // دا الجزء اللي بينفذ عملي�
     suspend fun updateUser(updateState: UpdateAccountState)
 }
 
+
 @Dao
 interface CartDao {            // دا الجزء اللي بينفذ عمليات في الداتا بيز
+    @Query("SELECT * FROM cart_items WHERE userId = :userid")
+    fun getCartItems(userid : String): Flow<List<CartItemsClass?>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addCartItem(cartItem : CartItemsClass)
+
+    @Update(entity = CartItemsClass::class)
+    suspend fun updateCartItem(cartItem: CartItemsClass)
+
+    @Query("DELETE FROM cart_items WHERE userId = :userId AND mealId = :mealId")
+    suspend fun deleteItemFromCart(mealId : String, userId : String)
+
     @Query("SELECT * FROM cart WHERE userId = :userid")
-    suspend fun getCart(userid : String): List<CartItems>
+    fun getParentCart(userid : String): Flow<CartClass?>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createParentCart(cart : CartClass)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)   // IGNORE دي بتتجاهل اي داتا عايز اضيفها فيها ايميل مطابق لايميل موجود قبل كدا
-    // REPLACE  بتستبدل الداتا القديمة بالجديدة لو الايميل متكرر في الداتا بيز
-    suspend fun addCartItem(cartItem : CartItems)
-
-    @Query("UPDATE cart SET quantity = :newQuantity, totalPrice = :newTotalPrice WHERE userId = :userId AND mealId = :mealId")
-    suspend fun updateQuantity(newQuantity : Int, newTotalPrice : Double, userId : String, mealId : String)
+    @Query("DELETE FROM cart WHERE userId = :userid")
+    suspend fun deleteParentCart(userid : String)
 }
