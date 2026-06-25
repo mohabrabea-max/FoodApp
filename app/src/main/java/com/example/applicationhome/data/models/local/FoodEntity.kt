@@ -128,7 +128,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "users")
 data class UserClass(
     val id : String = "",
-    val firstname : String = "",
+    val firstname : String = "Guest",
     val lastname : String = "",
     @PrimaryKey                 //   عشان الايميل ميتكررش في جدول اليوزرز
     val email : String = "",

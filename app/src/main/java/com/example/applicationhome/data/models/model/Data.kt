@@ -136,6 +136,16 @@ data class UserClassFireBase(
     val address : String = ""
 )
 
+data class CartClassForCalculations(
+    val id : Int = 0,
+    val name : String = "",
+    val image : String = "",
+    val price : Double = 0.0,
+    val size : String = "",
+    val type : String = "",
+    val restaurantId : Int = 0
+)
+
 data class FirebasePostResponse(val name : String)
 
 data class TextFieldClassFromConfirmOrderScreen(val textState : TextFieldState, val title: String)

@@ -1,6 +1,5 @@
 package com.example.applicationhome.ui.theme.components.forCart
 
-import android.R.attr.name
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +35,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.local.CartItemsClass
+import com.example.applicationhome.data.models.model.CartClassForCalculations
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.model.CartViewModel
@@ -48,8 +48,17 @@ fun CartBox(
     viewModel: ItemScreenViewModel,
     cartViewModel: CartViewModel,
 ){
-    val meal = cartViewModel.meal
+    val item = cartViewModel.meal
     val size = food.size
+    val meal = CartClassForCalculations(
+        item?.id ?: 0,
+        item?.name ?: "",
+        item?.image?.first() ?: "",
+        food.priceOfOne,
+        size,
+        food.type,
+        item?.restaurantId ?: 0
+    )
     val sizeInTitle = if(size.contains("Pieces")) "" else " (${size})"
 
     val cartkey = "${food.mealId}_${size}"
@@ -60,7 +69,7 @@ fun CartBox(
         background(Color.White).
         clickable {
             cartViewModel.getMeal(food.mealId)
-            if(meal != null) viewModel.selectItem(meal, meal.sizeOptions.find { it.size == size }?.size.toString())
+            viewModel.selectItem(item, size)
             navigationController.navigate(Screens.ItemScreen.screen)
         }
     ){
@@ -88,7 +97,7 @@ fun CartBox(
                         verticalArrangement = Arrangement.Center
                     ){
                         Text(
-                            text = "${name}${sizeInTitle}",
+                            text = "${food.name}${sizeInTitle}",
                             fontSize = 18.sp,
                             color = Color.Black,
                             style = MaterialTheme.typography.labelLarge,
@@ -119,7 +128,7 @@ fun CartBox(
                         clip(CircleShape).
                         background(Color.LightOrange.copy(alpha = 0.7f))
                     ){
-                        if(meal != null) FixedAddBox(cartViewModel, food, food.quantity, size, cartkey, meal)
+                        if(meal != null) FixedAddBox(cartViewModel,size, cartkey, meal)
                     }
                 }
             }

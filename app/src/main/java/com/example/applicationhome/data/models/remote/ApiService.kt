@@ -43,7 +43,7 @@ interface FoodAppAPIs{
     @GET("meals/{mealKey}.json")
     suspend fun getCartMeal(
         @Path("mealKey") mealKey : String
-    ): Response<FoodItem>
+    ): Response<Map<String, FoodItem>>
 
     @GET("restaurants.json")
     suspend fun getCarRestaurant(

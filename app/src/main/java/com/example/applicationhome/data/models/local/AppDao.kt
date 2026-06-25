@@ -38,8 +38,11 @@ interface CartDao {            // دا الجزء اللي بينفذ عمليا
     @Update(entity = CartItemsClass::class)
     suspend fun updateCartItem(cartItem: CartItemsClass)
 
-    @Query("DELETE FROM cart_items WHERE userId = :userId AND mealId = :mealId")
-    suspend fun deleteItemFromCart(mealId : String, userId : String)
+    @Query("DELETE FROM cart_items WHERE userId = :userId AND mealKey = :mealkey")
+    suspend fun deleteItemFromCart(mealkey : String, userId : String)
+
+    @Query("DELETE FROM cart_items WHERE userId = :userId")
+    suspend fun deleteAllItemFromCart(userId : String)
 
     @Query("SELECT * FROM cart WHERE userId = :userid")
     fun getParentCart(userid : String): Flow<CartClass?>

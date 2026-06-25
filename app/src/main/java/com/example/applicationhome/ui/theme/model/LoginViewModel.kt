@@ -42,6 +42,19 @@ class LoginViewModel(private val userRepository: UserRepository, application : A
             networkObserver.isNetworkAvailable.collect { available ->
                 isNetworkAvailable = available
             }
+
+        }
+
+        viewModelScope.launch {
+            userData.collect { item ->
+                if(item.id == ""){
+                    isLogin = false
+                    userRepository.setUserId(item.id)
+                }else{
+                    isLogin = true
+                    userRepository.setUserId(item.id)
+                }
+            }
         }
     }
 
@@ -75,6 +88,7 @@ class LoginViewModel(private val userRepository: UserRepository, application : A
 
     fun logout(){
         viewModelScope.launch {
+            println(userRepository.userId.value)
             isLogin = false
             userRepository.logOut(userData.value.email)
         }

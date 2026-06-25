@@ -28,19 +28,16 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.models.local.CartItemsClass
-import com.example.applicationhome.data.models.model.Food
+import com.example.applicationhome.data.models.model.CartClassForCalculations
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.model.CartViewModel
 
 @Composable
 fun FixedAddBox(
     cartViewModel : CartViewModel,
-    food: CartItemsClass,
-    count : Int,
     size : String,
     cartkey : String,
-    foodItem : Food
+    foodItem : CartClassForCalculations
 ){
     Row(
         modifier = Modifier.fillMaxSize()
@@ -74,7 +71,7 @@ fun FixedAddBox(
             modifier = Modifier.size(30.dp).clip(CircleShape).background(Color.DarkOrange),
             contentAlignment = Alignment.Center
         ){
-            IconButton(onClick = { if(foodItem != null) cartViewModel.plus(foodItem, size) }){
+            IconButton(onClick = { cartViewModel.plus(foodItem, size) }){
                 Icon(Icons.Default.Add, contentDescription = null, tint = Color.White)
             }
         }

@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.applicationhome.data.models.model.CartClassForCalculations
 import com.example.applicationhome.data.models.model.Food
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Screens
@@ -59,10 +60,28 @@ fun BottomBarForItemScreen(
     navigationController : NavHostController,
     bottomBarViewModel: BottomBarViewModel
 ){
-    val price = when(food){
-        is FoodItem -> { cartViewModel.newCount * (food.sizeOptions.find { it.size == size }?.price ?: 0.0) }
-        is Snack -> { cartViewModel.newCount * (food.priceANDsize[size] ?: 0.0) }
+    val price : Double
+    val type : String
+    when(food){
+        is FoodItem -> {
+            val item = food.sizeOptions.find { it.size == size }
+            price = cartViewModel.newCount * (item?.price ?: 0.0)
+            type = "Meal"
+        }
+        is Snack -> {
+            price = cartViewModel.newCount * (food.priceANDsize[size] ?: 0.0)
+            type = "Snack"
+        }
     }
+    val meal = CartClassForCalculations(
+        food.id,
+        food.name,
+        food.image.first(),
+        price,
+        size,
+        type,
+        food.restaurantId
+    )
     var color : Color
     var fontColor : Color
     if(cartViewModel.newCount == 0){
@@ -141,7 +160,7 @@ fun BottomBarForItemScreen(
                 background(color).
                 clickable {
                     if(cartViewModel.newCount > 0){
-                        cartViewModel.updateCount(food, size, cartViewModel.newCount)
+                        cartViewModel.updateCount(meal, size, cartViewModel.newCount)
                         if(cartViewModel.newCount > 0 && food.restaurantId == cartViewModel.cartInformation.value?.restaurantId){
                             scope.showAddToCartSnackbar(
                                 snackbarHostState,

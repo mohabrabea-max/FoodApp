@@ -9,7 +9,6 @@ import com.example.applicationhome.data.models.remote.RetrofitInstance
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import retrofit2.Response
 
 //    suspend fun addToMeals(){
@@ -25,9 +24,13 @@ import retrofit2.Response
 
 class UserRepository(private val userdao: UsersDao) {
     private val _userId = MutableStateFlow("")
-    val userId : StateFlow<String> = _userId.asStateFlow()
+    val userId : StateFlow<String> = _userId
 
     fun getActiveUserFromDatabase() : Flow<UserClass?> = userdao.getActiveUser(true)
+
+    fun setUserId(userId : String){
+        _userId.value = userId
+    }
 
     suspend fun setUserDataToDatabase(emailstate : String, passwordstate : String?): String {
         try {
@@ -39,7 +42,7 @@ class UserRepository(private val userdao: UsersDao) {
                 if(userMap != null){
                     val user = userMap.values.firstOrNull()
                     if(user != null && passwordstate != null && passwordstate == user.password){
-                        _userId.value = userMap.keys.first()
+                        _userId.value = userMap.keys.firstOrNull().toString()
                         val data = UserClass(
                             _userId.value ?: "",
                             user.firstname ?: "",

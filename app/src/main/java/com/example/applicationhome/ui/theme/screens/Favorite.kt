@@ -74,6 +74,7 @@ import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -91,7 +92,8 @@ fun Favorite(
     favoriteViewModel : FavoriteViewModel,
     categoriesBoxViewModel : CategoriesBoxViewModel,
     restaurantViewModel: RestaurantViewModel,
-    bottomBarViewModel: BottomBarViewModel
+    bottomBarViewModel: BottomBarViewModel,
+    loginViewModel : LoginViewModel
 ){
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) {
@@ -139,7 +141,7 @@ fun Favorite(
                 pointerInput(Unit) { detectTapGestures { } },
                 contentAlignment = Alignment.BottomCenter
             ){
-                MyBottonBar(navigationController, bottomBarViewModel, cartViewModel, favoriteViewModel)
+                MyBottonBar(navigationController, bottomBarViewModel, cartViewModel, favoriteViewModel, loginViewModel)
             }
         }
     ){

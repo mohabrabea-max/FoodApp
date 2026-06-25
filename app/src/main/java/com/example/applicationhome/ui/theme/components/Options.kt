@@ -23,7 +23,6 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,7 +53,7 @@ fun Options(
     drawerViewModel: DrawerViewModel,
     loginViewModel: LoginViewModel
 ){
-    val isLogIn by remember { mutableStateOf(loginViewModel.isLogin) }
+    val isLogIn = loginViewModel.isLogin
     val density = LocalDensity.current     //هنا بناخد قياس شاشة الموبايل
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} } // بنجبر الـ Measurable يشوف إن عرضه دايماً 250dp
     val options = Drawer.optionsData()
@@ -149,27 +148,29 @@ fun Options(
                             }
                         )
                     },
-                selected = false,
-                icon = {
-                    Icon(
-                        imageVector = if(isLogIn) Icons.Default.Logout else Icons.Default.Login,
-                        contentDescription = if(isLogIn) "Logout" else "Login",
-                        tint = if(isLogIn) Color.Red else Color.Green,
-                        modifier = Modifier.padding(start = 5.dp)
-                    )
-                },
-                onClick = {
-                    coroutineScope.launch{
-                        drawerState.close()
-                        if(isLogIn){
-                            loginViewModel.logout()
-                            Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()
-                        }else{
-                            navigationController.navigate(Screens.LoginScreen.screen)
+                    selected = false,
+                    icon = {
+                        Icon(
+                            imageVector = if(isLogIn) Icons.Default.Logout else Icons.Default.Login,
+                            contentDescription = if(isLogIn) "Logout" else "Login",
+                            tint = if(isLogIn) Color.Red else Color.Green,
+                            modifier = Modifier.padding(start = 5.dp)
+                        )
+                    },
+                    onClick = {
+                        coroutineScope.launch{
+                            drawerState.close()
+                            if(isLogIn){
+                                loginViewModel.logout()
+
+                                Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()
+                            }else{
+                                navigationController.navigate(Screens.LoginScreen.screen)
+                            }
                         }
                     }
-                }
-            )}
+                )
+            }
         }
     }
 }

@@ -37,6 +37,7 @@ import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.LoginViewModel
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,7 +46,8 @@ fun MyBottonBar(
     navigationController : NavController,
     viewModel: BottomBarViewModel,
     cartViewModel: CartViewModel,
-    favoriteViewModel: FavoriteViewModel
+    favoriteViewModel: FavoriteViewModel,
+    loginViewModel: LoginViewModel
 ){
     var selected = viewModel.selected
     Box(
@@ -132,7 +134,7 @@ fun MyBottonBar(
             Box(modifier = Modifier.weight(1f)){
                 IconButton(
                     onClick = {
-                        println(cartViewModel.cartItems.value)
+                        println(loginViewModel.userData.value.id)
                         if(selected == "Cart"){
                             navigationController.navigate(Screens.Cart.screen)
                         }else{

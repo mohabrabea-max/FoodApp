@@ -8,39 +8,60 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.models.local.CartClass
 import com.example.applicationhome.data.models.local.CartItemsClass
-import com.example.applicationhome.data.models.model.Food
+import com.example.applicationhome.data.models.model.CartClassForCalculations
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Restaurants
-import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.data.models.repository.CartRepository
 import com.example.applicationhome.data.models.repository.OrderRepository
 import com.example.applicationhome.data.models.repository.UserRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class CartViewModel(
     private val userRepository: UserRepository,
     private val cartRepository: CartRepository,
     private val orderRepository : OrderRepository
 ) : ViewModel(){
-    val cartItems : StateFlow<List<CartItemsClass?>> =
-        cartRepository.getCartItems().stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
-    val cartInformation : StateFlow<CartClass?> =
-        cartRepository.getCartData().stateIn(
+
+    var userid by mutableStateOf("")
+    val cartInformation : StateFlow<CartClass?> = userRepository.userId
+        .flatMapLatest { id ->
+            if (id.isNotEmpty()) {
+                userid = id
+                cartRepository.getCartData(id)
+            }else {
+                flowOf(null)
+            }
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
         )
+
+    val cartItems : StateFlow<List<CartItemsClass?>> = userRepository.userId
+        .flatMapLatest { id ->
+            if (id.isNotEmpty()) {
+                userid = id
+                cartRepository.getCartItems(id)
+            } else {
+                flowOf(emptyList())
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
     var cartRestaurant by mutableStateOf(Restaurants())
     var activId by mutableStateOf<Int?>(null)
     var errorInCart by mutableStateOf(false)
-    var newFoodInCart by mutableStateOf<Food?>(null)
+    var newFoodInCart by mutableStateOf<CartClassForCalculations?>(null)
     var newFoodInCartSize by mutableStateOf<String?>(null)
     var newCount by mutableStateOf(0)
     var totalPrice by mutableDoubleStateOf(0.0)
@@ -48,14 +69,6 @@ class CartViewModel(
 
     var meal : FoodItem? by mutableStateOf(null)
 
-    init {
-        viewModelScope.launch {
-            userRepository.userId.collect { id ->
-                cartRepository.setUserId(id)
-                orderRepository.setUserId(id)
-            }
-        }
-    }
 
     init {
         viewModelScope.launch {
@@ -65,13 +78,9 @@ class CartViewModel(
         }
     }
 
-    fun plus(food: Food, size : String){
+    fun plus(food: CartClassForCalculations, size : String){
         viewModelScope.launch {
             val mealKey = "${food.id}_${size}"
-            val price : Double? = when(food){
-                is FoodItem -> { food.sizeOptions.find { it.size == size }?.price }
-                is Snack -> { food.priceANDsize[size] }
-            }
             val currentItem = cartItems.value.find { it?.mealKey == mealKey }
             val finalNumber = if (currentItem != null){
                 if(currentItem.quantity == 99){
@@ -82,16 +91,12 @@ class CartViewModel(
             }else{
                 1
             }
-            val type = when(food){
-                is FoodItem -> {"Meal"}
-                is Snack -> {"Snack"}
-            }
             if(cartItems.value.isNotEmpty()){
-                if(food.restaurantId == cartInformation.value?.restaurantId && price != null){
+                if(food.restaurantId == cartInformation.value?.restaurantId){
                     if(cartItems.value.find { it?.mealKey == mealKey } != null){
-                        cartRepository.updateQuantity(food, size, type, price, finalNumber)
+                        cartRepository.updateQuantity(userid, food, size, food.type, food.price, finalNumber)
                     }else{
-                        cartRepository.addMealToCart(food, size, type, price, finalNumber)
+                        cartRepository.addMealToCart(userid, food, size, food.type, food.price, finalNumber)
                     }
                 }else{
                     alertDialogTrue()
@@ -99,21 +104,15 @@ class CartViewModel(
                     newFoodInCartSize = size
                 }
             }else{
-                if(price != null){
-                    cartRestaurant = cartRepository.getCartRestaurantData(food)?: Restaurants()
-                    cartRepository.createNewCart(food, size, type, price, cartRestaurant)
-                }
+                cartRestaurant = cartRepository.getCartRestaurantData(food)?: Restaurants()
+                cartRepository.createNewCart(userid, food, size, food.type, food.price, cartRestaurant)
             }
         }
     }
 
-    fun updateCount(food : Food, size : String, newCount : Int) {
+    fun updateCount(food : CartClassForCalculations, size : String, newCount : Int) {
         viewModelScope.launch {
             val mealKey = "${food.id}_${size}"
-            val price : Double? = when(food){
-                is FoodItem -> { food.sizeOptions.find { it.size == size }?.price }
-                is Snack -> { food.priceANDsize[size] }
-            }
             val cartItem = cartItems.value.find { it?.mealKey == mealKey }
             val finalNumber = if (cartItem != null){
                 if(cartItem.quantity == 99){
@@ -124,16 +123,12 @@ class CartViewModel(
             }else{
                 1
             }
-            val type = when(food){
-                is FoodItem -> {"Meal"}
-                is Snack -> {"Snack"}
-            }
             if(cartItems.value.isNotEmpty()){
-                if(food.restaurantId == cartInformation.value?.restaurantId && price != null){
+                if(food.restaurantId == cartInformation.value?.restaurantId){
                     if(cartItems.value.find { it?.mealKey == mealKey } != null){
-                        cartRepository.updateQuantity(food, size, type, price, finalNumber)
+                        cartRepository.updateQuantity(userid, food, size, food.type, food.price, finalNumber)
                     }else{
-                        cartRepository.addMealToCart(food, size, type, price, finalNumber)
+                        cartRepository.addMealToCart(userid, food, size, food.type, food.price, finalNumber)
                     }
                 }else{
                     alertDialogTrue()
@@ -141,33 +136,23 @@ class CartViewModel(
                     newFoodInCartSize = size
                 }
             }else{
-                if(price != null){
-                    cartRestaurant = cartRepository.getCartRestaurantData(food)?: Restaurants()
-                    cartRepository.createNewCart(food, size, type, price, cartRestaurant)
-                }
+                cartRestaurant = cartRepository.getCartRestaurantData(food)?: Restaurants()
+                cartRepository.createNewCart(userid, food, size, food.type, food.price, cartRestaurant)
             }
         }
     }
 
-    fun minus(food: Food, size : String){
+    fun minus(food: CartClassForCalculations, size : String){
         viewModelScope.launch {
             val mealKey = "${food.id}_${size}"
             var finalNumber by mutableStateOf(0)
             val cartItem = cartItems.value.find { it?.mealKey == mealKey }
-            val type = when(food){
-                is FoodItem -> {"Meal"}
-                is Snack -> {"Snack"}
-            }
-            val price : Double? = when(food){
-                is FoodItem -> { food.sizeOptions.find { it.size == size }?.price }
-                is Snack -> { food.priceANDsize[size] }
-            }
-            if(cartItem != null && price != null){
+            if(cartItem != null){
                 if(cartItem.quantity == 1){
-                    cartRepository.deleteFromCart(food.id, size)
+                    cartRepository.deleteFromCart(userid, food.id, size)
                 }else{
                     finalNumber = cartItem.quantity - 1
-                    cartRepository.updateQuantity(food, size, type, price, finalNumber)
+                    cartRepository.updateQuantity(userid, food, size, food.type, food.price, finalNumber)
                 }
             }
         }
@@ -175,11 +160,12 @@ class CartViewModel(
 
     fun clearAndStartNewCart() {
         viewModelScope.launch {
-            cartRepository.deleteAllCart()
             totalPrice = 0.0
             totalNumber.value = 0
             val newFood = newFoodInCart
             val newSize = newFoodInCartSize
+            cartRepository.deleteAllCart(userid)
+            cartRepository.deleteParentCart(userid)
             if(newFood != null && newSize != null){
                 plus(newFood, newSize)
             }
@@ -190,7 +176,7 @@ class CartViewModel(
 
     fun delete(foodId: Int, size : String){
         viewModelScope.launch {
-            cartRepository.deleteFromCart(foodId, size)
+            cartRepository.deleteFromCart(userid, foodId, size)
         }
     }
 

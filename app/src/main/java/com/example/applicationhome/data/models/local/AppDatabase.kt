@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [UserClass::class, CartClass::class, CartItemsClass::class],
-    version = 3,
+    version = 10,
     exportSchema = false
 )
 abstract class UsersDatabase : RoomDatabase(){
@@ -29,8 +29,11 @@ abstract class UsersDatabase : RoomDatabase(){
 
         fun getDaoInstance(context: Context) : UsersDatabase{
             return INSTANCE ?: synchronized(this) {
-                val instance = buildDatabase(context)
-                INSTANCE = instance
+                var instance = INSTANCE
+                if(instance == null){
+                    instance = buildDatabase(context)
+                    INSTANCE = instance
+                }
                 instance
             }
         }

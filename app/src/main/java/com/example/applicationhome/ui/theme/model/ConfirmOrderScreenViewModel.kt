@@ -24,6 +24,7 @@ import com.example.applicationhome.data.models.repository.OrderRepository
 import com.example.applicationhome.data.models.repository.UserRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -40,18 +41,22 @@ class ConfirmOrderScreenViewModel(
     val date = current.format(formatter)
 
 
-    val cartItems : StateFlow<List<CartItemsClass?>> =
-        cartRepository.getCartItems().stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
-
-    val cartInformation : StateFlow<CartClass?> =
-        cartRepository.getCartData().stateIn(
+    val cartInformation : StateFlow<CartClass?> = userRepository.userId
+        .flatMapLatest { id ->
+            cartRepository.getCartData(id)
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
+        )
+
+    val cartItems : StateFlow<List<CartItemsClass?>> =userRepository.userId
+        .flatMapLatest { id ->
+            cartRepository.getCartItems(id)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
         )
 
     val userData : StateFlow<UserClass> =

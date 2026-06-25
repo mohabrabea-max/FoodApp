@@ -246,7 +246,6 @@ fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostCon
             .clickable {
                 if(loginViewModel.isNetworkAvailable){
                     if(isEmailTrue && isPasswordTrue){
-                        println(loginViewModel.userData.value.id)
                         scope.launch {
                             loginViewModel.login()
                             loginViewModel.bottonstate()

@@ -30,27 +30,31 @@ import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import com.example.applicationhome.ui.theme.screens.FinalScreen
 
 class MainActivity : ComponentActivity() {
-    val app = application as MyFoodApp
-    val cartRepo = app.cartRepository
-    val orderRepo = app.orderRepository
-    val userRepo = app.userRepository
-    private val loginViewModel : LoginViewModel by viewModels {
-        object : ViewModelProvider.Factory{
+
+    // 1. تعريف الـ Repositories بأمان باستخدام lazy
+    private val app by lazy { application as MyFoodApp }
+    private val cartRepo by lazy { app.cartRepository }
+    private val orderRepo by lazy { app.orderRepository }
+    private val userRepo by lazy { app.userRepository }
+
+    // 2. تعريف الـ ViewModels في نطاق الكلاس الآمن باستخدام lazy أيضاً
+    private val loginViewModel: LoginViewModel by viewModels {
+        object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return LoginViewModel(userRepo, app) as T
             }
         }
     }
 
-    private val signUpViewModel : SignUpViewModel by viewModels {
-        object : ViewModelProvider.Factory{
+    private val signUpViewModel: SignUpViewModel by viewModels {
+        object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return SignUpViewModel(userRepo, app) as T
             }
         }
     }
 
-    private val cartViewModel : CartViewModel by viewModels {
+    private val cartViewModel: CartViewModel by viewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return CartViewModel(userRepo, cartRepo, orderRepo) as T
@@ -58,7 +62,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private val confirmOrderScreenViewModel : ConfirmOrderScreenViewModel by viewModels {
+    private val confirmOrderScreenViewModel: ConfirmOrderScreenViewModel by viewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return ConfirmOrderScreenViewModel(userRepo, cartRepo, orderRepo) as T
@@ -66,32 +70,36 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private val orderScreenViewModel : OrderScreenViewModel by viewModels {
+    private val orderScreenViewModel: OrderScreenViewModel by viewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return OrderScreenViewModel(orderRepo) as T
+                return OrderScreenViewModel(orderRepo) as T // (ملاحظة: تأكد من كتابتها OrderScreenViewModel(orderRepo = orderRepo) بالشكل السليم المعتاد)
+                // في كودك الأصلي كانت: return OrderScreenViewModel(orderRepo) as T
             }
         }
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        // 3. الـ Splash Screen لازم تكون أول سطر في الحياة
         installSplashScreen()
+        super.onCreate(savedInstanceState)
+
+        // تم إزالة تعريفات الـ Repositories من هنا لأن الـ lazy بيقوم بالواجب فوق في الأمان
 
         setContent {
-
             val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-            val itemScreenViewModel : ItemScreenViewModel = viewModel()
-            val viewModelForBottomBar : BottomBarViewModel = viewModel()
-            val userImageViewModel : UserImageViewModel = viewModel()
-            val favoriteViewModel : FavoriteViewModel = viewModel()
-            val drawerViewModel : DrawerViewModel = viewModel()
-            val apiData : APIData = viewModel()
-            val categoriesBoxViewModel : CategoriesBoxViewModel = viewModel()
-            val restaurantViewModel : RestaurantViewModel = viewModel()
-            val homeScreenViewModel : HomeScreenViewModel = viewModel()
+            val itemScreenViewModel: ItemScreenViewModel = viewModel()
+            val viewModelForBottomBar: BottomBarViewModel = viewModel()
+            val userImageViewModel: UserImageViewModel = viewModel()
+            val favoriteViewModel: FavoriteViewModel = viewModel()
+            val drawerViewModel: DrawerViewModel = viewModel()
+            val apiData: APIData = viewModel()
+            val categoriesBoxViewModel: CategoriesBoxViewModel = viewModel()
+            val restaurantViewModel: RestaurantViewModel = viewModel()
+            val homeScreenViewModel: HomeScreenViewModel = viewModel()
+
             FinalScreen(
                 scrollBehavior,
                 drawerState,
