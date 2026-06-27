@@ -3,10 +3,8 @@ package com.example.applicationhome.data.models.repository
 import com.example.applicationhome.data.models.local.CartClass
 import com.example.applicationhome.data.models.local.CartDao
 import com.example.applicationhome.data.models.local.CartItemsClass
-import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.remote.RetrofitInstance
-import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuList
 import kotlinx.coroutines.flow.Flow
 
 class CartRepository(private val cartdao: CartDao) {
@@ -122,21 +120,21 @@ class CartRepository(private val cartdao: CartDao) {
         }
     }
 
-    suspend fun getMeal(mealId : Int): FoodItem? {
-        val mealKey = "Meal_${mealId}"
-        if(foodMenuList[mealKey] != null){
-            return foodMenuList[mealKey]
-        }else{
-            return try {
-                val response = RetrofitInstance.api.getCartMeal(mealKey)
-                if(response.isSuccessful){
-                    return response.body()?.values?.firstOrNull()
-                }else{
-                    null
-                }
-            }catch (e : Exception){
-                null
-            }
-        }
-    }
+//    suspend fun getMeal(mealId : Int): FoodItem? {
+//        val mealKey = "Meal_${mealId}"
+//        if(foodMenuList[mealKey] != null){
+//            return foodMenuList[mealKey]
+//        }else{
+//            return try {
+//                val response = RetrofitInstance.api.getCartMeal(mealKey)
+//                if(response.isSuccessful){
+//                    return response.body()?.values?.firstOrNull()
+//                }else{
+//                    null
+//                }
+//            }catch (e : Exception){
+//                null
+//            }
+//        }
+//    }
 }

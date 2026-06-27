@@ -16,6 +16,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,16 +30,15 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Categories
-import com.example.applicationhome.data.models.repository.MenuRepository
-import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
+import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 
 @Composable
-fun CategoriesBox(category : Categories, categoriesBoxViewModel : CategoriesBoxViewModel){
-    val selected = categoriesBoxViewModel.selected
+fun CategoriesBox(category : Categories, homeScreenViewModel: HomeScreenViewModel){
+    val selected = homeScreenViewModel.selected
     var size = if(selected == category.id) 65.dp else 70.dp
     var alpha = if(selected == category.id) 1f else 0f
 
-    if (MenuRepository.categoriesisLoading) {
+    if (homeScreenViewModel.categoriesIsLoading.collectAsState().value) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -49,12 +49,12 @@ fun CategoriesBox(category : Categories, categoriesBoxViewModel : CategoriesBoxV
         Column(
             modifier = Modifier.clickable {
                 if(selected == 0){
-                    categoriesBoxViewModel.selected(category)
+                    homeScreenViewModel.selected(category)
                 }else if(selected != category.id){
-                    categoriesBoxViewModel.unSelected()
-                    categoriesBoxViewModel.selected(category)
+                    homeScreenViewModel.unSelected()
+                    homeScreenViewModel.selected(category)
                 }else{
-                    categoriesBoxViewModel.unSelected()
+                    homeScreenViewModel.unSelected()
                 }
             },
             horizontalAlignment = Alignment.CenterHorizontally,

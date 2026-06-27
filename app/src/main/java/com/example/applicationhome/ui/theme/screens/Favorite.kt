@@ -162,7 +162,6 @@ fun Favorite(
                                     favoriteViewModel,
                                     itemScreenViewModel,
                                     navigationController,
-                                    categoriesBoxViewModel,
                                     restaurantViewModel
                                 )
                             }

@@ -60,8 +60,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.MenuRepository.snacks
-import com.example.applicationhome.data.models.repository.MenuRepository.snacksisLoading
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
@@ -79,6 +77,7 @@ import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
+import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,7 +87,8 @@ fun ItemScreen(
     viewModel: ItemScreenViewModel,
     cartViewModel: CartViewModel,
     favoriteState : FavoriteViewModel,
-    loginViewModel : LoginViewModel
+    loginViewModel : LoginViewModel,
+    restaurantViewModel: RestaurantViewModel
 ){
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -112,7 +112,7 @@ fun ItemScreen(
             }
         }
     }
-    val snacks = snacks.values.toList()
+    val snacks = restaurantViewModel.snackMenuList
     val item = viewModel.selectedItem
     val size = viewModel.selectedSize
     val images = item?.image?.size ?: 0
@@ -126,7 +126,8 @@ fun ItemScreen(
                     Snackbar(
                         containerColor = Color.DeepMatteBlack,
                         actionColor = Color.DarkOrange,
-                        snackbarData = data
+                        snackbarData = data,
+                        shape = RoundedCornerShape(15.dp)
                     )
                 }
                 Spacer(modifier = Modifier.height(160.dp))
@@ -287,7 +288,7 @@ fun ItemScreen(
                                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start){
                                             val text = mutableListOf<String>()
                                                 selectedDetail?.snack?.forEach { (snakeId, snakeSize) ->
-                                                val snake2 = snacks.find { it.id == snakeId }
+                                                val snake2 = snacks.value.find { it.id == snakeId }
                                                 snake2?.let { safeSnake ->
                                                     text.add(snakeSize + " " + safeSnake.name)
                                                 }
@@ -330,10 +331,10 @@ fun ItemScreen(
                                             item{
                                                 val selectedDetail = item.sizeOptions.find { it.size == size }
                                                 selectedDetail?.snack?.forEach { (snakeId, snakeSize) ->
-                                                    val snake2 = snacks.find { it.id == snakeId }
+                                                    val snake2 = snacks.value.find { it.id == snakeId }
                                                     snake2?.let { safeSnake ->
                                                         SnaksBox(
-                                                            snacksisLoading,
+                                                            restaurantViewModel.snacksIsLoading.collectAsState().value,
                                                             modifier = Modifier.size(170.dp),
                                                             true,
                                                             safeSnake,

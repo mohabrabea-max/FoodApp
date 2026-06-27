@@ -35,10 +35,10 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
+import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 
 @Composable
-fun RestaurantHeader(item : Restaurants, homeScreenViewModel: HomeScreenViewModel){
+fun RestaurantHeader(item : Restaurants, viewRestaurantImageViewModel: ViewRestaurantImageViewModel){
     val background = item.image2
     val type = item.typ.toList()
     val logo = item.image
@@ -56,7 +56,7 @@ fun RestaurantHeader(item : Restaurants, homeScreenViewModel: HomeScreenViewMode
             contentDescription = null,
             modifier = Modifier.fillMaxWidth().
             height(230.dp).
-            clickable { homeScreenViewModel.view(item.image) },
+            clickable { viewRestaurantImageViewModel.view(item.image) },
             contentScale = ContentScale.Crop
         )
         Box(

@@ -23,15 +23,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.models.repository.MenuRepository
 import com.example.applicationhome.data.models.repository.TapRowData.FavoriteTapRow
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
+import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
+import com.example.applicationhome.ui.theme.model.RestaurantViewModel
+
 
 @Composable
-fun CategoriesBar(categoriesBoxViewModel : CategoriesBoxViewModel){
-    val categories = MenuRepository.categories
+fun CategoriesBar(homeScreenViewModel: HomeScreenViewModel){
+    val categories = homeScreenViewModel.categories
     Row(
         modifier = Modifier.fillMaxWidth().
         height(120.dp).
@@ -43,8 +45,8 @@ fun CategoriesBar(categoriesBoxViewModel : CategoriesBoxViewModel){
             horizontalArrangement = Arrangement.spacedBy(20.dp),
         ){
             item { Spacer(modifier = Modifier.width(4.dp)) }
-            items(categories) { category ->
-                CategoriesBox(category, categoriesBoxViewModel)
+            items(categories.toList()) { category ->
+                CategoriesBox(category, homeScreenViewModel)
             }
             item { Spacer(modifier = Modifier.width(4.dp)) }
         }
@@ -54,27 +56,27 @@ fun CategoriesBar(categoriesBoxViewModel : CategoriesBoxViewModel){
 
 
 @Composable
-fun CategoriesBarForRestaurantsScreen(typ : List<String>, categoriesBoxViewModel : CategoriesBoxViewModel){
+fun CategoriesBarForRestaurantsScreen(typ : List<String>, restaurantViewModel : RestaurantViewModel){
     ScrollableTabRow(
         modifier = Modifier.fillMaxWidth().
         height(50.dp),
-        selectedTabIndex = categoriesBoxViewModel.selectedTypeIndex,
+        selectedTabIndex = restaurantViewModel.selectedTypeIndex,
         containerColor = Color.White,
         contentColor = Color.Black,
         indicator = { tabPositions ->
-            if (categoriesBoxViewModel.selectedTypeIndex < tabPositions.size) {
+            if (restaurantViewModel.selectedTypeIndex < tabPositions.size) {
                 TabRowDefaults.SecondaryIndicator(
-                    modifier = Modifier.tabIndicatorOffset(tabPositions[categoriesBoxViewModel.selectedTypeIndex]),
+                    modifier = Modifier.tabIndicatorOffset(tabPositions[restaurantViewModel.selectedTypeIndex]),
                     color = Color.DarkOrange
                 )
             }
         }
     ){
         typ.forEachIndexed { index, typ ->
-            val isSelected = categoriesBoxViewModel.selectedTypeIndex == index
+            val isSelected = restaurantViewModel.selectedTypeIndex == index
             Tab(
                 selected = isSelected,
-                onClick = { categoriesBoxViewModel.selectedtype(index, typ) },
+                onClick = { restaurantViewModel.selectedtype(index, typ) },
                 text = {
                     Text(
                         text = typ,

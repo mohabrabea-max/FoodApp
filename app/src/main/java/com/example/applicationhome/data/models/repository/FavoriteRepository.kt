@@ -9,12 +9,6 @@ import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.data.models.remote.RetrofitInstance
-import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuList
-import com.example.applicationhome.data.models.repository.MenuRepository.restaurantsMenu
-import com.example.applicationhome.data.models.repository.MenuRepository.snacks
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 
 object FavoriteRepository {
     var favoritList = mutableStateMapOf<String, FavoriteClass>()
@@ -35,127 +29,127 @@ object FavoriteRepository {
     var restaurantsFavoriteIsLoading by mutableStateOf(true)
 
 
-    suspend fun favoriteMeals(): Map<String, FoodItem> {
-        val finalMealsList = mutableMapOf<String, FoodItem>()
-        val missingItems = mutableListOf<Int>()
-        mealsFavoriteMenu.forEach { item ->
-            val mealKey = "Meal_${item.id}"
-            val cachedMeal = foodMenuList[mealKey]
-            if(cachedMeal != null){
-                finalMealsList += (mealKey to cachedMeal)
-            }else{
-                missingItems.add(item.id)
-            }
-        }
-        if(missingItems.isNotEmpty()){
-            mealsFavoriteIsLoading = true
-            try {
-                coroutineScope {
-                    val deferredRequests = missingItems.map { item ->
-                        async {
-                            try {
-                                val response = RetrofitInstance.api.getCartMeals("\"id\"", item)
-                                val resultMap = response.body()
-                                if(response.isSuccessful && resultMap != null){
-                                    foodMenuList += resultMap
-                                    resultMap
-                                }else{ null }
-                            } catch (e : Exception){ null }
-                        }
-                    }
-                    deferredRequests.awaitAll().filterNotNull().forEach { item ->
-                        finalMealsList += item
-                    }
-                }
-            } finally {
-                mealsFavoriteIsLoading = false
-            }
-        }else{
-            mealsFavoriteIsLoading = false
-        }
-        return finalMealsList
-    }
-
-    suspend fun favoriteSnacks(): Map<String, Snack> {
-        val finalSnacksList = mutableMapOf<String, Snack>()
-        val missingItems = mutableListOf<Int>()
-        snacksFavoriteMenu.forEach { item ->
-            val snackKey = "Snack_${item.id}"
-            val cachedMeal = snacks[snackKey]
-            if(cachedMeal != null){
-                finalSnacksList += (snackKey to cachedMeal)
-            }else{
-                missingItems.add(item.id)
-            }
-        }
-        if(missingItems.isNotEmpty()){
-            snacksFavoriteIsLoading = true
-            try {
-                coroutineScope {
-                    val deferredRequests = missingItems.map { item ->
-                        async {
-                            try {
-                                val response = RetrofitInstance.api.getCartSnacks("\"id\"", item)
-                                val resultMap = response.body()
-                                if(response.isSuccessful && resultMap != null){
-                                    snacks += resultMap
-                                    resultMap
-                                }else{null}
-                            } catch (e : Exception){ null }
-                        }
-                    }
-                    deferredRequests.awaitAll().filterNotNull().forEach { item ->
-                        finalSnacksList += item
-                    }
-                }
-            } finally {
-                snacksFavoriteIsLoading = false
-            }
-        }else{
-            snacksFavoriteIsLoading = false
-        }
-        return finalSnacksList
-    }
-    suspend fun favoriteRestaurants(): Map<String, Restaurants> {
-        val finalRestaurantsList = mutableMapOf<String, Restaurants>()
-        val missingItems = mutableListOf<Int>()
-        restaurantsFavoriteMenu.forEach { item ->
-            val restaurantKey = "Restaurant_${item.id}"
-            val cachedMeal = restaurantsMenu[restaurantKey]
-            if(cachedMeal != null){
-                finalRestaurantsList += (restaurantKey to cachedMeal)
-            }else{
-                missingItems.add(item.id)
-            }
-        }
-        if(missingItems.isNotEmpty()){
-            restaurantsFavoriteIsLoading = true
-            try {
-                coroutineScope {
-                    val deferredRequests = missingItems.map { item ->
-                        async {
-                            try {
-                                val response = RetrofitInstance.api.getFavoriteRestaurants("\"id\"", item)
-                                val resultMap = response.body()
-                                if(response.isSuccessful && resultMap != null){
-                                    restaurantsMenu += resultMap
-                                    resultMap
-                                }else{ null }
-                            } catch (e : Exception){ null }
-                        }
-                    }
-                    deferredRequests.awaitAll().filterNotNull().forEach { item ->
-                        finalRestaurantsList += item
-                    }
-                }
-            } finally {
-                restaurantsFavoriteIsLoading = false
-            }
-        }else{
-            restaurantsFavoriteIsLoading = false
-        }
-        return finalRestaurantsList
-    }
+//    suspend fun favoriteMeals(): Map<String, FoodItem> {
+//        val finalMealsList = mutableMapOf<String, FoodItem>()
+//        val missingItems = mutableListOf<Int>()
+//        mealsFavoriteMenu.forEach { item ->
+//            val mealKey = "Meal_${item.id}"
+//            val cachedMeal = foodMenuList[mealKey]
+//            if(cachedMeal != null){
+//                finalMealsList += (mealKey to cachedMeal)
+//            }else{
+//                missingItems.add(item.id)
+//            }
+//        }
+//        if(missingItems.isNotEmpty()){
+//            mealsFavoriteIsLoading = true
+//            try {
+//                coroutineScope {
+//                    val deferredRequests = missingItems.map { item ->
+//                        async {
+//                            try {
+//                                val response = RetrofitInstance.api.getCartMeals("\"id\"", item)
+//                                val resultMap = response.body()
+//                                if(response.isSuccessful && resultMap != null){
+//                                    foodMenuList += resultMap
+//                                    resultMap
+//                                }else{ null }
+//                            } catch (e : Exception){ null }
+//                        }
+//                    }
+//                    deferredRequests.awaitAll().filterNotNull().forEach { item ->
+//                        finalMealsList += item
+//                    }
+//                }
+//            } finally {
+//                mealsFavoriteIsLoading = false
+//            }
+//        }else{
+//            mealsFavoriteIsLoading = false
+//        }
+//        return finalMealsList
+//    }
+//
+//    suspend fun favoriteSnacks(): Map<String, Snack> {
+//        val finalSnacksList = mutableMapOf<String, Snack>()
+//        val missingItems = mutableListOf<Int>()
+//        snacksFavoriteMenu.forEach { item ->
+//            val snackKey = "Snack_${item.id}"
+//            val cachedMeal = snacks[snackKey]
+//            if(cachedMeal != null){
+//                finalSnacksList += (snackKey to cachedMeal)
+//            }else{
+//                missingItems.add(item.id)
+//            }
+//        }
+//        if(missingItems.isNotEmpty()){
+//            snacksFavoriteIsLoading = true
+//            try {
+//                coroutineScope {
+//                    val deferredRequests = missingItems.map { item ->
+//                        async {
+//                            try {
+//                                val response = RetrofitInstance.api.getCartSnacks("\"id\"", item)
+//                                val resultMap = response.body()
+//                                if(response.isSuccessful && resultMap != null){
+//                                    snacks += resultMap
+//                                    resultMap
+//                                }else{null}
+//                            } catch (e : Exception){ null }
+//                        }
+//                    }
+//                    deferredRequests.awaitAll().filterNotNull().forEach { item ->
+//                        finalSnacksList += item
+//                    }
+//                }
+//            } finally {
+//                snacksFavoriteIsLoading = false
+//            }
+//        }else{
+//            snacksFavoriteIsLoading = false
+//        }
+//        return finalSnacksList
+//    }
+//    suspend fun favoriteRestaurants(): Map<String, Restaurants> {
+//        val finalRestaurantsList = mutableMapOf<String, Restaurants>()
+//        val missingItems = mutableListOf<Int>()
+//        restaurantsFavoriteMenu.forEach { item ->
+//            val restaurantKey = "Restaurant_${item.id}"
+//            val cachedMeal = restaurantsMenu[restaurantKey]
+//            if(cachedMeal != null){
+//                finalRestaurantsList += (restaurantKey to cachedMeal)
+//            }else{
+//                missingItems.add(item.id)
+//            }
+//        }
+//        if(missingItems.isNotEmpty()){
+//            restaurantsFavoriteIsLoading = true
+//            try {
+//                coroutineScope {
+//                    val deferredRequests = missingItems.map { item ->
+//                        async {
+//                            try {
+//                                val response = RetrofitInstance.api.getFavoriteRestaurants("\"id\"", item)
+//                                val resultMap = response.body()
+//                                if(response.isSuccessful && resultMap != null){
+//                                    restaurantsMenu += resultMap
+//                                    resultMap
+//                                }else{ null }
+//                            } catch (e : Exception){ null }
+//                        }
+//                    }
+//                    deferredRequests.awaitAll().filterNotNull().forEach { item ->
+//                        finalRestaurantsList += item
+//                    }
+//                }
+//            } finally {
+//                restaurantsFavoriteIsLoading = false
+//            }
+//        }else{
+//            restaurantsFavoriteIsLoading = false
+//        }
+//        return finalRestaurantsList
+//    }
 
     suspend fun addToFavorite(id : Int, typ : String, restaurants : Int) : String{
         val favoriteObject = FavoriteClass(id, typ, restaurants)

@@ -30,6 +30,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,8 +47,6 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.repository.MenuRepository.offers
-import com.example.applicationhome.data.models.repository.MenuRepository.restaurantsMenuisLoading
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -64,6 +64,7 @@ import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
+import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 import kotlinx.coroutines.CoroutineScope
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity")
@@ -79,13 +80,14 @@ fun HomeScreen(
     categoriesBoxViewModel : CategoriesBoxViewModel,
     restaurantViewModel: RestaurantViewModel,
     bottomBarViewModel : BottomBarViewModel,
-    homeScreenViewModel: HomeScreenViewModel,
-    loginViewModel : LoginViewModel
+    viewRestaurantImageViewModel: ViewRestaurantImageViewModel,
+    loginViewModel : LoginViewModel,
+    homeScreenViewModel : HomeScreenViewModel
 ){
     val scrollState = rememberLazyListState()
 
-    val restaurants = categoriesBoxViewModel.filterrestaurants
-    val offers = offers
+    val restaurants by homeScreenViewModel.filterRestaurants
+    val offers = homeScreenViewModel.offers
     val pagerState = rememberPagerState(pageCount = {offers.size})
 
     val context = LocalContext.current as? Activity
@@ -132,7 +134,9 @@ fun HomeScreen(
                             }
                         }
                     }
+
                     item{ Box(modifier = Modifier.fillMaxWidth().height(16.dp).background(Color.DarkOrange)) }
+
                     item{
                         Box(
                             modifier = Modifier.background(Color.White)
@@ -149,9 +153,10 @@ fun HomeScreen(
                     }
                     item{ Box(modifier = Modifier.fillMaxWidth().height(16.dp).background(Color.White)) }
 
-                    item{ CategoriesBar(categoriesBoxViewModel) }
+                    item{ CategoriesBar(homeScreenViewModel) }
 
                     item{ Spacer(modifier = Modifier.height(16.dp)) }
+
                     item{
                         Box(modifier = Modifier.fillMaxWidth().height(120.dp)){
                             HorizontalPager(
@@ -161,74 +166,55 @@ fun HomeScreen(
                                 pageSpacing = 10.dp
                             ) {page ->
                                 val currentOffer = offers[page]
-                                AsyncImage(
-                                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)).clickable {  },
-                                    model = ImageRequest.Builder(LocalContext.current).
-                                    data(currentOffer.image).
-                                    crossfade(true).
-                                    size(400, 400).
-                                    precision(Precision.EXACT).
-                                    build(),
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop
-                                )
+                                Box(
+                                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)).background(Color.White).clickable {  }
+                                ){
+                                    if(!homeScreenViewModel.offersIsLoading.collectAsState().value){
+                                        AsyncImage(
+                                            modifier = Modifier.fillMaxSize(),
+                                            model = ImageRequest.Builder(LocalContext.current).
+                                            data(currentOffer.image).
+                                            crossfade(true).
+                                            size(400, 400).
+                                            precision(Precision.EXACT).
+                                            build(),
+                                            contentDescription = null,
+                                            contentScale = ContentScale.Crop
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
+
                     item{ Spacer(modifier = Modifier.height(16.dp)) }
+
                     item{
                         Spacer(modifier = Modifier.height(20.dp))
                         Divider(color = Color.LightOrange.copy(alpha = 0.5f), modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp))
                         Spacer(modifier = Modifier.height(20.dp))
                     }
-//                    item{
-//                        Row(
-//                            modifier = Modifier.fillMaxWidth(),
-//                            verticalAlignment = Alignment.CenterVertically,
-//                            horizontalArrangement = Arrangement.SpaceBetween
-//                        ){
-//                            Text(
-//                                text = "Restaurants :",
-//                                style = MaterialTheme.typography.titleLarge,
-//                                color = Color.Black,
-//                                fontSize = 20.sp,
-//                                fontWeight = FontWeight.Bold,
-//                                modifier = Modifier.padding(start = 15.dp)
-//                            )
-//                            TextButton(
-//                                onClick = {navigationController.navigate(Screens.Restaurants.screen)},
-//                                contentPadding = PaddingValues(end = 15.dp)
-//                            ){
-//                                Text(
-//                                    text = "See all",
-//                                    style = MaterialTheme.typography.titleLarge,
-//                                    color = Color.DarkOrange,
-//                                    fontSize = 13.sp
-//                                )
-//                                Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, tint = Color.DarkOrange)
-//                            }
-//
-//                        }
-//                    }
-                    items(restaurants.values.toList()){ item ->
+
+                    items(restaurants.toList()){ item ->
                         RestaurantsBoxHomeScreen(
-                            restaurantsMenuisLoading,
+                            homeScreenViewModel.restaurantsMenuIsLoading.collectAsState().value,
                             item,
                             favoriteViewModel,
                             itemScreenViewModel,
                             navigationController,
-                            categoriesBoxViewModel,
                             restaurantViewModel,
-                            homeScreenViewModel
+                            viewRestaurantImageViewModel
                         )
                     }
+
                     item{ Spacer(modifier = Modifier.height(16.dp)) }
+
                     item{Spacer(modifier = Modifier.height(80.dp))}
                 }
             }
         }
-        if(homeScreenViewModel.viewImageState){
-            RestaurantImageView(homeScreenViewModel)
+        if(viewRestaurantImageViewModel.viewImageState){
+            RestaurantImageView(viewRestaurantImageViewModel)
         }
     }
 }

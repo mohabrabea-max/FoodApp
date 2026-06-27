@@ -13,7 +13,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.applicationhome.ui.theme.model.APIData
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
@@ -27,6 +26,7 @@ import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import com.example.applicationhome.ui.theme.model.SignUpViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
+import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 import com.example.applicationhome.ui.theme.screens.FinalScreen
 
 class MainActivity : ComponentActivity() {
@@ -36,6 +36,8 @@ class MainActivity : ComponentActivity() {
     private val cartRepo by lazy { app.cartRepository }
     private val orderRepo by lazy { app.orderRepository }
     private val userRepo by lazy { app.userRepository }
+    private val menuRepo by lazy { app.homeScreenRepository }
+    private val resRepo by lazy { app.restaurantScreenRepository }
 
     // 2. تعريف الـ ViewModels في نطاق الكلاس الآمن باستخدام lazy أيضاً
     private val loginViewModel: LoginViewModel by viewModels {
@@ -73,8 +75,23 @@ class MainActivity : ComponentActivity() {
     private val orderScreenViewModel: OrderScreenViewModel by viewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return OrderScreenViewModel(orderRepo, userRepo) as T // (ملاحظة: تأكد من كتابتها OrderScreenViewModel(orderRepo = orderRepo) بالشكل السليم المعتاد)
-                // في كودك الأصلي كانت: return OrderScreenViewModel(orderRepo) as T
+                return OrderScreenViewModel(orderRepo, userRepo) as T
+            }
+        }
+    }
+
+    private val homeScreenViewModel: HomeScreenViewModel by viewModels {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return HomeScreenViewModel(app, menuRepo) as T
+            }
+        }
+    }
+
+    private val restaurantViewModel: RestaurantViewModel by viewModels {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return RestaurantViewModel(app, resRepo, menuRepo) as T
             }
         }
     }
@@ -95,10 +112,8 @@ class MainActivity : ComponentActivity() {
             val userImageViewModel: UserImageViewModel = viewModel()
             val favoriteViewModel: FavoriteViewModel = viewModel()
             val drawerViewModel: DrawerViewModel = viewModel()
-            val apiData: APIData = viewModel()
             val categoriesBoxViewModel: CategoriesBoxViewModel = viewModel()
-            val restaurantViewModel: RestaurantViewModel = viewModel()
-            val homeScreenViewModel: HomeScreenViewModel = viewModel()
+            val viewRestaurantImageViewModel: ViewRestaurantImageViewModel = viewModel()
 
             FinalScreen(
                 scrollBehavior,
@@ -110,12 +125,12 @@ class MainActivity : ComponentActivity() {
                 favoriteViewModel,
                 drawerViewModel,
                 categoriesBoxViewModel,
-                apiData,
+                homeScreenViewModel,
                 loginViewModel,
                 restaurantViewModel,
                 confirmOrderScreenViewModel,
                 orderScreenViewModel,
-                homeScreenViewModel,
+                viewRestaurantImageViewModel,
                 signUpViewModel
             )
         }

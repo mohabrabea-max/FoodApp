@@ -17,7 +17,7 @@ fun CoroutineScope.showAddToCartSnackbar(
         val result = snackbarHostState.showSnackbar(
             message = message,
             actionLabel = actionLabel,
-            duration = SnackbarDuration.Short // المدة (حوالي 4 ثواني وتختفي)
+            duration = SnackbarDuration.Short, // المدة (حوالي 4 ثواني وتختفي),
         )
         if (result == SnackbarResult.ActionPerformed) {
             onActionClicked()

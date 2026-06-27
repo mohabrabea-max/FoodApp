@@ -26,14 +26,7 @@ class UserRepository(private val userdao: UsersDao) {
     private val _loading = MutableStateFlow(false)
     val loading : StateFlow<Boolean> = _loading
 
-    private val _userId = MutableStateFlow("")
-    val userId : StateFlow<String> = _userId
-
     fun getActiveUserFromDatabase() : Flow<UserClass?> = userdao.getActiveUser(true)
-
-    fun setUserId(userId : String){
-        _userId.value = userId
-    }
 
     suspend fun setUserDataToDatabase(emailstate : String, passwordstate : String?): String {
         try {
@@ -46,9 +39,9 @@ class UserRepository(private val userdao: UsersDao) {
                 if(userMap != null && userMap.isNotEmpty()){
                     val user = userMap.values.firstOrNull()
                     if(user != null && passwordstate == user.password){
-                        _userId.value = userMap.keys.firstOrNull().toString()
+                        val userId = userMap.keys.firstOrNull().toString()
                         val data = UserClass(
-                            _userId.value,
+                            userId,
                             user.firstname,
                             user.lastname,
                             user.email,
@@ -78,7 +71,6 @@ class UserRepository(private val userdao: UsersDao) {
 
     suspend fun logOut(email : String): String{
         return try {
-            _userId.value = ""
             userdao.updateUser(UpdateAccountState(email, isActive = false))
             "Success"
         } catch (e : Exception){
@@ -91,9 +83,9 @@ class UserRepository(private val userdao: UsersDao) {
             _loading.value = true
             val response: Response<FirebasePostResponse> = RetrofitInstance.api.signUp(userRequest)
             if (response.isSuccessful && response.body() != null) {
-                _userId.value = response.body()?.name.toString()
+                val userId = response.body()?.name.toString()
                 val userData = UserClass(
-                    _userId.value,
+                    userId,
                     userRequest.firstname,
                     userRequest.lastname,
                     userRequest.email,

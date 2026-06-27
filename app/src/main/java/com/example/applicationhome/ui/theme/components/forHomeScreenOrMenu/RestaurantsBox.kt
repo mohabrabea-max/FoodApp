@@ -42,11 +42,10 @@ import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
-import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
+import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 
 @Composable
 fun RestaurantsBox(
@@ -55,7 +54,6 @@ fun RestaurantsBox(
     favoriteState : FavoriteViewModel,
     itemScreenViewModel: ItemScreenViewModel,
     navigationController : NavHostController,
-    categoriesBoxViewModel: CategoriesBoxViewModel,
     restaurantViewModel: RestaurantViewModel
 ){
     if (loading) {
@@ -75,7 +73,7 @@ fun RestaurantsBox(
             Box(
                 modifier = Modifier.clickable {
                     restaurantViewModel.loadRestaurantId(item.id)
-                    categoriesBoxViewModel.selectedtype(0, item.typ.toList().first())
+                    restaurantViewModel.selectedtype(0, item.typ.toList().first())
                     itemScreenViewModel.selectRestaurant(item)
                     navigationController.navigate(Screens.RestaurantScreen.screen)
                 }
@@ -172,9 +170,8 @@ fun RestaurantsBoxHomeScreen(
     favoriteState : FavoriteViewModel,
     itemScreenViewModel: ItemScreenViewModel,
     navigationController : NavHostController,
-    categoriesBoxViewModel: CategoriesBoxViewModel,
     restaurantViewModel: RestaurantViewModel,
-    homeScreenViewModel: HomeScreenViewModel
+    viewRestaurantImageViewModel: ViewRestaurantImageViewModel
 ){
     if (loading) {
         Box(
@@ -192,7 +189,7 @@ fun RestaurantsBoxHomeScreen(
             background(Color.White).
             clickable {
                 restaurantViewModel.loadRestaurantId(item.id)
-                categoriesBoxViewModel.selectedtype(0, item.typ.toList().first())
+                restaurantViewModel.selectedtype(0, item.typ.toList().first())
                 itemScreenViewModel.selectRestaurant(item)
                 navigationController.navigate(Screens.RestaurantScreen.screen)
             },
@@ -253,7 +250,7 @@ fun RestaurantsBoxHomeScreen(
                             modifier = Modifier.size(55.dp).
                             clip(CircleShape).
                             background(Color.White).
-                            clickable { homeScreenViewModel.view(item.image) }.
+                            clickable { viewRestaurantImageViewModel.view(item.image) }.
                             shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(40.dp)).
                             border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(40.dp))
                         ){

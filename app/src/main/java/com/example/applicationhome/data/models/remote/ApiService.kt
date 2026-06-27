@@ -115,10 +115,10 @@ interface FoodAppAPIs{
     suspend fun restaurantOffers(
         @Query("orderBy") order : String,
         @Query("equalTo") value : Int
-    ): Map<String, Offers>
+    ): Response<Map<String, Offers>>
 
     @GET("offers.json")
-    suspend fun offers(): List<Offers>
+    suspend fun offers(): Response<List<Offers>>
 
 
 

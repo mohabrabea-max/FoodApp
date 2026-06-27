@@ -48,7 +48,6 @@ class LoginViewModel(private val userRepository: UserRepository, application : A
         viewModelScope.launch {
             userRepository.getActiveUserFromDatabase().collect { currentUser ->
                 if(currentUser != null && currentUser.id.isNotEmpty()){
-                    userRepository.setUserId(currentUser.id)
                     _isLogin.value = true
                 }else{
                     _isLogin.value = false

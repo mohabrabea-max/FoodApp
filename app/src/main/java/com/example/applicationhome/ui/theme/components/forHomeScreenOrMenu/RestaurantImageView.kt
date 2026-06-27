@@ -17,12 +17,12 @@ import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
+import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 
 @Composable
-fun RestaurantImageView(homeScreenViewModel: HomeScreenViewModel){
+fun RestaurantImageView(viewRestaurantImageViewModel: ViewRestaurantImageViewModel){
     Dialog(
-        onDismissRequest = { homeScreenViewModel.unView() },
+        onDismissRequest = { viewRestaurantImageViewModel.unView() },
         properties = DialogProperties(
             usePlatformDefaultWidth = false
         )
@@ -35,11 +35,11 @@ fun RestaurantImageView(homeScreenViewModel: HomeScreenViewModel){
             AsyncImage(
                 modifier = Modifier.fillMaxSize(),
                 model = ImageRequest.Builder(LocalContext.current).
-                data(homeScreenViewModel.image).
+                data(viewRestaurantImageViewModel.image).
                 crossfade(true).
                 precision(Precision.EXACT).
                 build(),
-                contentDescription = homeScreenViewModel.image,
+                contentDescription = viewRestaurantImageViewModel.image,
                 contentScale = ContentScale.Crop
             )
         }

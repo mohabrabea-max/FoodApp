@@ -54,7 +54,6 @@ import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.Options
 import com.example.applicationhome.ui.theme.components.profileAndSetting.UserImage
-import com.example.applicationhome.ui.theme.model.APIData
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
@@ -68,6 +67,7 @@ import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import com.example.applicationhome.ui.theme.model.SignUpViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
+import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -83,12 +83,12 @@ fun FinalScreen(
     favoriteViewModel : FavoriteViewModel,
     drawerViewModel: DrawerViewModel,
     categoriesBoxViewModel : CategoriesBoxViewModel,
-    apiData : APIData,
+    homeScreenViewModel : HomeScreenViewModel,
     loginViewModel: LoginViewModel,
     restaurantViewModel: RestaurantViewModel,
     confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
     orderScreenViewModel : OrderScreenViewModel,
-    homeScreenViewModel: HomeScreenViewModel,
+    viewRestaurantImageViewModel: ViewRestaurantImageViewModel,
     signUpViewModel : SignUpViewModel
 ){
     val userState by loginViewModel.userData.collectAsStateWithLifecycle()
@@ -210,12 +210,12 @@ fun FinalScreen(
                         popExitTransition = { ExitTransition.None }
                     ) {
                         when(item){
-                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel, homeScreenViewModel, loginViewModel)
+                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel, viewRestaurantImageViewModel, loginViewModel, homeScreenViewModel)
                             is Screens.Profile -> Profile(navigationController, userImageViewModel)
                             is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel, bottomBarViewModel, cartViewModel, favoriteViewModel, loginViewModel)
                             is Screens.Search -> Search()
-                            is Screens.RestaurantScreen -> RestaurantScreen(navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, loginViewModel, homeScreenViewModel)
-                            is Screens.ItemScreen -> ItemScreen(navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, loginViewModel)
+                            is Screens.RestaurantScreen -> RestaurantScreen(navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, restaurantViewModel, loginViewModel, viewRestaurantImageViewModel)
+                            is Screens.ItemScreen -> ItemScreen(navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, loginViewModel, restaurantViewModel)
                             is Screens.Notifications -> Notifications()
                             is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, bottomBarViewModel, itemScreenViewModel, cartViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel, loginViewModel)
                             is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, bottomBarViewModel, itemScreenViewModel, cartViewModel, bottomBarViewModel, loginViewModel)

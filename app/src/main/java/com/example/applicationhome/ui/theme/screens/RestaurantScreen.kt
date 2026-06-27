@@ -48,10 +48,6 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.repository.MenuRepository.foodMenuListisLoading
-import com.example.applicationhome.data.models.repository.MenuRepository.restaurantOffers
-import com.example.applicationhome.data.models.repository.MenuRepository.snacks
-import com.example.applicationhome.data.models.repository.MenuRepository.snacksisLoading
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.bars.RestaurantTopBar
 import com.example.applicationhome.ui.theme.components.forCart.AlertDialogMessage
@@ -64,12 +60,11 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Resta
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
 import com.example.applicationhome.ui.theme.model.CartViewModel
-import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
-import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
+import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -79,16 +74,15 @@ fun RestaurantScreen(
     itemScreenViewModel: ItemScreenViewModel,
     cartViewModel : CartViewModel,
     favoriteViewModel : FavoriteViewModel,
-    categoriesBoxViewModel: CategoriesBoxViewModel,
     restaurantViewModel : RestaurantViewModel,
     loginViewModel : LoginViewModel,
-    homeScreenViewModel: HomeScreenViewModel
+    viewRestaurantImageViewModel: ViewRestaurantImageViewModel
 ){
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(key1 = restaurantViewModel.isNetworkAvailable, key2 = restaurantViewModel.resid) {
-        if(restaurantViewModel.isNetworkAvailable && restaurantViewModel.resid != 0){
+    LaunchedEffect(key1 = restaurantViewModel.resid) {
+        if (restaurantViewModel.resid != 0) {
             restaurantViewModel.restaurantData()
         }
     }
@@ -107,8 +101,9 @@ fun RestaurantScreen(
     val layoutInfo = scrollState.layoutInfo
     val itemInfo = layoutInfo.visibleItemsInfo.find { it.key == "categories_header" }
 
-    val menu = categoriesBoxViewModel.filterMenu.values.filter { it.restaurantId == restaurantViewModel.resid }.toList()
-    val snacks = snacks.values.toList().filter { it.restaurantId == restaurantViewModel.resid }
+    val menu by restaurantViewModel.foodMenuList
+    val snacks by restaurantViewModel.snackMenuList
+    val offers by restaurantViewModel.restaurantOffersMenuList
     val item = itemScreenViewModel.selectedRestaurant
 
     if(item != null){
@@ -136,7 +131,7 @@ fun RestaurantScreen(
                     columns = GridCells.Fixed(2)
                 ){
                     item(span = { GridItemSpan(2) }){
-                        RestaurantHeader(item, homeScreenViewModel)
+                        RestaurantHeader(item, viewRestaurantImageViewModel)
                     }
                     item(span = { GridItemSpan(2) }){
                         Box{
@@ -145,7 +140,7 @@ fun RestaurantScreen(
                             ){
                                 item{ Spacer(modifier = Modifier.width(15.dp)) }
 
-                                items(restaurantOffers.toList()){ item ->
+                                items(offers.toList()){ item ->
                                     AsyncImage(
                                         modifier = Modifier.fillMaxWidth().height(120.dp).padding(vertical = 10.dp).clip(RoundedCornerShape(10.dp)).clickable {  },
                                         model = ImageRequest.Builder(LocalContext.current).
@@ -179,14 +174,14 @@ fun RestaurantScreen(
                                 }
                             )
                         ){
-                            CategoriesBarForRestaurantsScreen(item.typ, categoriesBoxViewModel)
+                            CategoriesBarForRestaurantsScreen(item.typ, restaurantViewModel)
 
                         }
                     }
-                    if(categoriesBoxViewModel.typeInRestaurantScreen == "Snacks"){
-                        items(snacks){ item ->
+                    if(restaurantViewModel.typeInRestaurantScreen == "Snacks"){
+                        items(snacks.toList()){ item ->
                             SnaksBox(
-                                snacksisLoading,
+                                restaurantViewModel.snacksIsLoading.collectAsState().value,
                                 modifier = Modifier.size(200.dp),
                                 false,
                                 item,
@@ -213,12 +208,12 @@ fun RestaurantScreen(
                                 }
                             )
                         }
-                    }else if(categoriesBoxViewModel.typeInRestaurantScreen == "Drink"){
+                    }else if(restaurantViewModel.typeInRestaurantScreen == "Drink"){
                         println("")
                     }else{
-                        items(menu){ item ->
+                        items(menu.toList()){ item ->
                             ItemsBox(
-                                foodMenuListisLoading,
+                                restaurantViewModel.foodMenuListIsLoading.collectAsState().value,
                                 item,
                                 navigationController,
                                 itemScreenViewModel,
@@ -240,9 +235,9 @@ fun RestaurantScreen(
                                 }
                             )
                         }
-                        items(menu){ item ->
+                        items(menu.toList()){ item ->
                             ItemsBox(
-                                foodMenuListisLoading,
+                                restaurantViewModel.foodMenuListIsLoading.collectAsState().value,
                                 item,
                                 navigationController,
                                 itemScreenViewModel,
@@ -289,8 +284,8 @@ fun RestaurantScreen(
                     )
                 }
 
-                if(homeScreenViewModel.viewImageState){
-                    RestaurantImageView(homeScreenViewModel)
+                if(viewRestaurantImageViewModel.viewImageState){
+                    RestaurantImageView(viewRestaurantImageViewModel)
                 }
             }
         }
