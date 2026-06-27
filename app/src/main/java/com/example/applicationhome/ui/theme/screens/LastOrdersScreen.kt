@@ -21,11 +21,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -36,7 +39,10 @@ import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LastOrdersScreen(navigationController : NavHostController, orderScreenViewModel : OrderScreenViewModel){
-    val allOrders = orderScreenViewModel.lastOrders.entries.toList().sortedByDescending { entry -> entry.key.toLong() }
+    LaunchedEffect(key1 = orderScreenViewModel.selectedOrder) {
+        orderScreenViewModel.getOrdersHistory()
+    }
+    val allOrders by orderScreenViewModel.sortedOrdersList.collectAsStateWithLifecycle()
     Scaffold(
         modifier = Modifier.navigationBarsPadding().fillMaxSize(),
         topBar = {
@@ -69,7 +75,7 @@ fun LastOrdersScreen(navigationController : NavHostController, orderScreenViewMo
                 modifier = Modifier.fillMaxSize()
             ){
                 item{Spacer(modifier = Modifier.height(100.dp))}
-                items(allOrders){ item ->
+                items(allOrders.entries.toList()){ item ->
                     Spacer(modifier = Modifier.height(10.dp))
                     LastOrdersBox(navigationController, orderScreenViewModel, item.value, item.key)
                 }

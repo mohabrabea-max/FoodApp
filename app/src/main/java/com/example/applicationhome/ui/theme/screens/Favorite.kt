@@ -190,6 +190,7 @@ fun Favorite(
                                             favoriteState = favoriteViewModel
                                         )
                                         AddBox(
+                                            loginViewModel,
                                             color = Color.VeryLightGray,
                                             food = item,
                                             cartViewModel
@@ -214,7 +215,7 @@ fun Favorite(
                                             food = item,
                                             favoriteState = favoriteViewModel
                                         )
-                                        AddBox(color = Color.White, food = item, cartViewModel)
+                                        AddBox(loginViewModel, color = Color.White, food = item, cartViewModel)
                                     }
                                 )
                             }

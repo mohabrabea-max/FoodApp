@@ -39,17 +39,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.models.model.CartClassForCalculations
+import com.example.applicationhome.data.models.local.CartItemsClass
 import com.example.applicationhome.data.models.model.Food
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.model.CartViewModel
+import com.example.applicationhome.ui.theme.model.LoginViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun AddBox(
+    loginViewModel: LoginViewModel,
     color : Color,
     food : Food,
     cartViewModel: CartViewModel,
@@ -77,18 +79,25 @@ fun AddBox(
         }
     }
 
-    val meal = CartClassForCalculations(
-        food.id,
-        food.name,
-        food.image.first(),
-        price,
-        selectedSize,
-        type,
-        food.restaurantId
-    )
+
 
     val cartkey = "${food.id}_${selectedSize}"
     val count = cartViewModel.cartItems.collectAsState().value.find { it?.mealKey == cartkey }?.quantity ?:0
+
+    val meal = CartItemsClass(
+        loginViewModel.userData.collectAsState().value.id,
+        cartkey,
+        id,
+        food.name,
+        type,
+        selectedSize,
+        count,
+        price,
+        price * count,
+        food.image.first(),
+        food.restaurantId
+    )
+
     val activid = cartViewModel.activId == id
     var isExpanded by remember { mutableStateOf(false) }
     val active = cartViewModel.activId

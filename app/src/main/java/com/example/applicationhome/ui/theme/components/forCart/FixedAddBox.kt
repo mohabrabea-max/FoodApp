@@ -28,7 +28,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.models.model.CartClassForCalculations
+import com.example.applicationhome.data.models.local.CartItemsClass
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.model.CartViewModel
 
@@ -37,7 +37,7 @@ fun FixedAddBox(
     cartViewModel : CartViewModel,
     size : String,
     cartkey : String,
-    foodItem : CartClassForCalculations
+    foodItem : CartItemsClass
 ){
     Row(
         modifier = Modifier.fillMaxSize()

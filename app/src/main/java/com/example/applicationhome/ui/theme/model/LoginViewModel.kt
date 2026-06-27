@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.core.NetworkObserver
 import com.example.applicationhome.data.models.local.UserClass
 import com.example.applicationhome.data.models.repository.UserRepository
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -18,14 +19,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class LoginViewModel(private val userRepository: UserRepository, application : Application) : AndroidViewModel(application) {
+    val loading : StateFlow<Boolean> = userRepository.loading
     val emailstate = TextFieldState()
     val passwordstate = TextFieldState()
-    var isEmailTrue by mutableStateOf(true)
-    var isPasswordTrue by mutableStateOf(true)
     private val networkObserver = NetworkObserver(application.applicationContext)
     var isNetworkAvailable by mutableStateOf(false)
-
-    var isLogin by mutableStateOf(false)
+    private val _isLogin = MutableStateFlow(false)
+    var isLogin : StateFlow<Boolean> = _isLogin
 
     val userData : StateFlow<UserClass> =
         userRepository.getActiveUserFromDatabase()
@@ -46,59 +46,40 @@ class LoginViewModel(private val userRepository: UserRepository, application : A
         }
 
         viewModelScope.launch {
-            userData.collect { item ->
-                if(item.id == ""){
-                    isLogin = false
-                    userRepository.setUserId(item.id)
+            userRepository.getActiveUserFromDatabase().collect { currentUser ->
+                if(currentUser != null && currentUser.id.isNotEmpty()){
+                    userRepository.setUserId(currentUser.id)
+                    _isLogin.value = true
                 }else{
-                    isLogin = true
-                    userRepository.setUserId(item.id)
+                    _isLogin.value = false
                 }
             }
         }
     }
 
 
-    fun bottonstate(){
+    fun clearFields(){
         emailstate.clearText()
         passwordstate.clearText()
     }
 
-    suspend fun getData(): String{
-        val dataState = userRepository.setUserDataToDatabase(emailstate.text.toString(), passwordstate.text.toString())
-        when(dataState){
-            "Password is true" -> {
-                isEmailTrue = true
-                isPasswordTrue = true
-            }
-            "Password is false" -> {
-                isEmailTrue = true
-                isPasswordTrue = false
-            }
-            "Email is false" -> {
-                isEmailTrue = false
-                isPasswordTrue = true
-            }
-            "Network error" -> {
-               println("Error")
-            }
-        }
-        return dataState
-    }
 
     fun logout(){
         viewModelScope.launch {
-            println(userRepository.userId.value)
-            isLogin = false
             userRepository.logOut(userData.value.email)
+            _isLogin.value = false
         }
     }
 
     fun login(){
         viewModelScope.launch {
-            val result = getData()
+            val result = userRepository.setUserDataToDatabase(emailstate.text.toString(), passwordstate.text.toString())
             if(result == "Password is true"){
-                isLogin = true
+                _isLogin.value = true
+            }else if(result == "Password is false"){
+                println("Password is false")
+            }else{
+                println("Email is false")
             }
         }
     }

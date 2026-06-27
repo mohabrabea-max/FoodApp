@@ -23,6 +23,9 @@ import retrofit2.Response
 
 
 class UserRepository(private val userdao: UsersDao) {
+    private val _loading = MutableStateFlow(false)
+    val loading : StateFlow<Boolean> = _loading
+
     private val _userId = MutableStateFlow("")
     val userId : StateFlow<String> = _userId
 
@@ -34,23 +37,24 @@ class UserRepository(private val userdao: UsersDao) {
 
     suspend fun setUserDataToDatabase(emailstate : String, passwordstate : String?): String {
         try {
+            _loading.value = true
             val formatEmail = "\"$emailstate\""
             val response = RetrofitInstance.api.getUserData(order = "\"email\"", value = formatEmail)
 
             if(response.isSuccessful && response.body() != null){
                 val userMap = response.body()
-                if(userMap != null){
+                if(userMap != null && userMap.isNotEmpty()){
                     val user = userMap.values.firstOrNull()
-                    if(user != null && passwordstate != null && passwordstate == user.password){
+                    if(user != null && passwordstate == user.password){
                         _userId.value = userMap.keys.firstOrNull().toString()
                         val data = UserClass(
-                            _userId.value ?: "",
-                            user.firstname ?: "",
-                            user.lastname ?: "",
-                            user.email ?: "",
-                            user.password ?: "",
-                            user.phonenumber ?: "",
-                            user.address ?: "",
+                            _userId.value,
+                            user.firstname,
+                            user.lastname,
+                            user.email,
+                            user.password,
+                            user.phonenumber,
+                            user.address,
                             isActive = true
                         )
                         userdao.addUser(data)
@@ -66,6 +70,8 @@ class UserRepository(private val userdao: UsersDao) {
             }
         } catch (e : Exception){
             return "خطأ في الشبكة: ${e.message}"
+        } finally {
+            _loading.value = false
         }
     }
 
@@ -82,6 +88,7 @@ class UserRepository(private val userdao: UsersDao) {
 
     suspend fun signUp(userRequest : UserClassFireBase): String {
         try {
+            _loading.value = true
             val response: Response<FirebasePostResponse> = RetrofitInstance.api.signUp(userRequest)
             if (response.isSuccessful && response.body() != null) {
                 _userId.value = response.body()?.name.toString()
@@ -102,6 +109,8 @@ class UserRepository(private val userdao: UsersDao) {
             }
         } catch (e: Exception) {
             return "خطأ في الشبكة: ${e.message}"
+        }finally {
+            _loading.value = false
         }
     }
 }

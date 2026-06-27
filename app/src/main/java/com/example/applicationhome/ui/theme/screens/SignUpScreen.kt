@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Facebook
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +31,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,7 +55,6 @@ import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.forSignUpOrLogin.NameTextField
 import com.example.applicationhome.ui.theme.components.forSignUpOrLogin.SignupTextField
 import com.example.applicationhome.ui.theme.components.forSignUpOrLogin.SignupTextFieldPage2
-import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.SignUpViewModel
 import kotlinx.coroutines.launch
 
@@ -58,9 +62,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun SignUpScreen(
     navigationController : NavHostController,
-    loginViewModel: LoginViewModel,
     signUpViewModel : SignUpViewModel
 ){
+    DisposableEffect(Unit){
+        onDispose {
+            signUpViewModel.clearFields()
+        }
+    }
     Scaffold(
         modifier = Modifier.navigationBarsPadding().fillMaxSize(),
         topBar = {
@@ -147,7 +155,7 @@ fun SignUpScreen(
                         verticalArrangement = Arrangement.Bottom,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
-                        SignUpButton(signUpViewModel, navigationController, loginViewModel)
+                        SignUpButton(signUpViewModel, navigationController)
 
                         Spacer(modifier = Modifier.height(25.dp))
                         Row(
@@ -235,10 +243,20 @@ fun SignUpScreen(
 }
 
 @Composable
-fun SignUpButton(signUpViewModel: SignUpViewModel, navigationController: NavHostController, loginViewModel: LoginViewModel){
+fun SignUpButton(signUpViewModel: SignUpViewModel, navigationController: NavHostController){
     val page = signUpViewModel.signupPages
     val state = signUpViewModel.bottonState
     val scope = rememberCoroutineScope()
+
+    val loading by signUpViewModel.loading.collectAsState()
+
+    val isLogin by signUpViewModel.isEmailChecked.collectAsState()
+
+    LaunchedEffect(isLogin){
+        if(isLogin){
+            signUpViewModel.nextPage()
+        }
+    }
     Box(
         modifier = Modifier
             .padding(start = 40.dp, end = 40.dp)
@@ -248,25 +266,28 @@ fun SignUpButton(signUpViewModel: SignUpViewModel, navigationController: NavHost
             .background(if(state == true || page == 2) Color.DarkOrange else Color.Gray)
             .clickable {
                 if(state == true && page == 1){
-                    signUpViewModel.nextPage()
+                    signUpViewModel.createAccount()
                 }else if(page == 2){
                     scope.launch {
                         signUpViewModel.signUpButton()
-                        loginViewModel.bottonstate()
-                        loginViewModel.login()
                         navigationController.navigate(Screens.HomeScreen.screen){ navigationController.popBackStack() }
-                        signUpViewModel.lastPage()
                     }
 
                 }
             },
         contentAlignment = Alignment.Center
     ){
-        Text(
-            text = if(page == 1) "Next" else "Sign Up",
-            style = MaterialTheme.typography.bodyLarge,
-            color = if(state == true || page == 2) Color.White else Color.Black,
-            fontSize = 18.sp
-        )
+        if(loading){
+            CircularProgressIndicator(
+                color = Color.White
+            )
+        }else{
+            Text(
+                text = if(page == 1) "Next" else "Sign Up",
+                style = MaterialTheme.typography.bodyLarge,
+                color = if(state == true || page == 2) Color.White else Color.Black,
+                fontSize = 18.sp
+            )
+        }
     }
 }

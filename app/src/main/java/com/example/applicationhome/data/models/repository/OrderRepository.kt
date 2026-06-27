@@ -4,17 +4,7 @@ import com.example.applicationhome.data.models.model.OrdersClass
 import com.example.applicationhome.data.models.remote.RetrofitInstance
 
 class OrderRepository() {
-    var userId: String = ""
-        private set
-
-    fun setUserId(userid: String) {
-        userId = userid
-    }
-
-
-
-
-    suspend fun uploadOrderRequest(orderClass : OrdersClass): String {
+    suspend fun uploadOrderRequest(orderClass : OrdersClass, userId: String): String {
         val orderId = System.currentTimeMillis().toString()
 
         return try {
@@ -30,12 +20,10 @@ class OrderRepository() {
             }
         } catch (e : Exception){
             "خطأ في الشبكة: ${e.message}"
-        } finally {
-            ""
         }
     }
 
-    suspend fun getOrders() : Map<String, OrdersClass>{
+    suspend fun getOrders(userId: String) : Map<String, OrdersClass>{
         return try {
             val response = RetrofitInstance.api.getLastOrders(userId)
             val orders = response.body()
@@ -45,6 +33,7 @@ class OrderRepository() {
                 emptyMap()
             }
         } catch (E : Exception){
+            E.printStackTrace()
             emptyMap()
         }
     }

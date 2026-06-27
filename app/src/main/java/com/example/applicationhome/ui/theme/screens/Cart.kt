@@ -58,8 +58,8 @@ import com.example.applicationhome.ui.theme.components.forCart.CartButton
 import com.example.applicationhome.ui.theme.components.forCart.PaymentSummaryCartScreen
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
-import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.LoginViewModel
 import kotlinx.coroutines.CoroutineScope
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter",
@@ -73,10 +73,10 @@ fun Cart(
     drawerState : DrawerState,
     coroutineScope : CoroutineScope,
     viewModelForBottomBar: BottomBarViewModel,
-    viewModel: ItemScreenViewModel = viewModel(),
+    itemScreenViewModel: ItemScreenViewModel = viewModel(),
     cartViewModel: CartViewModel,
     bottomBarViewModel: BottomBarViewModel,
-    favoriteViewModel: FavoriteViewModel
+    loginViewModel : LoginViewModel
 ){
     val cartItems by cartViewModel.cartItems.collectAsState()
     Scaffold(
@@ -131,7 +131,7 @@ fun Cart(
                         item{Spacer(modifier = Modifier.height(100.dp))}
 
                         items(cartItems) { item ->
-                            if(item != null) CartBox(item, navigationController, viewModel, cartViewModel)
+                            if(item != null) CartBox(item, itemScreenViewModel, cartViewModel, loginViewModel)
                         }
                         item{
                             PaymentSummaryCartScreen(cartViewModel)

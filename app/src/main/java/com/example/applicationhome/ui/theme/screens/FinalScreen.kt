@@ -33,6 +33,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -118,6 +119,7 @@ fun FinalScreen(
         Screens.LastOrdersScreen,
         Screens.OrderScreen
     )
+    val isLogin by loginViewModel.isLogin.collectAsState()
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -136,7 +138,7 @@ fun FinalScreen(
                     clip(RoundedCornerShape(40.dp)).
                     background(Color.VeryLightGray).
                     clickable{
-                        if(loginViewModel.isLogin){
+                        if(isLogin){
                             coroutineScope.launch{drawerState.close()}
                             navigationController.navigate(Screens.Profile.screen)
                         }else{
@@ -212,13 +214,13 @@ fun FinalScreen(
                             is Screens.Profile -> Profile(navigationController, userImageViewModel)
                             is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel, bottomBarViewModel, cartViewModel, favoriteViewModel, loginViewModel)
                             is Screens.Search -> Search()
-                            is Screens.RestaurantScreen -> RestaurantScreen(navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel, homeScreenViewModel)
-                            is Screens.ItemScreen -> ItemScreen(navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, bottomBarViewModel)
+                            is Screens.RestaurantScreen -> RestaurantScreen(navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, loginViewModel, homeScreenViewModel)
+                            is Screens.ItemScreen -> ItemScreen(navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, loginViewModel)
                             is Screens.Notifications -> Notifications()
                             is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, bottomBarViewModel, itemScreenViewModel, cartViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel, loginViewModel)
-                            is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, bottomBarViewModel, itemScreenViewModel, cartViewModel, bottomBarViewModel, favoriteViewModel)
-                            is Screens.LoginScreen -> LoginScreen(navigationController, loginViewModel, cartViewModel)
-                            is Screens.SignUpScreen -> SignUpScreen(navigationController, loginViewModel, signUpViewModel)
+                            is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, bottomBarViewModel, itemScreenViewModel, cartViewModel, bottomBarViewModel, loginViewModel)
+                            is Screens.LoginScreen -> LoginScreen(navigationController, loginViewModel)
+                            is Screens.SignUpScreen -> SignUpScreen(navigationController, signUpViewModel)
                             is Screens.ConfirmOrderScreen -> ConfirmOrderScreen(navigationController, confirmOrderScreenViewModel, cartViewModel)
                             is Screens.ConfirmOrderScreen2 -> ConfirmOrderScreen2(navigationController, confirmOrderScreenViewModel, bottomBarViewModel, cartViewModel, loginViewModel)
                             is Screens.LastOrdersScreen -> LastOrdersScreen(navigationController, orderScreenViewModel)

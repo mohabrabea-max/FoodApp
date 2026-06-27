@@ -3,7 +3,6 @@ package com.example.applicationhome.data.models.repository
 import com.example.applicationhome.data.models.local.CartClass
 import com.example.applicationhome.data.models.local.CartDao
 import com.example.applicationhome.data.models.local.CartItemsClass
-import com.example.applicationhome.data.models.model.CartClassForCalculations
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.remote.RetrofitInstance
@@ -16,7 +15,7 @@ class CartRepository(private val cartdao: CartDao) {
 
     fun getCartData(id : String) : Flow<CartClass?> = cartdao.getParentCart(id)
 
-    suspend fun getCartRestaurantData(food : CartClassForCalculations) : Restaurants?{
+    suspend fun getCartRestaurantData(food : CartItemsClass) : Restaurants?{
         return try {
             val response = RetrofitInstance.api.getCarRestaurant("\"id\"", food.restaurantId)
             val resData = response.body()?.values?.first()
@@ -30,21 +29,22 @@ class CartRepository(private val cartdao: CartDao) {
         }
     }
 
-    suspend fun createNewCart(userId : String, food: CartClassForCalculations, size : String, type : String, priceOfOne : Double, res : Restaurants, number: Int = 1) : String{
-        val mealKey = "${food.id}_$size"
+    suspend fun createNewCart(userId : String, food: CartItemsClass, size : String, type : String, priceOfOne : Double, res : Restaurants, number: Int) : String{
+        val mealKey = "${food.mealId}_$size"
         val cartObject = CartClass(userId, res.id, res.name, res.image)
         return try {
             val cartItemsObject = CartItemsClass(
                 userId,
                 mealKey,
-                food.id,
+                food.mealId,
                 food.name,
                 type,
                 size,
                 number,
                 priceOfOne,
                 priceOfOne * number,
-                food.image
+                food.image,
+                food.restaurantId
             )
             cartdao.createParentCart(cartObject)
             cartdao.addCartItem(cartItemsObject)
@@ -56,19 +56,20 @@ class CartRepository(private val cartdao: CartDao) {
         }
     }
 
-    suspend fun addMealToCart(userId : String, food: CartClassForCalculations, size : String, type : String, priceOfOne : Double, number: Int = 1): String{
-        val mealKey = "${food.id}_$size"
+    suspend fun addMealToCart(userId : String, food: CartItemsClass, size : String, type : String, priceOfOne : Double, number: Int): String{
+        val mealKey = "${food.mealId}_$size"
         val cartItemsObject = CartItemsClass(
             userId,
             mealKey,
-            food.id,
+            food.mealId,
             food.name,
             type,
             size,
             number,
             priceOfOne,
             priceOfOne * number,
-            food.image
+            food.image,
+            food.restaurantId
         )
         return try {
             cartdao.addCartItem(cartItemsObject)
@@ -78,22 +79,15 @@ class CartRepository(private val cartdao: CartDao) {
         }
     }
 
-    suspend fun updateQuantity(userId : String, food: CartClassForCalculations, size : String, type : String, priceOfOne : Double, number: Int): String{
-        val mealKey = "${food.id}_$size"
-        val cartItemsObject = CartItemsClass(
-            userId,
-            mealKey,
-            food.id,
-            food.name,
-            type,
-            size,
-            number,
-            priceOfOne,
-            priceOfOne * number,
-            food.image
-        )
+    suspend fun updateQuantity(userId : String, food: CartItemsClass, size : String, priceOfOne : Double, number: Int): String{
+        val mealKey = "${food.mealId}_${size}"
         return try {
-            cartdao.updateCartItem(cartItemsObject)
+            cartdao.updateCartItem(
+                number,
+                priceOfOne * number,
+                userId,
+                mealKey
+            )
             "Success"
         }catch (e : Exception){
             "Error"

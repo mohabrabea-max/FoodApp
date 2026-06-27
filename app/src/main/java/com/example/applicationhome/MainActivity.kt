@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
     private val orderScreenViewModel: OrderScreenViewModel by viewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return OrderScreenViewModel(orderRepo) as T // (ملاحظة: تأكد من كتابتها OrderScreenViewModel(orderRepo = orderRepo) بالشكل السليم المعتاد)
+                return OrderScreenViewModel(orderRepo, userRepo) as T // (ملاحظة: تأكد من كتابتها OrderScreenViewModel(orderRepo = orderRepo) بالشكل السليم المعتاد)
                 // في كودك الأصلي كانت: return OrderScreenViewModel(orderRepo) as T
             }
         }

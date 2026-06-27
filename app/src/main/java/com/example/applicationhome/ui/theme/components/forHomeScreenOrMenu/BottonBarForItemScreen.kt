@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,15 +38,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.applicationhome.data.models.model.CartClassForCalculations
+import com.example.applicationhome.data.models.local.CartItemsClass
 import com.example.applicationhome.data.models.model.Food
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
+import com.example.applicationhome.ui.theme.model.LoginViewModel
 import kotlinx.coroutines.CoroutineScope
 
 @SuppressLint("UnrememberedMutableState")
@@ -58,28 +59,35 @@ fun BottomBarForItemScreen(
     snackbarHostState : SnackbarHostState,
     scope : CoroutineScope,
     navigationController : NavHostController,
-    bottomBarViewModel: BottomBarViewModel
+    loginViewModel: LoginViewModel
 ){
-    val price : Double
+    val priceOfOne : Double
+    val totalPrice : Double
     val type : String
     when(food){
         is FoodItem -> {
             val item = food.sizeOptions.find { it.size == size }
-            price = cartViewModel.newCount * (item?.price ?: 0.0)
+            priceOfOne = (item?.price ?: 0.0)
+            totalPrice = cartViewModel.newCount * priceOfOne
             type = "Meal"
         }
         is Snack -> {
-            price = cartViewModel.newCount * (food.priceANDsize[size] ?: 0.0)
+            priceOfOne = (food.priceANDsize[size] ?: 0.0)
+            totalPrice = cartViewModel.newCount * priceOfOne
             type = "Snack"
         }
     }
-    val meal = CartClassForCalculations(
+    val meal = CartItemsClass(
+        loginViewModel.userData.collectAsState().value.id,
+        "${food.id}_${size}",
         food.id,
         food.name,
-        food.image.first(),
-        price,
-        size,
         type,
+        size,
+        cartViewModel.newCount,
+        priceOfOne,
+        totalPrice,
+        food.image.first(),
         food.restaurantId
     )
     var color : Color
@@ -120,7 +128,13 @@ fun BottomBarForItemScreen(
                     fillMaxSize(),
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
                 ){
-                    IconButton(onClick = { if(cartViewModel.newCount > 0) cartViewModel.minusnewCount() }, modifier = Modifier.weight(1f).fillMaxHeight()){
+                    IconButton(
+                        onClick = {
+                            if(cartViewModel.newCount > 0) {
+                                cartViewModel.minusnewCount()
+                            }
+                        },
+                        modifier = Modifier.weight(1f).fillMaxHeight()){
                         Icon(
                             Icons.Default.Remove,
                             contentDescription = null,
@@ -143,7 +157,13 @@ fun BottomBarForItemScreen(
                             fontWeight = FontWeight.Bold
                         )
                     }
-                    IconButton(onClick = { if(cartViewModel.newCount < 99) cartViewModel.plusnewCount() }, modifier = Modifier.weight(1f).fillMaxHeight()){
+                    IconButton(
+                        onClick = {
+                            if(cartViewModel.newCount < 99) {
+                                cartViewModel.plusnewCount()
+                            }
+                        },
+                        modifier = Modifier.weight(1f).fillMaxHeight()){
                         Icon(
                             Icons.Default.Add,
                             contentDescription = null,
@@ -161,7 +181,8 @@ fun BottomBarForItemScreen(
                 clickable {
                     if(cartViewModel.newCount > 0){
                         cartViewModel.updateCount(meal, size, cartViewModel.newCount)
-                        if(cartViewModel.newCount > 0 && food.restaurantId == cartViewModel.cartInformation.value?.restaurantId){
+                        if(food.restaurantId == cartViewModel.cartInformation.value?.restaurantId || cartViewModel.cartInformation.value == null){
+                            cartViewModel.deletenewCount()
                             scope.showAddToCartSnackbar(
                                 snackbarHostState,
                                 {
@@ -169,7 +190,6 @@ fun BottomBarForItemScreen(
                                 }
 
                             )
-                            cartViewModel.deletenewCount()
                         }
                     }
                 }.
@@ -186,7 +206,7 @@ fun BottomBarForItemScreen(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "EGP ${price}",
+                    text = "EGP ${totalPrice}",
                     fontSize = 15.sp,
                     style = MaterialTheme.typography.labelLarge,
                     color = fontColor,

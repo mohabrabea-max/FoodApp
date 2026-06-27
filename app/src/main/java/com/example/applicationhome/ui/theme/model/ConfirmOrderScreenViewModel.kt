@@ -6,9 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.data.models.local.CartClass
-import com.example.applicationhome.data.models.local.CartItemsClass
-import com.example.applicationhome.data.models.local.UserClass
 import com.example.applicationhome.data.models.model.OrderItemsClass
 import com.example.applicationhome.data.models.model.OrdersClass
 import com.example.applicationhome.data.models.model.UserInformationInOrderClass
@@ -22,11 +19,7 @@ import com.example.applicationhome.data.models.repository.ConfirmOrderScreenText
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.streettextFieldState
 import com.example.applicationhome.data.models.repository.OrderRepository
 import com.example.applicationhome.data.models.repository.UserRepository
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -40,34 +33,6 @@ class ConfirmOrderScreenViewModel(
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
     val date = current.format(formatter)
 
-
-    val cartInformation : StateFlow<CartClass?> = userRepository.userId
-        .flatMapLatest { id ->
-            cartRepository.getCartData(id)
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = null
-        )
-
-    val cartItems : StateFlow<List<CartItemsClass?>> =userRepository.userId
-        .flatMapLatest { id ->
-            cartRepository.getCartItems(id)
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
-
-    val userData : StateFlow<UserClass> =
-        userRepository.getActiveUserFromDatabase()
-            .map { userInDb ->
-                userInDb ?: UserClass(firstname = "Guest")
-            }.stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = UserClass(firstname = "Guest")
-            )
     var bottonState by mutableStateOf(false)
     var phoneNumbertextFieldState by mutableStateOf(false)
     val address1 = "${houseState.text} - ${streetState.text}"
@@ -109,15 +74,23 @@ class ConfirmOrderScreenViewModel(
 
     fun uploadOrder(){
         viewModelScope.launch {
-            val orderInformation = cartInformation.value
+            val currentUser = userRepository.getActiveUserFromDatabase().first()
+            val userId = currentUser?.id ?: ""
+
+            val orderInformation = cartRepository.getCartData(userId).first()
+            val currentCartItems = cartRepository.getCartItems(userId).first()
+
+            val firstname = currentUser?.firstname ?: ""
+            val lastname = currentUser?.lastname ?: ""
+
 
             var totalPrice = 0.0
-            cartItems.value.forEach { item ->
+            currentCartItems.forEach { item ->
                 totalPrice += item?.totalPrice ?: 0.0
             }
 
-            var orderItems = listOf(OrderItemsClass())
-            cartItems.value.forEach { item ->
+            var orderItems = listOf<OrderItemsClass>()
+            currentCartItems.forEach { item ->
                 orderItems += OrderItemsClass(
                     item?.mealId ?: 0,
                     item?.name ?: "",
@@ -134,7 +107,7 @@ class ConfirmOrderScreenViewModel(
                     "Preparing",
                     totalPrice,
                     UserInformationInOrderClass(
-                        "${userData.value.firstname} ${userData.value.lastname}",
+                        "${firstname} ${lastname}",
                         phoneNumberState.text.toString(),
                         if(additionalDirectionsState.text.isNotEmpty() && addressLabelState.text.isNotEmpty())
                             address1 + address2
@@ -146,7 +119,7 @@ class ConfirmOrderScreenViewModel(
                     orderInformation.restaurantImage,
                     orderInformation.restaurantId
                     )
-                orderRepository.uploadOrderRequest(order)
+                orderRepository.uploadOrderRequest(order, userId)
             }
         }
     }

@@ -2,6 +2,7 @@ package com.example.applicationhome.ui.theme.components.forCart
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,48 +33,52 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.local.CartItemsClass
-import com.example.applicationhome.data.models.model.CartClassForCalculations
-import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.LoginViewModel
 
 @Composable
 fun CartBox(
     food: CartItemsClass,
-    navigationController : NavHostController,
-    viewModel: ItemScreenViewModel,
+    itemScreenViewModel: ItemScreenViewModel,
     cartViewModel: CartViewModel,
+    loginViewModel: LoginViewModel
 ){
-    val item = cartViewModel.meal
+    val mealKey = "${food.mealId}_${food.size}"
     val size = food.size
-    val meal = CartClassForCalculations(
-        item?.id ?: 0,
-        item?.name ?: "",
-        item?.image?.first() ?: "",
-        food.priceOfOne,
-        size,
+    val meal = CartItemsClass(
+        loginViewModel.userData.collectAsState().value.id,
+        mealKey,
+        food.mealId,
+        food.name,
         food.type,
-        item?.restaurantId ?: 0
+        food.size,
+        food.quantity,
+        food.priceOfOne,
+        food.totalPrice,
+        food.image,
+        food.restaurantId
     )
     val sizeInTitle = if(size.contains("Pieces")) "" else " (${size})"
 
     val cartkey = "${food.mealId}_${size}"
 
     Box(
-        modifier = Modifier.padding(start = 10.dp, end = 10.dp).
+        modifier = Modifier.
+        clickable(
+            indication = null,
+            interactionSource = remember { MutableInteractionSource() }
+        ){
+            //itemScreenViewModel.selectItem(item, size)
+        }.
+        padding(start = 10.dp, end = 10.dp).
         fillMaxWidth().height(100.dp).
-        background(Color.White).
-        clickable {
-            cartViewModel.getMeal(food.mealId)
-            viewModel.selectItem(item, size)
-            navigationController.navigate(Screens.ItemScreen.screen)
-        }
+        background(Color.White)
     ){
         Column(modifier = Modifier.fillMaxSize()){
             Row(
@@ -128,7 +135,7 @@ fun CartBox(
                         clip(CircleShape).
                         background(Color.LightOrange.copy(alpha = 0.7f))
                     ){
-                        if(meal != null) FixedAddBox(cartViewModel,size, cartkey, meal)
+                        FixedAddBox(cartViewModel,size, cartkey, meal)
                     }
                 }
             }

@@ -63,12 +63,12 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Resta
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantHeader
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
-import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -81,7 +81,7 @@ fun RestaurantScreen(
     favoriteViewModel : FavoriteViewModel,
     categoriesBoxViewModel: CategoriesBoxViewModel,
     restaurantViewModel : RestaurantViewModel,
-    bottomBarViewModel: BottomBarViewModel,
+    loginViewModel : LoginViewModel,
     homeScreenViewModel: HomeScreenViewModel
 ){
     val snackbarHostState = remember { SnackbarHostState() }
@@ -205,6 +205,7 @@ fun RestaurantScreen(
                                         favoriteState = favoriteViewModel
                                     )
                                     AddBox(
+                                        loginViewModel,
                                         color = Color.VeryLightGray,
                                         food = item,
                                         cartViewModel
@@ -231,6 +232,7 @@ fun RestaurantScreen(
                                         favoriteState = favoriteViewModel
                                     )
                                     AddBox(
+                                        loginViewModel,
                                         color = Color.VeryLightGray,
                                         food = item,
                                         cartViewModel
@@ -254,6 +256,7 @@ fun RestaurantScreen(
                                         favoriteState = favoriteViewModel
                                     )
                                     AddBox(
+                                        loginViewModel,
                                         color = Color.VeryLightGray,
                                         food = item,
                                         cartViewModel
@@ -278,8 +281,8 @@ fun RestaurantScreen(
                         cartViewModel.cartInformation.collectAsState().value?.restaurantName ?: "",
                         "Start",
                         {
+                            cartViewModel.clearAndStartNewCart(1)
                             cartViewModel.alertDialogFalse()
-                            cartViewModel.clearAndStartNewCart()
                         },
                         "Cancel",
                         {cartViewModel.alertDialogFalse()}

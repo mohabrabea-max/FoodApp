@@ -28,7 +28,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,11 +53,6 @@ import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun OrderScreen(orderScreenViewModel : OrderScreenViewModel, navigationController : NavHostController, cartViewModel : CartViewModel){
-    LaunchedEffect(
-        key1 = orderScreenViewModel.lastOrders
-    ){
-        orderScreenViewModel.getOrdersHistory()
-    }
     val order = orderScreenViewModel.selectedOrder
     Scaffold(
         modifier = Modifier.navigationBarsPadding().fillMaxSize(),

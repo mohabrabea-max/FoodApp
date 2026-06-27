@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Facebook
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,7 +30,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,17 +51,19 @@ import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.forSignUpOrLogin.LoginTextField
-import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
-import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(
     navigationController : NavHostController,
-    loginViewModel: LoginViewModel,
-    cartViewModel: CartViewModel
+    loginViewModel: LoginViewModel
 ){
+    DisposableEffect(Unit){
+        onDispose {
+            loginViewModel.clearFields()
+        }
+    }
     Scaffold(
         modifier = Modifier.navigationBarsPadding().fillMaxSize(),
         topBar = {
@@ -72,7 +78,7 @@ fun LoginScreen(
                     IconButton(
                         onClick = {
                             if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
-                            loginViewModel.bottonstate()
+                            loginViewModel.clearFields()
                             },
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
                     ) {
@@ -146,7 +152,7 @@ fun LoginScreen(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
 
-                LoginButton(loginViewModel, navigationController, cartViewModel)
+                LoginButton(loginViewModel, navigationController)
 
                 Spacer(modifier = Modifier.height(25.dp))
                 Row(
@@ -232,10 +238,16 @@ fun LoginScreen(
 }
 
 @Composable
-fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostController, cartViewModel : CartViewModel){
-    var isEmailTrue = loginViewModel.isEmailTrue
-    var isPasswordTrue = loginViewModel.isPasswordTrue
-    val scope = rememberCoroutineScope()
+fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostController){
+    val loading by loginViewModel.loading.collectAsState()
+    val isLogin by loginViewModel.isLogin.collectAsState()
+
+    LaunchedEffect(isLogin){
+        if(isLogin){
+            navigationController.navigate(Screens.HomeScreen.screen) {navigationController.popBackStack()}
+        }
+    }
+
     Box(
         modifier = Modifier
             .padding(start = 40.dp, end = 40.dp)
@@ -245,27 +257,23 @@ fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostCon
             .background(if(loginViewModel.emailstate.text.isNotEmpty() && loginViewModel.passwordstate.text.isNotEmpty()) Color.DarkOrange else Color.Gray)
             .clickable {
                 if(loginViewModel.isNetworkAvailable){
-                    if(isEmailTrue && isPasswordTrue){
-                        scope.launch {
-                            loginViewModel.login()
-                            loginViewModel.bottonstate()
-                            navigationController.navigate(Screens.HomeScreen.screen) {navigationController.popBackStack()}
-                        }
-                    }else if(isEmailTrue && isPasswordTrue == false){
-                        println("true false")
-                    }else{
-                        println("false false")
-                    }
+                    loginViewModel.login()
                 }
             },
         contentAlignment = Alignment.Center
 
     ){
-        Text(
-            text = "Login",
-            style = MaterialTheme.typography.bodyLarge,
-            color = if(loginViewModel.emailstate.text.isNotEmpty() && loginViewModel.passwordstate.text.isNotEmpty()) Color.White else Color.Black,
-            fontSize = 18.sp
-        )
+        if(loading == true){
+            CircularProgressIndicator(
+                color = Color.White
+            )
+        }else{
+            Text(
+                text = "Login",
+                style = MaterialTheme.typography.bodyLarge,
+                color = if(loginViewModel.emailstate.text.isNotEmpty() && loginViewModel.passwordstate.text.isNotEmpty()) Color.White else Color.Black,
+                fontSize = 18.sp
+            )
+        }
     }
 }

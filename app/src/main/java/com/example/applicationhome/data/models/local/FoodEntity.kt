@@ -157,7 +157,7 @@ data class UpdatePhoneNumber(
 
 @Entity(
     tableName = "cart_items",
-    primaryKeys = ["userId", "mealId"]
+    primaryKeys = ["userId", "mealKey"]
 )
 data class CartItemsClass(
     val userId : String = "",
@@ -169,7 +169,8 @@ data class CartItemsClass(
     val quantity: Int = 0,
     val priceOfOne : Double = 0.0,
     val totalPrice : Double = 0.0,
-    val image : String = ""
+    val image : String = "",
+    val restaurantId : Int = 0
 )
 
 @Entity(tableName = "cart")

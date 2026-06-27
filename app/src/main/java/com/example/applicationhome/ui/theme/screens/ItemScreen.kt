@@ -38,6 +38,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -74,10 +75,10 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.ItemS
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Ratings
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.showAddToCartSnackbar
-import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
+import com.example.applicationhome.ui.theme.model.LoginViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,7 +88,7 @@ fun ItemScreen(
     viewModel: ItemScreenViewModel,
     cartViewModel: CartViewModel,
     favoriteState : FavoriteViewModel,
-    bottomBarViewModel: BottomBarViewModel
+    loginViewModel : LoginViewModel
 ){
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -419,19 +420,19 @@ fun ItemScreen(
                             snackbarHostState,
                             scope,
                             navigationController,
-                            bottomBarViewModel
+                            loginViewModel
                         )
                     }
                 }
 
                 if(cartViewModel.errorInCart){
                     AlertDialogMessage(
-                        cartViewModel.cartRestaurant.name,
+                        cartViewModel.cartInformation.collectAsState().value?.restaurantName ?: "",
                         "Start",
                         {
-                            cartViewModel.deletenewCount()
                             cartViewModel.alertDialogFalse()
-                            cartViewModel.clearAndStartNewCart()
+                            cartViewModel.clearAndStartNewCart(cartViewModel.newCount)
+                            cartViewModel.deletenewCount()
                             scope.showAddToCartSnackbar(
                                 snackbarHostState,
                                 {
