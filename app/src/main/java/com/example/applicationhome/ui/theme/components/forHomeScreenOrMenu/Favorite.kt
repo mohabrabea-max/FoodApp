@@ -20,10 +20,8 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.applicationhome.data.models.model.Food
-import com.example.applicationhome.data.models.model.FoodItem
-import com.example.applicationhome.data.models.model.Restaurants
-import com.example.applicationhome.data.models.model.Snack
+import com.example.applicationhome.data.models.local.FavoriteFoodDatabase
+import com.example.applicationhome.data.models.local.FavoriteRestaurantDatabase
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import kotlinx.coroutines.launch
@@ -33,23 +31,19 @@ import kotlinx.coroutines.launch
 fun Favorite(
     modifier: Modifier = Modifier,
     modifier2 : Modifier = Modifier,
-    food: Food,
-    favoriteState : FavoriteViewModel
+    food: FavoriteFoodDatabase,
+    favoriteViewModel : FavoriteViewModel
 ){
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
-    val favorite = favoriteState.isMealInFavorite(food.id)
-    val type = when(food){
-        is FoodItem -> {"Meal"}
-        is Snack -> {"Snack"}
-    }
+    val favorite = favoriteViewModel.isMealInFavorite(food.mealId)
     fun favorite1(){
         if(favorite == true){
-            favoriteState.removeFavorite(food, type)
+            favoriteViewModel.removeFavorite(food.mealId)
             Toast.makeText(context, "Remove From Favorite", Toast.LENGTH_SHORT).show()
         }else{
-            favoriteState.addFavorite(food)
+            favoriteViewModel.addFavorite(food)
             Toast.makeText(context, "Add To Favorite", Toast.LENGTH_SHORT).show()
         }
 
@@ -88,20 +82,20 @@ fun Favorite2(
     modifier: Modifier = Modifier,
     modifier2 : Modifier = Modifier,
     color : Color = Color.Black,
-    restaurants: Restaurants,
-    favoriteState : FavoriteViewModel
+    restaurants: FavoriteRestaurantDatabase,
+    favoriteViewModel : FavoriteViewModel
 ){
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
-    val favorite = favoriteState.isMealInFavorite(restaurants.id)
+    val favorite = favoriteViewModel.isMealInFavorite(restaurants.restaurantId)
     fun favorite1(){
 
         if(favorite == true){
-            favoriteState.removeRestaurantsFavorite(restaurants)
+            favoriteViewModel.removeRestaurantsFavorite(restaurants.restaurantId)
             Toast.makeText(context, "Remove From Favorite", Toast.LENGTH_SHORT).show()
         }else{
-            favoriteState.addRestaurantsFavorite(restaurants)
+            favoriteViewModel.addRestaurantsFavorite(restaurants)
             Toast.makeText(context, "Add To Favorite", Toast.LENGTH_SHORT).show()
         }
 

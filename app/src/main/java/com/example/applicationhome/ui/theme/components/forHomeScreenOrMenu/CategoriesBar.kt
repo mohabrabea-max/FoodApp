@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.example.applicationhome.data.models.repository.TapRowData.FavoriteTapRow
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
-import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
+import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 
@@ -94,27 +94,27 @@ fun CategoriesBarForRestaurantsScreen(typ : List<String>, restaurantViewModel : 
 
 
 @Composable
-fun favoriteBar(categoriesBoxViewModel: CategoriesBoxViewModel){
+fun favoriteBar(favoriteViewModel: FavoriteViewModel){
     TabRow(
         modifier = Modifier.fillMaxWidth().
         height(50.dp),
-        selectedTabIndex = categoriesBoxViewModel.selectedCategorieInFavoriteScreen,
+        selectedTabIndex = favoriteViewModel.selectedCategorieInFavoriteScreen,
         containerColor = Color.White,
         contentColor = Color.DeepMatteBlack,
         indicator = { tabPositions ->
-            if (categoriesBoxViewModel.selectedCategorieInFavoriteScreen < tabPositions.size) {
+            if (favoriteViewModel.selectedCategorieInFavoriteScreen < tabPositions.size) {
                 TabRowDefaults.SecondaryIndicator(
-                    modifier = Modifier.tabIndicatorOffset(tabPositions[categoriesBoxViewModel.selectedCategorieInFavoriteScreen]),
+                    modifier = Modifier.tabIndicatorOffset(tabPositions[favoriteViewModel.selectedCategorieInFavoriteScreen]),
                     color = Color.DarkOrange
                 )
             }
         }
     ){
         FavoriteTapRow.forEachIndexed { index, title ->
-            val isSelected = index == categoriesBoxViewModel.selectedCategorieInFavoriteScreen
+            val isSelected = index == favoriteViewModel.selectedCategorieInFavoriteScreen
             Tab(
                 selected = true,
-                onClick = { categoriesBoxViewModel.selectedFavoriteScreen(index) },
+                onClick = { favoriteViewModel.selectedFavoriteScreen(index) },
                 text = {
                     Text(
                         text = title,

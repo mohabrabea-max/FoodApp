@@ -25,11 +25,23 @@ sealed interface Food{
         @SerializedName("images")
         override val image : List<String> = listOf(""),
         @SerializedName("sizes")
-        val sizeOptions : List<MealSizeDetail>,
+        val sizeOptions : List<MealSizeDetail> = listOf(),
         override var restaurantId : Int = 0,
         @SerializedName("rating")
         override val review : Double = 0.0
     ): Food
+
+data class FoodItemToCalculate(
+    val id : Int = 0,
+    val name : String = "",
+    val image : List<String> = listOf(""),
+    val size : String = "",
+    val price : Double = 0.0,
+    val type : String = "",
+    val restaurantId : Int = 0,
+    val details : String = "",
+    val review : Double = 0.0
+)
 
     data class Snack(
         override val id : Int = 0,
@@ -37,7 +49,7 @@ sealed interface Food{
         @SerializedName("images")
         override val image : List<String> = listOf(""),
         @SerializedName("prices")
-        val priceANDsize : Map<String, Double>,
+        val priceANDsize : Map<String, Double> = mapOf(),
         override var restaurantId : Int = 0,
         @SerializedName("rating")
         override val review : Double = 0.0

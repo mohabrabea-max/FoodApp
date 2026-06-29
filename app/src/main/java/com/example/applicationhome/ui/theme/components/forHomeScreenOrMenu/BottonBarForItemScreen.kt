@@ -39,10 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.local.CartItemsClass
-import com.example.applicationhome.data.models.model.Food
-import com.example.applicationhome.data.models.model.FoodItem
+import com.example.applicationhome.data.models.model.FoodItemToCalculate
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.model.CartViewModel
@@ -54,38 +52,23 @@ import kotlinx.coroutines.CoroutineScope
 @Composable
 fun BottomBarForItemScreen(
     cartViewModel: CartViewModel,
-    food : Food,
+    food : FoodItemToCalculate,
     size : String,
     snackbarHostState : SnackbarHostState,
     scope : CoroutineScope,
     navigationController : NavHostController,
     loginViewModel: LoginViewModel
 ){
-    val priceOfOne : Double
-    val totalPrice : Double
-    val type : String
-    when(food){
-        is FoodItem -> {
-            val item = food.sizeOptions.find { it.size == size }
-            priceOfOne = (item?.price ?: 0.0)
-            totalPrice = cartViewModel.newCount * priceOfOne
-            type = "Meal"
-        }
-        is Snack -> {
-            priceOfOne = (food.priceANDsize[size] ?: 0.0)
-            totalPrice = cartViewModel.newCount * priceOfOne
-            type = "Snack"
-        }
-    }
+    val totalPrice = cartViewModel.newCount * food.price
     val meal = CartItemsClass(
         loginViewModel.userData.collectAsState().value.id,
         "${food.id}_${size}",
         food.id,
         food.name,
-        type,
+        food.type,
         size,
         cartViewModel.newCount,
-        priceOfOne,
+        food.price,
         totalPrice,
         food.image.first(),
         food.restaurantId

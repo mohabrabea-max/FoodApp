@@ -29,8 +29,8 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import com.example.applicationhome.data.models.model.FoodItemToCalculate
 import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
@@ -39,7 +39,7 @@ fun SnaksBox(
     snackIsLoading : Boolean,
     modifier: Modifier = Modifier,
     inItemScreen : Boolean,
-    item: Snack,
+    item: FoodItemToCalculate,
     size : String?,
     navigationController : NavHostController,
     itemScreenViewModel: ItemScreenViewModel,
@@ -58,7 +58,7 @@ fun SnaksBox(
             modifier = modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
             background(Color.White).
             clickable{
-                itemScreenViewModel.selectSnak(item, item.priceANDsize.keys.last())
+                itemScreenViewModel.selectSnak(item, item.size)
                 navigationController.navigate(Screens.ItemScreen.screen)
                 cartViewModel.deletenewCount()
             }
@@ -98,7 +98,7 @@ fun SnaksBox(
                     )
                     if(inItemScreen == false){
                         Text(
-                            text = item.priceANDsize.values.last().toString() + " E.G",
+                            text = item.price.toString() + " E.G",
                             fontSize = 16.sp,
                             color = Color.Black,
                             style = MaterialTheme.typography.labelLarge,

@@ -1,212 +1,234 @@
 package com.example.applicationhome.data.models.repository
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import android.content.Context
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.applicationhome.SyncAddToFavoritesWorker
+import com.example.applicationhome.SyncRemoveFromFavoritesWorker
+import com.example.applicationhome.data.models.local.FavoriteDao
+import com.example.applicationhome.data.models.local.FavoriteFoodDatabase
+import com.example.applicationhome.data.models.local.FavoriteRestaurantDatabase
 import com.example.applicationhome.data.models.model.FavoriteClass
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.data.models.remote.RetrofitInstance
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 
-object FavoriteRepository {
-    var favoritList = mutableStateMapOf<String, FavoriteClass>()
-
-    val mealsFavoriteMenu get() = favoritList.filter { it.value.typ == "Meal" }.values.toList()
-
-    val snacksFavoriteMenu get() = favoritList.filter { it.value.typ == "Snack" }.values.toList()
-
-    val restaurantsFavoriteMenu get() = favoritList.filter { it.value.typ == "Restaurant" }.values.toList()
-
-    var mealsFavorite = mutableStateMapOf<String, FoodItem>()
-    var mealsFavoriteIsLoading by mutableStateOf(true)
-
-    var snacksFavorite = mutableStateMapOf<String, Snack>()
-    var snacksFavoriteIsLoading by mutableStateOf(true)
-
-    var restaurantsFavorite = mutableStateMapOf<String, Restaurants>()
-    var restaurantsFavoriteIsLoading by mutableStateOf(true)
+class FavoriteRepository(private val context: Context, private val favoriteDao : FavoriteDao) {
+    private val _mealsFavoriteObject = mutableMapOf<String, FoodItem>()
 
 
-//    suspend fun favoriteMeals(): Map<String, FoodItem> {
-//        val finalMealsList = mutableMapOf<String, FoodItem>()
-//        val missingItems = mutableListOf<Int>()
-//        mealsFavoriteMenu.forEach { item ->
-//            val mealKey = "Meal_${item.id}"
-//            val cachedMeal = foodMenuList[mealKey]
-//            if(cachedMeal != null){
-//                finalMealsList += (mealKey to cachedMeal)
-//            }else{
-//                missingItems.add(item.id)
-//            }
-//        }
-//        if(missingItems.isNotEmpty()){
-//            mealsFavoriteIsLoading = true
-//            try {
-//                coroutineScope {
-//                    val deferredRequests = missingItems.map { item ->
-//                        async {
-//                            try {
-//                                val response = RetrofitInstance.api.getCartMeals("\"id\"", item)
-//                                val resultMap = response.body()
-//                                if(response.isSuccessful && resultMap != null){
-//                                    foodMenuList += resultMap
-//                                    resultMap
-//                                }else{ null }
-//                            } catch (e : Exception){ null }
-//                        }
-//                    }
-//                    deferredRequests.awaitAll().filterNotNull().forEach { item ->
-//                        finalMealsList += item
-//                    }
-//                }
-//            } finally {
-//                mealsFavoriteIsLoading = false
-//            }
-//        }else{
-//            mealsFavoriteIsLoading = false
-//        }
-//        return finalMealsList
-//    }
-//
-//    suspend fun favoriteSnacks(): Map<String, Snack> {
-//        val finalSnacksList = mutableMapOf<String, Snack>()
-//        val missingItems = mutableListOf<Int>()
-//        snacksFavoriteMenu.forEach { item ->
-//            val snackKey = "Snack_${item.id}"
-//            val cachedMeal = snacks[snackKey]
-//            if(cachedMeal != null){
-//                finalSnacksList += (snackKey to cachedMeal)
-//            }else{
-//                missingItems.add(item.id)
-//            }
-//        }
-//        if(missingItems.isNotEmpty()){
-//            snacksFavoriteIsLoading = true
-//            try {
-//                coroutineScope {
-//                    val deferredRequests = missingItems.map { item ->
-//                        async {
-//                            try {
-//                                val response = RetrofitInstance.api.getCartSnacks("\"id\"", item)
-//                                val resultMap = response.body()
-//                                if(response.isSuccessful && resultMap != null){
-//                                    snacks += resultMap
-//                                    resultMap
-//                                }else{null}
-//                            } catch (e : Exception){ null }
-//                        }
-//                    }
-//                    deferredRequests.awaitAll().filterNotNull().forEach { item ->
-//                        finalSnacksList += item
-//                    }
-//                }
-//            } finally {
-//                snacksFavoriteIsLoading = false
-//            }
-//        }else{
-//            snacksFavoriteIsLoading = false
-//        }
-//        return finalSnacksList
-//    }
-//    suspend fun favoriteRestaurants(): Map<String, Restaurants> {
-//        val finalRestaurantsList = mutableMapOf<String, Restaurants>()
-//        val missingItems = mutableListOf<Int>()
-//        restaurantsFavoriteMenu.forEach { item ->
-//            val restaurantKey = "Restaurant_${item.id}"
-//            val cachedMeal = restaurantsMenu[restaurantKey]
-//            if(cachedMeal != null){
-//                finalRestaurantsList += (restaurantKey to cachedMeal)
-//            }else{
-//                missingItems.add(item.id)
-//            }
-//        }
-//        if(missingItems.isNotEmpty()){
-//            restaurantsFavoriteIsLoading = true
-//            try {
-//                coroutineScope {
-//                    val deferredRequests = missingItems.map { item ->
-//                        async {
-//                            try {
-//                                val response = RetrofitInstance.api.getFavoriteRestaurants("\"id\"", item)
-//                                val resultMap = response.body()
-//                                if(response.isSuccessful && resultMap != null){
-//                                    restaurantsMenu += resultMap
-//                                    resultMap
-//                                }else{ null }
-//                            } catch (e : Exception){ null }
-//                        }
-//                    }
-//                    deferredRequests.awaitAll().filterNotNull().forEach { item ->
-//                        finalRestaurantsList += item
-//                    }
-//                }
-//            } finally {
-//                restaurantsFavoriteIsLoading = false
-//            }
-//        }else{
-//            restaurantsFavoriteIsLoading = false
-//        }
-//        return finalRestaurantsList
-//    }
+    private val _snacksFavoriteObject = mutableMapOf<String, Snack>()
 
-    suspend fun addToFavorite(id : Int, typ : String, restaurants : Int) : String{
-        val favoriteObject = FavoriteClass(id, typ, restaurants)
-        val mealKey = "${typ}_$id"
+
+    private val _restaurantsFavoriteObject = mutableMapOf<String, Restaurants>()
+
+
+
+    fun getFoodFavoriteFromDatabase(userId : String)
+    : Flow<List<FavoriteFoodDatabase>> = favoriteDao.getFoodFromDatabase(userId)
+
+    fun getRestaurantsFavoriteFromDatabase(userId : String)
+    : Flow<List<FavoriteRestaurantDatabase>> = favoriteDao.getRestaurantsFromDatabase(userId)
+
+
+    suspend fun syncFavoritesInDatabase(userId : String) : String{
+        val favoriteList : Map<String, FavoriteClass>
         return try {
-            val response = RetrofitInstance.api.addToFavorite("userId", mealKey, favoriteObject)
-            if(response.isSuccessful && response.body() != null){
-                favoritList[mealKey] = favoriteObject
-                //viewFavorite()
-                "Success"
-            }else{
-                "Network error"
-            }
-        } catch (e : Exception){
-            println("addToFavorite error")
-            "خطأ في الشبكة: ${e.message}"
-        }
-    }
+            val response = RetrofitInstance.api.getFavoriteItems(userId)
+            val favorite = response.body()
+            if(response.isSuccessful && favorite != null){
+                favoriteList = favorite
+                val mealsFavorite = favoriteList.filter { it.value.typ == "Meal" }.values.toList()
+                val snacksFavorite = favoriteList.filter { it.value.typ == "Snack" }.values.toList()
+                val restaurantsFavorite = favoriteList.filter { it.value.typ == "Restaurant" }.values.toList()
+                try {
+                    coroutineScope {
+                        val deferredMeals = mealsFavorite.map { item ->
+                            async {
+                                try {
+                                    val response = RetrofitInstance.api.getFavoriteMeals("\"id\"", item.id)
+                                    val resultMap = response.body()
+                                    if(response.isSuccessful && resultMap != null){
+                                        _mealsFavoriteObject += resultMap
+                                        resultMap
+                                    }else{ null }
+                                }catch (e : Exception){ null }
+                            }
+                        }
+                        val mealsFavoriteToAddInDatabase : List<FavoriteFoodDatabase>
 
-    suspend fun getFavorite() : String {
-        return try {
-            val response = RetrofitInstance.api.getFavoriteItems("userId")
-            if (response.isSuccessful) {
-                val favoriteItems = response.body()
-                if (favoriteItems != null) {
-                    favoritList.clear()
-                    favoritList.putAll(favoriteItems)
-                    //viewFavorite()
-                    "Success"
-                } else {
-                    favoritList.clear()
-                    "Favorite is empty"
+                        val finalMealsList = mutableMapOf<String, FoodItem>()
+
+                        deferredMeals.awaitAll().filterNotNull().forEach { item ->
+                            finalMealsList += item
+                        }
+
+                        mealsFavoriteToAddInDatabase = finalMealsList.values.map { item ->
+                            FavoriteFoodDatabase(
+                                userId,
+                                item.id,
+                                item.name,
+                                item.image.first(),
+                                item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }?.size ?: "",
+                                item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }?.price ?: 0.0,
+                                "Meal",
+                                item.restaurantId,
+                                true,
+                                false
+                            )
+                        }
+                        favoriteDao.addFoodToFavorite(mealsFavoriteToAddInDatabase)
+
+
+                        val deferredSnacks = snacksFavorite.map { item ->
+                            async {
+                                try {
+                                    val response = RetrofitInstance.api.getFavoriteSnacks("\"id\"", item.id)
+                                    val resultMap = response.body()
+                                    if(response.isSuccessful && resultMap != null){
+                                        _snacksFavoriteObject += resultMap
+                                        resultMap
+                                    }else{ null }
+                                }catch (e : Exception){ null }
+                            }
+                        }
+                        val snacksFavoriteToAddInDatabase : List<FavoriteFoodDatabase>
+
+                        val finalSnacksList = mutableMapOf<String, Snack>()
+
+                        deferredSnacks.awaitAll().filterNotNull().forEach { item ->
+                            finalSnacksList += item
+                        }
+
+                        snacksFavoriteToAddInDatabase = finalSnacksList.values.map { item ->
+                            FavoriteFoodDatabase(
+                                userId,
+                                item.id,
+                                item.name,
+                                item.image.first(),
+                                item.priceANDsize.keys.last(),
+                                item.priceANDsize.values.last(),
+                                "Snack",
+                                item.restaurantId,
+                                true,
+                                false
+                            )
+                        }
+                        favoriteDao.addFoodToFavorite(snacksFavoriteToAddInDatabase)
+
+
+                        val deferredRestaurants = restaurantsFavorite.map { item ->
+                            async {
+                                try {
+                                    val response = RetrofitInstance.api.getFavoriteRestaurants("\"id\"", item.id)
+                                    val resultMap = response.body()
+                                    if(response.isSuccessful && resultMap != null){
+                                        _restaurantsFavoriteObject += resultMap
+                                        resultMap
+                                    }else{ null }
+                                }catch (e : Exception){ null }
+                            }
+                        }
+                        val restaurantsFavoriteToAddInDatabase : List<FavoriteRestaurantDatabase>
+
+                        val finalRestaurantsList = mutableMapOf<String, Restaurants>()
+
+                        deferredRestaurants.awaitAll().filterNotNull().forEach { item ->
+                            finalRestaurantsList += item
+                        }
+
+                        restaurantsFavoriteToAddInDatabase = finalRestaurantsList.values.map { item ->
+                            FavoriteRestaurantDatabase(
+                                userId,
+                                item.id,
+                                item.name,
+                                item.image,
+                                item.image2,
+                                true,
+                                false
+                            )
+                        }
+                        favoriteDao.addRestaurantToFavorite(restaurantsFavoriteToAddInDatabase)
+                    }
+                }finally {
+                    null
                 }
-            } else {
-                "Network error"
             }
-        } catch (e : Exception) {
-            e.printStackTrace()
-            println("🚨 الكراش الحقيقي هو: ${e.localizedMessage}")
-            "خطأ في الشبكة: ${e.message}"
+            "Success"
+        }catch (e : Exception){
+            "Network error"
         }
     }
 
-    suspend fun deleteFavorite(id : Int, type : String): String{
-        val mealKey = "${type}_$id"
-        return try {
-            val response = RetrofitInstance.api.deleteFromFavorite("userId", mealKey)
-            if(response.isSuccessful){
-                favoritList.keys.remove(mealKey)
-                //viewFavorite()
-                "Success"
-            }else{
-                "Network error"
-            }
-        }catch (e : Exception){
-            println("deleteFavorite error")
-            "خطأ في الشبكة: ${e.message}"
-        }
+    suspend fun addFoodToFavorite(foodItem : FavoriteFoodDatabase){
+        favoriteDao.addFoodToFavorite(listOf(foodItem))
+        triggerOfflineSyncWorker()
+    }
+
+    suspend fun addRestaurantToFavorite(restaurantItem : FavoriteRestaurantDatabase){
+        favoriteDao.addRestaurantToFavorite(listOf(restaurantItem))
+        triggerOfflineSyncWorker()
+    }
+
+    private fun triggerOfflineSyncWorker() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val syncRequest = OneTimeWorkRequestBuilder<SyncAddToFavoritesWorker>()
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            "sync_favorites_work",  //  اسم الWorker
+            ExistingWorkPolicy.KEEP,   // عشان الWorker ميتعملش منه اكتر من نسخة
+            syncRequest
+        )
+    }
+
+    suspend fun deleteFoodFromFavorite(userId : String, mealId : Int){
+        favoriteDao.markFoodAsDeletedOffline(userId, mealId)
+        triggerOfflineRemoveWorker()
+    }
+
+    suspend fun deleteRestaurantFromFavorite(userId : String, resId : Int){
+        favoriteDao.markRestaurantsAsDeletedOffline(userId, resId)
+        triggerOfflineRemoveWorker()
+    }
+
+    private fun triggerOfflineRemoveWorker() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val syncRequest = OneTimeWorkRequestBuilder<SyncRemoveFromFavoritesWorker>()
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            "delete_favorites_work",
+            ExistingWorkPolicy.KEEP,
+            syncRequest
+        )
+    }
+
+    fun getMealToView(mealKey : String): FoodItem?{
+        return _mealsFavoriteObject[mealKey]
+    }
+
+    fun getSnackToView(snackKey : String): Snack?{
+        return _snacksFavoriteObject[snackKey]
+    }
+
+    fun getRestaurantToView(resKey : String): Restaurants?{
+        return _restaurantsFavoriteObject[resKey]
     }
 }

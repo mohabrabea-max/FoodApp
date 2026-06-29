@@ -59,6 +59,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import com.example.applicationhome.data.models.local.FavoriteFoodDatabase
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
@@ -71,7 +72,6 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Botto
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Favorite
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.ItemSize
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Ratings
-import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.showAddToCartSnackbar
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
@@ -86,7 +86,7 @@ fun ItemScreen(
     navigationController : NavHostController,
     viewModel: ItemScreenViewModel,
     cartViewModel: CartViewModel,
-    favoriteState : FavoriteViewModel,
+    favoriteViewModel : FavoriteViewModel,
     loginViewModel : LoginViewModel,
     restaurantViewModel: RestaurantViewModel
 ){
@@ -117,6 +117,19 @@ fun ItemScreen(
     val size = viewModel.selectedSize
     val images = item?.image?.size ?: 0
     val pagerState = rememberPagerState(pageCount = {images})
+
+    val favoriteFoodDatabase = FavoriteFoodDatabase(
+        favoriteViewModel.userId,
+        item?.id ?: 0,
+        item?.name ?: "",
+        item?.image?.first() ?: "",
+        size,
+        item?.price ?: 0.0,
+        item?.type ?: "",
+        item?.restaurantId ?: 0,
+        false,
+        false
+    )
 
     if(item != null){
         Scaffold(
@@ -194,8 +207,8 @@ fun ItemScreen(
                                 shadow(elevation = if(searchSize < 1) 7.dp else 0.dp, spotColor = Color.LightGray, shape = CircleShape).clip(CircleShape).size(40.dp).
                                 background(Color.White),
                                 modifier2 = Modifier.size(25.dp),
-                                food = item,
-                                favoriteState = favoriteState
+                                food = favoriteFoodDatabase,
+                                favoriteViewModel = favoriteViewModel
                             )
                         },
                         weight = 2f
@@ -284,24 +297,15 @@ fun ItemScreen(
                                             fontWeight = FontWeight.Bold
                                         )
                                         Spacer(modifier = Modifier.height(10.dp))
-                                        val selectedDetail = item.sizeOptions.find { it.size == size }
-                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start){
-                                            val text = mutableListOf<String>()
-                                                selectedDetail?.snack?.forEach { (snakeId, snakeSize) ->
-                                                val snake2 = snacks.value.find { it.id == snakeId }
-                                                snake2?.let { safeSnake ->
-                                                    text.add(snakeSize + " " + safeSnake.name)
-                                                }
-                                            }
-                                            Text(
-                                                text = text.joinToString(" - "),
-                                                color = Color.MediumBrownForTitle
-                                            )
+                                        Text(
+                                            text = item.details,
+                                            color = Color.MediumBrownForTitle
+                                        )
                                         }
                                     }
                                     Spacer(modifier = Modifier.height(10.dp))
                                     Text(
-                                        text = "${item.sizeOptions.find { it.size == size }?.price} L.E",
+                                        text = "${item.price} L.E",
                                         fontSize = 30.sp,
                                         style = MaterialTheme.typography.labelLarge,
                                         color = Color.BrownForFont,
@@ -328,24 +332,24 @@ fun ItemScreen(
                                         Spacer(modifier = Modifier.height(5.dp))
                                         LazyRow {
                                             item{Spacer(modifier = Modifier.width(7.dp))}
-                                            item{
-                                                val selectedDetail = item.sizeOptions.find { it.size == size }
-                                                selectedDetail?.snack?.forEach { (snakeId, snakeSize) ->
-                                                    val snake2 = snacks.value.find { it.id == snakeId }
-                                                    snake2?.let { safeSnake ->
-                                                        SnaksBox(
-                                                            restaurantViewModel.snacksIsLoading.collectAsState().value,
-                                                            modifier = Modifier.size(170.dp),
-                                                            true,
-                                                            safeSnake,
-                                                            snakeSize,
-                                                            navigationController,
-                                                            viewModel,
-                                                            cartViewModel
-                                                        )
-                                                    }
-                                                }
-                                            }
+//                                            item{
+//                                                val selectedDetail = item.sizeOptions.find { it.size == size }
+//                                                selectedDetail?.snack?.forEach { (snakeId, snakeSize) ->
+//                                                    val snake2 = snacks.value.find { it.id == snakeId }
+//                                                    snake2?.let { safeSnake ->
+//                                                        SnaksBox(
+//                                                            restaurantViewModel.snacksIsLoading.collectAsState().value,
+//                                                            modifier = Modifier.size(170.dp),
+//                                                            true,
+//                                                            safeSnake,
+//                                                            snakeSize,
+//                                                            navigationController,
+//                                                            viewModel,
+//                                                            cartViewModel
+//                                                        )
+//                                                    }
+//                                                }
+//                                            }
                                             item{Spacer(modifier = Modifier.width(7.dp))}
                                         }
                                     }
@@ -404,14 +408,12 @@ fun ItemScreen(
                                         fontWeight = FontWeight.Bold
                                     )
                                     Spacer(modifier = Modifier.height(10.dp))
-                                    Ratings(item)
+                                    Ratings()
                                 }
                             }
-                        }
                         item{Spacer(modifier = Modifier.height(150.dp))}
+                        }
                     }
-                }
-
                 Column(modifier = Modifier.align(Alignment.BottomCenter)){
                     Box(contentAlignment = Alignment.Center){
                         BottomBarForItemScreen(
@@ -425,27 +427,27 @@ fun ItemScreen(
                         )
                     }
                 }
+            }
 
-                if(cartViewModel.errorInCart){
-                    AlertDialogMessage(
-                        cartViewModel.cartInformation.collectAsState().value?.restaurantName ?: "",
-                        "Start",
-                        {
-                            cartViewModel.alertDialogFalse()
-                            cartViewModel.clearAndStartNewCart(cartViewModel.newCount)
-                            cartViewModel.deletenewCount()
-                            scope.showAddToCartSnackbar(
-                                snackbarHostState,
-                                {
-                                    navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
-                                }
+            if(cartViewModel.errorInCart){
+                AlertDialogMessage(
+                    cartViewModel.cartInformation.collectAsState().value?.restaurantName ?: "",
+                    "Start",
+                    {
+                        cartViewModel.alertDialogFalse()
+                        cartViewModel.clearAndStartNewCart(cartViewModel.newCount)
+                        cartViewModel.deletenewCount()
+                        scope.showAddToCartSnackbar(
+                            snackbarHostState,
+                            {
+                                navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
+                            }
 
-                            )
-                        },
-                        "Cancel",
-                        {cartViewModel.alertDialogFalse()}
-                    )
-                }
+                        )
+                    },
+                    "Cancel",
+                    {cartViewModel.alertDialogFalse()}
+                )
             }
         }
     }

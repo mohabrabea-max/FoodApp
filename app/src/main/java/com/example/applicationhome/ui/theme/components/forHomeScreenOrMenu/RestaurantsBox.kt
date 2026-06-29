@@ -24,6 +24,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +39,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import com.example.applicationhome.data.models.local.FavoriteRestaurantDatabase
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
@@ -46,16 +48,18 @@ import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun RestaurantsBox(
     loading : Boolean,
-    item : Restaurants,
-    favoriteState : FavoriteViewModel,
+    item : FavoriteRestaurantDatabase,
+    favoriteViewModel : FavoriteViewModel,
     itemScreenViewModel: ItemScreenViewModel,
     navigationController : NavHostController,
     restaurantViewModel: RestaurantViewModel
 ){
+    val coroutineScope = rememberCoroutineScope()
     if (loading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -72,10 +76,17 @@ fun RestaurantsBox(
         ){
             Box(
                 modifier = Modifier.clickable {
-                    restaurantViewModel.loadRestaurantId(item.id)
-                    restaurantViewModel.selectedtype(0, item.typ.toList().first())
-                    itemScreenViewModel.selectRestaurant(item)
-                    navigationController.navigate(Screens.RestaurantScreen.screen)
+                    coroutineScope.launch {
+                        val restaurant = favoriteViewModel.getRestaurantToView(item.restaurantId)
+                        if(restaurant != null) {
+                            itemScreenViewModel.selectRestaurant(restaurant)
+                        }
+
+                        restaurantViewModel.loadRestaurantId(item.restaurantId)
+                        restaurantViewModel.selectedTypeInFavoriteScreen(0, item.restaurantId)
+
+                        navigationController.navigate(Screens.RestaurantScreen.screen)
+                    }
                 }
             ){
                 Box(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray)){
@@ -91,17 +102,6 @@ fun RestaurantsBox(
                         contentScale = ContentScale.Crop
                     )
                     Row(modifier = Modifier.fillMaxWidth().background(Color.Black.copy(alpha = 0f)).padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween){
-                        Row(
-                            modifier = Modifier.shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(5.dp)).
-                            background(Color.VeryLightGray).
-                            border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(5.dp)).
-                            padding(top = 2.dp, bottom = 2.dp, start = 4.dp, end = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ){
-                            Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFD700) , modifier = Modifier.size(15.dp))
-                            Text(text = item.review.toString(), color = Color.Black, fontSize = 15.sp, modifier = Modifier)
-                        }
                         Favorite2(
                             modifier = Modifier.
                             clip(CircleShape).
@@ -109,7 +109,7 @@ fun RestaurantsBox(
                             size(35.dp).
                             background(Color.VeryLightGray),
                             restaurants = item,
-                            favoriteState = favoriteState
+                            favoriteViewModel = favoriteViewModel
                         )
                     }
                 }
@@ -167,12 +167,21 @@ fun RestaurantsBox(
 fun RestaurantsBoxHomeScreen(
     loading : Boolean,
     item : Restaurants,
-    favoriteState : FavoriteViewModel,
+    favoriteViewModel : FavoriteViewModel,
     itemScreenViewModel: ItemScreenViewModel,
     navigationController : NavHostController,
     restaurantViewModel: RestaurantViewModel,
     viewRestaurantImageViewModel: ViewRestaurantImageViewModel
 ){
+    val favoriteRestaurantDatabase = FavoriteRestaurantDatabase(
+        favoriteViewModel.userId,
+        item.id,
+        item.name,
+        item.image,
+        item.image2,
+        false,
+        false
+    )
     if (loading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -227,8 +236,8 @@ fun RestaurantsBoxHomeScreen(
                             size(35.dp).
                             background(Color.Black.copy(alpha = 0.2f)),
                             color = Color.White,
-                            restaurants = item,
-                            favoriteState = favoriteState
+                            restaurants = favoriteRestaurantDatabase,
+                            favoriteViewModel = favoriteViewModel
                         )
                     }
                 }

@@ -56,7 +56,6 @@ import com.example.applicationhome.ui.theme.components.Options
 import com.example.applicationhome.ui.theme.components.profileAndSetting.UserImage
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
-import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.DrawerViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
@@ -82,7 +81,6 @@ fun FinalScreen(
     userImageViewModel : UserImageViewModel,
     favoriteViewModel : FavoriteViewModel,
     drawerViewModel: DrawerViewModel,
-    categoriesBoxViewModel : CategoriesBoxViewModel,
     homeScreenViewModel : HomeScreenViewModel,
     loginViewModel: LoginViewModel,
     restaurantViewModel: RestaurantViewModel,
@@ -210,14 +208,14 @@ fun FinalScreen(
                         popExitTransition = { ExitTransition.None }
                     ) {
                         when(item){
-                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel, viewRestaurantImageViewModel, loginViewModel, homeScreenViewModel)
+                            is Screens.HomeScreen -> HomeScreen(drawerState, coroutineScope, navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, restaurantViewModel, bottomBarViewModel, viewRestaurantImageViewModel, loginViewModel, homeScreenViewModel)
                             is Screens.Profile -> Profile(navigationController, userImageViewModel)
                             is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel, bottomBarViewModel, cartViewModel, favoriteViewModel, loginViewModel)
                             is Screens.Search -> Search()
                             is Screens.RestaurantScreen -> RestaurantScreen(navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, restaurantViewModel, loginViewModel, viewRestaurantImageViewModel)
                             is Screens.ItemScreen -> ItemScreen(navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, loginViewModel, restaurantViewModel)
                             is Screens.Notifications -> Notifications()
-                            is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, bottomBarViewModel, itemScreenViewModel, cartViewModel, favoriteViewModel, categoriesBoxViewModel, restaurantViewModel, bottomBarViewModel, loginViewModel)
+                            is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, restaurantViewModel, bottomBarViewModel, loginViewModel)
                             is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, bottomBarViewModel, itemScreenViewModel, cartViewModel, bottomBarViewModel, loginViewModel)
                             is Screens.LoginScreen -> LoginScreen(navigationController, loginViewModel)
                             is Screens.SignUpScreen -> SignUpScreen(navigationController, signUpViewModel)

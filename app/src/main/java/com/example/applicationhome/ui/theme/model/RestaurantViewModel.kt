@@ -13,6 +13,7 @@ import com.example.applicationhome.data.models.model.Drink
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Offers
 import com.example.applicationhome.data.models.model.Snack
+import com.example.applicationhome.data.models.repository.FavoriteRepository
 import com.example.applicationhome.data.models.repository.HomeScreenRepository
 import com.example.applicationhome.data.models.repository.RestaurantScreenRepository
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +22,8 @@ import kotlinx.coroutines.launch
 class RestaurantViewModel (
     application : Application,
     private val restaurantScreenRepository : RestaurantScreenRepository,
-    homeScreenRepository: HomeScreenRepository
+    homeScreenRepository: HomeScreenRepository,
+    private val favoriteRepository: FavoriteRepository
 ) : AndroidViewModel(application){
     private val networkObserver = NetworkObserver(application.applicationContext)
     var isNetworkAvailable by mutableStateOf(false)
@@ -81,16 +83,24 @@ class RestaurantViewModel (
         if(restaurantscount != null){
             viewModelScope.launch {
                 if(foodMenuList.value.size < restaurantscount.meals){
-                    _foodMenuMap += restaurantScreenRepository.uploadFoodMenuFromApi(resid)
+                    val foodMenu = restaurantScreenRepository.uploadFoodMenuFromApi(resid)
+                    _foodMenuMap += foodMenu
                 }
                 if(snackMenuList.value.size < restaurantscount.snacks){
-                    _snackMenuMap += restaurantScreenRepository.uploadSnacksMenuFromApi(resid)
+                    val snackMenu = restaurantScreenRepository.uploadSnacksMenuFromApi(resid)
+                    _snackMenuMap += snackMenu
                 }
                 if(restaurantOffersMenuList.value.size < restaurantscount.offers){
                     _restaurantOffersMenuList += restaurantScreenRepository.uploadRestaurantOffersFromApi(resid)
                 }
             }
         }
+    }
+
+    fun selectedTypeInFavoriteScreen(index : Int, restaurantId : Int){
+        val restaurant = favoriteRepository.getRestaurantToView("Restaurant_${restaurantId}")
+        selectedTypeIndex = index
+        typeInRestaurantScreen = restaurant?.typ?.toList()?.first() ?: ""
     }
 
     fun selectedtype(index : Int, type : String){

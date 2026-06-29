@@ -31,7 +31,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.model.FoodItem
+import com.example.applicationhome.data.models.model.FoodItemToCalculate
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
@@ -39,7 +39,7 @@ import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 @Composable
 fun ItemsBox(
     foodMenuIsLoading : Boolean,
-    item: FoodItem,
+    item: FoodItemToCalculate,
     navigationController : NavHostController,
     itemScreenViewModel: ItemScreenViewModel,
     cartViewModel: CartViewModel,
@@ -61,7 +61,7 @@ fun ItemsBox(
             background(Color.White).
             aspectRatio(0.65f).
             clickable{
-                itemScreenViewModel.selectItem(item, item.sizeOptions.last().size)
+                itemScreenViewModel.selectItem(item, item.size)
                 navigationController.navigate(Screens.ItemScreen.screen)
                 cartViewModel.deletenewCount()
             }.
@@ -110,7 +110,7 @@ fun ItemsBox(
                         style = MaterialTheme.typography.titleLarge
                     )
                     Text(
-                        text = item.sizeOptions.last().price.toString() + " E.G",
+                        text = item.price.toString() + " E.G",
                         fontSize = 16.sp,
                         color = Color.Black,
                         style = MaterialTheme.typography.labelLarge,

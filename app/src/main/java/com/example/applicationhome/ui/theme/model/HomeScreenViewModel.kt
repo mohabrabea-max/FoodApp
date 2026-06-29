@@ -27,7 +27,7 @@ class HomeScreenViewModel(
 
 
     private val _restaurantsMenu = mutableStateMapOf<String, Restaurants>()
-    val restaurantsMenu = derivedStateOf { _restaurantsMenu.values.toList() }
+
     val restaurantsMenuIsLoading : StateFlow<Boolean> = homeScreenRepository.restaurantsMenuIsLoading
 
 
@@ -67,15 +67,16 @@ class HomeScreenViewModel(
 
     fun loadDataFromApi() {
         viewModelScope.launch {
-            _restaurantsMenu += homeScreenRepository.uploadRestaurantsFromApi()
+            val restaurants = homeScreenRepository.getRestaurantsFromApi()
+            _restaurantsMenu += restaurants
         }
         viewModelScope.launch {
             _categories.clear()
-            _categories += homeScreenRepository.uploadCategorieslistFromApi()
+            _categories += homeScreenRepository.getCategorieslistFromApi()
         }
         viewModelScope.launch {
             _offers.clear()
-            _offers += homeScreenRepository.uploadOffersFromApi()
+            _offers += homeScreenRepository.getOffersFromApi()
         }
         viewModelScope.launch {
             homeScreenRepository.restaurantCount()

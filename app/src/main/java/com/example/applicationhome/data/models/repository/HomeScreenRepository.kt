@@ -39,7 +39,7 @@ class HomeScreenRepository() {
         }
     }
 
-    suspend fun uploadRestaurantsFromApi(): Map<String, Restaurants> {
+    suspend fun getRestaurantsFromApi(): Map<String, Restaurants> {
         val restaurants = try {
             _restaurantsMenuIsLoading.value = true
             val response = RetrofitInstance.api.restaurants()
@@ -57,7 +57,7 @@ class HomeScreenRepository() {
         return restaurants
     }
 
-    suspend fun uploadCategorieslistFromApi(): List<Categories> {
+    suspend fun getCategorieslistFromApi(): List<Categories> {
         val categoriesList = try {
             _categoriesIsLoading.value = true
             RetrofitInstance.api.categorieslist()
@@ -69,7 +69,7 @@ class HomeScreenRepository() {
         return categoriesList
     }
 
-    suspend fun uploadOffersFromApi(): List<Offers> {
+    suspend fun getOffersFromApi(): List<Offers> {
         val offers = try {
             _offersIsLoading.value = true
             val response = RetrofitInstance.api.offers()

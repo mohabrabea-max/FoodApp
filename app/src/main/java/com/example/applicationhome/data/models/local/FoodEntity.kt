@@ -182,6 +182,39 @@ data class CartClass(
 )
 
 
+@Entity(
+    tableName = "favorite_food",
+    primaryKeys = ["userId", "mealId"]
+)
+data class FavoriteFoodDatabase(
+    val userId : String = "",
+    val mealId : Int = 0,
+    val name : String = "",
+    val image : String = "",
+    val size : String = "",
+    val price : Double = 0.0,
+    val type : String = "",
+    val restaurantId : Int = 0,
+    val isSynced : Boolean = false,
+    val isDeletedOffline : Boolean = false
+)
+
+
+@Entity(
+    tableName = "favorite_restaurant",
+    primaryKeys = ["userId", "restaurantId"]
+)
+data class FavoriteRestaurantDatabase(
+    val userId : String = "",
+    val restaurantId : Int = 0,
+    val name : String = "",
+    val image : String = "",
+    val image2 : String = "",
+    val isSynced : Boolean = false,
+    val isDeletedOffline : Boolean = false
+)
+
+
 
 //data class FirebasePostResponse(val name : String)
 //

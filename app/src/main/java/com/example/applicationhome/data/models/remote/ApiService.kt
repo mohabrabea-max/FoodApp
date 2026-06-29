@@ -52,13 +52,13 @@ interface FoodAppAPIs{
     ): Response<Map<String, Restaurants>>
 
     @GET("meals.json")
-    suspend fun getCartMeals(
+    suspend fun getFavoriteMeals(
         @Query("orderBy") order : String,
         @Query("equalTo") value : Int
     ): Response<Map<String, FoodItem>>
 
     @GET("snacks.json")
-    suspend fun getCartSnacks(
+    suspend fun getFavoriteSnacks(
         @Query("orderBy") order : String,
         @Query("equalTo") value : Int
     ): Response<Map<String, Snack>>
@@ -68,7 +68,7 @@ interface FoodAppAPIs{
         @Path("userId") userId : String,
         @Path("mealKey") mealKey : String,
         @Body data : FavoriteClass
-    ): Response<FavoriteClass>
+    ): Response<Unit>
 
     @DELETE("favorite/{userId}/{mealKey}.json")
     suspend fun deleteFromFavorite(

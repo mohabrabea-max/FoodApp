@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
-import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.DrawerViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
@@ -38,6 +37,7 @@ class MainActivity : ComponentActivity() {
     private val userRepo by lazy { app.userRepository }
     private val menuRepo by lazy { app.homeScreenRepository }
     private val resRepo by lazy { app.restaurantScreenRepository }
+    private val favRepo by lazy { app.favoriteRepository }
 
     // 2. تعريف الـ ViewModels في نطاق الكلاس الآمن باستخدام lazy أيضاً
     private val loginViewModel: LoginViewModel by viewModels {
@@ -91,7 +91,15 @@ class MainActivity : ComponentActivity() {
     private val restaurantViewModel: RestaurantViewModel by viewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return RestaurantViewModel(app, resRepo, menuRepo) as T
+                return RestaurantViewModel(app, resRepo, menuRepo, favRepo) as T
+            }
+        }
+    }
+
+    private val favoriteViewModel: FavoriteViewModel by viewModels {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return FavoriteViewModel(userRepo, favRepo, app) as T
             }
         }
     }
@@ -110,9 +118,7 @@ class MainActivity : ComponentActivity() {
             val itemScreenViewModel: ItemScreenViewModel = viewModel()
             val viewModelForBottomBar: BottomBarViewModel = viewModel()
             val userImageViewModel: UserImageViewModel = viewModel()
-            val favoriteViewModel: FavoriteViewModel = viewModel()
             val drawerViewModel: DrawerViewModel = viewModel()
-            val categoriesBoxViewModel: CategoriesBoxViewModel = viewModel()
             val viewRestaurantImageViewModel: ViewRestaurantImageViewModel = viewModel()
 
             FinalScreen(
@@ -124,7 +130,6 @@ class MainActivity : ComponentActivity() {
                 userImageViewModel,
                 favoriteViewModel,
                 drawerViewModel,
-                categoriesBoxViewModel,
                 homeScreenViewModel,
                 loginViewModel,
                 restaurantViewModel,

@@ -53,3 +53,56 @@ interface CartDao {            // دا الجزء اللي بينفذ عمليا
     @Query("DELETE FROM cart WHERE userId = :userid")
     suspend fun deleteParentCart(userid : String)
 }
+
+@Dao
+interface FavoriteDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addFoodToFavorite(foodItem : List<FavoriteFoodDatabase>)
+
+    @Query("DELETE FROM favorite_food WHERE userId = :userId AND mealId IN (:mealIds)")
+    suspend fun deleteFoodFromDatabase(userId: String, mealIds: List<Int>)
+
+    @Query("SELECT * FROM favorite_food WHERE isDeletedOffline = 1 AND isSynced = 1")
+    suspend fun getFoodDeletedOffline() : List<FavoriteFoodDatabase>
+
+    @Query("UPDATE favorite_food SET isDeletedOffline = 1 WHERE userId = :userId AND mealId = :mealId")
+    suspend fun markFoodAsDeletedOffline(userId: String, mealId: Int)
+
+    @Query("SELECT * FROM favorite_food WHERE userId = :userId AND isDeletedOffline = 0")
+    fun getFoodFromDatabase(userId : String) : Flow<List<FavoriteFoodDatabase>>
+
+    @Query("SELECT * FROM favorite_food WHERE isSynced = 0 AND isDeletedOffline = 0")
+    suspend fun getUnSyncedFood() : List<FavoriteFoodDatabase>
+
+    @Update
+    suspend fun markMealsAsSynced(meals: List<FavoriteFoodDatabase>)
+
+    @Query("DELETE FROM favorite_food WHERE isDeletedOffline = 1 AND isSynced = 0")
+    suspend fun cleanUpLocalOnlyDeletedMeals()
+
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addRestaurantToFavorite(restaurant : List<FavoriteRestaurantDatabase>)
+
+    @Query("DELETE FROM favorite_restaurant WHERE userId = :userId AND restaurantId IN (:resIds)")
+    suspend fun deleteRestaurantFromDatabase(userId: String, resIds: List<Int>)
+
+    @Query("SELECT * FROM favorite_restaurant WHERE isDeletedOffline = 1 AND isSynced = 1")
+    suspend fun getRestaurantsDeletedOffline() : List<FavoriteRestaurantDatabase>
+
+    @Query("UPDATE favorite_restaurant SET isDeletedOffline = 1 WHERE userId = :userId AND restaurantId = :resId")
+    suspend fun markRestaurantsAsDeletedOffline(userId: String, resId: Int)
+
+    @Query("SELECT * FROM favorite_restaurant WHERE userId = :userId AND isDeletedOffline = 0")
+    fun getRestaurantsFromDatabase(userId : String) : Flow<List<FavoriteRestaurantDatabase>>
+
+    @Query("SELECT * FROM favorite_restaurant WHERE isSynced = 0 AND isDeletedOffline = 0")
+    suspend fun getUnSyncedRestaurants() : List<FavoriteRestaurantDatabase>
+
+    @Update
+    suspend fun markRestaurantsAsSynced(restaurants: List<FavoriteRestaurantDatabase>)
+
+    @Query("DELETE FROM favorite_restaurant WHERE isDeletedOffline = 1 AND isSynced = 0")
+    suspend fun cleanUpLocalOnlyDeletedRestaurants()
+}

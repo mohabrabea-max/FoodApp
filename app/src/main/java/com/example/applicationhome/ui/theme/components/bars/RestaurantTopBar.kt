@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import com.example.applicationhome.data.models.local.FavoriteRestaurantDatabase
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
@@ -62,6 +63,17 @@ fun RestaurantTopBar(
             }
         }
     }
+
+    val favoriteRestaurantDatabase = FavoriteRestaurantDatabase(
+        favoriteViewModel.userId,
+        item.id,
+        item.name,
+        item.image,
+        item.image2,
+        false,
+        false
+    )
+
     Column{
         MyTopBar(
             Color.DarkOrange.copy(alpha = alpha),
@@ -131,8 +143,8 @@ fun RestaurantTopBar(
                         shape = CircleShape
                     ).clip(CircleShape).size(40.dp).background(Color.White),
                     modifier2 = Modifier.size(25.dp),
-                    restaurants = item,
-                    favoriteState = favoriteViewModel
+                    restaurants = favoriteRestaurantDatabase,
+                    favoriteViewModel = favoriteViewModel
                 )
             },
             Arrangement.Start,

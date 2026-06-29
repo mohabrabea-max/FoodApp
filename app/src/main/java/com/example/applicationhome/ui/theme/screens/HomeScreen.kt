@@ -58,7 +58,6 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Resta
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SearchBox
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
-import com.example.applicationhome.ui.theme.model.CategoriesBoxViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
@@ -77,7 +76,6 @@ fun HomeScreen(
     itemScreenViewModel: ItemScreenViewModel,
     cartViewModel : CartViewModel,
     favoriteViewModel : FavoriteViewModel,
-    categoriesBoxViewModel : CategoriesBoxViewModel,
     restaurantViewModel: RestaurantViewModel,
     bottomBarViewModel : BottomBarViewModel,
     viewRestaurantImageViewModel: ViewRestaurantImageViewModel,

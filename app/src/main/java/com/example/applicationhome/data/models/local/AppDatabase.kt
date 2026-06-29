@@ -6,13 +6,14 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [UserClass::class, CartClass::class, CartItemsClass::class],
-    version = 14,
+    entities = [UserClass::class, CartClass::class, CartItemsClass::class, FavoriteFoodDatabase::class, FavoriteRestaurantDatabase::class],
+    version = 15,
     exportSchema = false
 )
 abstract class UsersDatabase : RoomDatabase(){
     abstract val userDao : UsersDao
     abstract val cartDao : CartDao
+    abstract val favoriteDao : FavoriteDao
     companion object {
         @Volatile  // بتخلي التغيير اللي بيحصل على المتغير daoInstance نفسه في الرام يسمع فوراً في كل الـ Threads
         private var INSTANCE : UsersDatabase? = null

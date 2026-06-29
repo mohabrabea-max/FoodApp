@@ -40,9 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.data.models.local.CartItemsClass
-import com.example.applicationhome.data.models.model.Food
-import com.example.applicationhome.data.models.model.FoodItem
-import com.example.applicationhome.data.models.model.Snack
+import com.example.applicationhome.data.models.model.FoodItemToCalculate
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.model.CartViewModel
@@ -53,7 +51,7 @@ import kotlinx.coroutines.delay
 fun AddBox(
     loginViewModel: LoginViewModel,
     color : Color,
-    food : Food,
+    food : FoodItemToCalculate,
     cartViewModel: CartViewModel,
     message : () -> Unit = {},
     modifier: Modifier = Modifier
@@ -61,23 +59,9 @@ fun AddBox(
 
     val context = LocalContext.current
     val id = food.id
-    val selectedSize : String
-    val price : Double
-    val type : String
-    when(food){
-        is FoodItem -> {
-            val item = food.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces")}
-            selectedSize = item?.size.toString()
-            price = item?.price ?: 0.0
-            type = "Meal"
-        }
-        is Snack -> {
-            val item = food.priceANDsize
-            selectedSize = item.keys.last()
-            price = item.values.last()
-            type = "Snack"
-        }
-    }
+    val selectedSize = food.size
+    val price = food.price
+    val type = food.type
 
 
 
