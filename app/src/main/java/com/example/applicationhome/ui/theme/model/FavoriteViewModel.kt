@@ -1,7 +1,6 @@
 package com.example.applicationhome.ui.theme.model
 
 import android.app.Application
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -17,10 +16,12 @@ import com.example.applicationhome.data.models.model.Snack
 import com.example.applicationhome.data.models.repository.FavoriteRepository
 import com.example.applicationhome.data.models.repository.UserRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -35,7 +36,7 @@ class FavoriteViewModel(
 
     var selectedCategorieInFavoriteScreen by mutableIntStateOf(0)
 
-    var userId : String = ""
+    var userId by mutableStateOf("")
 
     private val _favoriteFoodFromDatabase : StateFlow<List<FavoriteFoodDatabase>> =
         userRepository.getActiveUserFromDatabase().flatMapLatest { user ->
@@ -48,34 +49,56 @@ class FavoriteViewModel(
             }
         }.stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.Eagerly,
             initialValue = emptyList()
         )
 
-    val favoriteCount : Int by derivedStateOf{
-        _favoriteFoodFromDatabase.value.size
-    }
+    val favoriteFoodCount : StateFlow<Int> = _favoriteFoodFromDatabase
+        .map { it.size }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = 0
+        )
 
-    val favoriteMeals : List<FavoriteFoodDatabase> by derivedStateOf{
-        _favoriteFoodFromDatabase.value.filter { it.type == "Meal" }
-    }
 
-    val favoriteSnacks : List<FavoriteFoodDatabase> by derivedStateOf{
-        _favoriteFoodFromDatabase.value.filter { it.type == "Snack" }
-    }
+    val favoriteMeals : StateFlow<List<FavoriteFoodDatabase>> = _favoriteFoodFromDatabase
+        .map { list -> list.filter { it.type == "Meal" } }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptyList()
+        )
+
+    val favoriteSnacks : StateFlow<List<FavoriteFoodDatabase>> = _favoriteFoodFromDatabase
+        .map { list -> list.filter { it.type == "Snack" } }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptyList()
+        )
 
     val favoriteRestaurantsFromDatabase : StateFlow<List<FavoriteRestaurantDatabase>> =
         userRepository.getActiveUserFromDatabase().flatMapLatest { user ->
             val id = user?.id ?: ""
             if (id.isNotEmpty()){
+                userId = id
                 favoriteRepository.getRestaurantsFavoriteFromDatabase(id)
             }else{
                 flowOf(emptyList())
             }
         }.stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.Eagerly,
             initialValue = emptyList()
+        )
+
+    val favoriteRestaurantsCount : StateFlow<Int> = favoriteRestaurantsFromDatabase
+        .map { it.size }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = 0
         )
 
 
@@ -83,7 +106,9 @@ class FavoriteViewModel(
         viewModelScope.launch {
             networkObserver.isNetworkAvailable.collect { available ->
                 isNetworkAvailable = available
-                favoriteRepository.syncFavoritesInDatabase(userId)
+                if (available && userId.isNotEmpty()) {
+                    favoriteRepository.syncFavoritesInDatabase(userId)
+                }
             }
         }
     }
@@ -91,12 +116,12 @@ class FavoriteViewModel(
 
     fun addFavorite(food : FavoriteFoodDatabase){
         viewModelScope.launch {
-            favoriteRepository.addFoodToFavorite(food)
+            favoriteRepository.addFoodToFavorite(food.copy(userId = userId))
         }
     }
     fun addRestaurantsFavorite(restaurants: FavoriteRestaurantDatabase){
         viewModelScope.launch {
-            favoriteRepository.addRestaurantToFavorite(restaurants)
+            favoriteRepository.addRestaurantToFavorite(restaurants.copy(userId = userId))
         }
     }
 
@@ -115,12 +140,20 @@ class FavoriteViewModel(
         selectedCategorieInFavoriteScreen = index
     }
 
-    fun isMealInFavorite(foodId : Int): Boolean{
-        return _favoriteFoodFromDatabase.value.any{ it.mealId == foodId }
+    fun isMealInFavorite(foodId : Int): Flow<Boolean> {
+        return _favoriteFoodFromDatabase.map { list ->
+            list.any{ it.mealId == foodId }
+        }
     }
 
-    fun getRestaurantToView(resId : Int): Restaurants? =
-        favoriteRepository.getRestaurantToView("Restaurant_${resId}")
+    fun isRestaurantInFavorite(resId : Int): Flow<Boolean>{
+        return favoriteRestaurantsFromDatabase.map { list ->
+            list.any{ it.restaurantId == resId }
+        }
+    }
+
+    suspend fun getRestaurantToView(resId : Int): Restaurants? =
+        favoriteRepository.getRestaurantToView(resId)
 
     fun getMealToView(mealId : Int): FoodItem? =
         favoriteRepository.getMealToView("Meal_${mealId}")

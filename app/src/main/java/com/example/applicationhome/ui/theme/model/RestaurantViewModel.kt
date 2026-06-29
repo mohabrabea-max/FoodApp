@@ -97,8 +97,8 @@ class RestaurantViewModel (
         }
     }
 
-    fun selectedTypeInFavoriteScreen(index : Int, restaurantId : Int){
-        val restaurant = favoriteRepository.getRestaurantToView("Restaurant_${restaurantId}")
+    suspend fun selectedTypeInFavoriteScreen(index : Int, restaurantId : Int){
+        val restaurant = favoriteRepository.getRestaurantToView(restaurantId)
         selectedTypeIndex = index
         typeInRestaurantScreen = restaurant?.typ?.toList()?.first() ?: ""
     }

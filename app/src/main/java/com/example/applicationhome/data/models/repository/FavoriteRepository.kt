@@ -28,7 +28,7 @@ class FavoriteRepository(private val context: Context, private val favoriteDao :
     private val _snacksFavoriteObject = mutableMapOf<String, Snack>()
 
 
-    private val _restaurantsFavoriteObject = mutableMapOf<String, Restaurants>()
+    private val _restaurantsFavoriteObject = java.util.concurrent.ConcurrentHashMap<String, Restaurants>()
 
 
 
@@ -131,7 +131,7 @@ class FavoriteRepository(private val context: Context, private val favoriteDao :
                                     val response = RetrofitInstance.api.getFavoriteRestaurants("\"id\"", item.id)
                                     val resultMap = response.body()
                                     if(response.isSuccessful && resultMap != null){
-                                        _restaurantsFavoriteObject += resultMap
+                                        _restaurantsFavoriteObject.putAll(resultMap)
                                         resultMap
                                     }else{ null }
                                 }catch (e : Exception){ null }
@@ -228,7 +228,16 @@ class FavoriteRepository(private val context: Context, private val favoriteDao :
         return _snacksFavoriteObject[snackKey]
     }
 
-    fun getRestaurantToView(resKey : String): Restaurants?{
-        return _restaurantsFavoriteObject[resKey]
+    suspend fun getRestaurantToView(resId : Int): Restaurants?{
+        _restaurantsFavoriteObject["Restaurant_${resId}"]?.let { return it }
+
+        return try {
+            val response = RetrofitInstance.api.getFavoriteRestaurants("\"id\"", resId)
+            val resultMap = response.body()
+            if (response.isSuccessful && resultMap != null) {
+                _restaurantsFavoriteObject.putAll(resultMap) // دمج آمن جوه الـ ConcurrentHashMap
+                resultMap["Restaurant_${resId}"]
+            } else { null }
+        } catch (e: Exception) { null }
     }
 }

@@ -30,7 +30,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.FoodItemToCalculate
-import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
@@ -59,7 +58,6 @@ fun SnaksBox(
             background(Color.White).
             clickable{
                 itemScreenViewModel.selectSnak(item, item.size)
-                navigationController.navigate(Screens.ItemScreen.screen)
                 cartViewModel.deletenewCount()
             }
         ){

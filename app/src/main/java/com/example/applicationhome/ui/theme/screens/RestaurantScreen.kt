@@ -189,7 +189,7 @@ fun RestaurantScreen(
                                 item.image.first(),
                                 item.priceANDsize.keys.last(),
                                 item.priceANDsize.values.last(),
-                                "Meal",
+                                "Snack",
                                 item.restaurantId,
                                 false,
                                 false

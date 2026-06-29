@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -37,7 +38,7 @@ fun Favorite(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
-    val favorite = favoriteViewModel.isMealInFavorite(food.mealId)
+    val favorite = favoriteViewModel.isMealInFavorite(food.mealId).collectAsState(initial = false).value
     fun favorite1(){
         if(favorite == true){
             favoriteViewModel.removeFavorite(food.mealId)
@@ -88,7 +89,7 @@ fun Favorite2(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
-    val favorite = favoriteViewModel.isMealInFavorite(restaurants.restaurantId)
+    val favorite = favoriteViewModel.isRestaurantInFavorite(restaurants.restaurantId).collectAsState(initial = false).value
     fun favorite1(){
 
         if(favorite == true){
