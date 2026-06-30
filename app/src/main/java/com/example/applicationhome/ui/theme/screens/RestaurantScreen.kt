@@ -63,6 +63,7 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Resta
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
@@ -78,12 +79,14 @@ fun RestaurantScreen(
     favoriteViewModel : FavoriteViewModel,
     restaurantViewModel : RestaurantViewModel,
     loginViewModel : LoginViewModel,
-    viewRestaurantImageViewModel: ViewRestaurantImageViewModel
+    viewRestaurantImageViewModel: ViewRestaurantImageViewModel,
+    homeScreenViewModel : HomeScreenViewModel
 ){
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = restaurantViewModel.resid) {
+
         if (restaurantViewModel.resid != 0) {
             restaurantViewModel.restaurantData()
         }
@@ -230,7 +233,8 @@ fun RestaurantScreen(
                                         food = snack,
                                         cartViewModel
                                     )
-                                }
+                                },
+                                homeScreenViewModel
                             )
                         }
                     }else if(restaurantViewModel.typeInRestaurantScreen == "Drink"){
@@ -358,5 +362,7 @@ fun RestaurantScreen(
                 }
             }
         }
+    }else{
+        NoInternetScreen(navigationController)
     }
 }

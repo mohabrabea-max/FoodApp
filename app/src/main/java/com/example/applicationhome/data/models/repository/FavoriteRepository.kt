@@ -228,7 +228,7 @@ class FavoriteRepository(private val context: Context, private val favoriteDao :
         return _snacksFavoriteObject[snackKey]
     }
 
-    suspend fun getRestaurantToView(resId : Int): Restaurants?{
+    suspend fun getRestaurantToView(resId : Int): Restaurants? {
         _restaurantsFavoriteObject["Restaurant_${resId}"]?.let { return it }
 
         return try {

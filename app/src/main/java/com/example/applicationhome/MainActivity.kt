@@ -95,11 +95,18 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
     private val favoriteViewModel: FavoriteViewModel by viewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return FavoriteViewModel(userRepo, favRepo, app) as T
+            }
+        }
+    }
+
+    private val itemScreenViewModel: ItemScreenViewModel by viewModels {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return ItemScreenViewModel(favRepo) as T
             }
         }
     }
@@ -115,7 +122,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-            val itemScreenViewModel: ItemScreenViewModel = viewModel()
             val viewModelForBottomBar: BottomBarViewModel = viewModel()
             val userImageViewModel: UserImageViewModel = viewModel()
             val drawerViewModel: DrawerViewModel = viewModel()

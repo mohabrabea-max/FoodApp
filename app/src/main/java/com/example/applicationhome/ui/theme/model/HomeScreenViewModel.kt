@@ -51,7 +51,7 @@ class HomeScreenViewModel(
 
 
     private val networkObserver = NetworkObserver(application.applicationContext)
-    var isNetworkAvailable by mutableStateOf(false)
+    var isNetworkAvailable by mutableStateOf(true)
 
 
     init {

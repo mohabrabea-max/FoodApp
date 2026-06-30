@@ -30,7 +30,9 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.models.model.FoodItemToCalculate
+import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.model.CartViewModel
+import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @Composable
@@ -43,8 +45,10 @@ fun SnaksBox(
     navigationController : NavHostController,
     itemScreenViewModel: ItemScreenViewModel,
     cartViewModel : CartViewModel,
-    actions : @Composable ColumnScope.() -> Unit = {}
+    actions : @Composable ColumnScope.() -> Unit = {},
+    homeScreenViewModel : HomeScreenViewModel
 ){
+    val networkState = homeScreenViewModel.isNetworkAvailable
     if (snackIsLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -57,8 +61,12 @@ fun SnaksBox(
             modifier = modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
             background(Color.White).
             clickable{
-                itemScreenViewModel.selectSnak(item, item.size)
-                cartViewModel.deletenewCount()
+                if(networkState){
+                    itemScreenViewModel.selectSnak(item, item.size)
+                    cartViewModel.deletenewCount()
+                }else{
+                    navigationController.navigate(Screens.NoInternetScreen.screen)
+                }
             }
         ){
             Column(modifier = Modifier.fillMaxSize().background(Color.White)){

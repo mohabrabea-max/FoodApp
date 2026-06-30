@@ -27,16 +27,22 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -53,6 +60,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.Options
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.showNetworkSnackBar
 import com.example.applicationhome.ui.theme.components.profileAndSetting.UserImage
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
@@ -89,6 +97,10 @@ fun FinalScreen(
     viewRestaurantImageViewModel: ViewRestaurantImageViewModel,
     signUpViewModel : SignUpViewModel
 ){
+    val snackBarHostState = remember { SnackbarHostState() }
+    val networkState  = homeScreenViewModel.isNetworkAvailable
+
+
     val userState by loginViewModel.userData.collectAsStateWithLifecycle()
     val density = LocalDensity.current
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} }
@@ -115,7 +127,8 @@ fun FinalScreen(
         Screens.ConfirmOrderScreen,
         Screens.ConfirmOrderScreen2,
         Screens.LastOrdersScreen,
-        Screens.OrderScreen
+        Screens.OrderScreen,
+        Screens.NoInternetScreen
     )
     val isLogin by loginViewModel.isLogin.collectAsState()
     ModalNavigationDrawer(
@@ -193,10 +206,9 @@ fun FinalScreen(
             }
         }
     ){
-        Scaffold(
+        Box(
             modifier = Modifier.
-            fillMaxSize(),
-            containerColor = Color.Black
+            fillMaxSize().background(Color.Black),
         ){
             NavHost(navController = navigationController, startDestination = Screens.HomeScreen.screen){
                 allScreens.forEach { item ->
@@ -212,10 +224,10 @@ fun FinalScreen(
                             is Screens.Profile -> Profile(navigationController, userImageViewModel)
                             is Screens.Settings -> Settings(drawerState, coroutineScope, navigationController, userImageViewModel, bottomBarViewModel, cartViewModel, favoriteViewModel, loginViewModel)
                             is Screens.Search -> Search()
-                            is Screens.RestaurantScreen -> RestaurantScreen(navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, restaurantViewModel, loginViewModel, viewRestaurantImageViewModel)
+                            is Screens.RestaurantScreen -> RestaurantScreen(navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, restaurantViewModel, loginViewModel, viewRestaurantImageViewModel, homeScreenViewModel)
                             is Screens.ItemScreen -> ItemScreen(navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, loginViewModel, restaurantViewModel)
                             is Screens.Notifications -> Notifications()
-                            is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, restaurantViewModel, bottomBarViewModel, loginViewModel)
+                            is Screens.Favorite -> Favorite(drawerState, coroutineScope, navigationController, itemScreenViewModel, cartViewModel, favoriteViewModel, restaurantViewModel, bottomBarViewModel, loginViewModel, viewRestaurantImageViewModel, homeScreenViewModel)
                             is Screens.Cart -> Cart(navigationController, drawerState, coroutineScope, bottomBarViewModel, itemScreenViewModel, cartViewModel, bottomBarViewModel, loginViewModel)
                             is Screens.LoginScreen -> LoginScreen(navigationController, loginViewModel)
                             is Screens.SignUpScreen -> SignUpScreen(navigationController, signUpViewModel)
@@ -223,9 +235,61 @@ fun FinalScreen(
                             is Screens.ConfirmOrderScreen2 -> ConfirmOrderScreen2(navigationController, confirmOrderScreenViewModel, bottomBarViewModel, cartViewModel, loginViewModel)
                             is Screens.LastOrdersScreen -> LastOrdersScreen(navigationController, orderScreenViewModel)
                             is Screens.OrderScreen -> OrderScreen(orderScreenViewModel, navigationController, cartViewModel)
+                            is Screens.NoInternetScreen -> NoInternetScreen(navigationController)
                         }
                     }
                 }
+
+            }
+            // TODO: fix snackbar color and racing condition issues
+            var wasNetworkDisconnected by remember { mutableStateOf(false) }
+            LaunchedEffect(networkState){
+                if(!networkState){
+                    //delay(2000.milliseconds)
+                    wasNetworkDisconnected = true
+                    coroutineScope.showNetworkSnackBar(
+                        snackBarHostState,
+                        message = "No internet connection. Please try again.",
+                        actionLabel = "DISCONNECTED",
+                    )
+                }else{
+                    if(wasNetworkDisconnected){
+                        wasNetworkDisconnected = false
+                        coroutineScope.showNetworkSnackBar(
+                            snackBarHostState,
+                            message = "Connected! Refreshing menu...",
+                            actionLabel = "CONNECTED",
+                        )
+
+                    }
+                }
+            }
+
+            SnackbarHost(
+                hostState = snackBarHostState,
+                modifier = Modifier
+                    .align(alignment = Alignment.TopCenter)
+                    .padding(top = 150.dp)
+                    .width(300.dp)
+            ){ data ->
+                val backgroundColor = if (data.visuals.actionLabel == "DISCONNECTED") {
+                    Color(0xFFD32F2F)
+                } else {
+                    Color.Green
+                }
+                Snackbar(
+                    containerColor = backgroundColor,
+                    contentColor = Color.White,
+                    shape = RoundedCornerShape(15.dp),
+                    content = {
+                        Text(
+                            text = data.visuals.message,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                )
             }
         }
     }

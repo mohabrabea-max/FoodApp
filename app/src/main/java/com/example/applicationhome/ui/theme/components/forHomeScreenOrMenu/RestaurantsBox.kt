@@ -22,10 +22,8 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,11 +44,10 @@ import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 fun RestaurantsBox(
@@ -60,10 +57,18 @@ fun RestaurantsBox(
     itemScreenViewModel: ItemScreenViewModel,
     navigationController : NavHostController,
     restaurantViewModel: RestaurantViewModel,
-    snackBarHostState: SnackbarHostState,
-    coroutineScope: CoroutineScope
+    viewRestaurantImageViewModel : ViewRestaurantImageViewModel,
+    homeScreenViewModel : HomeScreenViewModel
 ){
-    val coroutineScope = rememberCoroutineScope()
+    val networkState  = homeScreenViewModel.isNetworkAvailable
+
+    val resScreen = Restaurants(
+        item.restaurantId,
+        listOf(""),
+        item.name,
+        item.image,
+        item.image2
+    )
     if (loading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -80,18 +85,12 @@ fun RestaurantsBox(
         ){
             Box(
                 modifier = Modifier.clickable {
-                    coroutineScope.launch {
-                        val restaurant = favoriteViewModel.getRestaurantToView(item.restaurantId)
-                        println(item.restaurantId)
-                        if(restaurant != null) {
-                            itemScreenViewModel.selectRestaurant(restaurant)
-                            restaurantViewModel.loadRestaurantId(item.restaurantId)
-                            restaurantViewModel.selectedTypeInFavoriteScreen(0, item.restaurantId)
-                            navigationController.navigate(Screens.RestaurantScreen.screen)
-                        }else{
-                            coroutineScope.showNetworkSnackBar(snackBarHostState)
-                        }
-                    }
+                    itemScreenViewModel.selectRestaurant(resScreen)
+                    restaurantViewModel.loadRestaurantId(item.restaurantId)
+                    restaurantViewModel.selectedTypeInFavoriteScreen(0, item.restaurantId)
+                    navigationController.navigate(Screens.RestaurantScreen.screen)
+
+                    //coroutineScope.showNetworkSnackBar(snackBarHostState)
                 }
             ){
                 Box(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray)){
@@ -106,6 +105,7 @@ fun RestaurantsBox(
                         contentDescription = item.name,
                         contentScale = ContentScale.Crop
                     )
+
                     Row(modifier = Modifier.fillMaxWidth().background(Color.Black.copy(alpha = 0f)).padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween){
                         Favorite2(
                             modifier = Modifier.
@@ -145,7 +145,7 @@ fun RestaurantsBox(
                         modifier = Modifier.size(50.dp).
                         clip(CircleShape).
                         background(Color.White).
-                        clickable {  }.
+                        clickable { viewRestaurantImageViewModel.view(item.image) }.
                         shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(40.dp)).
                         border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(40.dp))
                     ){
@@ -176,8 +176,11 @@ fun RestaurantsBoxHomeScreen(
     itemScreenViewModel: ItemScreenViewModel,
     navigationController : NavHostController,
     restaurantViewModel: RestaurantViewModel,
-    viewRestaurantImageViewModel: ViewRestaurantImageViewModel
+    viewRestaurantImageViewModel: ViewRestaurantImageViewModel,
+    homeScreenViewModel : HomeScreenViewModel
 ){
+    val networkState  = homeScreenViewModel.isNetworkAvailable
+
     val favoriteRestaurantDatabase = FavoriteRestaurantDatabase(
         "",
         item.id,

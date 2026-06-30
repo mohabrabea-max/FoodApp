@@ -60,14 +60,17 @@ import com.example.applicationhome.ui.theme.components.bars.MyBottonBar
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.AddBox
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Favorite
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.ItemsBox
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantsBox
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
+import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 import kotlinx.coroutines.CoroutineScope
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity")
@@ -82,7 +85,9 @@ fun Favorite(
     favoriteViewModel : FavoriteViewModel,
     restaurantViewModel: RestaurantViewModel,
     bottomBarViewModel: BottomBarViewModel,
-    loginViewModel : LoginViewModel
+    loginViewModel : LoginViewModel,
+    viewRestaurantImageViewModel: ViewRestaurantImageViewModel,
+    homeScreenViewModel : HomeScreenViewModel
 ){
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -133,8 +138,8 @@ fun Favorite(
                                         itemScreenViewModel,
                                         navigationController,
                                         restaurantViewModel,
-                                        snackBarHostState,
-                                        coroutineScope
+                                        viewRestaurantImageViewModel,
+                                        homeScreenViewModel
                                     )
                                 }
                             }
@@ -178,7 +183,8 @@ fun Favorite(
                                             food = snack,
                                             cartViewModel
                                         )
-                                    }
+                                    },
+                                    homeScreenViewModel
                                 )
                             }
                         }
@@ -241,6 +247,9 @@ fun Favorite(
                     )
                 }
             )
+        }
+        if(viewRestaurantImageViewModel.viewImageState){
+            RestaurantImageView(viewRestaurantImageViewModel)
         }
     }
 }

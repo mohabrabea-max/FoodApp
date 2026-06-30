@@ -7,7 +7,8 @@ import kotlinx.coroutines.launch
 
 fun CoroutineScope.showNetworkSnackBar(
     snackbarHostState: SnackbarHostState,
-    message: String = "No internet connection. Please try again."
+    message: String,
+    actionLabel: String
 
 ){
     this.launch {

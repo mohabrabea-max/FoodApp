@@ -201,7 +201,8 @@ fun HomeScreen(
                             itemScreenViewModel,
                             navigationController,
                             restaurantViewModel,
-                            viewRestaurantImageViewModel
+                            viewRestaurantImageViewModel,
+                            homeScreenViewModel
                         )
                     }
 
