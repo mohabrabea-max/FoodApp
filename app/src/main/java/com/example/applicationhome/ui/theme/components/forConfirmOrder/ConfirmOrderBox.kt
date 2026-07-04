@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.local.CartItemsClass
+import com.example.applicationhome.data.models.local.entity.CartItemsClass
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.phoneNumberState
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.model.LoginViewModel

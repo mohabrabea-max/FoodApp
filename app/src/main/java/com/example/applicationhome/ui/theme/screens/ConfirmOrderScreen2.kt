@@ -39,7 +39,6 @@ import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.forCart.CartButton
 import com.example.applicationhome.ui.theme.components.forCart.PaymentSummary
 import com.example.applicationhome.ui.theme.components.forConfirmOrder.ConfirmOrderBox
-import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
@@ -53,7 +52,6 @@ import com.example.applicationhome.ui.theme.model.LoginViewModel
 fun ConfirmOrderScreen2(
     navigationController : NavHostController,
     confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
-    bottomBarViewModel : BottomBarViewModel,
     cartViewModel: CartViewModel,
     loginViewModel: LoginViewModel
 ){
@@ -108,7 +106,6 @@ fun ConfirmOrderScreen2(
                         Color.White,
                         "Confirm order",
                         {
-                            bottomBarViewModel.home()
                             confirmOrderScreenViewModel.uploadOrder()
                             navigationController.navigate(Screens.HomeScreen.screen)
                             confirmOrderScreenViewModel.cleanTextField()

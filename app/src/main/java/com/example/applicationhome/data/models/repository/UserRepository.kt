@@ -1,8 +1,8 @@
 package com.example.applicationhome.data.models.repository
 
-import com.example.applicationhome.data.models.local.UpdateAccountState
-import com.example.applicationhome.data.models.local.UserClass
-import com.example.applicationhome.data.models.local.UsersDao
+import com.example.applicationhome.data.models.local.entity.UpdateAccountState
+import com.example.applicationhome.data.models.local.entity.UserClass
+import com.example.applicationhome.data.models.local.dao.UsersDao
 import com.example.applicationhome.data.models.model.FirebasePostResponse
 import com.example.applicationhome.data.models.model.UserClassFireBase
 import com.example.applicationhome.data.models.remote.RetrofitInstance

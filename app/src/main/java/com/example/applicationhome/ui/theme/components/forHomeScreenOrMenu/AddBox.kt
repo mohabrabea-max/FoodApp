@@ -39,8 +39,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.models.local.CartItemsClass
-import com.example.applicationhome.data.models.model.FoodItemToCalculate
+import com.example.applicationhome.data.models.local.entity.CartItemsClass
+import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.model.CartViewModel
@@ -51,21 +51,20 @@ import kotlinx.coroutines.delay
 fun AddBox(
     loginViewModel: LoginViewModel,
     color : Color,
-    food : FoodItemToCalculate,
+    food : FavoriteSnacksDatabase,
     cartViewModel: CartViewModel,
     message : () -> Unit = {},
     modifier: Modifier = Modifier
 ){
 
     val context = LocalContext.current
-    val id = food.id
-    val selectedSize = food.size
-    val price = food.price
-    val type = food.type
+    val id = food.snackId
+    val size = food.priceANDsize.keys.last()
+    val price = food.priceANDsize.values.last()
 
 
 
-    val cartkey = "${food.id}_${selectedSize}"
+    val cartkey = "${id}_${size}"
     val count = cartViewModel.cartItems.collectAsState().value.find { it?.mealKey == cartkey }?.quantity ?:0
 
     val meal = CartItemsClass(
@@ -73,12 +72,12 @@ fun AddBox(
         cartkey,
         id,
         food.name,
-        type,
-        selectedSize,
+        "Snack",
+        size,
         count,
         price,
         price * count,
-        food.image.first(),
+        food.image,
         food.restaurantId
     )
 
@@ -103,7 +102,7 @@ fun AddBox(
         clip(CircleShape).
         background(cartColor).
         clickable {
-            cartViewModel.delete(food.id, selectedSize)
+            cartViewModel.delete(id, size)
             if( count > 0 ) Toast.makeText(context, "Removed From Cart", Toast.LENGTH_SHORT).show()
         }.
         border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)),
@@ -114,7 +113,7 @@ fun AddBox(
                 onClick = {
                     isExpanded = true
                     cartViewModel.active(id)
-                    cartViewModel.plus(meal, selectedSize)
+                    cartViewModel.plus(meal, size)
                     if(food.restaurantId == cartViewModel.cartInformation.value?.restaurantId) message()
                 },
                 modifier = Modifier.fillMaxSize()
@@ -140,7 +139,7 @@ fun AddBox(
                         cartViewModel.active(id)
                     }else{
                         cartViewModel.active(id)
-                        cartViewModel.plus(meal, selectedSize)
+                        cartViewModel.plus(meal, size)
                     }
                 },
                 contentAlignment = Alignment.Center
@@ -168,7 +167,7 @@ fun AddBox(
                     clip(CircleShape).
                     background(color).
                     clickable {
-                        cartViewModel.plus(meal, selectedSize)
+                        cartViewModel.plus(meal, size)
                     },
                     contentAlignment = Alignment.Center
                 ){
@@ -178,7 +177,7 @@ fun AddBox(
                         background(color),
                         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
                     ){
-                        IconButton(onClick = {cartViewModel.minus(meal, selectedSize)}, modifier = Modifier.weight(1f).fillMaxHeight()){
+                        IconButton(onClick = {cartViewModel.minus(meal, size)}, modifier = Modifier.weight(1f).fillMaxHeight()){
                             Icon(
                                 Icons.Default.Remove,
                                 contentDescription = null,
@@ -202,7 +201,7 @@ fun AddBox(
                         }
                         IconButton(
                             onClick = {
-                                cartViewModel.plus(meal, selectedSize)
+                                cartViewModel.plus(meal, size)
                                 if(food.restaurantId == cartViewModel.cartInformation.value?.restaurantId) message()
                             },
                             modifier = Modifier.weight(1f).fillMaxHeight()){

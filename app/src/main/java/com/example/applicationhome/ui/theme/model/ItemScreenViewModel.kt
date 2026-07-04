@@ -6,7 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.data.models.model.FoodItemToCalculate
+import com.example.applicationhome.data.models.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.repository.FavoriteRepository
 import kotlinx.coroutines.launch
@@ -14,18 +15,18 @@ import kotlinx.coroutines.launch
 class ItemScreenViewModel(
     private val favoriteRepository : FavoriteRepository
 ) : ViewModel() {
-    var selectedSnak by mutableStateOf<FoodItemToCalculate?>(null)
+    var selectedSnak by mutableStateOf<FavoriteSnacksDatabase?>(null)
     var selectedSnackSize by mutableStateOf("Small")
-    var selectedItem by mutableStateOf<FoodItemToCalculate?>(null)
+    var selectedItem by mutableStateOf<FavoriteFoodDatabase?>(null)
     var selectedSize by mutableStateOf("Small")
     var selectedRestaurant by mutableStateOf<Restaurants?>(null)
 
 
-    fun selectItem(item: FoodItemToCalculate, size : String) {
+    fun selectItem(item: FavoriteFoodDatabase, size : String) {
         selectedItem = item
         selectedSize = size
     }
-    fun selectSnak(item: FoodItemToCalculate?, size : String){
+    fun selectSnak(item: FavoriteSnacksDatabase?, size : String){
         selectedSnak = item
         selectedSnackSize = size
     }

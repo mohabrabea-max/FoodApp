@@ -38,8 +38,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.applicationhome.data.models.local.CartItemsClass
-import com.example.applicationhome.data.models.model.FoodItemToCalculate
+import com.example.applicationhome.data.models.local.entity.CartItemsClass
+import com.example.applicationhome.data.models.local.entity.FavoriteFoodDatabase
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -52,25 +52,26 @@ import kotlinx.coroutines.CoroutineScope
 @Composable
 fun BottomBarForItemScreen(
     cartViewModel: CartViewModel,
-    food : FoodItemToCalculate,
+    food : FavoriteFoodDatabase,
     size : String,
     snackbarHostState : SnackbarHostState,
     scope : CoroutineScope,
     navigationController : NavHostController,
     loginViewModel: LoginViewModel
 ){
-    val totalPrice = cartViewModel.newCount * food.price
+    val price = food.sizeOptions.find { it.size == size }?.price ?: 0.0
+    val totalPrice = cartViewModel.newCount * price
     val meal = CartItemsClass(
         loginViewModel.userData.collectAsState().value.id,
-        "${food.id}_${size}",
-        food.id,
+        "${food.mealId}_${size}",
+        food.mealId,
         food.name,
         food.type,
         size,
         cartViewModel.newCount,
-        food.price,
+        price,
         totalPrice,
-        food.image.first(),
+        food.image,
         food.restaurantId
     )
     var color : Color
@@ -92,7 +93,8 @@ fun BottomBarForItemScreen(
             detectTapGestures { }
         }.
         padding(horizontal = 15.dp).
-        navigationBarsPadding()
+        navigationBarsPadding(),
+        contentAlignment = Alignment.Center
     ){
         Row(
             modifier = Modifier.fillMaxSize(),

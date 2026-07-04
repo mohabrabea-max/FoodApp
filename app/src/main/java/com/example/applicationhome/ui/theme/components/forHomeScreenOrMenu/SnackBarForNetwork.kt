@@ -15,6 +15,7 @@ fun CoroutineScope.showNetworkSnackBar(
         snackbarHostState.showSnackbar(
             message = message,
             duration = SnackbarDuration.Short,
+            actionLabel = actionLabel
         )
     }
 }

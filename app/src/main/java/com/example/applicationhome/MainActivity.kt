@@ -13,7 +13,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.DrawerViewModel
@@ -122,7 +121,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-            val viewModelForBottomBar: BottomBarViewModel = viewModel()
             val userImageViewModel: UserImageViewModel = viewModel()
             val drawerViewModel: DrawerViewModel = viewModel()
             val viewRestaurantImageViewModel: ViewRestaurantImageViewModel = viewModel()
@@ -131,7 +129,6 @@ class MainActivity : ComponentActivity() {
                 scrollBehavior,
                 drawerState,
                 itemScreenViewModel,
-                viewModelForBottomBar,
                 cartViewModel,
                 userImageViewModel,
                 favoriteViewModel,

@@ -12,13 +12,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -35,23 +34,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.example.applicationhome.data.models.local.entity.FavoriteRestaurantDatabase
-import com.example.applicationhome.data.models.model.Restaurants
+import com.example.applicationhome.data.models.local.entity.FavoriteFoodDatabase
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
-import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.FavoriteRestaurant
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Favorite
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
-import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RestaurantTopBar(
-    searchSize : Float,
-    item : Restaurants,
-    scrollState : LazyGridState,
+fun ItemScreenTopBar(
     navigationController : NavHostController,
-    restaurantViewModel: RestaurantViewModel,
-    favoriteViewModel: FavoriteViewModel
+    scrollState : LazyListState,
+    favoriteFoodDatabase : FavoriteFoodDatabase,
+    favoriteViewModel : FavoriteViewModel
 ){
     val alpha by remember {
         derivedStateOf {
@@ -62,31 +56,27 @@ fun RestaurantTopBar(
             }
         }
     }
-
-    val favoriteRestaurantDatabase = FavoriteRestaurantDatabase(
-        favoriteViewModel.userId,
-        item.id,
-        item.name,
-        item.image,
-        item.image2,
-        false,
-        false
-    )
+    val searchSize by remember {
+        derivedStateOf {
+            if(scrollState.firstVisibleItemIndex >= 1){
+                3f
+            }else{
+                ((scrollState.firstVisibleItemScrollOffset / 300f) - 1f).coerceIn(1f, 3f)
+            }
+        }
+    }
 
     Column{
-        RestaurantScreenTopBar(
+        MyTopBar(
             Color.DarkOrange.copy(alpha = alpha),
             modifier = Modifier.
             fillMaxWidth().
             height(100.dp),
-            item.name,
+            null,
             Color.White,
             {
                 IconButton(
-                    onClick = {
-                        if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
-                        restaurantViewModel.resid = 0
-                    },
+                    onClick = {if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() } },
                     modifier = Modifier.padding(5.dp).
                     border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
                     shadow(elevation = if(searchSize < 1) 7.dp else 0.dp, spotColor = Color.LightGray, shape = CircleShape).clip(CircleShape).size(40.dp).
@@ -131,21 +121,17 @@ fun RestaurantTopBar(
                         )
                     }
                 }
-                FavoriteRestaurant(
-                    modifier = Modifier.padding(5.dp).border(
-                        width = 1.dp,
-                        color = Color.LightGray.copy(alpha = 0.25f),
-                        shape = RoundedCornerShape(30.dp)
-                    ).shadow(
-                        elevation = if (searchSize < 1) 7.dp else 0.dp,
-                        spotColor = Color.LightGray,
-                        shape = CircleShape
-                    ).clip(CircleShape).size(40.dp).background(Color.White),
+                Favorite(
+                    modifier = Modifier.padding(5.dp).
+                    border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
+                    shadow(elevation = if(searchSize < 1) 7.dp else 0.dp, spotColor = Color.LightGray, shape = CircleShape).clip(CircleShape).size(40.dp).
+                    background(Color.White),
                     modifier2 = Modifier.size(25.dp),
-                    restaurants = favoriteRestaurantDatabase,
+                    food = favoriteFoodDatabase,
                     favoriteViewModel = favoriteViewModel
                 )
-            }
+            },
+            weight = 2f
         )
     }
 }

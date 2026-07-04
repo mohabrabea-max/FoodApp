@@ -6,8 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.data.models.local.CartClass
-import com.example.applicationhome.data.models.local.CartItemsClass
+import com.example.applicationhome.data.models.local.entity.CartClass
+import com.example.applicationhome.data.models.local.entity.CartItemsClass
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.repository.CartRepository
 import com.example.applicationhome.data.models.repository.OrderRepository

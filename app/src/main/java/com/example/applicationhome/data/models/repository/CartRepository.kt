@@ -1,8 +1,8 @@
 package com.example.applicationhome.data.models.repository
 
-import com.example.applicationhome.data.models.local.CartClass
-import com.example.applicationhome.data.models.local.CartDao
-import com.example.applicationhome.data.models.local.CartItemsClass
+import com.example.applicationhome.data.models.local.entity.CartClass
+import com.example.applicationhome.data.models.local.dao.CartDao
+import com.example.applicationhome.data.models.local.entity.CartItemsClass
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.remote.RetrofitInstance
 import kotlinx.coroutines.flow.Flow

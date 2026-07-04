@@ -9,7 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.core.NetworkObserver
-import com.example.applicationhome.data.models.local.UserClass
+import com.example.applicationhome.data.models.local.entity.UserClass
 import com.example.applicationhome.data.models.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

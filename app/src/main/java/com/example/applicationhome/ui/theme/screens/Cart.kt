@@ -1,6 +1,7 @@
 package com.example.applicationhome.ui.theme.screens
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,7 +25,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,11 +56,9 @@ import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.forCart.CartBox
 import com.example.applicationhome.ui.theme.components.forCart.CartButton
 import com.example.applicationhome.ui.theme.components.forCart.PaymentSummaryCartScreen
-import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
-import kotlinx.coroutines.CoroutineScope
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter",
     "UnrememberedMutableState",
@@ -70,14 +68,13 @@ import kotlinx.coroutines.CoroutineScope
 @Composable
 fun Cart(
     navigationController : NavHostController,
-    drawerState : DrawerState,
-    coroutineScope : CoroutineScope,
-    viewModelForBottomBar: BottomBarViewModel,
     itemScreenViewModel: ItemScreenViewModel = viewModel(),
     cartViewModel: CartViewModel,
-    bottomBarViewModel: BottomBarViewModel,
     loginViewModel : LoginViewModel
 ){
+    BackHandler(enabled = true){
+        if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
+    }
     val cartItems by cartViewModel.cartItems.collectAsState()
     Scaffold(
         modifier = Modifier.navigationBarsPadding().
@@ -95,7 +92,6 @@ fun Cart(
                     IconButton(
                         onClick = {
                             if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
-                            bottomBarViewModel.home()
                         },
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
                     ){
@@ -178,7 +174,6 @@ fun Cart(
 
                                     restoreState = true
                                 }
-                                viewModelForBottomBar.home()
                             }.
                             border(width = 1.dp, color = Color.BrownForFont, shape = RoundedCornerShape(40.dp)).
                             padding(7.dp).align(Alignment.CenterHorizontally)

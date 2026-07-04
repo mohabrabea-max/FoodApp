@@ -1,7 +1,7 @@
 package com.example.applicationhome
 
 import android.app.Application
-import com.example.applicationhome.data.models.local.UsersDatabase
+import com.example.applicationhome.data.models.local.db.UsersDatabase
 import com.example.applicationhome.data.models.repository.CartRepository
 import com.example.applicationhome.data.models.repository.FavoriteRepository
 import com.example.applicationhome.data.models.repository.HomeScreenRepository

@@ -8,8 +8,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.core.NetworkObserver
-import com.example.applicationhome.data.models.local.FavoriteFoodDatabase
-import com.example.applicationhome.data.models.local.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.models.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.models.local.entity.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.Snack
@@ -38,7 +39,7 @@ class FavoriteViewModel(
 
     var userId by mutableStateOf("")
 
-    private val _favoriteFoodFromDatabase : StateFlow<List<FavoriteFoodDatabase>> =
+    val favoriteMeals : StateFlow<List<FavoriteFoodDatabase>> =
         userRepository.getActiveUserFromDatabase().flatMapLatest { user ->
             val id = user?.id ?: ""
             if(id.isNotEmpty()){
@@ -53,7 +54,24 @@ class FavoriteViewModel(
             initialValue = emptyList()
         )
 
-    val favoriteFoodCount : StateFlow<Int> = _favoriteFoodFromDatabase
+
+    val favoriteSnacks : StateFlow<List<FavoriteSnacksDatabase>> =
+        userRepository.getActiveUserFromDatabase().flatMapLatest { user ->
+            val id = user?.id ?: ""
+            if (id.isNotEmpty()) {
+                userId = id
+                favoriteRepository.getSnacksFavoriteFromDatabase(id)
+            } else {
+                flowOf(emptyList())
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptyList()
+        )
+
+
+    val favoriteFoodCount : StateFlow<Int> = favoriteMeals
         .map { it.size }
         .stateIn(
             scope = viewModelScope,
@@ -61,22 +79,14 @@ class FavoriteViewModel(
             initialValue = 0
         )
 
-
-    val favoriteMeals : StateFlow<List<FavoriteFoodDatabase>> = _favoriteFoodFromDatabase
-        .map { list -> list.filter { it.type == "Meal" } }
+    val favoriteSnacksCount : StateFlow<Int> = favoriteSnacks
+        .map { it.size }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = emptyList()
+            initialValue = 0
         )
 
-    val favoriteSnacks : StateFlow<List<FavoriteFoodDatabase>> = _favoriteFoodFromDatabase
-        .map { list -> list.filter { it.type == "Snack" } }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = emptyList()
-        )
 
     val favoriteRestaurantsFromDatabase : StateFlow<List<FavoriteRestaurantDatabase>> =
         userRepository.getActiveUserFromDatabase().flatMapLatest { user ->
@@ -114,9 +124,14 @@ class FavoriteViewModel(
     }
 
 
-    fun addFavorite(food : FavoriteFoodDatabase){
+    fun addMealFavorite(food : FavoriteFoodDatabase){
         viewModelScope.launch {
             favoriteRepository.addFoodToFavorite(food.copy(userId = userId))
+        }
+    }
+    fun addSnackFavorite(snack : FavoriteSnacksDatabase){
+        viewModelScope.launch {
+            favoriteRepository.addSnackToFavorite(snack.copy(userId = userId))
         }
     }
     fun addRestaurantsFavorite(restaurants: FavoriteRestaurantDatabase){
@@ -125,9 +140,14 @@ class FavoriteViewModel(
         }
     }
 
-    fun removeFavorite(mealId : Int){
+    fun removeMealFavorite(mealId : Int){
         viewModelScope.launch {
             favoriteRepository.deleteFoodFromFavorite(userId, mealId)
+        }
+    }
+    fun removeSnackFavorite(snackId : Int){
+        viewModelScope.launch {
+            favoriteRepository.deleteSnackFromFavorite(userId, snackId)
         }
     }
     fun removeRestaurantsFavorite(resId : Int){
@@ -141,8 +161,14 @@ class FavoriteViewModel(
     }
 
     fun isMealInFavorite(foodId : Int): Flow<Boolean> {
-        return _favoriteFoodFromDatabase.map { list ->
+        return favoriteMeals.map { list ->
             list.any{ it.mealId == foodId }
+        }
+    }
+
+    fun isSnackInFavorite(snackId : Int): Flow<Boolean> {
+        return favoriteSnacks.map { list ->
+            list.any{ it.snackId == snackId }
         }
     }
 

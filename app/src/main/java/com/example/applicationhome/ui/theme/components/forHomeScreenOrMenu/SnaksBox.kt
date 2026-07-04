@@ -29,7 +29,8 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.model.FoodItemToCalculate
+import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
+import com.example.applicationhome.data.models.model.MealSnacks
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
@@ -39,9 +40,8 @@ import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 fun SnaksBox(
     snackIsLoading : Boolean,
     modifier: Modifier = Modifier,
-    inItemScreen : Boolean,
-    item: FoodItemToCalculate,
-    size : String?,
+    item: FavoriteSnacksDatabase,
+    size : String,
     navigationController : NavHostController,
     itemScreenViewModel: ItemScreenViewModel,
     cartViewModel : CartViewModel,
@@ -49,6 +49,9 @@ fun SnaksBox(
     homeScreenViewModel : HomeScreenViewModel
 ){
     val networkState = homeScreenViewModel.isNetworkAvailable
+
+    val price = item.priceANDsize[size]
+
     if (snackIsLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -62,7 +65,7 @@ fun SnaksBox(
             background(Color.White).
             clickable{
                 if(networkState){
-                    itemScreenViewModel.selectSnak(item, item.size)
+                    itemScreenViewModel.selectSnak(item, size)
                     cartViewModel.deletenewCount()
                 }else{
                     navigationController.navigate(Screens.NoInternetScreen.screen)
@@ -74,7 +77,7 @@ fun SnaksBox(
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(),
                         model = ImageRequest.Builder(LocalContext.current).
-                        data(item.image.first()).
+                        data(item.image).
                         crossfade(true).
                         precision(Precision.EXACT).
                         build(),
@@ -94,7 +97,7 @@ fun SnaksBox(
                     verticalArrangement = Arrangement.SpaceBetween
                 ){
                     Text(
-                        text = if(inItemScreen == false) item.name else size + " " + item.name,
+                        text = item.name,
                         fontSize = 14.sp,
                         color = Color.Black,
                         style = TextStyle(
@@ -102,16 +105,57 @@ fun SnaksBox(
                             letterSpacing = (-0.5).sp
                         )
                     )
-                    if(inItemScreen == false){
-                        Text(
-                            text = item.price.toString() + " E.G",
-                            fontSize = 16.sp,
-                            color = Color.Black,
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    Text(
+                        text = "$price E.G",
+                        fontSize = 16.sp,
+                        color = Color.Black,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
+            }
+        }
+    }
+}
+
+
+
+@Composable
+fun SnaksBoxForItemScreen(
+    modifier: Modifier = Modifier,
+    item: MealSnacks
+){
+    Card(
+        modifier = modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
+        background(Color.White).
+        clickable{  }
+    ){
+        Column(modifier = Modifier.fillMaxSize().background(Color.White)){
+            Box(modifier = Modifier.fillMaxWidth().weight(2f)){
+                AsyncImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = ImageRequest.Builder(LocalContext.current).
+                    data(item.image).
+                    crossfade(true).
+                    precision(Precision.EXACT).
+                    build(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop
+                )
+            }
+            Column(
+                modifier = Modifier.fillMaxWidth().weight(1.1f).padding(start = 15.dp, end = 10.dp, top = 5.dp, bottom = 10.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ){
+                Text(
+                    text = item.size + " " + item.name,
+                    fontSize = 14.sp,
+                    color = Color.Black,
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = (-0.5).sp
+                    )
+                )
             }
         }
     }

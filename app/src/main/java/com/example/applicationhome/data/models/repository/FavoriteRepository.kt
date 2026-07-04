@@ -8,9 +8,10 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.applicationhome.SyncAddToFavoritesWorker
 import com.example.applicationhome.SyncRemoveFromFavoritesWorker
-import com.example.applicationhome.data.models.local.FavoriteDao
-import com.example.applicationhome.data.models.local.FavoriteFoodDatabase
-import com.example.applicationhome.data.models.local.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.models.local.dao.FavoriteDao
+import com.example.applicationhome.data.models.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.models.local.entity.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
 import com.example.applicationhome.data.models.model.FavoriteClass
 import com.example.applicationhome.data.models.model.FoodItem
 import com.example.applicationhome.data.models.model.Restaurants
@@ -34,6 +35,9 @@ class FavoriteRepository(private val context: Context, private val favoriteDao :
 
     fun getFoodFavoriteFromDatabase(userId : String)
     : Flow<List<FavoriteFoodDatabase>> = favoriteDao.getFoodFromDatabase(userId)
+
+    fun getSnacksFavoriteFromDatabase(userId : String)
+            : Flow<List<FavoriteSnacksDatabase>> = favoriteDao.getSnacksFromDatabase(userId)
 
     fun getRestaurantsFavoriteFromDatabase(userId : String)
     : Flow<List<FavoriteRestaurantDatabase>> = favoriteDao.getRestaurantsFromDatabase(userId)
@@ -75,12 +79,13 @@ class FavoriteRepository(private val context: Context, private val favoriteDao :
                             FavoriteFoodDatabase(
                                 userId,
                                 item.id,
+                                item.category,
                                 item.name,
+                                item.details,
                                 item.image.first(),
-                                item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }?.size ?: "",
-                                item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }?.price ?: 0.0,
-                                "Meal",
+                                item.sizeOptions,
                                 item.restaurantId,
+                                item.review,
                                 true,
                                 false
                             )
@@ -100,7 +105,7 @@ class FavoriteRepository(private val context: Context, private val favoriteDao :
                                 }catch (e : Exception){ null }
                             }
                         }
-                        val snacksFavoriteToAddInDatabase : List<FavoriteFoodDatabase>
+                        val snacksFavoriteToAddInDatabase : List<FavoriteSnacksDatabase>
 
                         val finalSnacksList = mutableMapOf<String, Snack>()
 
@@ -109,20 +114,20 @@ class FavoriteRepository(private val context: Context, private val favoriteDao :
                         }
 
                         snacksFavoriteToAddInDatabase = finalSnacksList.values.map { item ->
-                            FavoriteFoodDatabase(
+                            FavoriteSnacksDatabase(
                                 userId,
                                 item.id,
                                 item.name,
+                                item.details,
                                 item.image.first(),
-                                item.priceANDsize.keys.last(),
-                                item.priceANDsize.values.last(),
-                                "Snack",
+                                item.priceANDsize,
                                 item.restaurantId,
+                                item.review,
                                 true,
                                 false
                             )
                         }
-                        favoriteDao.addFoodToFavorite(snacksFavoriteToAddInDatabase)
+                        favoriteDao.addSnacksToFavorite(snacksFavoriteToAddInDatabase)
 
 
                         val deferredRestaurants = restaurantsFavorite.map { item ->
@@ -173,6 +178,11 @@ class FavoriteRepository(private val context: Context, private val favoriteDao :
         triggerOfflineSyncWorker()
     }
 
+    suspend fun addSnackToFavorite(snackItem : FavoriteSnacksDatabase){
+        favoriteDao.addSnacksToFavorite(listOf(snackItem))
+        triggerOfflineSyncWorker()
+    }
+
     suspend fun addRestaurantToFavorite(restaurantItem : FavoriteRestaurantDatabase){
         favoriteDao.addRestaurantToFavorite(listOf(restaurantItem))
         triggerOfflineSyncWorker()
@@ -196,6 +206,11 @@ class FavoriteRepository(private val context: Context, private val favoriteDao :
 
     suspend fun deleteFoodFromFavorite(userId : String, mealId : Int){
         favoriteDao.markFoodAsDeletedOffline(userId, mealId)
+        triggerOfflineRemoveWorker()
+    }
+
+    suspend fun deleteSnackFromFavorite(userId : String, snackId : Int){
+        favoriteDao.markSnacksAsDeletedOffline(userId, snackId)
         triggerOfflineRemoveWorker()
     }
 

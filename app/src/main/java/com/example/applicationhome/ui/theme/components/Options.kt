@@ -37,7 +37,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.data.models.repository.Drawer
 import com.example.applicationhome.ui.theme.DarkOrange
-import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.DrawerViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -50,7 +49,6 @@ fun Options(
     navigationController: NavHostController,
     drawerState : DrawerState,
     coroutineScope : CoroutineScope,
-    bottomBarViewModel: BottomBarViewModel,
     drawerViewModel: DrawerViewModel,
     loginViewModel: LoginViewModel
 ){
@@ -91,8 +89,6 @@ fun Options(
                     selected = currentRoute == item.screen,
                     icon = {Icon(imageVector = item.icon, contentDescription = item.title, tint = Color.DarkOrange, modifier = Modifier.padding(start = 5.dp))},
                     onClick = {
-                        if(item.title == "Home") bottomBarViewModel.home()
-                        else if(item.title == "Settings") bottomBarViewModel.settings()
                         coroutineScope.launch{drawerState.close()}
                         navigationController.navigate(item.screen)
                     }

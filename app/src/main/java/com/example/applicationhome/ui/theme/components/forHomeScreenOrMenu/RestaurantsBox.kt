@@ -38,7 +38,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.local.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.models.local.entity.FavoriteRestaurantDatabase
 import com.example.applicationhome.data.models.model.Restaurants
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
@@ -107,7 +107,7 @@ fun RestaurantsBox(
                     )
 
                     Row(modifier = Modifier.fillMaxWidth().background(Color.Black.copy(alpha = 0f)).padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween){
-                        Favorite2(
+                        FavoriteRestaurant(
                             modifier = Modifier.
                             clip(CircleShape).
                             border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
@@ -238,7 +238,7 @@ fun RestaurantsBoxHomeScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.End
                     ){
-                        Favorite2(
+                        FavoriteRestaurant(
                             modifier = Modifier.
                             clip(CircleShape).
                             size(35.dp).

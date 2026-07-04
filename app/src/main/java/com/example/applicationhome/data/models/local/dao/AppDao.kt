@@ -1,10 +1,17 @@
-package com.example.applicationhome.data.models.local
+package com.example.applicationhome.data.models.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.applicationhome.data.models.local.entity.CartClass
+import com.example.applicationhome.data.models.local.entity.CartItemsClass
+import com.example.applicationhome.data.models.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.models.local.entity.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
+import com.example.applicationhome.data.models.local.entity.UpdateAccountState
+import com.example.applicationhome.data.models.local.entity.UserClass
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -79,6 +86,32 @@ interface FavoriteDao {
 
     @Query("DELETE FROM favorite_food WHERE isDeletedOffline = 1 AND isSynced = 0")
     suspend fun cleanUpLocalOnlyDeletedMeals()
+
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addSnacksToFavorite(snacksItems : List<FavoriteSnacksDatabase>)
+
+    @Query("DELETE FROM favorite_snacks WHERE userId = :userId AND snackId IN (:snackIds)")
+    suspend fun deleteSnacksFromDatabase(userId: String, snackIds: List<Int>)
+
+    @Query("SELECT * FROM favorite_snacks WHERE isDeletedOffline = 1 AND isSynced = 1")
+    suspend fun getSnacksDeletedOffline() : List<FavoriteSnacksDatabase>
+
+    @Query("UPDATE favorite_snacks SET isDeletedOffline = 1 WHERE userId = :userId AND snackId = :snackId")
+    suspend fun markSnacksAsDeletedOffline(userId: String, snackId: Int)
+
+    @Query("SELECT * FROM favorite_snacks WHERE userId = :userId AND isDeletedOffline = 0")
+    fun getSnacksFromDatabase(userId : String) : Flow<List<FavoriteSnacksDatabase>>
+
+    @Query("SELECT * FROM favorite_snacks WHERE isSynced = 0 AND isDeletedOffline = 0")
+    suspend fun getUnSyncedSnacks() : List<FavoriteSnacksDatabase>
+
+    @Update
+    suspend fun markSnacksAsSynced(snacks: List<FavoriteSnacksDatabase>)
+
+    @Query("DELETE FROM favorite_snacks WHERE isDeletedOffline = 1 AND isSynced = 0")
+    suspend fun cleanUpLocalOnlyDeletedSnacks()
 
 
 

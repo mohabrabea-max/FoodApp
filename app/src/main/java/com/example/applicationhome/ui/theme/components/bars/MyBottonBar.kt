@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -29,29 +31,34 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
-import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
-@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyBottonBar(
-    navigationController : NavController,
-    viewModel: BottomBarViewModel,
+    navigationController : NavHostController,
+    dashboardNavController : NavHostController,
+    currentRoute :  String?,
     cartViewModel: CartViewModel,
     favoriteViewModel: FavoriteViewModel,
-    loginViewModel: LoginViewModel
+    loginViewModel: LoginViewModel,
+    homeListState : LazyListState,
+    favoriteListState : LazyGridState,
+    settingsListState : LazyGridState,
+    scope : CoroutineScope
 ){
-    var selected = viewModel.selected
     val count = favoriteViewModel.favoriteFoodCount.collectAsState().value +
-            favoriteViewModel.favoriteRestaurantsCount.collectAsState().value
+            favoriteViewModel.favoriteRestaurantsCount.collectAsState().value +
+            favoriteViewModel.favoriteSnacksCount.collectAsState().value
     Box(
         modifier = Modifier.width(350.dp).
         height(60.dp).
@@ -66,23 +73,21 @@ fun MyBottonBar(
             verticalAlignment = Alignment.CenterVertically
         ){
             Box(modifier = Modifier.weight(1f)){
+                val isHomeActive = currentRoute == Screens.HomeScreen.screen
                 IconButton(
                     onClick = {
-                        if(selected == "Home"){
-                            navigationController.navigate(Screens.HomeScreen.screen)
-                        }else{
-                            viewModel.home()
-                            navigationController.navigate(Screens.HomeScreen.screen){
-                                popUpTo(navigationController.graph.findStartDestination().id) {
+                        if(!isHomeActive){
+                            dashboardNavController.navigate(Screens.HomeScreen.screen){
+                                popUpTo(dashboardNavController.graph.findStartDestination().id) {
                                     saveState = true // احفظ حالة الصفحة اللي أنا خارج منها (زي السكرول)
                                 }
-
                                 // 2. ميكررش نفس الصفحة لو أنا دوست عليها وأنا واقف فيها
                                 launchSingleTop = true
 
-
-
+                                restoreState = true  // 3. يرجع الحالة اللي كانت محفوظة لما أرجع للصفحة دي تاني
                             }
+                        }else{
+                            scope.launch { homeListState.animateScrollToItem(0) }
                         }
                     }, modifier = Modifier.fillMaxSize().align(Alignment.Center)
                 ){
@@ -90,25 +95,25 @@ fun MyBottonBar(
                         Icons.Default.Home,
                         contentDescription = "Home",
                         modifier = Modifier.size(26.dp),
-                        tint = if(selected == "Home") Color.DarkOrange else Color.White
+                        tint = if(isHomeActive) Color.DarkOrange else Color.White
                     )
                 }
             }
             Box(modifier = Modifier.weight(1f)){
+                val isFavoriteActive = currentRoute == Screens.Favorite.screen
                 IconButton(
                     onClick = {
-                        if(selected == "Favorite"){
-                            navigationController.navigate(Screens.Favorite.screen)
-                        }else{
-                            viewModel.favorite()
-                            navigationController.navigate(Screens.Favorite.screen){
-                                popUpTo(navigationController.graph.findStartDestination().id) {
+                        if(!isFavoriteActive){
+                            dashboardNavController.navigate(Screens.Favorite.screen){
+                                popUpTo(dashboardNavController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
                                 launchSingleTop = true
 
-                                restoreState = true  // 3. يرجع الحالة اللي كانت محفوظة لما أرجع للصفحة دي تاني
+                                restoreState = true
                             }
+                        }else{
+                            scope.launch { favoriteListState.animateScrollToItem(0) }
                         }
                     }, modifier = Modifier.fillMaxSize().align(Alignment.Center)
                 ){
@@ -128,7 +133,7 @@ fun MyBottonBar(
                             Icons.Default.Favorite,
                             contentDescription = "Favorite",
                             modifier = Modifier.size(26.dp),
-                            tint = if(selected == "Favorite") Color.DarkOrange else Color.White
+                            tint = if(isFavoriteActive) Color.DarkOrange else Color.White
                         )
                     }
                 }
@@ -137,18 +142,8 @@ fun MyBottonBar(
                 IconButton(
                     onClick = {
                         println(loginViewModel.userData.value.id)
-                        if(selected == "Cart"){
-                            navigationController.navigate(Screens.Cart.screen)
-                        }else{
-                            navigationController.navigate(Screens.Cart.screen){
-                                popUpTo(navigationController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-
-                                launchSingleTop = true
-
-                                restoreState = true
-                            }
+                        navigationController.navigate(Screens.Cart.screen){
+                            launchSingleTop = true
                         }
                     }, modifier = Modifier.fillMaxSize().align(Alignment.Center)
                 ){
@@ -168,20 +163,18 @@ fun MyBottonBar(
                             Icons.Default.ShoppingCart,
                             contentDescription = "Cart",
                             modifier = Modifier.size(26.dp),
-                            tint = if(selected == "Cart") Color.DarkOrange else Color.White
+                            tint = Color.White
                         )
                     }
                 }
             }
             Box(modifier = Modifier.weight(1f)){
+                val isSettingsActive = currentRoute == Screens.Settings.screen
                 IconButton(
                     onClick = {
-                        if(selected == "Settings"){
-                            navigationController.navigate(Screens.Settings.screen)
-                        }else{
-                            viewModel.settings()
-                            navigationController.navigate(Screens.Settings.screen){
-                                popUpTo(navigationController.graph.findStartDestination().id) {
+                        if(!isSettingsActive){
+                            dashboardNavController.navigate(Screens.Settings.screen){
+                                popUpTo(dashboardNavController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
 
@@ -189,6 +182,8 @@ fun MyBottonBar(
 
                                 restoreState = true
                             }
+                        }else{
+                            scope.launch { settingsListState.animateScrollToItem(0) }
                         }
                     }, modifier = Modifier.fillMaxSize().align(Alignment.Center)
                 ){
@@ -196,7 +191,7 @@ fun MyBottonBar(
                         Icons.Default.Person,
                         contentDescription = "Settings",
                         modifier = Modifier.size(26.dp),
-                        tint = if(selected == "Settings") Color.DarkOrange else Color.White
+                        tint = if(isSettingsActive) Color.DarkOrange else Color.White
                     )
                 }
             }

@@ -5,14 +5,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.google.gson.annotations.SerializedName
 
-enum class CategoryType { PIZZA, BURGER, CHICKEN, SWEET, ALL }
-
-
-enum class FoodSizes{ SMALL, MEDIUM, LARGE }
 
 sealed interface Food{
     val id: Int
     val name : String
+    val details : String
     val image : List<String>
     var restaurantId : Int
     val review : Double
@@ -20,8 +17,9 @@ sealed interface Food{
 
     data class FoodItem(
         override val id : Int = 0,
-        val category : String = CategoryType.ALL.toString(),
+        val category : String = "ALL",
         override val name : String = "",
+        override val details : String = "",
         @SerializedName("images")
         override val image : List<String> = listOf(""),
         @SerializedName("sizes")
@@ -31,25 +29,14 @@ sealed interface Food{
         override val review : Double = 0.0
     ): Food
 
-data class FoodItemToCalculate(
-    val id : Int = 0,
-    val name : String = "",
-    val image : List<String> = listOf(""),
-    val size : String = "",
-    val price : Double = 0.0,
-    val type : String = "",
-    val restaurantId : Int = 0,
-    val details : String = "",
-    val review : Double = 0.0
-)
-
     data class Snack(
         override val id : Int = 0,
         override val name : String = "",
+        override val details : String = "",
         @SerializedName("images")
         override val image : List<String> = listOf(""),
         @SerializedName("prices")
-        val priceANDsize : Map<String, Double> = mapOf(),
+        val priceANDsize : Map<String, Double> = emptyMap(),
         override var restaurantId : Int = 0,
         @SerializedName("rating")
         override val review : Double = 0.0
@@ -67,12 +54,19 @@ data class MealSizeDetail(
     val size : String = "",
     val price : Double = 0.0,
     @SerializedName("details")
-    val snack : Map<Int, String> = mapOf(0 to "")
+    val snack : Map<Int, MealSnacks> = emptyMap()
 )
+
+data class MealSnacks(
+    val size : String = "",
+    val name : String = "",
+    val image : String = ""
+)
+
 data class Categories(
     val id : Int = 0,
     val name : String = "",
-    val type : String = CategoryType.ALL.toString(),
+    val type : String = "ALL",
     val image : String = "",
     val icon : String = ""
 )
@@ -151,20 +145,6 @@ data class UserClassFireBase(
 data class FirebasePostResponse(val name : String)
 
 data class TextFieldClassFromConfirmOrderScreen(val textState : TextFieldState, val title: String)
-
-
-//data class CartItemsClass(
-//    val id : Int = 0,
-//    val type : String = "",
-//    val size : String = "",
-//    val number : Int = 0
-//)
-//data class CartClass(
-//    val cartItems : Map<String, CartItemsClass> = emptyMap<String, CartItemsClass>(),
-//    val restaurantId : Int = 0,
-//    val restaurantName : String = "",
-//    val restaurantImage : String = ""
-//)
 
 
 data class OrderItemsClass(

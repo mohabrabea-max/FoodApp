@@ -48,15 +48,17 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.local.FavoriteFoodDatabase
-import com.example.applicationhome.data.models.model.FoodItemToCalculate
+import com.example.applicationhome.data.models.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.bars.RestaurantTopBar
 import com.example.applicationhome.ui.theme.components.forCart.AlertDialogMessage
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.AddBox
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.CategoriesBarForRestaurantsScreen
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Favorite
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.FavoriteSnacks
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.ItemsBox
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.MealBoxIcon
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantButton
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantHeader
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantImageView
@@ -103,15 +105,26 @@ fun RestaurantScreen(
         }
     }
     val topBarHeightPx = with(LocalDensity.current) { 100.dp.toPx() }
-    val layoutInfo = scrollState.layoutInfo
-    val itemInfo = layoutInfo.visibleItemsInfo.find { it.key == "categories_header" }
+    val itemInfo by remember {
+        derivedStateOf {
+            scrollState.layoutInfo.visibleItemsInfo.find { it.key == "categories_header" }
+        }
+    }
 
     val menu by restaurantViewModel.foodMenuList
     val snacks by restaurantViewModel.snackMenuList
     val offers by restaurantViewModel.restaurantOffersMenuList
-    val item = itemScreenViewModel.selectedRestaurant
+    val iteme = itemScreenViewModel.selectedRestaurant
 
-    if(item != null){
+    val cartItems by cartViewModel.cartItems.collectAsState()
+    val cartInformation by cartViewModel.cartInformation.collectAsState()
+    val restaurantId = cartInformation?.restaurantId
+    val restaurantName = cartInformation?.restaurantName
+
+    val foodMenuIsLoading by restaurantViewModel.foodMenuListIsLoading.collectAsState()
+    val snacksIsLoading by restaurantViewModel.snacksIsLoading.collectAsState()
+
+    if(iteme != null){
         Scaffold(
             modifier = Modifier.navigationBarsPadding().fillMaxSize(),
             snackbarHost = {
@@ -125,7 +138,7 @@ fun RestaurantScreen(
                 //Spacer(modifier = Modifier.height(150.dp))
             },
             topBar = {
-                RestaurantTopBar(searchSize, item, scrollState, navigationController, restaurantViewModel, favoriteViewModel)
+                RestaurantTopBar(searchSize, iteme, scrollState, navigationController, restaurantViewModel, favoriteViewModel)
             }
         ){
             Box(modifier = Modifier.background(Color.VeryLightGray)){
@@ -136,7 +149,7 @@ fun RestaurantScreen(
                     columns = GridCells.Fixed(2)
                 ){
                     item(span = { GridItemSpan(2) }){
-                        RestaurantHeader(item, viewRestaurantImageViewModel)
+                        RestaurantHeader(iteme, viewRestaurantImageViewModel)
                     }
                     item(span = { GridItemSpan(2) }){
                         Box{
@@ -145,7 +158,7 @@ fun RestaurantScreen(
                             ){
                                 item{ Spacer(modifier = Modifier.width(15.dp)) }
 
-                                items(offers.toList()){ item ->
+                                items(offers){ item ->
                                     AsyncImage(
                                         modifier = Modifier.fillMaxWidth().height(120.dp).padding(vertical = 10.dp).clip(RoundedCornerShape(10.dp)).clickable {  },
                                         model = ImageRequest.Builder(LocalContext.current).
@@ -166,71 +179,61 @@ fun RestaurantScreen(
                             modifier = Modifier.height(47.dp).
                             fillMaxWidth().
                             graphicsLayer {
-                                if (itemInfo != null) {
-                                    if (itemInfo.offset.y < topBarHeightPx) {
-                                        translationY = topBarHeightPx - itemInfo.offset.y
+                                val currentInfo = itemInfo
+                                if (currentInfo != null) {
+                                    if (currentInfo.offset.y < topBarHeightPx) {
+                                        translationY = topBarHeightPx - currentInfo.offset.y
                                     }
                                 }
-                            }.shadow( elevation =
-                                if (itemInfo != null){
-                                    if (itemInfo.offset.y < topBarHeightPx) 3.dp else 0.dp
+                            }.shadow(
+                                elevation =
+                                if (itemInfo != null && itemInfo!!.offset.y < topBarHeightPx){
+                                    3.dp
                                 }else{
                                     0.dp
                                 }
                             )
                         ){
-                            CategoriesBarForRestaurantsScreen(item.typ, restaurantViewModel)
+                            CategoriesBarForRestaurantsScreen(iteme.typ, restaurantViewModel)
 
                         }
                     }
                     if(restaurantViewModel.typeInRestaurantScreen == "Snacks"){
-                        items(snacks.toList()){ item ->
-                            val databaseMenu = FavoriteFoodDatabase(
+                        items(snacks){ item ->
+                            val databaseMenu = FavoriteSnacksDatabase(
                                 favoriteViewModel.userId,
                                 item.id,
                                 item.name,
+                                item.details,
                                 item.image.first(),
-                                item.priceANDsize.keys.last(),
-                                item.priceANDsize.values.last(),
-                                "Snack",
+                                item.priceANDsize,
                                 item.restaurantId,
+                                item.review,
                                 false,
                                 false
                             )
-                            val snack = FoodItemToCalculate(
-                                item.id,
-                                item.name,
-                                item.image,
-                                item.priceANDsize.keys.last(),
-                                item.priceANDsize.values.last(),
-                                "Snack",
-                                item.restaurantId,
-                                "ffffffffff sssssssss hhjd ggg",
-                                5.0
-                            )
                             SnaksBox(
-                                restaurantViewModel.snacksIsLoading.collectAsState().value,
+                                snacksIsLoading,
                                 modifier = Modifier.size(200.dp),
-                                false,
-                                snack,
-                                null,
+                                databaseMenu,
+                                item.priceANDsize.keys.last(),
                                 navigationController,
                                 itemScreenViewModel,
                                 cartViewModel,
                                 {
-                                    Favorite(
+                                    FavoriteSnacks(
                                         modifier = Modifier.
                                         clip(CircleShape).
                                         border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
                                         size(35.dp).
                                         background(Color.VeryLightGray),
-                                        food = databaseMenu,
+                                        snack = databaseMenu,
                                         favoriteViewModel = favoriteViewModel
                                     )
                                     AddBox(
                                         loginViewModel,
                                         color = Color.VeryLightGray,
-                                        food = snack,
+                                        food = databaseMenu,
                                         cartViewModel
                                     )
                                 },
@@ -238,34 +241,25 @@ fun RestaurantScreen(
                             )
                         }
                     }else if(restaurantViewModel.typeInRestaurantScreen == "Drink"){
-                        println("")
+
                     }else{
-                        items(menu.toList()){ item ->
-                            val sizeOptions = item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }
+                        items(menu){ item ->
                             val databaseMenu = FavoriteFoodDatabase(
                                 favoriteViewModel.userId,
                                 item.id,
+                                item.category,
                                 item.name,
+                                item.details,
                                 item.image.first(),
-                                sizeOptions?.size ?: "",
-                                sizeOptions?.price ?: 0.0,
-                                "Meal",
+                                item.sizeOptions,
                                 item.restaurantId,
+                                item.review,
                                 false,
                                 false
                             )
-                            val menu = FoodItemToCalculate(
-                                item.id,
-                                item.name,
-                                item.image,
-                                sizeOptions?.size ?: "",
-                                sizeOptions?.price ?: 0.0,
-                                "Meal",
-                                item.restaurantId
-                            )
                             ItemsBox(
-                                restaurantViewModel.foodMenuListIsLoading.collectAsState().value,
-                                menu,
+                                foodMenuIsLoading,
+                                databaseMenu,
                                 navigationController,
                                 itemScreenViewModel,
                                 cartViewModel,
@@ -277,41 +271,27 @@ fun RestaurantScreen(
                                         food = databaseMenu,
                                         favoriteViewModel = favoriteViewModel
                                     )
-                                    AddBox(
-                                        loginViewModel,
-                                        color = Color.VeryLightGray,
-                                        food = menu,
-                                        cartViewModel
-                                    )
+                                    MealBoxIcon()
                                 }
                             )
                         }
-                        items(menu.toList()){ item ->
-                            val sizeOptions = item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }
+                        items(menu){ item ->
                             val databaseMenu = FavoriteFoodDatabase(
                                 favoriteViewModel.userId,
                                 item.id,
+                                item.category,
                                 item.name,
+                                item.details,
                                 item.image.first(),
-                                sizeOptions?.size ?: "",
-                                sizeOptions?.price ?: 0.0,
-                                "Meal",
+                                item.sizeOptions,
                                 item.restaurantId,
+                                item.review,
                                 false,
                                 false
                             )
-                            val menu = FoodItemToCalculate(
-                                item.id,
-                                item.name,
-                                item.image,
-                                sizeOptions?.size ?: "",
-                                sizeOptions?.price ?: 0.0,
-                                "Meal",
-                                item.restaurantId
-                            )
                             ItemsBox(
-                                restaurantViewModel.foodMenuListIsLoading.collectAsState().value,
-                                menu,
+                                foodMenuIsLoading,
+                                databaseMenu,
                                 navigationController,
                                 itemScreenViewModel,
                                 cartViewModel,
@@ -323,12 +303,7 @@ fun RestaurantScreen(
                                         food = databaseMenu,
                                         favoriteViewModel = favoriteViewModel
                                     )
-                                    AddBox(
-                                        loginViewModel,
-                                        color = Color.VeryLightGray,
-                                        food = menu,
-                                        cartViewModel
-                                    )
+                                    MealBoxIcon()
                                 }
                             )
                         }
@@ -336,7 +311,7 @@ fun RestaurantScreen(
                     item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
                 }
 
-                if(cartViewModel.cartInformation.collectAsState().value?.restaurantId == restaurantViewModel.resid && cartViewModel.cartItems.collectAsState().value.isNotEmpty()){
+                if(restaurantId == restaurantViewModel.resid && cartItems.isNotEmpty()){
                     Column(modifier = Modifier.align(Alignment.BottomCenter)){
                         Box(contentAlignment = Alignment.Center){
                             RestaurantButton(navigationController, cartViewModel)
@@ -346,7 +321,7 @@ fun RestaurantScreen(
 
                 if(cartViewModel.errorInCart){
                     AlertDialogMessage(
-                        cartViewModel.cartInformation.collectAsState().value?.restaurantName ?: "",
+                        restaurantName ?: "",
                         "Start",
                         {
                             cartViewModel.clearAndStartNewCart(1)

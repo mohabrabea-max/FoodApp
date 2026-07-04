@@ -1,18 +1,17 @@
 package com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,11 +38,34 @@ fun CategoriesBox(category : Categories, homeScreenViewModel: HomeScreenViewMode
     var alpha = if(selected == category.id) 1f else 0f
 
     if (homeScreenViewModel.categoriesIsLoading.collectAsState().value) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator() // دايرة التحميل الافتراضية في أندرويد
+        Column(
+            modifier = Modifier.clickable {
+                if(selected == 0){
+                    homeScreenViewModel.selected(category)
+                }else if(selected != category.id){
+                    homeScreenViewModel.unSelected()
+                    homeScreenViewModel.selected(category)
+                }else{
+                    homeScreenViewModel.unSelected()
+                }
+            },
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly
+        ){
+            Box(
+                modifier = Modifier.
+                size(70.dp).
+                clip(CircleShape).
+                background(Color.White).
+                border(
+                    width = 2.dp,
+                    color = Color.Black.copy(alpha = alpha),
+                    shape = CircleShape
+                ),
+                contentAlignment = Alignment.Center
+            ){
+                Spacer(modifier = Modifier.height(5.dp))
+            }
         }
     }else{
         Column(

@@ -33,9 +33,9 @@ class HomeScreenViewModel(
 
     val filterRestaurants = derivedStateOf {
         if(typ == "All"){
-            _restaurantsMenu.values
+            _restaurantsMenu.values.toList()
         }else{
-            _restaurantsMenu.filter { it.value.typ.contains(typ) }.values
+            _restaurantsMenu.filter { it.value.typ.contains(typ) }.values.toList()
         }
     }
 

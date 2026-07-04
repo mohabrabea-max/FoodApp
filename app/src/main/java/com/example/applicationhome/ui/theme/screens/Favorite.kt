@@ -7,7 +7,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
@@ -41,7 +41,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,19 +50,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
-import com.example.applicationhome.data.models.model.FoodItemToCalculate
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.bars.FavoriteScreenTopBar
-import com.example.applicationhome.ui.theme.components.bars.MyBottonBar
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.AddBox
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Favorite
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.FavoriteSnacks
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.ItemsBox
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.MealBoxIcon
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantsBox
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
-import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
@@ -84,10 +82,10 @@ fun Favorite(
     cartViewModel : CartViewModel,
     favoriteViewModel : FavoriteViewModel,
     restaurantViewModel: RestaurantViewModel,
-    bottomBarViewModel: BottomBarViewModel,
     loginViewModel : LoginViewModel,
     viewRestaurantImageViewModel: ViewRestaurantImageViewModel,
-    homeScreenViewModel : HomeScreenViewModel
+    homeScreenViewModel : HomeScreenViewModel,
+    favoriteListState : LazyGridState
 ){
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -97,6 +95,8 @@ fun Favorite(
         // ده بيمسح الأبلكيشن من الـ Background ويقفله تماماً
         context?.finishAffinity()
     }
+
+    val userId = loginViewModel.userData.collectAsState().value.id
 
     val favoriteMeals = favoriteViewModel.favoriteMeals.collectAsState()
     val favoriteSnacks = favoriteViewModel.favoriteSnacks.collectAsState()
@@ -109,20 +109,12 @@ fun Favorite(
         Scaffold(
             modifier = Modifier.navigationBarsPadding().
             fillMaxSize(),
-            topBar = { FavoriteScreenTopBar(drawerState, coroutineScope, navigationController, favoriteViewModel) },
-            bottomBar = {
-                Box(
-                    modifier = Modifier.navigationBarsPadding().fillMaxWidth().
-                    pointerInput(Unit) { detectTapGestures { } },
-                    contentAlignment = Alignment.BottomCenter
-                ){
-                    MyBottonBar(navigationController, bottomBarViewModel, cartViewModel, favoriteViewModel, loginViewModel)
-                }
-            }
+            topBar = { FavoriteScreenTopBar(drawerState, coroutineScope, navigationController, favoriteViewModel) }
         ){
             Box(modifier = Modifier.fillMaxSize().background(Color.White)){
                 if(count > 0){
                     LazyVerticalGrid (
+                        state = favoriteListState,
                         modifier = Modifier.fillMaxSize(),
                         columns = GridCells.Fixed(2),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -147,40 +139,28 @@ fun Favorite(
                         if(favoriteViewModel.selectedCategorieInFavoriteScreen == 1) {
                             item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
                             items(favoriteSnacks.value) { item ->
-                                val snack = FoodItemToCalculate(
-                                    item.mealId,
-                                    item.name,
-                                    listOf(item.image),
-                                    item.size,
-                                    item.price,
-                                    "Snack",
-                                    item.restaurantId,
-                                    "ffffffffff sssssssss hhjd ggg",
-                                    5.0
-                                )
                                 SnaksBox(
                                     false,
                                     modifier = Modifier.size(200.dp),
-                                    false,
-                                    snack,
-                                    null,
+                                    item,
+                                    item.priceANDsize.keys.last(),
                                     navigationController,
                                     itemScreenViewModel,
                                     cartViewModel,
                                     {
-                                        Favorite(
+                                        FavoriteSnacks(
                                             modifier = Modifier.clip(CircleShape).border(
                                                 width = 0.5.dp,
                                                 color = Color.Gray.copy(alpha = 0.2f),
                                                 shape = RoundedCornerShape(30.dp)
                                             ).size(35.dp).background(Color.VeryLightGray),
-                                            food = item,
+                                            snack = item,
                                             favoriteViewModel = favoriteViewModel
                                         )
                                         AddBox(
                                             loginViewModel,
                                             color = Color.VeryLightGray,
-                                            food = snack,
+                                            food = item,
                                             cartViewModel
                                         )
                                     },
@@ -191,20 +171,9 @@ fun Favorite(
                         if(favoriteViewModel.selectedCategorieInFavoriteScreen == 0) {
                             item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
                             items(favoriteMeals.value) { item ->
-                                val meal = FoodItemToCalculate(
-                                    item.mealId,
-                                    item.name,
-                                    listOf(item.image),
-                                    item.size,
-                                    item.price,
-                                    "Snack",
-                                    item.restaurantId,
-                                    "ffffffffff sssssssss hhjd ggg",
-                                    5.0
-                                )
                                 ItemsBox(
                                     false,
-                                    meal,
+                                    item,
                                     navigationController,
                                     itemScreenViewModel,
                                     cartViewModel,
@@ -215,7 +184,7 @@ fun Favorite(
                                             food = item,
                                             favoriteViewModel = favoriteViewModel
                                         )
-                                        AddBox(loginViewModel, color = Color.White, food = meal, cartViewModel)
+                                        MealBoxIcon()
                                     }
                                 )
                             }
@@ -223,7 +192,7 @@ fun Favorite(
                         item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
                     }
                 }else{
-                    OfflineFavoriteScreen(navigationController, bottomBarViewModel)
+                    OfflineFavoriteScreen(navigationController)
                 }
             }
         }
@@ -265,8 +234,7 @@ fun Favorite(
 
 @Composable
 fun OfflineFavoriteScreen(
-    navigationController : NavHostController,
-    bottomBarViewModel : BottomBarViewModel
+    navigationController : NavHostController
 ){
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
         Spacer(modifier = Modifier.height(300.dp))
@@ -299,7 +267,6 @@ fun OfflineFavoriteScreen(
 
                     restoreState = true
                 }
-                bottomBarViewModel.home()
             }.
             border(width = 1.dp, color = Color.BrownForFont, shape = RoundedCornerShape(40.dp)).
             padding(7.dp).align(Alignment.CenterHorizontally)

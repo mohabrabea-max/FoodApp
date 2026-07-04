@@ -1,14 +1,10 @@
 package com.example.applicationhome.ui.theme.screens
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,17 +16,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -39,40 +26,30 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import coil.size.Precision
-import com.example.applicationhome.data.models.local.FavoriteFoodDatabase
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.components.bars.MyTopBar
+import com.example.applicationhome.ui.theme.components.bars.ItemScreenTopBar
 import com.example.applicationhome.ui.theme.components.forCart.AlertDialogMessage
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.BottomBarForItemScreen
-import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Favorite
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.ItemSize
-import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Ratings
+import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBoxForItemScreen
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.showAddToCartSnackbar
+import com.example.applicationhome.ui.theme.components.forItemScreen.ItemScreenImage
+import com.example.applicationhome.ui.theme.components.forItemScreen.RatingsAndReviews
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
@@ -84,52 +61,21 @@ import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 @Composable
 fun ItemScreen(
     navigationController : NavHostController,
-    viewModel: ItemScreenViewModel,
-    cartViewModel: CartViewModel,
+    itemScreenViewModel : ItemScreenViewModel,
+    cartViewModel : CartViewModel,
     favoriteViewModel : FavoriteViewModel,
     loginViewModel : LoginViewModel,
-    restaurantViewModel: RestaurantViewModel
+    restaurantViewModel : RestaurantViewModel
 ){
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     val scrollState = rememberLazyListState()
-    val alpha by remember {
-        derivedStateOf {
-            if(scrollState.firstVisibleItemIndex >= 1){
-                1f
-            }else{
-                ((scrollState.firstVisibleItemScrollOffset / 300f) - 1f).coerceIn(0f, 1f)
-            }
-        }
-    }
-    val searchSize by remember {
-        derivedStateOf {
-            if(scrollState.firstVisibleItemIndex >= 1){
-                3f
-            }else{
-                ((scrollState.firstVisibleItemScrollOffset / 300f) - 1f).coerceIn(1f, 3f)
-            }
-        }
-    }
-    val snacks = restaurantViewModel.snackMenuList
-    val item = viewModel.selectedItem
-    val size = viewModel.selectedSize
-    val images = item?.image?.size ?: 0
-    val pagerState = rememberPagerState(pageCount = {images})
 
-    val favoriteFoodDatabase = FavoriteFoodDatabase(
-        favoriteViewModel.userId,
-        item?.id ?: 0,
-        item?.name ?: "",
-        item?.image?.first() ?: "",
-        size,
-        item?.price ?: 0.0,
-        item?.type ?: "",
-        item?.restaurantId ?: 0,
-        false,
-        false
-    )
+    val item = itemScreenViewModel.selectedItem
+    val size = itemScreenViewModel.selectedSize
+
+    val price = item?.sizeOptions?.find { it.size == itemScreenViewModel.selectedSize }?.price ?: 0.0
 
     if(item != null){
         Scaffold(
@@ -146,287 +92,114 @@ fun ItemScreen(
                 Spacer(modifier = Modifier.height(160.dp))
             },
             topBar = {
-                Column{
-                    MyTopBar(
-                        Color.DarkOrange.copy(alpha = alpha),
-                        modifier = Modifier.
-                        fillMaxWidth().
-                        height(100.dp),
-                        null,
-                        Color.White,
-                        {
-                            IconButton(
-                                onClick = {if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() } },
-                                modifier = Modifier.padding(5.dp).
-                                border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
-                                shadow(elevation = if(searchSize < 1) 7.dp else 0.dp, spotColor = Color.LightGray, shape = CircleShape).clip(CircleShape).size(40.dp).
-                                background(Color.White)
-                            ){
-                                Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)
-                            }
-                        },
-                        {
-                            Box(
-                                modifier = Modifier.animateContentSize().padding(5.dp).
-                                border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
-                                shadow(elevation = if(searchSize < 1) 7.dp else 0.dp, spotColor = Color.LightGray, shape = CircleShape).clip(CircleShape).
-                                width(if(searchSize > 1) 120.dp else 40.dp).height(40.dp).
-                                background(Color.White).
-                                clickable {
-                                    navigationController.navigate(Screens.Search.screen){
-                                        popUpTo(navigationController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                },
-                            ){
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.align(Alignment.CenterStart)
-                                ){
-                                    Icon(
-                                        Icons.Default.Search,
-                                        contentDescription = null,
-                                        tint = Color.Black,
-                                        modifier = Modifier.padding(start = 8.dp)
-                                    )
-                                    if(searchSize > 1) Text(
-                                        text = "Search",
-                                        softWrap = false,
-                                        color = Color.Black,
-                                        fontSize = 18.sp,
-                                        modifier = Modifier.padding(start = 5.dp)
-                                    )
-                                }
-                            }
-                            Favorite(
-                                modifier = Modifier.padding(5.dp).
-                                border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
-                                shadow(elevation = if(searchSize < 1) 7.dp else 0.dp, spotColor = Color.LightGray, shape = CircleShape).clip(CircleShape).size(40.dp).
-                                background(Color.White),
-                                modifier2 = Modifier.size(25.dp),
-                                food = favoriteFoodDatabase,
-                                favoriteViewModel = favoriteViewModel
-                            )
-                        },
-                        weight = 2f
-                    )
-                }
+                ItemScreenTopBar(navigationController, scrollState, item, favoriteViewModel)
             }
         ){
-            Box(modifier = Modifier.background(Color.VeryLightGray)){
-                Column{
-                    LazyColumn(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        state = scrollState,
-                        modifier = Modifier.fillMaxSize()
-                    ){
-                        item{
+            Box(modifier = Modifier.background(Color.VeryLightGray).padding(10.dp)){
+                LazyColumn(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    state = scrollState,
+                    modifier = Modifier.fillMaxSize()
+                ){
+                    item{
+                        Column{
+                            Spacer(modifier = Modifier.height(50.dp))
+                            ItemScreenImage(scrollState, item.image)
+                        }
+                    }
+                    item {
+                        //Spacer(modifier = Modifier.height(20.dp))
+                        Column(
+                            modifier = Modifier.fillMaxWidth().
+                            clip(RoundedCornerShape(20.dp)).
+                            background(Color.White).
+                            padding(15.dp)
+                        ){
+                            Text(
+                                text = item.name,
+                                fontSize = 20.sp,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = Color.BrownForFont,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            Text(
+                                text = item.details,
+                                color = Color.MediumBrownForTitle
+                            )
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            Text(
+                                text = "$price L.E",
+                                fontSize = 30.sp,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = Color.BrownForFont,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(start = 15.dp, bottom = 15.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Box(
+                            modifier = Modifier.fillMaxWidth().
+                            clip(RoundedCornerShape(20.dp)).
+                            background(Color.White)
+                        ){
                             Column{
-                                Spacer(modifier = Modifier.height(50.dp))
-                                Box(
-                                    modifier = Modifier.size(350.dp).
-                                    clip(RoundedCornerShape(10.dp)).
-                                    graphicsLayer {
-                                        // بنخلي الصورة تتحرك بنص سرعة السكرول (Parallax)
-                                        // وبنخليها تنزل لتحت شوية عشان اللي تحتها يغطيها
-                                        translationY = scrollState.firstVisibleItemScrollOffset * 1f
-                                        val scale = 1f - (scrollState.firstVisibleItemScrollOffset.toFloat() / 4000f).coerceIn(0f, 0.2f)  // تأثير التصغير (Scale)
-                                        scaleX = scale
-                                        scaleY = scale
-                                        1f - (scrollState.firstVisibleItemScrollOffset.toFloat() / 1000f).coerceIn(0f, 1f) // بنخلي الصورة دايماً "ورا" الحاجات التانية
-                                    }
-                                ){
-                                    HorizontalPager(
-                                        state = pagerState,
-                                        modifier = Modifier.fillMaxSize()
-                                    ) { page ->
-                                        AsyncImage(
-                                            model = ImageRequest.Builder(LocalContext.current).
-                                            data(item.image[page]).
-                                            crossfade(true).
-                                            precision(Precision.EXACT).
-                                            build(),
-                                            contentDescription = null,
-                                            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)),
-                                            contentScale = ContentScale.Crop
-                                        )
-                                    }
-                                    Row(
-                                        Modifier.height(50.dp).fillMaxWidth().align(Alignment.BottomCenter),
-                                        horizontalArrangement = Arrangement.Center,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Row(
-                                            modifier = Modifier.clip(CircleShape).
-                                            background(Color.VeryLightGray.copy(alpha = 0.5f)).
-                                            padding(3.dp)
-                                        ){
-                                            repeat(item.image.size) { iteration ->
-                                                val color = if (pagerState.currentPage == iteration) Color.DarkOrange else Color.Black
-                                                Box(
-                                                    modifier = Modifier.padding(4.dp).
-                                                    clip(CircleShape).
-                                                    background(color).
-                                                    size(5.dp)
+                                Spacer(modifier = Modifier.height(15.dp))
+                                Text(
+                                    text = "Meal snacks",
+                                    fontSize = 16.sp,
+                                    color = Color.Black,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(start = 15.dp)
+                                )
+                                Spacer(modifier = Modifier.height(5.dp))
+                                LazyRow {
+                                    item{Spacer(modifier = Modifier.width(7.dp))}
+                                        item{
+                                            val selectedDetail = item.sizeOptions.find { it.size == size }
+                                            selectedDetail?.snack?.forEach { (snakeId, value) ->
+                                                SnaksBoxForItemScreen(
+                                                    modifier = Modifier.size(170.dp),
+                                                    value
                                                 )
                                             }
                                         }
-                                    }
+                                    item{Spacer(modifier = Modifier.width(7.dp))}
                                 }
                             }
                         }
-                        item {
-                            Column(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray).padding(start = 10.dp, end = 10.dp)){
-                                //Spacer(modifier = Modifier.height(20.dp))
-                                Column(
-                                    modifier = Modifier.fillMaxWidth().
-                                    clip(RoundedCornerShape(20.dp)).
-                                    background(Color.White)
-                                ){
-                                    Column(
-                                        modifier = Modifier.padding(15.dp)
-                                    ){
-                                        Text(
-                                            text = item.name,
-                                            fontSize = 20.sp,
-                                            style = MaterialTheme.typography.labelLarge,
-                                            color = Color.BrownForFont,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Spacer(modifier = Modifier.height(10.dp))
-                                        Text(
-                                            text = item.details,
-                                            color = Color.MediumBrownForTitle
-                                        )
-                                        }
-                                    }
-                                    Spacer(modifier = Modifier.height(10.dp))
-                                    Text(
-                                        text = "${item.price} L.E",
-                                        fontSize = 30.sp,
-                                        style = MaterialTheme.typography.labelLarge,
-                                        color = Color.BrownForFont,
-                                        fontWeight = FontWeight.Bold,
-                                        modifier = Modifier.padding(start = 15.dp, bottom = 15.dp)
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Box(
-                                    modifier = Modifier.fillMaxWidth().
-                                    clip(RoundedCornerShape(20.dp)).
-                                    background(Color.White)
-                                ){
-                                    Column{
-                                        Spacer(modifier = Modifier.height(15.dp))
-                                        Text(
-                                            text = "Meal snacks",
-                                            fontSize = 16.sp,
-                                            color = Color.Black,
-                                            style = MaterialTheme.typography.labelLarge,
-                                            fontWeight = FontWeight.Bold,
-                                            modifier = Modifier.padding(start = 15.dp)
-                                        )
-                                        Spacer(modifier = Modifier.height(5.dp))
-                                        LazyRow {
-                                            item{Spacer(modifier = Modifier.width(7.dp))}
-//                                            item{
-//                                                val selectedDetail = item.sizeOptions.find { it.size == size }
-//                                                selectedDetail?.snack?.forEach { (snakeId, snakeSize) ->
-//                                                    val snake2 = snacks.value.find { it.id == snakeId }
-//                                                    snake2?.let { safeSnake ->
-//                                                        SnaksBox(
-//                                                            restaurantViewModel.snacksIsLoading.collectAsState().value,
-//                                                            modifier = Modifier.size(170.dp),
-//                                                            true,
-//                                                            safeSnake,
-//                                                            snakeSize,
-//                                                            navigationController,
-//                                                            viewModel,
-//                                                            cartViewModel
-//                                                        )
-//                                                    }
-//                                                }
-//                                            }
-                                            item{Spacer(modifier = Modifier.width(7.dp))}
-                                        }
-                                    }
-                                }
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Box(
-                                    modifier = Modifier.fillMaxWidth().
-                                    clip(RoundedCornerShape(20.dp)).
-                                    background(Color.White).
-                                    padding(10.dp)
-                                ){
-                                    ItemSize(viewModel)
-                                }
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Column(
-                                    modifier = Modifier.fillMaxWidth().
-                                    clip(RoundedCornerShape(20.dp)).
-                                    background(Color.White).
-                                    padding(15.dp),
-                                    horizontalAlignment = Alignment.Start
-                                ){
-                                    Text(
-                                        text = "Ratings & Reviews",
-                                        fontSize = 16.sp,
-                                        color = Color.Black,
-                                        style = MaterialTheme.typography.labelLarge,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Spacer(modifier = Modifier.height(15.dp))
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Start
-                                    ){
-                                        Text(
-                                            text = item.review.toString(),
-                                            fontSize = 25.sp,
-                                            color = Color.Black,
-                                            style = MaterialTheme.typography.labelLarge,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        for(x in 0 .. item.review.toInt()){
-                                            Icon(
-                                                Icons.Default.Star,
-                                                contentDescription = null,
-                                                tint = Color.DarkOrange,
-                                                modifier = Modifier.size(30.dp)
-                                            )
-                                        }
-                                    }
-                                    Spacer(modifier = Modifier.height(15.dp))
-                                    Text(
-                                        text = "All reviews (5)",
-                                        fontSize = 18.sp,
-                                        color = Color.Black,
-                                        style = MaterialTheme.typography.labelLarge,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Spacer(modifier = Modifier.height(10.dp))
-                                    Ratings()
-                                }
-                            }
-                        item{Spacer(modifier = Modifier.height(150.dp))}
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Box(
+                            modifier = Modifier.fillMaxWidth().
+                            clip(RoundedCornerShape(20.dp)).
+                            background(Color.White).
+                            padding(10.dp)
+                        ){
+                            ItemSize(itemScreenViewModel)
                         }
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        RatingsAndReviews(navigationController, item.review)
                     }
-                Column(modifier = Modifier.align(Alignment.BottomCenter)){
-                    Box(contentAlignment = Alignment.Center){
-                        BottomBarForItemScreen(
-                            cartViewModel,
-                            item,
-                            size,
-                            snackbarHostState,
-                            scope,
-                            navigationController,
-                            loginViewModel
-                        )
-                    }
+                    item{Spacer(modifier = Modifier.height(150.dp))}
                 }
+            }
+            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom){
+                BottomBarForItemScreen(
+                    cartViewModel,
+                    item,
+                    size,
+                    snackbarHostState,
+                    scope,
+                    navigationController,
+                    loginViewModel
+                )
             }
 
             if(cartViewModel.errorInCart){

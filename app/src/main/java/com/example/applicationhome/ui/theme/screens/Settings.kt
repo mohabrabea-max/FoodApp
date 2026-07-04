@@ -5,7 +5,6 @@ import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,9 +20,9 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -41,7 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -55,15 +53,10 @@ import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.components.bars.MyBottonBar
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.profileAndSetting.SettingsBox
 import com.example.applicationhome.ui.theme.components.profileAndSetting.SettingsOptionsBox
 import com.example.applicationhome.ui.theme.components.profileAndSetting.UserImage
-import com.example.applicationhome.ui.theme.model.BottomBarViewModel
-import com.example.applicationhome.ui.theme.model.CartViewModel
-import com.example.applicationhome.ui.theme.model.FavoriteViewModel
-import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -76,12 +69,8 @@ fun Settings(
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
     userImageViewModel: UserImageViewModel,
-    bottomBarViewModel : BottomBarViewModel,
-    cartViewModel : CartViewModel,
-    favoriteViewModel: FavoriteViewModel,
-    loginViewModel : LoginViewModel
+    settingsListState : LazyGridState
 ){
-    val scrollState = rememberLazyGridState()
     val profileoptions = ProfileData.profileOptions()
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) {
@@ -153,20 +142,11 @@ fun Settings(
                     }
                 }
             }
-        },
-        bottomBar = {
-            Box(
-                modifier = Modifier.navigationBarsPadding().fillMaxWidth().
-                pointerInput(Unit) { detectTapGestures { } },
-                contentAlignment = Alignment.BottomCenter
-            ){
-                MyBottonBar(navigationController, bottomBarViewModel, cartViewModel, favoriteViewModel, loginViewModel)
-            }
         }
     ){
         Column(modifier = Modifier.statusBarsPadding().background(Color.VeryLightGray).padding(10.dp)){
             LazyVerticalGrid(
-                state = scrollState,
+                state = settingsListState,
                 modifier = Modifier.fillMaxSize(),
                 columns = GridCells.Fixed(2),
                 verticalArrangement = Arrangement.spacedBy(10.dp),

@@ -6,7 +6,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,8 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -51,17 +49,13 @@ import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.bars.HomeScreenTopBar
-import com.example.applicationhome.ui.theme.components.bars.MyBottonBar
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.CategoriesBar
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantsBoxHomeScreen
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SearchBox
-import com.example.applicationhome.ui.theme.model.BottomBarViewModel
-import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
-import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -74,18 +68,16 @@ fun HomeScreen(
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
     itemScreenViewModel: ItemScreenViewModel,
-    cartViewModel : CartViewModel,
     favoriteViewModel : FavoriteViewModel,
     restaurantViewModel: RestaurantViewModel,
-    bottomBarViewModel : BottomBarViewModel,
     viewRestaurantImageViewModel: ViewRestaurantImageViewModel,
-    loginViewModel : LoginViewModel,
-    homeScreenViewModel : HomeScreenViewModel
+    homeScreenViewModel : HomeScreenViewModel,
+    scrollState : LazyListState
 ){
-    val scrollState = rememberLazyListState()
-
     val restaurants by homeScreenViewModel.filterRestaurants
     val offers = homeScreenViewModel.offers
+    val offersIsLoading by homeScreenViewModel.offersIsLoading.collectAsState()
+    val restaurantIsLoading by homeScreenViewModel.restaurantsMenuIsLoading.collectAsState()
     val pagerState = rememberPagerState(pageCount = {offers.size})
 
     val context = LocalContext.current as? Activity
@@ -96,15 +88,6 @@ fun HomeScreen(
         fillMaxSize(),
         topBar = {
             HomeScreenTopBar(scrollState, drawerState, coroutineScope, navigationController)
-        },
-        bottomBar = {
-            Box(
-                modifier = Modifier.fillMaxWidth().
-                pointerInput(Unit) { detectTapGestures { } },
-                contentAlignment = Alignment.BottomCenter
-            ){
-                MyBottonBar(navigationController, bottomBarViewModel, cartViewModel, favoriteViewModel, loginViewModel)
-            }
         }
     ){
         Box(modifier = Modifier.background(Color.VeryLightGray)){
@@ -167,7 +150,7 @@ fun HomeScreen(
                                 Box(
                                     modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)).background(Color.White).clickable {  }
                                 ){
-                                    if(!homeScreenViewModel.offersIsLoading.collectAsState().value){
+                                    if(!offersIsLoading){
                                         AsyncImage(
                                             modifier = Modifier.fillMaxSize(),
                                             model = ImageRequest.Builder(LocalContext.current).
@@ -193,9 +176,9 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(20.dp))
                     }
 
-                    items(restaurants.toList()){ item ->
+                    items(restaurants){ item ->
                         RestaurantsBoxHomeScreen(
-                            homeScreenViewModel.restaurantsMenuIsLoading.collectAsState().value,
+                            restaurantIsLoading,
                             item,
                             favoriteViewModel,
                             itemScreenViewModel,

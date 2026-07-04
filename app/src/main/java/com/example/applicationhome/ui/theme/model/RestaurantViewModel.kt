@@ -40,14 +40,14 @@ class RestaurantViewModel (
 
     private val _foodMenuMap = mutableStateMapOf<String, FoodItem>()
     val foodMenuList = derivedStateOf {
-        _foodMenuMap.filter { it.value.restaurantId == resid && it.value.category == typeInRestaurantScreen }.values
+        _foodMenuMap.filter { it.value.restaurantId == resid && it.value.category == typeInRestaurantScreen }.values.toList()
     }
     val foodMenuListIsLoading : StateFlow<Boolean> = restaurantScreenRepository.foodMenuListIsLoading
 
 
     private val _snackMenuMap = mutableStateMapOf<String, Snack>()
     val snackMenuList = derivedStateOf {
-        _snackMenuMap.filter { it.value.restaurantId == resid }.values
+        _snackMenuMap.filter { it.value.restaurantId == resid }.values.toList()
     }
     val snacksIsLoading : StateFlow<Boolean> = restaurantScreenRepository.snacksIsLoading
 
@@ -61,7 +61,7 @@ class RestaurantViewModel (
 
     val _restaurantOffersMenuList = mutableStateMapOf<String, Offers>()
     val restaurantOffersMenuList = derivedStateOf {
-        _restaurantOffersMenuList.filter { it.value.restaurantId == resid }.values
+        _restaurantOffersMenuList.filter { it.value.restaurantId == resid }.values.toList()
     }
     val restaurantOffersLoading : StateFlow<Boolean> = restaurantScreenRepository.restaurantOffersLoading
 

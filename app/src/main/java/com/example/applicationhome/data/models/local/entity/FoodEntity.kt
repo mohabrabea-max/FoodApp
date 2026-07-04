@@ -1,7 +1,8 @@
-package com.example.applicationhome.data.models.local
+package com.example.applicationhome.data.models.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.applicationhome.data.models.model.MealSizeDetail
 
 //enum class CategoryType { PIZZA, BURGER, CHICKEN, SWEET, ALL }
 //
@@ -189,12 +190,31 @@ data class CartClass(
 data class FavoriteFoodDatabase(
     val userId : String = "",
     val mealId : Int = 0,
-    val name : String = "",
-    val image : String = "",
-    val size : String = "",
-    val price : Double = 0.0,
     val type : String = "",
+    val name : String = "",
+    val details : String = "",
+    val image : String = "",
+    val sizeOptions : List<MealSizeDetail> = emptyList(),
     val restaurantId : Int = 0,
+    val review : Double = 0.0,
+    val isSynced : Boolean = false,
+    val isDeletedOffline : Boolean = false
+)
+
+
+@Entity(
+    tableName = "favorite_snacks",
+    primaryKeys = ["userId", "snackId"]
+)
+data class FavoriteSnacksDatabase(
+    val userId : String = "",
+    val snackId : Int = 0,
+    val name : String = "",
+    val details : String = "",
+    val image : String = "",
+    val priceANDsize : Map<String, Double> = emptyMap(),
+    val restaurantId : Int = 0,
+    val review : Double = 0.0,
     val isSynced : Boolean = false,
     val isDeletedOffline : Boolean = false
 )

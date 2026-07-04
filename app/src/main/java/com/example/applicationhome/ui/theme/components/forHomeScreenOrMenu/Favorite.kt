@@ -21,8 +21,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.applicationhome.data.models.local.FavoriteFoodDatabase
-import com.example.applicationhome.data.models.local.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.models.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.models.local.entity.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import kotlinx.coroutines.launch
@@ -41,10 +42,10 @@ fun Favorite(
     val favorite = favoriteViewModel.isMealInFavorite(food.mealId).collectAsState(initial = false).value
     fun favorite1(){
         if(favorite == true){
-            favoriteViewModel.removeFavorite(food.mealId)
+            favoriteViewModel.removeMealFavorite(food.mealId)
             Toast.makeText(context, "Remove From Favorite", Toast.LENGTH_SHORT).show()
         }else{
-            favoriteViewModel.addFavorite(food)
+            favoriteViewModel.addMealFavorite(food)
             Toast.makeText(context, "Add To Favorite", Toast.LENGTH_SHORT).show()
         }
 
@@ -79,7 +80,57 @@ fun Favorite(
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun Favorite2(
+fun FavoriteSnacks(
+    modifier : Modifier = Modifier,
+    modifier2 : Modifier = Modifier,
+    snack : FavoriteSnacksDatabase,
+    favoriteViewModel : FavoriteViewModel
+){
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val scale = remember { Animatable(1f) }
+    val favorite = favoriteViewModel.isSnackInFavorite(snack.snackId).collectAsState(initial = false).value
+    fun favorite1(){
+        if(favorite == true){
+            favoriteViewModel.removeSnackFavorite(snack.snackId)
+            Toast.makeText(context, "Remove From Favorite", Toast.LENGTH_SHORT).show()
+        }else{
+            favoriteViewModel.addSnackFavorite(snack)
+            Toast.makeText(context, "Add To Favorite", Toast.LENGTH_SHORT).show()
+        }
+
+        scope.launch {
+            // يكبر بسرعة لـ 1.3x في 100 مللي ثانية
+            scale.animateTo(1.3f, animationSpec = tween(100))
+            // يرجع لحجمه الطبيعي 1x بسرعة برضه
+            scale.animateTo(1f, animationSpec = tween(100))
+        }
+    }
+
+    IconButton(modifier = modifier, onClick = {favorite1()}){
+        if(favorite == false) {
+            Icon(
+                imageVector = Icons.Default.FavoriteBorder,
+                contentDescription = "More",
+                tint = Color.DarkOrange,
+                modifier = modifier2.size(20.dp).scale(scale.value)
+            )
+        }else{
+            Icon(
+                imageVector = Icons.Default.Favorite,
+                contentDescription = "More",
+                tint = Color.DarkOrange,
+                modifier = modifier2.size(20.dp).scale(scale.value)
+            )
+        }
+    }
+}
+
+
+
+@SuppressLint("UnrememberedMutableState")
+@Composable
+fun FavoriteRestaurant(
     modifier: Modifier = Modifier,
     modifier2 : Modifier = Modifier,
     color : Color = Color.Black,
