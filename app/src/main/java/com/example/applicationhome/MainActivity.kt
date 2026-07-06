@@ -25,7 +25,6 @@ import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import com.example.applicationhome.ui.theme.model.SignUpViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
-import com.example.applicationhome.ui.theme.screens.FinalScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -74,7 +73,7 @@ class MainActivity : ComponentActivity() {
     private val orderScreenViewModel: OrderScreenViewModel by viewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return OrderScreenViewModel(orderRepo, userRepo) as T
+                return OrderScreenViewModel(app, orderRepo, userRepo) as T
             }
         }
     }

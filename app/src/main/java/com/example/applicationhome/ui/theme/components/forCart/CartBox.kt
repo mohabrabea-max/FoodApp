@@ -22,7 +22,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,34 +38,16 @@ import coil.size.Precision
 import com.example.applicationhome.data.models.local.entity.CartItemsClass
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.model.CartViewModel
-import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
-import com.example.applicationhome.ui.theme.model.LoginViewModel
 
 @Composable
 fun CartBox(
     food: CartItemsClass,
-    itemScreenViewModel: ItemScreenViewModel,
-    cartViewModel: CartViewModel,
-    loginViewModel: LoginViewModel
+    cartViewModel: CartViewModel
 ){
-    val mealKey = "${food.mealId}_${food.size}"
     val size = food.size
-    val meal = CartItemsClass(
-        loginViewModel.userData.collectAsState().value.id,
-        mealKey,
-        food.mealId,
-        food.name,
-        food.type,
-        food.size,
-        food.quantity,
-        food.priceOfOne,
-        food.totalPrice,
-        food.image,
-        food.restaurantId
-    )
     val sizeInTitle = if(size.contains("Pieces")) "" else " (${size})"
 
-    val cartkey = "${food.mealId}_${size}"
+    val cartKey = "${food.mealId}_${size}"
 
     Box(
         modifier = Modifier.
@@ -135,7 +116,7 @@ fun CartBox(
                         clip(CircleShape).
                         background(Color.LightOrange.copy(alpha = 0.7f))
                     ){
-                        FixedAddBox(cartViewModel,size, cartkey, meal)
+                        FixedAddBox(cartViewModel,size, cartKey, food)
                     }
                 }
             }

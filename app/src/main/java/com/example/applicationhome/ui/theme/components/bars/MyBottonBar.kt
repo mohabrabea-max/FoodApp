@@ -1,6 +1,5 @@
 package com.example.applicationhome.ui.theme.components.bars
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -24,13 +23,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.model.Screens
@@ -56,9 +56,11 @@ fun MyBottonBar(
     settingsListState : LazyGridState,
     scope : CoroutineScope
 ){
-    val count = favoriteViewModel.favoriteFoodCount.collectAsState().value +
-            favoriteViewModel.favoriteRestaurantsCount.collectAsState().value +
-            favoriteViewModel.favoriteSnacksCount.collectAsState().value
+    val favoriteFoodCount by favoriteViewModel.favoriteFoodCount.collectAsStateWithLifecycle()
+    val favoriteSnacksCount by favoriteViewModel.favoriteSnacksCount.collectAsStateWithLifecycle()
+    val favoriteRestaurantsCount by favoriteViewModel.favoriteRestaurantsCount.collectAsStateWithLifecycle()
+    val count = favoriteFoodCount + favoriteSnacksCount + favoriteRestaurantsCount
+
     Box(
         modifier = Modifier.width(350.dp).
         height(60.dp).

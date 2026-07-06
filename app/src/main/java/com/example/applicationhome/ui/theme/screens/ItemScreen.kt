@@ -25,7 +25,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
@@ -76,6 +77,8 @@ fun ItemScreen(
     val size = itemScreenViewModel.selectedSize
 
     val price = item?.sizeOptions?.find { it.size == itemScreenViewModel.selectedSize }?.price ?: 0.0
+
+    val cartInformation by cartViewModel.cartInformation.collectAsStateWithLifecycle()
 
     if(item != null){
         Scaffold(
@@ -204,7 +207,7 @@ fun ItemScreen(
 
             if(cartViewModel.errorInCart){
                 AlertDialogMessage(
-                    cartViewModel.cartInformation.collectAsState().value?.restaurantName ?: "",
+                    cartInformation?.restaurantName ?: "",
                     "Start",
                     {
                         cartViewModel.alertDialogFalse()

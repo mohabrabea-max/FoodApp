@@ -3,6 +3,8 @@ package com.example.applicationhome.data.models.local.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.applicationhome.data.models.model.MealSizeDetail
+import com.example.applicationhome.data.models.model.OrderItemsClass
+import com.example.applicationhome.data.models.model.UserInformationInOrderClass
 
 //enum class CategoryType { PIZZA, BURGER, CHICKEN, SWEET, ALL }
 //
@@ -232,6 +234,27 @@ data class FavoriteRestaurantDatabase(
     val image2 : String = "",
     val isSynced : Boolean = false,
     val isDeletedOffline : Boolean = false
+)
+
+
+@Entity(
+    tableName = "orders_history",
+    primaryKeys = ["orderId", "userId"]
+)
+data class OrdersDatabaseClass(
+    val orderId : String = "",
+    val userId : String = "",
+    val date : String = "",
+    val state : String = "",
+    val subtotal : Double = 0.0,
+    val delivery : Double = 0.0,
+    val service : Double = 0.0,
+    val totalPrice : Double = 0.0,
+    val restaurantName : String = "",
+    val restaurantImage : String = "",
+    val restaurantId : Int = 0,
+    val userInformation : UserInformationInOrderClass = UserInformationInOrderClass(),
+    val orderItems : List<OrderItemsClass> = emptyList()
 )
 
 

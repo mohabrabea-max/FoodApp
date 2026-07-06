@@ -32,7 +32,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,7 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
@@ -57,25 +56,18 @@ import com.example.applicationhome.ui.theme.components.forCart.CartBox
 import com.example.applicationhome.ui.theme.components.forCart.CartButton
 import com.example.applicationhome.ui.theme.components.forCart.PaymentSummaryCartScreen
 import com.example.applicationhome.ui.theme.model.CartViewModel
-import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
-import com.example.applicationhome.ui.theme.model.LoginViewModel
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter",
-    "UnrememberedMutableState",
-    "ContextCastToActivity"
-)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Cart(
     navigationController : NavHostController,
-    itemScreenViewModel: ItemScreenViewModel = viewModel(),
-    cartViewModel: CartViewModel,
-    loginViewModel : LoginViewModel
+    cartViewModel: CartViewModel
 ){
     BackHandler(enabled = true){
         if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
     }
-    val cartItems by cartViewModel.cartItems.collectAsState()
+    val cartItems by cartViewModel.cartItems.collectAsStateWithLifecycle()
     Scaffold(
         modifier = Modifier.navigationBarsPadding().
         fillMaxSize(),
@@ -119,7 +111,7 @@ fun Cart(
     ){
         Box(modifier = Modifier.background(Color.White)){
             Box(modifier = Modifier.fillMaxSize()){
-                if(cartViewModel.cartItems.collectAsState().value.isNotEmpty()){
+                if(cartItems.isNotEmpty()){
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -127,7 +119,7 @@ fun Cart(
                         item{Spacer(modifier = Modifier.height(100.dp))}
 
                         items(cartItems) { item ->
-                            if(item != null) CartBox(item, itemScreenViewModel, cartViewModel, loginViewModel)
+                            if(item != null) CartBox(item, cartViewModel)
                         }
                         item{
                             PaymentSummaryCartScreen(cartViewModel)
@@ -190,7 +182,7 @@ fun Cart(
                 }
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally){
-                if(cartViewModel.cartItems.collectAsState().value.isNotEmpty()){
+                if(cartItems.isNotEmpty()){
                     CartButton(
                         Color.DarkOrange,
                         Color.White,

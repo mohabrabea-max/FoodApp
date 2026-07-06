@@ -7,17 +7,27 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.applicationhome.data.models.local.dao.CartDao
 import com.example.applicationhome.data.models.local.dao.FavoriteDao
+import com.example.applicationhome.data.models.local.dao.OrdersDao
 import com.example.applicationhome.data.models.local.dao.UsersDao
 import com.example.applicationhome.data.models.local.entity.CartClass
 import com.example.applicationhome.data.models.local.entity.CartItemsClass
 import com.example.applicationhome.data.models.local.entity.FavoriteFoodDatabase
 import com.example.applicationhome.data.models.local.entity.FavoriteRestaurantDatabase
 import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
+import com.example.applicationhome.data.models.local.entity.OrdersDatabaseClass
 import com.example.applicationhome.data.models.local.entity.UserClass
 
 @Database(
-    entities = [UserClass::class, CartClass::class, CartItemsClass::class, FavoriteFoodDatabase::class, FavoriteSnacksDatabase::class, FavoriteRestaurantDatabase::class],
-    version = 22,
+    entities = [
+        UserClass::class,
+        CartClass::class,
+        CartItemsClass::class,
+        FavoriteFoodDatabase::class,
+        FavoriteSnacksDatabase::class,
+        FavoriteRestaurantDatabase::class,
+        OrdersDatabaseClass::class
+    ],
+    version = 24,
     exportSchema = false
 )
 
@@ -27,6 +37,8 @@ abstract class UsersDatabase : RoomDatabase(){
     abstract val userDao : UsersDao
     abstract val cartDao : CartDao
     abstract val favoriteDao : FavoriteDao
+    abstract val ordersDao : OrdersDao
+
     companion object {
         @Volatile  // بتخلي التغيير اللي بيحصل على المتغير daoInstance نفسه في الرام يسمع فوراً في كل الـ Threads
         private var INSTANCE : UsersDatabase? = null

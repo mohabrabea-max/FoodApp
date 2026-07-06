@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,9 +37,12 @@ import com.example.applicationhome.ui.theme.model.CartViewModel
 fun FixedAddBox(
     cartViewModel : CartViewModel,
     size : String,
-    cartkey : String,
+    cartKey : String,
     foodItem : CartItemsClass
 ){
+    val cartItems by cartViewModel.cartItems.collectAsState()
+    val quantity = cartItems.find { it?.mealKey == cartKey }?.quantity
+
     Row(
         modifier = Modifier.fillMaxSize()
             .pointerInput(Unit) {
@@ -60,7 +64,7 @@ fun FixedAddBox(
             modifier = Modifier.fillMaxHeight().width(30.dp).padding(top = 4.dp, bottom = 4.dp),contentAlignment = Alignment.Center
         ){
             Text(
-                text = cartViewModel.cartItems.collectAsState().value.find { it?.mealKey == cartkey }?.quantity.toString(),
+                text = "$quantity",
                 fontSize = 15.sp,
                 style = MaterialTheme.typography.labelLarge,
                 color = Color.Black,

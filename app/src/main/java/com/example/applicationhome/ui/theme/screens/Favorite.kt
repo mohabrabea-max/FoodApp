@@ -34,7 +34,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -47,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
@@ -96,14 +97,14 @@ fun Favorite(
         context?.finishAffinity()
     }
 
-    val userId = loginViewModel.userData.collectAsState().value.id
 
-    val favoriteMeals = favoriteViewModel.favoriteMeals.collectAsState()
-    val favoriteSnacks = favoriteViewModel.favoriteSnacks.collectAsState()
-    val favoriteRestaurants = favoriteViewModel.favoriteRestaurantsFromDatabase.collectAsState()
+    val favoriteMeals by favoriteViewModel.favoriteMeals.collectAsStateWithLifecycle()
+    val favoriteSnacks by favoriteViewModel.favoriteSnacks.collectAsStateWithLifecycle()
+    val favoriteRestaurants by favoriteViewModel.favoriteRestaurantsFromDatabase.collectAsStateWithLifecycle()
 
-    val count = favoriteViewModel.favoriteFoodCount.collectAsState().value +
-            favoriteViewModel.favoriteRestaurantsCount.collectAsState().value
+    val favoriteFoodCount by favoriteViewModel.favoriteFoodCount.collectAsStateWithLifecycle()
+    val favoriteRestaurantsCount by favoriteViewModel.favoriteRestaurantsCount.collectAsStateWithLifecycle()
+    val count = favoriteFoodCount + favoriteRestaurantsCount
 
     Box(modifier = Modifier.fillMaxSize()){
         Scaffold(
@@ -121,8 +122,8 @@ fun Favorite(
                     ){
                         item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(146.dp))}
                         if(favoriteViewModel.selectedCategorieInFavoriteScreen == 2) {
-                            if(favoriteRestaurants.value.isNotEmpty()){
-                                items(favoriteRestaurants.value.toList()) { item ->
+                            if(favoriteRestaurants.isNotEmpty()){
+                                items(favoriteRestaurants) { item ->
                                     RestaurantsBox(
                                         false,
                                         item,
@@ -138,7 +139,7 @@ fun Favorite(
                         }
                         if(favoriteViewModel.selectedCategorieInFavoriteScreen == 1) {
                             item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
-                            items(favoriteSnacks.value) { item ->
+                            items(favoriteSnacks) { item ->
                                 SnaksBox(
                                     false,
                                     modifier = Modifier.size(200.dp),
@@ -170,7 +171,7 @@ fun Favorite(
                         }
                         if(favoriteViewModel.selectedCategorieInFavoriteScreen == 0) {
                             item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
-                            items(favoriteMeals.value) { item ->
+                            items(favoriteMeals) { item ->
                                 ItemsBox(
                                     false,
                                     item,

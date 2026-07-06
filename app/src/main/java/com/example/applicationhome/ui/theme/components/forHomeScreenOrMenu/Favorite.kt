@@ -1,6 +1,5 @@
 package com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu
 
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -14,6 +13,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -28,7 +28,6 @@ import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnrememberedMutableState")
 @Composable
 fun Favorite(
     modifier: Modifier = Modifier,
@@ -39,9 +38,10 @@ fun Favorite(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
-    val favorite = favoriteViewModel.isMealInFavorite(food.mealId).collectAsState(initial = false).value
+    val favorite by favoriteViewModel.isMealInFavorite(food.mealId).collectAsState(initial = false)
+
     fun favorite1(){
-        if(favorite == true){
+        if(favorite){
             favoriteViewModel.removeMealFavorite(food.mealId)
             Toast.makeText(context, "Remove From Favorite", Toast.LENGTH_SHORT).show()
         }else{
@@ -58,7 +58,7 @@ fun Favorite(
     }
 
     IconButton(modifier = modifier, onClick = {favorite1()}){
-        if(favorite == false) {
+        if(!favorite) {
             Icon(
                 imageVector = Icons.Default.FavoriteBorder,
                 contentDescription = "More",
@@ -78,7 +78,6 @@ fun Favorite(
 
 
 
-@SuppressLint("UnrememberedMutableState")
 @Composable
 fun FavoriteSnacks(
     modifier : Modifier = Modifier,
@@ -89,9 +88,10 @@ fun FavoriteSnacks(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
-    val favorite = favoriteViewModel.isSnackInFavorite(snack.snackId).collectAsState(initial = false).value
+    val favorite by favoriteViewModel.isSnackInFavorite(snack.snackId).collectAsState(initial = false)
+
     fun favorite1(){
-        if(favorite == true){
+        if(favorite){
             favoriteViewModel.removeSnackFavorite(snack.snackId)
             Toast.makeText(context, "Remove From Favorite", Toast.LENGTH_SHORT).show()
         }else{
@@ -108,7 +108,7 @@ fun FavoriteSnacks(
     }
 
     IconButton(modifier = modifier, onClick = {favorite1()}){
-        if(favorite == false) {
+        if(!favorite) {
             Icon(
                 imageVector = Icons.Default.FavoriteBorder,
                 contentDescription = "More",
@@ -128,7 +128,6 @@ fun FavoriteSnacks(
 
 
 
-@SuppressLint("UnrememberedMutableState")
 @Composable
 fun FavoriteRestaurant(
     modifier: Modifier = Modifier,
@@ -140,10 +139,10 @@ fun FavoriteRestaurant(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
-    val favorite = favoriteViewModel.isRestaurantInFavorite(restaurants.restaurantId).collectAsState(initial = false).value
-    fun favorite1(){
+    val favorite by favoriteViewModel.isRestaurantInFavorite(restaurants.restaurantId).collectAsState(initial = false)
 
-        if(favorite == true){
+    fun favorite1(){
+        if(favorite){
             favoriteViewModel.removeRestaurantsFavorite(restaurants.restaurantId)
             Toast.makeText(context, "Remove From Favorite", Toast.LENGTH_SHORT).show()
         }else{
@@ -160,7 +159,7 @@ fun FavoriteRestaurant(
     }
 
     IconButton(modifier = modifier, onClick = {favorite1()}){
-        if(favorite == false) {
+        if(!favorite) {
             Icon(
                 imageVector = Icons.Default.BookmarkBorder,
                 contentDescription = "More",

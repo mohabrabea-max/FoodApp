@@ -36,7 +36,6 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -55,7 +54,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.Options
@@ -80,6 +78,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DashboardScreen(
     navigationController: NavHostController,
+    dashboardNavController : NavHostController,
     drawerState : DrawerState,
     itemScreenViewModel: ItemScreenViewModel,
     cartViewModel : CartViewModel,
@@ -91,7 +90,7 @@ fun DashboardScreen(
     restaurantViewModel: RestaurantViewModel,
     viewRestaurantImageViewModel: ViewRestaurantImageViewModel
 ){
-    val dashboardNavController = rememberNavController()
+
     val coroutineScope = rememberCoroutineScope()
 
     val homeListState = rememberLazyListState()
@@ -101,7 +100,7 @@ fun DashboardScreen(
     val navBackStackEntry by dashboardNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val isLogin by loginViewModel.isLogin.collectAsState()
+    val isLogin by loginViewModel.isLogin.collectAsStateWithLifecycle()
 
     val userState by loginViewModel.userData.collectAsStateWithLifecycle()
     val density = LocalDensity.current

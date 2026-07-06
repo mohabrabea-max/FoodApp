@@ -32,7 +32,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +43,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.models.model.Screens
@@ -57,6 +57,7 @@ import com.example.applicationhome.ui.theme.model.LoginViewModel
 @Composable
 fun LoginScreen(
     navigationController : NavHostController,
+    dashboardNavController : NavHostController,
     loginViewModel: LoginViewModel
 ){
     DisposableEffect(Unit){
@@ -152,7 +153,7 @@ fun LoginScreen(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
 
-                LoginButton(loginViewModel, navigationController)
+                LoginButton(loginViewModel, dashboardNavController)
 
                 Spacer(modifier = Modifier.height(25.dp))
                 Row(
@@ -239,8 +240,8 @@ fun LoginScreen(
 
 @Composable
 fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostController){
-    val loading by loginViewModel.loading.collectAsState()
-    val isLogin by loginViewModel.isLogin.collectAsState()
+    val loading by loginViewModel.loading.collectAsStateWithLifecycle()
+    val isLogin by loginViewModel.isLogin.collectAsStateWithLifecycle()
 
     LaunchedEffect(isLogin){
         if(isLogin){

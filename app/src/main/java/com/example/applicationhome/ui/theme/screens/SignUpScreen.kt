@@ -62,6 +62,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SignUpScreen(
     navigationController : NavHostController,
+    dashboardNavController : NavHostController,
     signUpViewModel : SignUpViewModel
 ){
     DisposableEffect(Unit){
@@ -155,7 +156,7 @@ fun SignUpScreen(
                         verticalArrangement = Arrangement.Bottom,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
-                        SignUpButton(signUpViewModel, navigationController)
+                        SignUpButton(signUpViewModel, dashboardNavController)
 
                         Spacer(modifier = Modifier.height(25.dp))
                         Row(
@@ -243,7 +244,7 @@ fun SignUpScreen(
 }
 
 @Composable
-fun SignUpButton(signUpViewModel: SignUpViewModel, navigationController: NavHostController){
+fun SignUpButton(signUpViewModel: SignUpViewModel, dashboardNavController: NavHostController){
     val page = signUpViewModel.signupPages
     val state = signUpViewModel.bottonState
     val scope = rememberCoroutineScope()
@@ -270,7 +271,7 @@ fun SignUpButton(signUpViewModel: SignUpViewModel, navigationController: NavHost
                 }else if(page == 2){
                     scope.launch {
                         signUpViewModel.signUpButton()
-                        navigationController.navigate(Screens.HomeScreen.screen){ navigationController.popBackStack() }
+                        dashboardNavController.navigate(Screens.HomeScreen.screen){ dashboardNavController.popBackStack() }
                     }
 
                 }

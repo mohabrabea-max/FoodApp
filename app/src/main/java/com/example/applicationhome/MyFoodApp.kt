@@ -12,6 +12,7 @@ import com.example.applicationhome.data.models.repository.UserRepository
 class MyFoodApp : Application() {
     val database by lazy { UsersDatabase.getDaoInstance(this) }
     val cartdao by lazy { database.cartDao }
+    val ordersdao by lazy { database.ordersDao }
     val userdao by lazy { database.userDao }
     val favoriteDao by lazy { database.favoriteDao }
 
@@ -25,5 +26,5 @@ class MyFoodApp : Application() {
 
     val cartRepository by lazy { CartRepository(cartdao) }
 
-    val orderRepository by lazy { OrderRepository() }
+    val orderRepository by lazy { OrderRepository(ordersdao) }
 }

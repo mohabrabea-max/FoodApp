@@ -37,14 +37,18 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.model.OrdersClass
+import com.example.applicationhome.data.models.local.entity.OrdersDatabaseClass
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
 
 @Composable
-fun LastOrdersBox(navigationController: NavHostController, orderScreenViewModel : OrderScreenViewModel, order : OrdersClass, orderId : String){
+fun LastOrdersBox(
+    navigationController: NavHostController,
+    orderScreenViewModel : OrderScreenViewModel,
+    order : OrdersDatabaseClass
+){
     var color by remember { mutableStateOf(Color.Gray) }
     if(order.state == "Preparing" || order.state == "Out for Delivery"){
         color = Color.DarkOrange
@@ -114,7 +118,7 @@ fun LastOrdersBox(navigationController: NavHostController, orderScreenViewModel 
                             modifier = Modifier.padding(vertical = 5.dp)
                         )
                         Text(
-                            text = orderId,
+                            text = order.orderId,
                             fontSize = 12.sp,
                             style = MaterialTheme.typography.labelLarge,
                             color = Color.BrownForFont,

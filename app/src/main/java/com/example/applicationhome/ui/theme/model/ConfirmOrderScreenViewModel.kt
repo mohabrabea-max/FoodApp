@@ -84,10 +84,13 @@ class ConfirmOrderScreenViewModel(
             val lastname = currentUser?.lastname ?: ""
 
 
-            var totalPrice = 0.0
+            var subtotal = 0.0
             currentCartItems.forEach { item ->
-                totalPrice += item?.totalPrice ?: 0.0
+                subtotal += item?.totalPrice ?: 0.0
             }
+            val delivery = 55.0
+            val service = 8.0
+            val totalPrice = subtotal + delivery + service
 
             var orderItems = listOf<OrderItemsClass>()
             currentCartItems.forEach { item ->
@@ -105,9 +108,12 @@ class ConfirmOrderScreenViewModel(
                 val order = OrdersClass(
                     date,
                     "Preparing",
+                    subtotal,
+                    delivery,
+                    service,
                     totalPrice,
                     UserInformationInOrderClass(
-                        "${firstname} ${lastname}",
+                        "$firstname $lastname",
                         phoneNumberState.text.toString(),
                         if(additionalDirectionsState.text.isNotEmpty() && addressLabelState.text.isNotEmpty())
                             address1 + address2

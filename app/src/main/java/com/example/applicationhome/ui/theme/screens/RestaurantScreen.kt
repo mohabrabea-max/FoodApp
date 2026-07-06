@@ -29,7 +29,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -44,6 +43,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -116,13 +116,13 @@ fun RestaurantScreen(
     val offers by restaurantViewModel.restaurantOffersMenuList
     val iteme = itemScreenViewModel.selectedRestaurant
 
-    val cartItems by cartViewModel.cartItems.collectAsState()
-    val cartInformation by cartViewModel.cartInformation.collectAsState()
+    val cartItems by cartViewModel.cartItems.collectAsStateWithLifecycle()
+    val cartInformation by cartViewModel.cartInformation.collectAsStateWithLifecycle()
     val restaurantId = cartInformation?.restaurantId
     val restaurantName = cartInformation?.restaurantName
 
-    val foodMenuIsLoading by restaurantViewModel.foodMenuListIsLoading.collectAsState()
-    val snacksIsLoading by restaurantViewModel.snacksIsLoading.collectAsState()
+    val foodMenuIsLoading by restaurantViewModel.foodMenuListIsLoading.collectAsStateWithLifecycle()
+    val snacksIsLoading by restaurantViewModel.snacksIsLoading.collectAsStateWithLifecycle()
 
     if(iteme != null){
         Scaffold(

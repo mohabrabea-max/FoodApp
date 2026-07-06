@@ -48,7 +48,7 @@ fun PaymentSummary(cartViewModel: CartViewModel){
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = "EGP ${totalprice}",
+                text = "EGP $totalprice",
                 fontSize = 14.sp,
                 color = Color.Black,
                 style = MaterialTheme.typography.bodySmall,
@@ -66,7 +66,7 @@ fun PaymentSummary(cartViewModel: CartViewModel){
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = "EGP ${delivery}",
+                text = "EGP $delivery",
                 fontSize = 14.sp,
                 color = Color.Black,
                 style = MaterialTheme.typography.bodySmall
@@ -84,7 +84,7 @@ fun PaymentSummary(cartViewModel: CartViewModel){
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = "EGP ${service}",
+                text = "EGP $service",
                 fontSize = 14.sp,
                 color = Color.Black,
                 style = MaterialTheme.typography.bodySmall
@@ -139,7 +139,7 @@ fun PaymentSummaryCartScreen(cartViewModel: CartViewModel){
                 style = MaterialTheme.typography.labelLarge
             )
             Text(
-                text = "EGP ${totalprice}",
+                text = "EGP $totalprice",
                 fontSize = 17.sp,
                 color = Color.Black,
                 style = MaterialTheme.typography.labelLarge

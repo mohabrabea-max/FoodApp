@@ -26,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.applicationhome.data.models.local.entity.CartItemsClass
 import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
 import com.example.applicationhome.ui.theme.DarkOrange
@@ -46,6 +46,7 @@ import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun AddBox(
@@ -65,10 +66,13 @@ fun AddBox(
 
 
     val cartkey = "${id}_${size}"
-    val count = cartViewModel.cartItems.collectAsState().value.find { it?.mealKey == cartkey }?.quantity ?:0
+    val cartItems by cartViewModel.cartItems.collectAsStateWithLifecycle()
+    val count = cartItems.find { it?.mealKey == cartkey }?.quantity ?:0
+
+    val userData by loginViewModel.userData.collectAsStateWithLifecycle()
 
     val meal = CartItemsClass(
-        loginViewModel.userData.collectAsState().value.id,
+        userData.id,
         cartkey,
         id,
         food.name,
@@ -88,12 +92,12 @@ fun AddBox(
     //  بيراقب الـ isExpanded
     LaunchedEffect(key1 = count, key2 = active) {
         if (isExpanded && active == id) {
-            delay(1000)
+            delay(1000.milliseconds)
             isExpanded = false
         }
     }
-    var cartColor = if (activid == false || isExpanded == false || count == 0) Color.VeryLightGray else Color.Red
-    var targetWidth = if (activid == false || isExpanded == false) 35.dp else 160.dp
+    val cartColor = if (!activid || !isExpanded || count == 0) Color.VeryLightGray else Color.Red
+    val targetWidth = if (!activid || !isExpanded) 35.dp else 160.dp
     Box(
         modifier = modifier.
         animateContentSize().
@@ -108,7 +112,7 @@ fun AddBox(
         border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)),
         contentAlignment = Alignment.Center
     ){
-        if(count == 0 && activid == false || count == 0 && isExpanded == false) {
+        if(count == 0 && !activid || count == 0 && !isExpanded) {
             IconButton(
                 onClick = {
                     isExpanded = true
@@ -125,7 +129,7 @@ fun AddBox(
                     modifier = Modifier.fillMaxSize().padding(5.dp)
                 )
             }
-        }else if(count > 0 && activid == false || isExpanded == false){
+        }else if(count > 0 && !activid || !isExpanded){
             Box(
                 modifier = modifier.
                 animateContentSize().
@@ -192,7 +196,7 @@ fun AddBox(
                             contentAlignment = Alignment.Center
                         ){
                             Text(
-                                text = count.toString(),
+                                text = "$count",
                                 fontSize = 20.sp,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = Color.Black,

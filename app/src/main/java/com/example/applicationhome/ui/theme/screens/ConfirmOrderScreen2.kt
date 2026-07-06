@@ -51,6 +51,7 @@ import com.example.applicationhome.ui.theme.model.LoginViewModel
 @Composable
 fun ConfirmOrderScreen2(
     navigationController : NavHostController,
+    dashboardNavController : NavHostController,
     confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
     cartViewModel: CartViewModel,
     loginViewModel: LoginViewModel
@@ -107,7 +108,7 @@ fun ConfirmOrderScreen2(
                         "Confirm order",
                         {
                             confirmOrderScreenViewModel.uploadOrder()
-                            navigationController.navigate(Screens.HomeScreen.screen)
+                            dashboardNavController.navigate(Screens.HomeScreen.screen)
                             confirmOrderScreenViewModel.cleanTextField()
                         }
                     )

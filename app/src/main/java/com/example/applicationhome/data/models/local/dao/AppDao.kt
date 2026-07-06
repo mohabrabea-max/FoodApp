@@ -10,10 +10,13 @@ import com.example.applicationhome.data.models.local.entity.CartItemsClass
 import com.example.applicationhome.data.models.local.entity.FavoriteFoodDatabase
 import com.example.applicationhome.data.models.local.entity.FavoriteRestaurantDatabase
 import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
+import com.example.applicationhome.data.models.local.entity.OrdersDatabaseClass
 import com.example.applicationhome.data.models.local.entity.UpdateAccountState
 import com.example.applicationhome.data.models.local.entity.UserClass
 import kotlinx.coroutines.flow.Flow
 
+
+//                       *** -------------------------------------- \\***  User Data  ***// ------------------------------------- ***
 @Dao
 interface UsersDao {            // دا الجزء اللي بينفذ عمليات في الداتا بيز
 //    @Query("SELECT * FROM users")
@@ -34,8 +37,12 @@ interface UsersDao {            // دا الجزء اللي بينفذ عملي�
 }
 
 
+//                       *** -------------------------------------- \\***  Cart  ***// ------------------------------------- ***
 @Dao
 interface CartDao {            // دا الجزء اللي بينفذ عمليات في الداتا بيز
+
+    //               --------------------------------------   Cart Items    -------------------------------------
+
     @Query("SELECT * FROM cart_items WHERE userId = :userid")
     fun getCartItems(userid : String): Flow<List<CartItemsClass?>>
 
@@ -51,6 +58,10 @@ interface CartDao {            // دا الجزء اللي بينفذ عمليا
     @Query("DELETE FROM cart_items WHERE userId = :userId")
     suspend fun deleteAllItemFromCart(userId : String)
 
+
+    //             --------------------------------------   Parent Cart    -------------------------------------
+
+
     @Query("SELECT * FROM cart WHERE userId = :userid")
     fun getParentCart(userid : String): Flow<CartClass?>
 
@@ -61,8 +72,24 @@ interface CartDao {            // دا الجزء اللي بينفذ عمليا
     suspend fun deleteParentCart(userid : String)
 }
 
+
+//                       *** -------------------------------------- \\***  Orders History  ***// ------------------------------------- ***
+@Dao
+interface OrdersDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addNewOrders(orders : List<OrdersDatabaseClass>)
+
+    @Query("SELECT * FROM orders_history WHERE userId =:userId")
+    fun getAllOrders(userId : String) : Flow<List<OrdersDatabaseClass>>
+}
+
+
+//                         *** -------------------------------------- \\***  Favorite  ***// ------------------------------------- ***
 @Dao
 interface FavoriteDao {
+
+    //             --------------------------------------   Meals    -------------------------------------
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addFoodToFavorite(foodItem : List<FavoriteFoodDatabase>)
 
@@ -87,7 +114,7 @@ interface FavoriteDao {
     @Query("DELETE FROM favorite_food WHERE isDeletedOffline = 1 AND isSynced = 0")
     suspend fun cleanUpLocalOnlyDeletedMeals()
 
-
+    //             --------------------------------------   Snacks    -------------------------------------
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addSnacksToFavorite(snacksItems : List<FavoriteSnacksDatabase>)
@@ -113,7 +140,7 @@ interface FavoriteDao {
     @Query("DELETE FROM favorite_snacks WHERE isDeletedOffline = 1 AND isSynced = 0")
     suspend fun cleanUpLocalOnlyDeletedSnacks()
 
-
+    //              --------------------------------------   Restaurants    -------------------------------------
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addRestaurantToFavorite(restaurant : List<FavoriteRestaurantDatabase>)

@@ -38,11 +38,17 @@ import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun LastOrdersScreen(navigationController : NavHostController, orderScreenViewModel : OrderScreenViewModel){
-    LaunchedEffect(key1 = orderScreenViewModel.selectedOrder) {
+fun LastOrdersScreen(
+    navigationController : NavHostController,
+    orderScreenViewModel : OrderScreenViewModel
+){
+
+    LaunchedEffect(key1 = orderScreenViewModel.isNetworkAvailable) {
         orderScreenViewModel.getOrdersHistory()
     }
-    val allOrders by orderScreenViewModel.sortedOrdersList.collectAsStateWithLifecycle()
+
+    val ordersHistory by orderScreenViewModel.ordersHistory.collectAsStateWithLifecycle()
+
     Scaffold(
         modifier = Modifier.navigationBarsPadding().fillMaxSize(),
         topBar = {
@@ -75,9 +81,9 @@ fun LastOrdersScreen(navigationController : NavHostController, orderScreenViewMo
                 modifier = Modifier.fillMaxSize()
             ){
                 item{Spacer(modifier = Modifier.height(100.dp))}
-                items(allOrders.entries.toList()){ item ->
+                items(ordersHistory){ item ->
                     Spacer(modifier = Modifier.height(10.dp))
-                    LastOrdersBox(navigationController, orderScreenViewModel, item.value, item.key)
+                    LastOrdersBox(navigationController, orderScreenViewModel, item)
                 }
                 item{Spacer(modifier = Modifier.height(100.dp))}
             }

@@ -1,4 +1,4 @@
-package com.example.applicationhome.ui.theme.screens
+package com.example.applicationhome
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.EnterTransition
@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.applicationhome.DashboardScreen
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.showNetworkSnackBar
 import com.example.applicationhome.ui.theme.model.CartViewModel
@@ -48,6 +47,19 @@ import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import com.example.applicationhome.ui.theme.model.SignUpViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
+import com.example.applicationhome.ui.theme.screens.Cart
+import com.example.applicationhome.ui.theme.screens.ConfirmOrderScreen
+import com.example.applicationhome.ui.theme.screens.ConfirmOrderScreen2
+import com.example.applicationhome.ui.theme.screens.ItemScreen
+import com.example.applicationhome.ui.theme.screens.LastOrdersScreen
+import com.example.applicationhome.ui.theme.screens.LoginScreen
+import com.example.applicationhome.ui.theme.screens.NoInternetScreen
+import com.example.applicationhome.ui.theme.screens.Notifications
+import com.example.applicationhome.ui.theme.screens.OrderScreen
+import com.example.applicationhome.ui.theme.screens.Profile
+import com.example.applicationhome.ui.theme.screens.RestaurantScreen
+import com.example.applicationhome.ui.theme.screens.Search
+import com.example.applicationhome.ui.theme.screens.SignUpScreen
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -75,6 +87,8 @@ fun FinalScreen(
 
     val navigationController = rememberNavController()
 
+    val dashboardNavController = rememberNavController()
+
     val coroutineScope = rememberCoroutineScope()
 
     Box(
@@ -93,6 +107,7 @@ fun FinalScreen(
             composable(Screens.DashboardScreen.screen){
                 DashboardScreen(
                     navigationController,
+                    dashboardNavController,
                     drawerState,
                     itemScreenViewModel,
                     cartViewModel,
@@ -145,18 +160,16 @@ fun FinalScreen(
             composable(Screens.Cart.screen){
                 Cart(
                     navigationController,
-                    itemScreenViewModel,
-                    cartViewModel,
-                    loginViewModel
+                    cartViewModel
                 )
             }
 
             composable(Screens.LoginScreen.screen){
-                LoginScreen(navigationController, loginViewModel)
+                LoginScreen(navigationController, dashboardNavController, loginViewModel)
             }
 
             composable(Screens.SignUpScreen.screen){
-                SignUpScreen(navigationController, signUpViewModel)
+                SignUpScreen(navigationController, dashboardNavController, signUpViewModel)
             }
 
             composable(Screens.ConfirmOrderScreen.screen){
@@ -170,6 +183,7 @@ fun FinalScreen(
             composable(Screens.ConfirmOrderScreen2.screen){
                 ConfirmOrderScreen2(
                     navigationController,
+                    dashboardNavController,
                     confirmOrderScreenViewModel,
                     cartViewModel,
                     loginViewModel

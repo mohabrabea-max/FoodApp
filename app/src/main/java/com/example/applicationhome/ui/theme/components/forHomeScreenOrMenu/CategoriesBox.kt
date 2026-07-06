@@ -15,7 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
@@ -34,10 +35,12 @@ import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 @Composable
 fun CategoriesBox(category : Categories, homeScreenViewModel: HomeScreenViewModel){
     val selected = homeScreenViewModel.selected
-    var size = if(selected == category.id) 65.dp else 70.dp
-    var alpha = if(selected == category.id) 1f else 0f
+    val size = if(selected == category.id) 65.dp else 70.dp
+    val alpha = if(selected == category.id) 1f else 0f
 
-    if (homeScreenViewModel.categoriesIsLoading.collectAsState().value) {
+    val categoriesIsLoading by homeScreenViewModel.categoriesIsLoading.collectAsStateWithLifecycle()
+
+    if (categoriesIsLoading) {
         Column(
             modifier = Modifier.clickable {
                 if(selected == 0){

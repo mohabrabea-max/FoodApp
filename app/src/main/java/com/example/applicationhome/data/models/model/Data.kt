@@ -167,9 +167,12 @@ data class UserInformationInOrderClass(
 data class OrdersClass(
     val date : String = "",
     val state : String = "",
+    val subtotal : Double = 0.0,
+    val delivery : Double = 0.0,
+    val service : Double = 0.0,
     val totalPrice : Double = 0.0,
     val userInformation : UserInformationInOrderClass = UserInformationInOrderClass(),
-    val orderItems : List<OrderItemsClass> = listOf(OrderItemsClass()),
+    val orderItems : List<OrderItemsClass> = emptyList(),
     val restaurantName : String = "",
     val restaurantImage : String = "",
     val restaurantId : Int = 0

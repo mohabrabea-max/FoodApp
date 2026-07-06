@@ -42,11 +42,11 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import com.example.applicationhome.data.models.local.entity.OrdersDatabaseClass
 import com.example.applicationhome.data.models.model.OrderItemsClass
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
-import com.example.applicationhome.ui.theme.components.forCart.PaymentSummary
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
 
@@ -92,7 +92,7 @@ fun OrderScreen(orderScreenViewModel : OrderScreenViewModel, navigationControlle
                         OrderDetelseBox(item)
                     }
                     item {
-                        PaymentSummary(cartViewModel)
+                        PaymentSummaryForOrderScreen(order)
                     }
                     item { Spacer(modifier = Modifier.height(100.dp)) }
                 }
@@ -145,7 +145,7 @@ fun OrderDetelseBox(
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = "${price} x ${food.quantity}" ,
+                            text = "$price x ${food.quantity}" ,
                             fontSize = 15.sp,
                             color = Color.Red,
                             style = MaterialTheme.typography.labelLarge,
@@ -156,6 +156,95 @@ fun OrderDetelseBox(
             }
             Spacer(modifier = Modifier.height(15.dp))
             Divider(color = Color.LightOrange.copy(alpha = 0.5f), modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+        }
+    }
+}
+
+@Composable
+fun PaymentSummaryForOrderScreen(order: OrdersDatabaseClass){
+    Column(
+        horizontalAlignment = Alignment.Start,
+        modifier = Modifier.fillMaxWidth().background(Color.White).padding(20.dp)
+    ){
+        Text(
+            text = "Payment summary",
+            fontSize = 20.sp,
+            color = Color.Black,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Text(
+                text = "Subtotal",
+                fontSize = 14.sp,
+                color = Color.Black,
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = "EGP ${order.subtotal}",
+                fontSize = 14.sp,
+                color = Color.Black,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Text(
+                text = "Delivery fee",
+                fontSize = 14.sp,
+                color = Color.Black,
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = "EGP ${order.delivery}",
+                fontSize = 14.sp,
+                color = Color.Black,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Text(
+                text = "Service fee",
+                fontSize = 14.sp,
+                color = Color.Black,
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = "EGP ${order.service}",
+                fontSize = 14.sp,
+                color = Color.Black,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Text(
+                text = "Total amount",
+                fontSize = 17.sp,
+                color = Color.Black,
+                style = MaterialTheme.typography.labelLarge
+            )
+            Text(
+                text = "EGP ${order.totalPrice}",
+                fontSize = 17.sp,
+                color = Color.Black,
+                style = MaterialTheme.typography.labelLarge
+            )
         }
     }
 }
