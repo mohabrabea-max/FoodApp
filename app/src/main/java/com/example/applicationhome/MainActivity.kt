@@ -6,9 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -118,14 +116,12 @@ class MainActivity : ComponentActivity() {
         // تم إزالة تعريفات الـ Repositories من هنا لأن الـ lazy بيقوم بالواجب فوق في الأمان
 
         setContent {
-            val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
             val userImageViewModel: UserImageViewModel = viewModel()
             val drawerViewModel: DrawerViewModel = viewModel()
             val viewRestaurantImageViewModel: ViewRestaurantImageViewModel = viewModel()
 
             FinalScreen(
-                scrollBehavior,
                 drawerState,
                 itemScreenViewModel,
                 cartViewModel,

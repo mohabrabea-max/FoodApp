@@ -8,9 +8,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -19,24 +22,41 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
+import kotlinx.coroutines.launch
 
 @Composable
-fun CartButton(backgroundcolor : Color, fontcolor : Color, title: String, action: () -> Unit){
+fun CartButton(confirmOrderScreenViewModel : ConfirmOrderScreenViewModel, backgroundcolor : Color, fontcolor : Color, title: String, action: () -> Unit){
+    val scope = rememberCoroutineScope()
+
+    val loading by confirmOrderScreenViewModel.loading.collectAsStateWithLifecycle()
+
     Box(
         modifier = Modifier.navigationBarsPadding().padding(horizontal = 20.dp).fillMaxWidth().
         height(50.dp).
         shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(50.dp)).
         background(backgroundcolor).
-        clickable{action()},
+        clickable{
+            scope.launch {
+                action()
+            }
+       },
         contentAlignment = Alignment.Center
     ){
-        Text(
-            text = title,
-            fontSize = 15.sp,
-            style = MaterialTheme.typography.labelLarge,
-            color = fontcolor,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold
-        )
+        if(loading){
+            CircularProgressIndicator(
+                color = Color.White
+            )
+        }else{
+            Text(
+                text = title,
+                fontSize = 15.sp,
+                style = MaterialTheme.typography.labelLarge,
+                color = fontcolor,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }

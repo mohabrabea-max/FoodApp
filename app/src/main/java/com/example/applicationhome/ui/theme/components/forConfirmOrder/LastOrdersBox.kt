@@ -57,6 +57,8 @@ fun LastOrdersBox(
     }else if(order.state == "Cancelled" || order.state == "Failed"){
         color = Color.Red
     }
+
+    val quantity = order.orderItems.sumOf { item -> item.quantity }
     Box(
         modifier = Modifier
             .padding(horizontal = 15.dp)
@@ -118,7 +120,7 @@ fun LastOrdersBox(
                             modifier = Modifier.padding(vertical = 5.dp)
                         )
                         Text(
-                            text = order.orderId,
+                            text = "${order.orderId}",
                             fontSize = 12.sp,
                             style = MaterialTheme.typography.labelLarge,
                             color = Color.BrownForFont,
@@ -168,7 +170,7 @@ fun LastOrdersBox(
                             modifier = Modifier.padding(vertical = 2.dp)
                         )
                         Text(
-                            text = order.orderItems.size.toString(),
+                            text = "$quantity",
                             fontSize = 15.sp,
                             style = MaterialTheme.typography.labelLarge,
                             color = Color.Blue,

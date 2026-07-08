@@ -179,6 +179,7 @@ fun ConfirmOrderScreen(
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally){
                 CartButton(
+                    confirmOrderScreenViewModel,
                     color,
                     fontcolor,
                     "Save address",

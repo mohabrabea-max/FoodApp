@@ -35,6 +35,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,7 +64,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun SignUpScreen(
     navigationController : NavHostController,
-    dashboardNavController : NavHostController,
     signUpViewModel : SignUpViewModel
 ){
     DisposableEffect(Unit){
@@ -156,7 +157,7 @@ fun SignUpScreen(
                         verticalArrangement = Arrangement.Bottom,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
-                        SignUpButton(signUpViewModel, dashboardNavController)
+                        SignUpButton(signUpViewModel, navigationController)
 
                         Spacer(modifier = Modifier.height(25.dp))
                         Row(
@@ -244,7 +245,9 @@ fun SignUpScreen(
 }
 
 @Composable
-fun SignUpButton(signUpViewModel: SignUpViewModel, dashboardNavController: NavHostController){
+fun SignUpButton(signUpViewModel: SignUpViewModel, navigationController: NavHostController){
+    val clickState = remember { mutableStateOf(true) }
+
     val page = signUpViewModel.signupPages
     val state = signUpViewModel.bottonState
     val scope = rememberCoroutineScope()
@@ -264,14 +267,15 @@ fun SignUpButton(signUpViewModel: SignUpViewModel, dashboardNavController: NavHo
             .height(50.dp)
             .fillMaxWidth()
             .clip(CircleShape)
-            .background(if(state == true || page == 2) Color.DarkOrange else Color.Gray)
+            .background(if(state || page == 2) Color.DarkOrange else Color.Gray)
             .clickable {
-                if(state == true && page == 1){
+                if(state && page == 1){
                     signUpViewModel.createAccount()
-                }else if(page == 2){
+                }else if(page == 2 && clickState.value){
                     scope.launch {
+                        clickState.value = false
                         signUpViewModel.signUpButton()
-                        dashboardNavController.navigate(Screens.HomeScreen.screen){ dashboardNavController.popBackStack() }
+                        navigationController.popBackStack()
                     }
 
                 }
@@ -286,7 +290,7 @@ fun SignUpButton(signUpViewModel: SignUpViewModel, dashboardNavController: NavHo
             Text(
                 text = if(page == 1) "Next" else "Sign Up",
                 style = MaterialTheme.typography.bodyLarge,
-                color = if(state == true || page == 2) Color.White else Color.Black,
+                color = if(state || page == 2) Color.White else Color.Black,
                 fontSize = 18.sp
             )
         }

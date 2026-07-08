@@ -38,7 +38,7 @@ class SyncRemoveFromFavoritesWorker(
                             try {
                                 RetrofitInstance.api.deleteFromFavorite(
                                     item.userId,
-                                    "${item.type}_${item.mealId}"
+                                    "Meal_${item.mealId}"
                                 ).isSuccessful
                             }catch (e : Exception){ false }
                         }

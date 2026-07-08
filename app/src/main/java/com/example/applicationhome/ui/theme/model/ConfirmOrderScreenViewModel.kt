@@ -19,20 +19,16 @@ import com.example.applicationhome.data.models.repository.ConfirmOrderScreenText
 import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.streettextFieldState
 import com.example.applicationhome.data.models.repository.OrderRepository
 import com.example.applicationhome.data.models.repository.UserRepository
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class ConfirmOrderScreenViewModel(
     private val userRepository: UserRepository,
     private val cartRepository: CartRepository,
     private val orderRepository : OrderRepository
 ) : ViewModel() {
-    val current = LocalDateTime.now()
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-    val date = current.format(formatter)
-
+    val loading : StateFlow<Boolean> = orderRepository.loading
     var bottonState by mutableStateOf(false)
     var phoneNumbertextFieldState by mutableStateOf(false)
     val address1 = "${houseState.text} - ${streetState.text}"
@@ -72,7 +68,7 @@ class ConfirmOrderScreenViewModel(
         streettextFieldState = true
     }
 
-    fun uploadOrder(){
+    fun uploadOrder(onSuccess: () -> Unit){
         viewModelScope.launch {
             val currentUser = userRepository.getActiveUserFromDatabase().first()
             val userId = currentUser?.id ?: ""
@@ -106,7 +102,7 @@ class ConfirmOrderScreenViewModel(
             }
             if(orderInformation != null){
                 val order = OrdersClass(
-                    date,
+                    "",
                     "Preparing",
                     subtotal,
                     delivery,
@@ -127,6 +123,8 @@ class ConfirmOrderScreenViewModel(
                     )
                 orderRepository.uploadOrderRequest(order, userId)
             }
+            onSuccess()
+            cleanTextField()
         }
     }
 }

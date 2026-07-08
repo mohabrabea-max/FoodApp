@@ -126,12 +126,12 @@ interface FoodAppAPIs{
     @PUT("orders/{userId}/{orderId}.json")
     suspend fun putNewOrder(
         @Path("userId") userId : String,
-        @Path("orderId") orderId : String,
+        @Path("orderId") orderId : Long,
         @Body order : OrdersClass
     ): Response<OrdersClass>
 
     @GET("orders/{userId}.json")
     suspend fun getLastOrders(
         @Path("userId") userId : String
-    ): Response<Map<String, OrdersClass>>
+    ): Response<Map<Long, OrdersClass>>
 }

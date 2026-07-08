@@ -33,6 +33,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,7 +59,6 @@ import com.example.applicationhome.ui.theme.model.LoginViewModel
 @Composable
 fun LoginScreen(
     navigationController : NavHostController,
-    dashboardNavController : NavHostController,
     loginViewModel: LoginViewModel
 ){
     DisposableEffect(Unit){
@@ -153,7 +154,7 @@ fun LoginScreen(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
 
-                LoginButton(loginViewModel, dashboardNavController)
+                LoginButton(loginViewModel, navigationController)
 
                 Spacer(modifier = Modifier.height(25.dp))
                 Row(
@@ -240,12 +241,14 @@ fun LoginScreen(
 
 @Composable
 fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostController){
+    val clickState = remember { mutableStateOf(true) }
+
     val loading by loginViewModel.loading.collectAsStateWithLifecycle()
     val isLogin by loginViewModel.isLogin.collectAsStateWithLifecycle()
 
-    LaunchedEffect(isLogin){
+    LaunchedEffect(key1 = isLogin){
         if(isLogin){
-            navigationController.navigate(Screens.HomeScreen.screen) {navigationController.popBackStack()}
+            navigationController.popBackStack()
         }
     }
 
@@ -257,14 +260,15 @@ fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostCon
             .clip(CircleShape)
             .background(if(loginViewModel.emailstate.text.isNotEmpty() && loginViewModel.passwordstate.text.isNotEmpty()) Color.DarkOrange else Color.Gray)
             .clickable {
-                if(loginViewModel.isNetworkAvailable){
+                if(loginViewModel.isNetworkAvailable && clickState.value){
+                    clickState.value = false
                     loginViewModel.login()
                 }
             },
         contentAlignment = Alignment.Center
 
     ){
-        if(loading == true){
+        if(loading){
             CircularProgressIndicator(
                 color = Color.White
             )

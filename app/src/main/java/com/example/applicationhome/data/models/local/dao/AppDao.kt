@@ -79,7 +79,7 @@ interface OrdersDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addNewOrders(orders : List<OrdersDatabaseClass>)
 
-    @Query("SELECT * FROM orders_history WHERE userId =:userId")
+    @Query("SELECT * FROM orders_history WHERE userId =:userId ORDER BY orderId DESC")
     fun getAllOrders(userId : String) : Flow<List<OrdersDatabaseClass>>
 }
 

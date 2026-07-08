@@ -2,7 +2,6 @@ package com.example.applicationhome.ui.theme.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -66,8 +64,7 @@ fun LastOrdersScreen(
                             if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
                         },
                         modifier = Modifier.padding(5.dp).
-                        border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
-                        shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = CircleShape).clip(CircleShape).size(40.dp).
+                        clip(CircleShape).size(40.dp).
                         background(Color.White)
                     ){
                         Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.DeepMatteBlack)

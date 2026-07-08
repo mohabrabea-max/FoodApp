@@ -35,8 +35,8 @@ class SyncAddToFavoritesWorker(
                             try {
                                 RetrofitInstance.api.addToFavorite(
                                     item.userId,
-                                    "${item.type}_${item.mealId}",
-                                    FavoriteClass(item.mealId, item.type, item.restaurantId)
+                                    "Meal_${item.mealId}",
+                                    FavoriteClass(item.mealId, "Meal", item.restaurantId)
                                 ).isSuccessful
                             }catch (e : Exception){ false }
                         }

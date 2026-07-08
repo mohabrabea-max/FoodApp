@@ -24,13 +24,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.model.Screens
 import com.example.applicationhome.ui.theme.BrandBlue
@@ -51,12 +54,14 @@ import com.example.applicationhome.ui.theme.model.LoginViewModel
 @Composable
 fun ConfirmOrderScreen2(
     navigationController : NavHostController,
-    dashboardNavController : NavHostController,
     confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
     cartViewModel: CartViewModel,
     loginViewModel: LoginViewModel
 ){
-    val cart = cartViewModel.cartItems
+    val cart by cartViewModel.cartItems.collectAsStateWithLifecycle()
+
+    val clickState = remember { mutableStateOf(true) }
+
     Scaffold(
         modifier = Modifier.navigationBarsPadding().fillMaxSize(),
         topBar = {
@@ -91,7 +96,7 @@ fun ConfirmOrderScreen2(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ){
                     item{Spacer(modifier = Modifier.height(100.dp))}
-                    items(cart.value) { item ->
+                    items(cart) { item ->
                         if(item != null)ConfirmOrderBox(item, loginViewModel)
                     }
                     item{
@@ -101,17 +106,27 @@ fun ConfirmOrderScreen2(
                 }
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally){
-                if(cart.collectAsState().value.isNotEmpty()){
+                if(cart.isNotEmpty()){
                     CartButton(
+                        confirmOrderScreenViewModel,
                         Color.BrandBlue,
                         Color.White,
-                        "Confirm order",
-                        {
-                            confirmOrderScreenViewModel.uploadOrder()
-                            dashboardNavController.navigate(Screens.HomeScreen.screen)
-                            confirmOrderScreenViewModel.cleanTextField()
+                        "Confirm order"
+                    ){
+                        if(clickState.value){
+                            clickState.value = false
+                            confirmOrderScreenViewModel.uploadOrder(
+                                onSuccess = {
+                                    cartViewModel.clearAllCart()
+                                    navigationController.navigate(Screens.DashboardScreen.screen){
+                                        popUpTo(Screens.DashboardScreen.screen){
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                            )
                         }
-                    )
+                    }
                 }
             }
         }

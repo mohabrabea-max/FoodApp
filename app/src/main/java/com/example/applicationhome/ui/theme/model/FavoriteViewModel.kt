@@ -114,10 +114,19 @@ class FavoriteViewModel(
 
     init {
         viewModelScope.launch {
-            networkObserver.isNetworkAvailable.collect { available ->
-                isNetworkAvailable = available
-                if (available && userId.isNotEmpty()) {
-                    favoriteRepository.syncFavoritesInDatabase(userId)
+            userRepository.getActiveUserFromDatabase().collect { user ->
+                val id = user?.id ?: ""
+
+                if (id.isNotEmpty()) {
+                    userId
+
+                    networkObserver.isNetworkAvailable.collect { available ->
+                        isNetworkAvailable = available
+
+                        if (available) {
+                            favoriteRepository.syncFavoritesInDatabase(id)
+                        }
+                    }
                 }
             }
         }

@@ -242,7 +242,7 @@ data class FavoriteRestaurantDatabase(
     primaryKeys = ["orderId", "userId"]
 )
 data class OrdersDatabaseClass(
-    val orderId : String = "",
+    val orderId : Long = 0,
     val userId : String = "",
     val date : String = "",
     val state : String = "",

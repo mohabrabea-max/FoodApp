@@ -56,13 +56,15 @@ import com.example.applicationhome.ui.theme.components.forCart.CartBox
 import com.example.applicationhome.ui.theme.components.forCart.CartButton
 import com.example.applicationhome.ui.theme.components.forCart.PaymentSummaryCartScreen
 import com.example.applicationhome.ui.theme.model.CartViewModel
+import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Cart(
     navigationController : NavHostController,
-    cartViewModel: CartViewModel
+    cartViewModel: CartViewModel,
+    confirmOrderScreenViewModel : ConfirmOrderScreenViewModel
 ){
     BackHandler(enabled = true){
         if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
@@ -184,6 +186,7 @@ fun Cart(
             Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally){
                 if(cartItems.isNotEmpty()){
                     CartButton(
+                        confirmOrderScreenViewModel,
                         Color.DarkOrange,
                         Color.White,
                         "Checkout",

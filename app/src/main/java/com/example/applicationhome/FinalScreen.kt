@@ -17,7 +17,6 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -67,7 +66,6 @@ import kotlin.time.Duration.Companion.milliseconds
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinalScreen(
-    scrollBehavior : TopAppBarScrollBehavior,
     drawerState : DrawerState,
     itemScreenViewModel: ItemScreenViewModel,
     cartViewModel : CartViewModel,
@@ -87,8 +85,6 @@ fun FinalScreen(
 
     val navigationController = rememberNavController()
 
-    val dashboardNavController = rememberNavController()
-
     val coroutineScope = rememberCoroutineScope()
 
     Box(
@@ -107,7 +103,6 @@ fun FinalScreen(
             composable(Screens.DashboardScreen.screen){
                 DashboardScreen(
                     navigationController,
-                    dashboardNavController,
                     drawerState,
                     itemScreenViewModel,
                     cartViewModel,
@@ -160,16 +155,17 @@ fun FinalScreen(
             composable(Screens.Cart.screen){
                 Cart(
                     navigationController,
-                    cartViewModel
+                    cartViewModel,
+                    confirmOrderScreenViewModel
                 )
             }
 
             composable(Screens.LoginScreen.screen){
-                LoginScreen(navigationController, dashboardNavController, loginViewModel)
+                LoginScreen(navigationController, loginViewModel)
             }
 
             composable(Screens.SignUpScreen.screen){
-                SignUpScreen(navigationController, dashboardNavController, signUpViewModel)
+                SignUpScreen(navigationController, signUpViewModel)
             }
 
             composable(Screens.ConfirmOrderScreen.screen){
@@ -183,7 +179,6 @@ fun FinalScreen(
             composable(Screens.ConfirmOrderScreen2.screen){
                 ConfirmOrderScreen2(
                     navigationController,
-                    dashboardNavController,
                     confirmOrderScreenViewModel,
                     cartViewModel,
                     loginViewModel

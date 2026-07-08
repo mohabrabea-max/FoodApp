@@ -26,7 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.models.local.entity.CartItemsClass
 import com.example.applicationhome.data.models.local.entity.FavoriteFoodDatabase
@@ -59,10 +60,14 @@ fun BottomBarForItemScreen(
     navigationController : NavHostController,
     loginViewModel: LoginViewModel
 ){
+    val cartInformation by cartViewModel.cartInformation.collectAsStateWithLifecycle()
+
+    val userData by loginViewModel.userData.collectAsStateWithLifecycle()
+
     val price = food.sizeOptions.find { it.size == size }?.price ?: 0.0
     val totalPrice = cartViewModel.newCount * price
     val meal = CartItemsClass(
-        loginViewModel.userData.collectAsState().value.id,
+        userData.id,
         "${food.mealId}_${size}",
         food.mealId,
         food.name,
@@ -166,7 +171,7 @@ fun BottomBarForItemScreen(
                 clickable {
                     if(cartViewModel.newCount > 0){
                         cartViewModel.updateCount(meal, size, cartViewModel.newCount)
-                        if(food.restaurantId == cartViewModel.cartInformation.value?.restaurantId || cartViewModel.cartInformation.value == null){
+                        if(food.restaurantId == cartInformation?.restaurantId || cartInformation != null){
                             cartViewModel.deletenewCount()
                             scope.showAddToCartSnackbar(
                                 snackbarHostState,
@@ -191,7 +196,7 @@ fun BottomBarForItemScreen(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "EGP ${totalPrice}",
+                    text = "EGP $totalPrice",
                     fontSize = 15.sp,
                     style = MaterialTheme.typography.labelLarge,
                     color = fontColor,

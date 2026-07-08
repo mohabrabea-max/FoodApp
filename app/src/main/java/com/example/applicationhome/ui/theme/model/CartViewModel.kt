@@ -182,6 +182,12 @@ class CartViewModel(
         }
     }
 
+    fun clearAllCart(){
+        viewModelScope.launch {
+            cartRepository.deleteAllCart(userid)
+        }
+    }
+
     fun delete(foodId: Int, size : String){
         viewModelScope.launch {
             cartRepository.deleteFromCart(userid, foodId, size)
