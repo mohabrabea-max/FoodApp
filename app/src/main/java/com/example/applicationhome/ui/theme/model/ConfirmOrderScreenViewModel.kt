@@ -6,24 +6,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.data.models.model.OrderItemsClass
-import com.example.applicationhome.data.models.model.OrdersClass
-import com.example.applicationhome.data.models.model.UserInformationInOrderClass
-import com.example.applicationhome.data.models.repository.CartRepository
-import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.additionalDirectionsState
-import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.addressLabelState
-import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.houseState
-import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.housetextFieldState
-import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.phoneNumberState
-import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.streetState
-import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.streettextFieldState
-import com.example.applicationhome.data.models.repository.OrderRepository
-import com.example.applicationhome.data.models.repository.UserRepository
+import com.example.applicationhome.data.data.model.OrderItemsClass
+import com.example.applicationhome.data.data.model.OrdersClass
+import com.example.applicationhome.data.data.model.UserInformationInOrderClass
+import com.example.applicationhome.data.data.repository.CartRepository
+import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.additionalDirectionsState
+import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.addressLabelState
+import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.houseState
+import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.housetextFieldState
+import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.phoneNumberState
+import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.streetState
+import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.streettextFieldState
+import com.example.applicationhome.data.data.repository.OrderRepository
+import com.example.applicationhome.data.data.repository.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ConfirmOrderScreenViewModel(
+@HiltViewModel
+class ConfirmOrderScreenViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val cartRepository: CartRepository,
     private val orderRepository : OrderRepository
@@ -70,14 +73,14 @@ class ConfirmOrderScreenViewModel(
 
     fun uploadOrder(onSuccess: () -> Unit){
         viewModelScope.launch {
-            val currentUser = userRepository.getActiveUserFromDatabase().first()
-            val userId = currentUser?.id ?: ""
+            val currentUser = userRepository.userData.first()
+            val userId = currentUser.id
 
             val orderInformation = cartRepository.getCartData(userId).first()
             val currentCartItems = cartRepository.getCartItems(userId).first()
 
-            val firstname = currentUser?.firstname ?: ""
-            val lastname = currentUser?.lastname ?: ""
+            val firstname = currentUser.firstname
+            val lastname = currentUser.lastname
 
 
             var subtotal = 0.0
@@ -88,7 +91,7 @@ class ConfirmOrderScreenViewModel(
             val service = 8.0
             val totalPrice = subtotal + delivery + service
 
-            var orderItems = listOf<OrderItemsClass>()
+            val orderItems = mutableListOf<OrderItemsClass>()
             currentCartItems.forEach { item ->
                 orderItems += OrderItemsClass(
                     item?.mealId ?: 0,

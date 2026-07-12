@@ -1,21 +1,24 @@
 package com.example.applicationhome
 
 import android.content.Context
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.applicationhome.data.models.local.db.UsersDatabase
-import com.example.applicationhome.data.models.remote.RetrofitInstance
+import com.example.applicationhome.data.data.local.dao.FavoriteDao
+import com.example.applicationhome.data.data.remote.RetrofitInstance
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
-class SyncRemoveFromFavoritesWorker(
-    context: Context,
-    workerParameters: WorkerParameters
+@HiltWorker
+class SyncRemoveFromFavoritesWorker @AssistedInject constructor(
+    @Assisted context: Context,
+    @Assisted workerParameters: WorkerParameters,
+    private val favoriteDao : FavoriteDao
 ): CoroutineWorker(context, workerParameters) {
     override suspend fun doWork(): Result {
-        val favoriteDao = UsersDatabase.getDaoInstance(applicationContext).favoriteDao
-
         return try {
             favoriteDao.cleanUpLocalOnlyDeletedMeals()
             favoriteDao.cleanUpLocalOnlyDeletedSnacks()

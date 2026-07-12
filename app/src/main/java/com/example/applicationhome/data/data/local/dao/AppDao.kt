@@ -1,18 +1,18 @@
-package com.example.applicationhome.data.models.local.dao
+package com.example.applicationhome.data.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.applicationhome.data.models.local.entity.CartClass
-import com.example.applicationhome.data.models.local.entity.CartItemsClass
-import com.example.applicationhome.data.models.local.entity.FavoriteFoodDatabase
-import com.example.applicationhome.data.models.local.entity.FavoriteRestaurantDatabase
-import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
-import com.example.applicationhome.data.models.local.entity.OrdersDatabaseClass
-import com.example.applicationhome.data.models.local.entity.UpdateAccountState
-import com.example.applicationhome.data.models.local.entity.UserClass
+import com.example.applicationhome.data.data.local.entity.CartClass
+import com.example.applicationhome.data.data.local.entity.CartItemsClass
+import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.data.local.entity.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.data.local.entity.FavoriteSnacksDatabase
+import com.example.applicationhome.data.data.local.entity.OrdersDatabaseClass
+import com.example.applicationhome.data.data.local.entity.UpdateAccountState
+import com.example.applicationhome.data.data.local.entity.UserClass
 import kotlinx.coroutines.flow.Flow
 
 

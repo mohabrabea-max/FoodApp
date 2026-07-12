@@ -38,9 +38,9 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.local.entity.FavoriteRestaurantDatabase
-import com.example.applicationhome.data.models.model.Restaurants
-import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.data.local.entity.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.data.model.Restaurants
+import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel

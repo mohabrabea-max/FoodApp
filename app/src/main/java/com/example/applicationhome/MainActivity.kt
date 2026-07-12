@@ -3,13 +3,11 @@ package com.example.applicationhome
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDrawerState
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
@@ -23,90 +21,10 @@ import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import com.example.applicationhome.ui.theme.model.SignUpViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    // 1. تعريف الـ Repositories بأمان باستخدام lazy
-    private val app by lazy { application as MyFoodApp }
-    private val cartRepo by lazy { app.cartRepository }
-    private val orderRepo by lazy { app.orderRepository }
-    private val userRepo by lazy { app.userRepository }
-    private val menuRepo by lazy { app.homeScreenRepository }
-    private val resRepo by lazy { app.restaurantScreenRepository }
-    private val favRepo by lazy { app.favoriteRepository }
-
-    // 2. تعريف الـ ViewModels في نطاق الكلاس الآمن باستخدام lazy أيضاً
-    private val loginViewModel: LoginViewModel by viewModels {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return LoginViewModel(userRepo, app) as T
-            }
-        }
-    }
-
-    private val signUpViewModel: SignUpViewModel by viewModels {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return SignUpViewModel(userRepo, app) as T
-            }
-        }
-    }
-
-    private val cartViewModel: CartViewModel by viewModels {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return CartViewModel(userRepo, cartRepo, orderRepo) as T
-            }
-        }
-    }
-
-    private val confirmOrderScreenViewModel: ConfirmOrderScreenViewModel by viewModels {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return ConfirmOrderScreenViewModel(userRepo, cartRepo, orderRepo) as T
-            }
-        }
-    }
-
-    private val orderScreenViewModel: OrderScreenViewModel by viewModels {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return OrderScreenViewModel(app, orderRepo, userRepo) as T
-            }
-        }
-    }
-
-    private val homeScreenViewModel: HomeScreenViewModel by viewModels {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return HomeScreenViewModel(app, menuRepo) as T
-            }
-        }
-    }
-
-    private val restaurantViewModel: RestaurantViewModel by viewModels {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return RestaurantViewModel(app, resRepo, menuRepo, favRepo) as T
-            }
-        }
-    }
-    private val favoriteViewModel: FavoriteViewModel by viewModels {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return FavoriteViewModel(userRepo, favRepo, app) as T
-            }
-        }
-    }
-
-    private val itemScreenViewModel: ItemScreenViewModel by viewModels {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return ItemScreenViewModel(favRepo) as T
-            }
-        }
-    }
-
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         // 3. الـ Splash Screen لازم تكون أول سطر في الحياة
@@ -116,10 +34,19 @@ class MainActivity : ComponentActivity() {
         // تم إزالة تعريفات الـ Repositories من هنا لأن الـ lazy بيقوم بالواجب فوق في الأمان
 
         setContent {
+            val loginViewModel: LoginViewModel = hiltViewModel()
+            val signUpViewModel: SignUpViewModel = hiltViewModel()
+            val cartViewModel: CartViewModel = hiltViewModel()
+            val confirmOrderScreenViewModel: ConfirmOrderScreenViewModel = hiltViewModel()
+            val orderScreenViewModel: OrderScreenViewModel = hiltViewModel()
+            val homeScreenViewModel: HomeScreenViewModel = hiltViewModel()
+            val restaurantViewModel: RestaurantViewModel = hiltViewModel()
+            val favoriteViewModel: FavoriteViewModel = hiltViewModel()
+            val itemScreenViewModel: ItemScreenViewModel = hiltViewModel()
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
             val userImageViewModel: UserImageViewModel = viewModel()
             val drawerViewModel: DrawerViewModel = viewModel()
-            val viewRestaurantImageViewModel: ViewRestaurantImageViewModel = viewModel()
+            val viewRestaurantImageViewModel: ViewRestaurantImageViewModel = hiltViewModel()
 
             FinalScreen(
                 drawerState,

@@ -1,16 +1,17 @@
-package com.example.applicationhome.data.models.repository
+package com.example.applicationhome.data.data.repository
 
 import androidx.compose.runtime.mutableStateMapOf
-import com.example.applicationhome.data.models.model.Categories
-import com.example.applicationhome.data.models.model.Offers
-import com.example.applicationhome.data.models.model.Restaurants
-import com.example.applicationhome.data.models.model.RestaurantsCount
-import com.example.applicationhome.data.models.remote.RetrofitInstance
+import com.example.applicationhome.data.data.model.Categories
+import com.example.applicationhome.data.data.model.Offers
+import com.example.applicationhome.data.data.model.Restaurants
+import com.example.applicationhome.data.data.model.RestaurantsCount
+import com.example.applicationhome.data.data.remote.RetrofitInstance
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
 
-class HomeScreenRepository() {
+class HomeScreenRepository @Inject constructor() {
     private val _restaurantsMenuIsLoading = MutableStateFlow(true)
     val restaurantsMenuIsLoading : StateFlow<Boolean> = _restaurantsMenuIsLoading
 

@@ -55,7 +55,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.Options
 import com.example.applicationhome.ui.theme.components.bars.MyBottonBar

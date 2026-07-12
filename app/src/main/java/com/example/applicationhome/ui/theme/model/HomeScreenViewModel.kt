@@ -9,15 +9,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.core.NetworkObserver
-import com.example.applicationhome.data.models.model.Categories
-import com.example.applicationhome.data.models.model.Offers
-import com.example.applicationhome.data.models.model.Restaurants
-import com.example.applicationhome.data.models.repository.HomeScreenRepository
+import com.example.applicationhome.data.data.model.Categories
+import com.example.applicationhome.data.data.model.Offers
+import com.example.applicationhome.data.data.model.Restaurants
+import com.example.applicationhome.data.data.remote.NetworkObserver
+import com.example.applicationhome.data.data.repository.HomeScreenRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeScreenViewModel(
+@HiltViewModel
+class HomeScreenViewModel @Inject constructor(
     application : Application,
     private val homeScreenRepository : HomeScreenRepository
 ) : AndroidViewModel(application){

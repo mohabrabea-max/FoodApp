@@ -1,4 +1,4 @@
-package com.example.applicationhome.data.models.repository
+package com.example.applicationhome.data.data.repository
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
@@ -25,12 +25,12 @@ import androidx.compose.material.icons.filled.ShoppingCartCheckout
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.example.applicationhome.data.models.model.Account
-import com.example.applicationhome.data.models.model.Options
-import com.example.applicationhome.data.models.model.ProfileOptions
-import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.model.Settings
-import com.example.applicationhome.data.models.model.TextFieldClassFromConfirmOrderScreen
+import com.example.applicationhome.data.data.model.Account
+import com.example.applicationhome.data.data.model.Options
+import com.example.applicationhome.data.data.model.ProfileOptions
+import com.example.applicationhome.data.data.model.Screens
+import com.example.applicationhome.data.data.model.Settings
+import com.example.applicationhome.data.data.model.TextFieldClassFromConfirmOrderScreen
 import java.util.Calendar
 
 object ProfileData {

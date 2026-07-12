@@ -1,13 +1,16 @@
-package com.example.applicationhome.data.models.repository
+package com.example.applicationhome.data.data.repository
 
-import com.example.applicationhome.data.models.local.entity.CartClass
-import com.example.applicationhome.data.models.local.dao.CartDao
-import com.example.applicationhome.data.models.local.entity.CartItemsClass
-import com.example.applicationhome.data.models.model.Restaurants
-import com.example.applicationhome.data.models.remote.RetrofitInstance
+import com.example.applicationhome.data.data.local.dao.CartDao
+import com.example.applicationhome.data.data.local.entity.CartClass
+import com.example.applicationhome.data.data.local.entity.CartItemsClass
+import com.example.applicationhome.data.data.model.Restaurants
+import com.example.applicationhome.data.data.remote.RetrofitInstance
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class CartRepository(private val cartdao: CartDao) {
+class CartRepository @Inject constructor(
+    private val cartdao: CartDao
+) {
 
     fun getCartItems(id : String): Flow<List<CartItemsClass?>> = cartdao.getCartItems(id)
 

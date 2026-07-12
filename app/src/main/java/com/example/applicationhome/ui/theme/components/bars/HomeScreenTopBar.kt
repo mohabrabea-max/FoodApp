@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
-import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

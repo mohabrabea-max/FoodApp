@@ -20,7 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
-import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.favoriteBar
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel

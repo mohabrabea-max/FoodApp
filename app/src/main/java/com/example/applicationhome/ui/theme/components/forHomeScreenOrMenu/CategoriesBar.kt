@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.models.repository.TapRowData.FavoriteTapRow
+import com.example.applicationhome.data.data.repository.TapRowData.FavoriteTapRow
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel

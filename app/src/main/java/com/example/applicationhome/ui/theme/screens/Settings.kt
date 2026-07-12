@@ -47,8 +47,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
-import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.ProfileData
+import com.example.applicationhome.data.data.model.Screens
+import com.example.applicationhome.data.data.repository.ProfileData
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.MediumBrownForTitle

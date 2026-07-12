@@ -1,21 +1,27 @@
 package com.example.applicationhome.ui.theme.model
 
-import android.app.Application
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.data.models.model.UserClassFireBase
-import com.example.applicationhome.data.models.repository.UserRepository
+import com.example.applicationhome.data.data.model.UserClassFireBase
+import com.example.applicationhome.data.data.remote.NetworkObserver
+import com.example.applicationhome.data.data.repository.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SignUpViewModel(private val userRepository: UserRepository, application : Application) : AndroidViewModel(application) {
+@HiltViewModel
+class SignUpViewModel @Inject constructor(
+    private val userRepository: UserRepository,
+    private val networkObserver: NetworkObserver
+) : ViewModel() {
     val loading : StateFlow<Boolean> = userRepository.loading
 
     val firstnamestate = TextFieldState()

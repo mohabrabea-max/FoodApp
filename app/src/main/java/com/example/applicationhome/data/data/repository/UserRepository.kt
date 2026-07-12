@@ -1,15 +1,20 @@
-package com.example.applicationhome.data.models.repository
+package com.example.applicationhome.data.data.repository
 
-import com.example.applicationhome.data.models.local.entity.UpdateAccountState
-import com.example.applicationhome.data.models.local.entity.UserClass
-import com.example.applicationhome.data.models.local.dao.UsersDao
-import com.example.applicationhome.data.models.model.FirebasePostResponse
-import com.example.applicationhome.data.models.model.UserClassFireBase
-import com.example.applicationhome.data.models.remote.RetrofitInstance
+import com.example.applicationhome.data.data.local.dao.UsersDao
+import com.example.applicationhome.data.data.local.entity.UpdateAccountState
+import com.example.applicationhome.data.data.local.entity.UserClass
+import com.example.applicationhome.data.data.model.FirebasePostResponse
+import com.example.applicationhome.data.data.model.UserClassFireBase
+import com.example.applicationhome.data.data.remote.RetrofitInstance
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import retrofit2.Response
+import javax.inject.Inject
 
 //    suspend fun addToMeals(){
 //        try {
@@ -22,9 +27,22 @@ import retrofit2.Response
 //    }
 
 
-class UserRepository(private val userdao: UsersDao) {
+class UserRepository @Inject constructor(
+    private val userdao: UsersDao,
+    externalScope: CoroutineScope
+) {
     private val _loading = MutableStateFlow(false)
     val loading : StateFlow<Boolean> = _loading
+
+    val userData : StateFlow<UserClass> =
+        getActiveUserFromDatabase()
+            .map { userInDb ->
+                userInDb ?: UserClass(firstname = "Guest")
+            }.stateIn(
+                scope = externalScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = UserClass(firstname = "Guest")
+            )
 
     fun getActiveUserFromDatabase() : Flow<UserClass?> = userdao.getActiveUser(true)
 

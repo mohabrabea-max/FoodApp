@@ -42,8 +42,8 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.local.entity.OrdersDatabaseClass
-import com.example.applicationhome.data.models.model.OrderItemsClass
+import com.example.applicationhome.data.data.local.entity.OrdersDatabaseClass
+import com.example.applicationhome.data.data.model.OrderItemsClass
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar

@@ -29,9 +29,9 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
-import com.example.applicationhome.data.models.model.MealSnacks
-import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.data.local.entity.FavoriteSnacksDatabase
+import com.example.applicationhome.data.data.model.MealSnacks
+import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel

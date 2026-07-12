@@ -1,21 +1,21 @@
 package com.example.applicationhome.ui.theme.model
 
-import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.core.NetworkObserver
-import com.example.applicationhome.data.models.local.entity.FavoriteFoodDatabase
-import com.example.applicationhome.data.models.local.entity.FavoriteRestaurantDatabase
-import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
-import com.example.applicationhome.data.models.model.FoodItem
-import com.example.applicationhome.data.models.model.Restaurants
-import com.example.applicationhome.data.models.model.Snack
-import com.example.applicationhome.data.models.repository.FavoriteRepository
-import com.example.applicationhome.data.models.repository.UserRepository
+import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.data.local.entity.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.data.local.entity.FavoriteSnacksDatabase
+import com.example.applicationhome.data.data.model.FoodItem
+import com.example.applicationhome.data.data.model.Restaurants
+import com.example.applicationhome.data.data.model.Snack
+import com.example.applicationhome.data.data.remote.NetworkObserver
+import com.example.applicationhome.data.data.repository.FavoriteRepository
+import com.example.applicationhome.data.data.repository.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,14 +25,15 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@HiltViewModel
 @OptIn(ExperimentalCoroutinesApi::class)
-class FavoriteViewModel(
+class FavoriteViewModel @Inject constructor(
     userRepository: UserRepository,
     private val favoriteRepository : FavoriteRepository,
-    application : Application
-) : AndroidViewModel(application){
-    private val networkObserver = NetworkObserver(application.applicationContext)
+    private val networkObserver: NetworkObserver
+) : ViewModel(){
     var isNetworkAvailable by mutableStateOf(false)
 
     var selectedCategorieInFavoriteScreen by mutableIntStateOf(0)
@@ -40,8 +41,8 @@ class FavoriteViewModel(
     var userId by mutableStateOf("")
 
     val favoriteMeals : StateFlow<List<FavoriteFoodDatabase>> =
-        userRepository.getActiveUserFromDatabase().flatMapLatest { user ->
-            val id = user?.id ?: ""
+        userRepository.userData.flatMapLatest { user ->
+            val id = user.id
             if(id.isNotEmpty()){
                 userId = id
                 favoriteRepository.getFoodFavoriteFromDatabase(id)
@@ -56,8 +57,8 @@ class FavoriteViewModel(
 
 
     val favoriteSnacks : StateFlow<List<FavoriteSnacksDatabase>> =
-        userRepository.getActiveUserFromDatabase().flatMapLatest { user ->
-            val id = user?.id ?: ""
+        userRepository.userData.flatMapLatest { user ->
+            val id = user.id
             if (id.isNotEmpty()) {
                 userId = id
                 favoriteRepository.getSnacksFavoriteFromDatabase(id)
@@ -89,8 +90,8 @@ class FavoriteViewModel(
 
 
     val favoriteRestaurantsFromDatabase : StateFlow<List<FavoriteRestaurantDatabase>> =
-        userRepository.getActiveUserFromDatabase().flatMapLatest { user ->
-            val id = user?.id ?: ""
+        userRepository.userData.flatMapLatest { user ->
+            val id = user.id
             if (id.isNotEmpty()){
                 userId = id
                 favoriteRepository.getRestaurantsFavoriteFromDatabase(id)
@@ -114,9 +115,8 @@ class FavoriteViewModel(
 
     init {
         viewModelScope.launch {
-            userRepository.getActiveUserFromDatabase().collect { user ->
-                val id = user?.id ?: ""
-
+            userRepository.userData.collect { user ->
+                val id = user.id
                 if (id.isNotEmpty()) {
                     userId
 
@@ -195,4 +195,5 @@ class FavoriteViewModel(
 
     fun getSnackToView(snackId : Int): Snack? =
         favoriteRepository.getSnackToView("Snack_${snackId}")
+
 }

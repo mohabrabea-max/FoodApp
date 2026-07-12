@@ -1,15 +1,15 @@
-package com.example.applicationhome.data.models.remote
+package com.example.applicationhome.data.data.remote
 
-import com.example.applicationhome.data.models.model.Categories
-import com.example.applicationhome.data.models.model.FavoriteClass
-import com.example.applicationhome.data.models.model.FirebasePostResponse
-import com.example.applicationhome.data.models.model.FoodItem
-import com.example.applicationhome.data.models.model.Offers
-import com.example.applicationhome.data.models.model.OrdersClass
-import com.example.applicationhome.data.models.model.Restaurants
-import com.example.applicationhome.data.models.model.RestaurantsCount
-import com.example.applicationhome.data.models.model.Snack
-import com.example.applicationhome.data.models.model.UserClassFireBase
+import com.example.applicationhome.data.data.model.Categories
+import com.example.applicationhome.data.data.model.FavoriteClass
+import com.example.applicationhome.data.data.model.FirebasePostResponse
+import com.example.applicationhome.data.data.model.FoodItem
+import com.example.applicationhome.data.data.model.Offers
+import com.example.applicationhome.data.data.model.OrdersClass
+import com.example.applicationhome.data.data.model.Restaurants
+import com.example.applicationhome.data.data.model.RestaurantsCount
+import com.example.applicationhome.data.data.model.Snack
+import com.example.applicationhome.data.data.model.UserClassFireBase
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE

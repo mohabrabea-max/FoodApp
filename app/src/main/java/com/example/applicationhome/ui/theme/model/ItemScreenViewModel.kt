@@ -6,13 +6,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.data.models.local.entity.FavoriteFoodDatabase
-import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
-import com.example.applicationhome.data.models.model.Restaurants
-import com.example.applicationhome.data.models.repository.FavoriteRepository
+import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.data.local.entity.FavoriteSnacksDatabase
+import com.example.applicationhome.data.data.model.Restaurants
+import com.example.applicationhome.data.data.repository.FavoriteRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ItemScreenViewModel(
+@HiltViewModel
+class ItemScreenViewModel @Inject constructor(
     private val favoriteRepository : FavoriteRepository
 ) : ViewModel() {
     var selectedSnak by mutableStateOf<FavoriteSnacksDatabase?>(null)

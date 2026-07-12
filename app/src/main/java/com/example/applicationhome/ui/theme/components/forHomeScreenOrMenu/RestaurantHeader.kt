@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.model.Restaurants
+import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 

@@ -47,7 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
-import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack

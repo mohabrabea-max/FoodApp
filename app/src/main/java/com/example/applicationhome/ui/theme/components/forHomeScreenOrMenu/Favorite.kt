@@ -21,9 +21,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.applicationhome.data.models.local.entity.FavoriteFoodDatabase
-import com.example.applicationhome.data.models.local.entity.FavoriteRestaurantDatabase
-import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
+import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.data.local.entity.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.data.local.entity.FavoriteSnacksDatabase
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import kotlinx.coroutines.launch

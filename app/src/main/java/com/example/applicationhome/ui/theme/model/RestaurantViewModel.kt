@@ -1,31 +1,33 @@
 package com.example.applicationhome.ui.theme.model
 
-import android.app.Application
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.core.NetworkObserver
-import com.example.applicationhome.data.models.model.Drink
-import com.example.applicationhome.data.models.model.FoodItem
-import com.example.applicationhome.data.models.model.Offers
-import com.example.applicationhome.data.models.model.Snack
-import com.example.applicationhome.data.models.repository.FavoriteRepository
-import com.example.applicationhome.data.models.repository.HomeScreenRepository
-import com.example.applicationhome.data.models.repository.RestaurantScreenRepository
+import com.example.applicationhome.data.data.model.Drink
+import com.example.applicationhome.data.data.model.FoodItem
+import com.example.applicationhome.data.data.model.Offers
+import com.example.applicationhome.data.data.model.Snack
+import com.example.applicationhome.data.data.remote.NetworkObserver
+import com.example.applicationhome.data.data.repository.FavoriteRepository
+import com.example.applicationhome.data.data.repository.HomeScreenRepository
+import com.example.applicationhome.data.data.repository.RestaurantScreenRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RestaurantViewModel (
-    application : Application,
+@HiltViewModel
+class RestaurantViewModel @Inject constructor(
+    private val networkObserver: NetworkObserver,
     private val restaurantScreenRepository : RestaurantScreenRepository,
     homeScreenRepository: HomeScreenRepository,
     private val favoriteRepository: FavoriteRepository
-) : AndroidViewModel(application){
-    private val networkObserver = NetworkObserver(application.applicationContext)
+): ViewModel(){
+
     var isNetworkAvailable by mutableStateOf(false)
 
 
@@ -79,7 +81,7 @@ class RestaurantViewModel (
     }
 
     fun restaurantData(){
-        val restaurantscount = restaurantCount.get(resid)
+        val restaurantscount = restaurantCount[resid]
         if(restaurantscount != null){
             viewModelScope.launch {
                 if(foodMenuList.value.size < restaurantscount.meals){

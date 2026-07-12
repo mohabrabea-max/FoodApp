@@ -35,7 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.BrandBlue
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar

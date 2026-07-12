@@ -15,13 +15,10 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,8 +45,8 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.local.entity.FavoriteFoodDatabase
-import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
+import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.data.local.entity.FavoriteSnacksDatabase
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.bars.RestaurantTopBar
 import com.example.applicationhome.ui.theme.components.forCart.AlertDialogMessage
@@ -93,7 +90,7 @@ fun RestaurantScreen(
             restaurantViewModel.restaurantData()
         }
     }
-    val scrollState = rememberLazyGridState()
+    val scrollState = rememberLazyListState()
 
     val searchSize by remember {
         derivedStateOf {
@@ -142,35 +139,34 @@ fun RestaurantScreen(
             }
         ){
             Box(modifier = Modifier.background(Color.VeryLightGray)){
-                LazyVerticalGrid (
+                LazyColumn (
                     state = scrollState,
-                    modifier = Modifier.fillMaxSize().
-                    background(Color.White),
-                    columns = GridCells.Fixed(2)
+                    modifier = Modifier.fillMaxSize()
                 ){
-                    item(span = { GridItemSpan(2) }){
+                    item{
                         RestaurantHeader(iteme, viewRestaurantImageViewModel)
                     }
-                    item(span = { GridItemSpan(2) }){
-                        Box{
-                            LazyRow (
-                                modifier = Modifier.fillMaxSize(),
-                            ){
-                                item{ Spacer(modifier = Modifier.width(15.dp)) }
+                    item{
+                        LazyRow (
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(120.dp)
+                                .background(Color.White)
+                        ){
+                            item{ Spacer(modifier = Modifier.width(15.dp)) }
 
-                                items(offers){ item ->
-                                    AsyncImage(
-                                        modifier = Modifier.fillMaxWidth().height(120.dp).padding(vertical = 10.dp).clip(RoundedCornerShape(10.dp)).clickable {  },
-                                        model = ImageRequest.Builder(LocalContext.current).
-                                        data(item.image).
-                                        crossfade(true).
-                                        size(400, 400).
-                                        precision(Precision.EXACT).
-                                        build(),
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Crop
-                                    )
-                                }
+                            items(offers){ item ->
+                                AsyncImage(
+                                    modifier = Modifier.fillMaxWidth().height(120.dp).padding(vertical = 10.dp).clip(RoundedCornerShape(10.dp)).clickable {  },
+                                    model = ImageRequest.Builder(LocalContext.current).
+                                    data(item.image).
+                                    crossfade(true).
+                                    size(400, 400).
+                                    precision(Precision.EXACT).
+                                    build(),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop
+                                )
                             }
                         }
                     }
@@ -181,13 +177,13 @@ fun RestaurantScreen(
                             graphicsLayer {
                                 val currentInfo = itemInfo
                                 if (currentInfo != null) {
-                                    if (currentInfo.offset.y < topBarHeightPx) {
-                                        translationY = topBarHeightPx - currentInfo.offset.y
+                                    if (currentInfo.offset < topBarHeightPx) {
+                                        translationY = topBarHeightPx - currentInfo.offset
                                     }
                                 }
                             }.shadow(
                                 elevation =
-                                if (itemInfo != null && itemInfo!!.offset.y < topBarHeightPx){
+                                if (itemInfo != null && itemInfo!!.offset < topBarHeightPx){
                                     3.dp
                                 }else{
                                     0.dp
@@ -308,7 +304,7 @@ fun RestaurantScreen(
                             )
                         }
                     }
-                    item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
+                    item{Spacer(modifier = Modifier.height(100.dp))}
                 }
 
                 if(restaurantId == restaurantViewModel.resid && cartItems.isNotEmpty()){

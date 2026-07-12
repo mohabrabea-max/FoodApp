@@ -1,10 +1,10 @@
-package com.example.applicationhome.data.models.local.entity
+package com.example.applicationhome.data.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.applicationhome.data.models.model.MealSizeDetail
-import com.example.applicationhome.data.models.model.OrderItemsClass
-import com.example.applicationhome.data.models.model.UserInformationInOrderClass
+import com.example.applicationhome.data.data.model.MealSizeDetail
+import com.example.applicationhome.data.data.model.OrderItemsClass
+import com.example.applicationhome.data.data.model.UserInformationInOrderClass
 
 //enum class CategoryType { PIZZA, BURGER, CHICKEN, SWEET, ALL }
 //

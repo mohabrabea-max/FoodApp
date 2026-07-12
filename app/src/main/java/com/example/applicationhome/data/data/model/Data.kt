@@ -1,4 +1,4 @@
-package com.example.applicationhome.data.models.model
+package com.example.applicationhome.data.data.model
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.ui.graphics.Color

@@ -29,7 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.models.model.Categories
+import com.example.applicationhome.data.data.model.Categories
 import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 
 @Composable

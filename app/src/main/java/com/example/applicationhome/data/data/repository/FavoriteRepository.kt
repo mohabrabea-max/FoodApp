@@ -1,4 +1,4 @@
-package com.example.applicationhome.data.models.repository
+package com.example.applicationhome.data.data.repository
 
 import android.content.Context
 import androidx.work.Constraints
@@ -8,21 +8,26 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.applicationhome.SyncAddToFavoritesWorker
 import com.example.applicationhome.SyncRemoveFromFavoritesWorker
-import com.example.applicationhome.data.models.local.dao.FavoriteDao
-import com.example.applicationhome.data.models.local.entity.FavoriteFoodDatabase
-import com.example.applicationhome.data.models.local.entity.FavoriteRestaurantDatabase
-import com.example.applicationhome.data.models.local.entity.FavoriteSnacksDatabase
-import com.example.applicationhome.data.models.model.FavoriteClass
-import com.example.applicationhome.data.models.model.FoodItem
-import com.example.applicationhome.data.models.model.Restaurants
-import com.example.applicationhome.data.models.model.Snack
-import com.example.applicationhome.data.models.remote.RetrofitInstance
+import com.example.applicationhome.data.data.local.dao.FavoriteDao
+import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.data.local.entity.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.data.local.entity.FavoriteSnacksDatabase
+import com.example.applicationhome.data.data.model.FavoriteClass
+import com.example.applicationhome.data.data.model.FoodItem
+import com.example.applicationhome.data.data.model.Restaurants
+import com.example.applicationhome.data.data.model.Snack
+import com.example.applicationhome.data.data.remote.RetrofitInstance
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class FavoriteRepository(private val context: Context, private val favoriteDao : FavoriteDao) {
+class FavoriteRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val favoriteDao : FavoriteDao
+){
     private val _mealsFavoriteObject = mutableMapOf<String, FoodItem>()
 
 

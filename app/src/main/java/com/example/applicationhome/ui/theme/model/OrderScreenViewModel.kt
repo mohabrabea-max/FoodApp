@@ -6,10 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.core.NetworkObserver
-import com.example.applicationhome.data.models.local.entity.OrdersDatabaseClass
-import com.example.applicationhome.data.models.repository.OrderRepository
-import com.example.applicationhome.data.models.repository.UserRepository
+import com.example.applicationhome.data.data.local.entity.OrdersDatabaseClass
+import com.example.applicationhome.data.data.remote.NetworkObserver
+import com.example.applicationhome.data.data.repository.OrderRepository
+import com.example.applicationhome.data.data.repository.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,9 +18,11 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@HiltViewModel
 @OptIn(ExperimentalCoroutinesApi::class)
-class OrderScreenViewModel(
+class OrderScreenViewModel @Inject constructor(
     application: Application,
     private val orderRepository : OrderRepository,
     userRepository: UserRepository
@@ -33,8 +36,8 @@ class OrderScreenViewModel(
     var selectedOrder by mutableStateOf(OrdersDatabaseClass())
 
     val ordersHistory : StateFlow<List<OrdersDatabaseClass>> =
-        userRepository.getActiveUserFromDatabase().flatMapLatest { user ->
-            val id = user?.id ?: ""
+        userRepository.userData.flatMapLatest { user ->
+            val id = user.id
             if(id.isNotEmpty()){
                 userId = id
                 orderRepository.getOrdersHistoryFromDatabase(id)

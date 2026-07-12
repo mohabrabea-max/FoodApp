@@ -1,13 +1,14 @@
-package com.example.applicationhome.data.models.repository
+package com.example.applicationhome.data.data.repository
 
-import com.example.applicationhome.data.models.model.FoodItem
-import com.example.applicationhome.data.models.model.Offers
-import com.example.applicationhome.data.models.model.Snack
-import com.example.applicationhome.data.models.remote.RetrofitInstance
+import com.example.applicationhome.data.data.model.FoodItem
+import com.example.applicationhome.data.data.model.Offers
+import com.example.applicationhome.data.data.model.Snack
+import com.example.applicationhome.data.data.remote.RetrofitInstance
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
-class RestaurantScreenRepository() {
+class RestaurantScreenRepository @Inject constructor() {
     private val _foodMenuListIsLoading = MutableStateFlow(true)
     val foodMenuListIsLoading : StateFlow<Boolean> = _foodMenuListIsLoading
 

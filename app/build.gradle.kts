@@ -1,21 +1,19 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
 }
 
 android {
     namespace = "com.example.applicationhome"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.applicationhome"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -31,27 +29,70 @@ android {
             )
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    buildFeatures {
+        compose = true
+    }
+
     buildFeatures {
         compose = true
     }
 }
 
 dependencies {
+    // AndroidX & Lifecycle
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.hilt.common)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.material3)
-    implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.compose.foundation.layout)
+
+    // Icons - تم حذف رقم الإصدار يدويًا ليعتمد على الـ BOM لمنع أي تضارب في التصميم
+    implementation("androidx.compose.material:material-icons-extended")
+
+    // UI Utilities
+    implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.8.5")
+
+    // Networking (Retrofit) - تم ترقيتها لإصدار أحدث ومستقر
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+
+    // Local Data & Storage
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+    // Room - تم توحيد الإصدارات على 2.6.1 لتطابق الـ TOML تماماً
+    implementation("androidx.room:room-runtime:2.7.0")
+    implementation(libs.androidx.room.ktx)
+    ksp("androidx.room:room-compiler:2.7.0")
+    // WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.10.0")
+
+    // Dependency Injection (Hilt)
+    implementation("com.google.dagger:hilt-android:2.57.1")
+    ksp("com.google.dagger:hilt-compiler:2.57.1") // 🛠️ تم تصحيح اسم المكتبة هنا
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -59,17 +100,4 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    dependencies {implementation("androidx.core:core-splashscreen:1.0.1")}
-    implementation("androidx.navigation:navigation-compose:2.9.7")
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    dependencies { implementation("androidx.compose.material:material-icons-extended:1.7.0") } // مكتبة ايقونات
-    implementation("io.coil-kt:coil-compose:2.6.0")
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")// Retrofit: المكتبة الأساسية للربط
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")// Converter: عشان يحول الـ JSON لكلاسات كوتلن أوتوماتيك
-    implementation("androidx.datastore:datastore-preferences:1.1.1") // مكتبة الحفظ الدائم
-    implementation("androidx.room:room-runtime:2.8.4")
-    implementation("androidx.room:room-ktx:2.8.4")
-    ksp("androidx.room:room-compiler:2.8.4")
-    implementation("androidx.work:work-runtime-ktx:2.10.0")
-
 }

@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -35,9 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.example.applicationhome.data.models.local.entity.FavoriteRestaurantDatabase
-import com.example.applicationhome.data.models.model.Restaurants
-import com.example.applicationhome.data.models.model.Screens
+import com.example.applicationhome.data.data.local.entity.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.data.model.Restaurants
+import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.FavoriteRestaurant
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
@@ -48,7 +48,7 @@ import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 fun RestaurantTopBar(
     searchSize : Float,
     item : Restaurants,
-    scrollState : LazyGridState,
+    scrollState : LazyListState,
     navigationController : NavHostController,
     restaurantViewModel: RestaurantViewModel,
     favoriteViewModel: FavoriteViewModel

@@ -39,9 +39,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.applicationhome.data.models.model.Screens
-import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.textFieldConfirmOrderScreenList1
-import com.example.applicationhome.data.models.repository.ConfirmOrderScreenTextField.textFieldConfirmOrderScreenList2
+import com.example.applicationhome.data.data.model.Screens
+import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.textFieldConfirmOrderScreenList1
+import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.textFieldConfirmOrderScreenList2
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.forCart.CartButton

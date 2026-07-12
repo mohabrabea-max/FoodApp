@@ -1,16 +1,19 @@
-package com.example.applicationhome.data.models.repository
+package com.example.applicationhome.data.data.repository
 
-import com.example.applicationhome.data.models.local.dao.OrdersDao
-import com.example.applicationhome.data.models.local.entity.OrdersDatabaseClass
-import com.example.applicationhome.data.models.model.OrdersClass
-import com.example.applicationhome.data.models.remote.RetrofitInstance
+import com.example.applicationhome.data.data.local.dao.OrdersDao
+import com.example.applicationhome.data.data.local.entity.OrdersDatabaseClass
+import com.example.applicationhome.data.data.model.OrdersClass
+import com.example.applicationhome.data.data.remote.RetrofitInstance
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 
-class OrderRepository(private val ordersDao : OrdersDao) {
+class OrderRepository @Inject constructor(
+    private val ordersDao : OrdersDao
+) {
     private val _loading = MutableStateFlow(false)
     val loading : StateFlow<Boolean> = _loading
 

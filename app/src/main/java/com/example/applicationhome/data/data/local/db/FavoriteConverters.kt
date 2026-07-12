@@ -1,9 +1,9 @@
-package com.example.applicationhome.data.models.local.db
+package com.example.applicationhome.data.data.local.db
 
 import androidx.room.TypeConverter
-import com.example.applicationhome.data.models.model.MealSizeDetail
-import com.example.applicationhome.data.models.model.OrderItemsClass
-import com.example.applicationhome.data.models.model.UserInformationInOrderClass
+import com.example.applicationhome.data.data.model.MealSizeDetail
+import com.example.applicationhome.data.data.model.OrderItemsClass
+import com.example.applicationhome.data.data.model.UserInformationInOrderClass
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
