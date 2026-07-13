@@ -1,10 +1,9 @@
 package com.example.applicationhome.ui.theme.model
 
-import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.data.local.entity.OrdersDatabaseClass
 import com.example.applicationhome.data.data.remote.NetworkObserver
@@ -23,12 +22,11 @@ import javax.inject.Inject
 @HiltViewModel
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrderScreenViewModel @Inject constructor(
-    application: Application,
+    private val networkObserver : NetworkObserver,
     private val orderRepository : OrderRepository,
     userRepository: UserRepository
-) : AndroidViewModel(application){
+) : ViewModel(){
 
-    private val networkObserver = NetworkObserver(application.applicationContext)
     var isNetworkAvailable by mutableStateOf(false)
 
     var userId by mutableStateOf("")

@@ -52,6 +52,7 @@ dependencies {
     // AndroidX & Lifecycle
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.hilt.common)
+    implementation(libs.androidx.hilt.work)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
@@ -63,7 +64,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.foundation.layout)
 
-    // Icons - تم حذف رقم الإصدار يدويًا ليعتمد على الـ BOM لمنع أي تضارب في التصميم
+    // Icons
     implementation("androidx.compose.material:material-icons-extended")
 
     // UI Utilities
@@ -73,14 +74,14 @@ dependencies {
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.8.5")
 
-    // Networking (Retrofit) - تم ترقيتها لإصدار أحدث ومستقر
+    // Networking (Retrofit)
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
     // Local Data & Storage
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
-    // Room - تم توحيد الإصدارات على 2.6.1 لتطابق الـ TOML تماماً
+    // Room
     implementation("androidx.room:room-runtime:2.7.0")
     implementation(libs.androidx.room.ktx)
     ksp("androidx.room:room-compiler:2.7.0")
@@ -88,8 +89,8 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.10.0")
 
     // Dependency Injection (Hilt)
-    implementation("com.google.dagger:hilt-android:2.57.1")
-    ksp("com.google.dagger:hilt-compiler:2.57.1") // 🛠️ تم تصحيح اسم المكتبة هنا
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     // Testing
@@ -100,4 +101,10 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+}
+configurations.all {
+    resolutionStrategy {
+        force("com.google.dagger:hilt-android:2.57.1")
+        force("com.google.dagger:hilt-compiler:2.57.1")
+    }
 }

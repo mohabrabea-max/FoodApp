@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetFavoriteUseCase @Inject constructor(
     private val userRepository: UserRepository,
     private val favoriteRepository : FavoriteRepository,
-    @field:ApplicationScope private val externalScope: CoroutineScope
+    @ApplicationScope private val externalScope: CoroutineScope
 ){
 
 }

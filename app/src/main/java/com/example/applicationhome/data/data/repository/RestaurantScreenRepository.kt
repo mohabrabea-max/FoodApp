@@ -3,12 +3,16 @@ package com.example.applicationhome.data.data.repository
 import com.example.applicationhome.data.data.model.FoodItem
 import com.example.applicationhome.data.data.model.Offers
 import com.example.applicationhome.data.data.model.Snack
-import com.example.applicationhome.data.data.remote.RetrofitInstance
+import com.example.applicationhome.data.data.remote.FoodAppAPIs
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class RestaurantScreenRepository @Inject constructor() {
+@Singleton
+class RestaurantScreenRepository @Inject constructor(
+    private val api : FoodAppAPIs
+) {
     private val _foodMenuListIsLoading = MutableStateFlow(true)
     val foodMenuListIsLoading : StateFlow<Boolean> = _foodMenuListIsLoading
 
@@ -28,7 +32,7 @@ class RestaurantScreenRepository @Inject constructor() {
     suspend fun uploadFoodMenuFromApi(resId : Int): Map<String, FoodItem> {
         val foodMenu = try {
             _foodMenuListIsLoading.value = true
-            val response = RetrofitInstance.api.foodmenu("\"restaurantId\"", resId)
+            val response = api.foodmenu("\"restaurantId\"", resId)
             val foodMenu = response.body()
             if(response.isSuccessful && foodMenu != null){
                 foodMenu
@@ -46,7 +50,7 @@ class RestaurantScreenRepository @Inject constructor() {
     suspend fun uploadSnacksMenuFromApi(resId : Int): Map<String, Snack> {
         val snacksMenu = try {
             _snacksIsLoading.value = true
-            val response = RetrofitInstance.api.snacksMenu("\"restaurantId\"", resId)
+            val response = api.snacksMenu("\"restaurantId\"", resId)
             val snacksmenu = response.body()
             if(response.isSuccessful && snacksmenu != null){
                 snacksmenu
@@ -64,7 +68,7 @@ class RestaurantScreenRepository @Inject constructor() {
     suspend fun uploadRestaurantOffersFromApi(resId : Int): Map<String, Offers> {
         val restaurantOffers = try {
             _restaurantOffersLoading.value = true
-            val response = RetrofitInstance.api.restaurantOffers("\"restaurantId\"", resId)
+            val response = api.restaurantOffers("\"restaurantId\"", resId)
             val offers = response.body()
             if(response.isSuccessful && offers != null){
                 offers

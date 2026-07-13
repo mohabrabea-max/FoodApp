@@ -44,7 +44,6 @@ import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
-import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
@@ -57,11 +56,8 @@ fun RestaurantsBox(
     itemScreenViewModel: ItemScreenViewModel,
     navigationController : NavHostController,
     restaurantViewModel: RestaurantViewModel,
-    viewRestaurantImageViewModel : ViewRestaurantImageViewModel,
-    homeScreenViewModel : HomeScreenViewModel
+    viewRestaurantImageViewModel : ViewRestaurantImageViewModel
 ){
-    val networkState  = homeScreenViewModel.isNetworkAvailable
-
     val resScreen = Restaurants(
         item.restaurantId,
         listOf(""),
@@ -176,11 +172,8 @@ fun RestaurantsBoxHomeScreen(
     itemScreenViewModel: ItemScreenViewModel,
     navigationController : NavHostController,
     restaurantViewModel: RestaurantViewModel,
-    viewRestaurantImageViewModel: ViewRestaurantImageViewModel,
-    homeScreenViewModel : HomeScreenViewModel
+    viewRestaurantImageViewModel: ViewRestaurantImageViewModel
 ){
-    val networkState  = homeScreenViewModel.isNetworkAvailable
-
     val favoriteRestaurantDatabase = FavoriteRestaurantDatabase(
         "",
         item.id,

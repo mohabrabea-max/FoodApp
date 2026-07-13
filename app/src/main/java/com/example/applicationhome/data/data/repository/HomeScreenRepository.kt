@@ -5,13 +5,16 @@ import com.example.applicationhome.data.data.model.Categories
 import com.example.applicationhome.data.data.model.Offers
 import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.data.data.model.RestaurantsCount
-import com.example.applicationhome.data.data.remote.RetrofitInstance
+import com.example.applicationhome.data.data.remote.FoodAppAPIs
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
+import javax.inject.Singleton
 
-
-class HomeScreenRepository @Inject constructor() {
+@Singleton
+class HomeScreenRepository @Inject constructor(
+    private val api : FoodAppAPIs
+) {
     private val _restaurantsMenuIsLoading = MutableStateFlow(true)
     val restaurantsMenuIsLoading : StateFlow<Boolean> = _restaurantsMenuIsLoading
 
@@ -28,7 +31,7 @@ class HomeScreenRepository @Inject constructor() {
 
     suspend fun restaurantCount(){
         try {
-            val restaurants = RetrofitInstance.api.getRestaurantCount()
+            val restaurants = api.getRestaurantCount()
             val countList = restaurants.body()
             if(restaurants.isSuccessful && countList != null){
                 _restaurantCount += countList
@@ -43,7 +46,7 @@ class HomeScreenRepository @Inject constructor() {
     suspend fun getRestaurantsFromApi(): Map<String, Restaurants> {
         val restaurants = try {
             _restaurantsMenuIsLoading.value = true
-            val response = RetrofitInstance.api.restaurants()
+            val response = api.restaurants()
             val restaurants = response.body()
             if(response.isSuccessful && restaurants != null){
                 restaurants
@@ -61,7 +64,7 @@ class HomeScreenRepository @Inject constructor() {
     suspend fun getCategorieslistFromApi(): List<Categories> {
         val categoriesList = try {
             _categoriesIsLoading.value = true
-            RetrofitInstance.api.categorieslist()
+            api.categorieslist()
         } catch (e: Exception) {
             emptyList()
         } finally {
@@ -73,7 +76,7 @@ class HomeScreenRepository @Inject constructor() {
     suspend fun getOffersFromApi(): List<Offers> {
         val offers = try {
             _offersIsLoading.value = true
-            val response = RetrofitInstance.api.offers()
+            val response = api.offers()
             val offers = response.body()
             if(response.isSuccessful && offers != null){
                 offers

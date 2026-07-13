@@ -6,7 +6,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.applicationhome.data.data.local.dao.FavoriteDao
 import com.example.applicationhome.data.data.model.FavoriteClass
-import com.example.applicationhome.data.data.remote.RetrofitInstance
+import com.example.applicationhome.data.data.remote.FoodAppAPIs
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.async
@@ -17,7 +17,8 @@ import kotlinx.coroutines.coroutineScope
 class SyncAddToFavoritesWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val favoriteDao: FavoriteDao
+    private val favoriteDao: FavoriteDao,
+    private val api : FoodAppAPIs
 ): CoroutineWorker(context, workerParameters) {
     override suspend fun doWork(): Result {
         return try {
@@ -25,9 +26,7 @@ class SyncAddToFavoritesWorker @AssistedInject constructor(
             val unSyncedSnacks = favoriteDao.getUnSyncedSnacks()
             val unSyncedRestaurants = favoriteDao.getUnSyncedRestaurants()
 
-            var mealsSyncSuccess = true
-            var snacksSyncSuccess = true
-            var restaurantsSyncSuccess = true
+            var allSyncSuccess = true
 
 //      =================  1. رفع الوجبات =================
 
@@ -36,19 +35,24 @@ class SyncAddToFavoritesWorker @AssistedInject constructor(
                     val unSyncedMealsToFirebase = unSyncedMeals.map { item ->
                         async {
                             try {
-                                RetrofitInstance.api.addToFavorite(
+                                val response = api.addToFavorite(
                                     item.userId,
                                     "Meal_${item.mealId}",
                                     FavoriteClass(item.mealId, "Meal", item.restaurantId)
-                                ).isSuccessful
-                            }catch (e : Exception){ false }
+                                )
+                                Pair(item, response.isSuccessful)
+                            }catch (e : Exception){
+                                Pair(item, false)
+                            }
                         }
                     }
                     val results = unSyncedMealsToFirebase.awaitAll()
-                    if(results.all { it }){
-                        favoriteDao.markMealsAsSynced(unSyncedMeals.map { it.copy(isSynced = true) })
-                    }else {
-                        mealsSyncSuccess = false
+                    val successfulMeals = results.filter { it.second }.map { it.first }
+                    if(successfulMeals.isNotEmpty()){
+                        favoriteDao.markMealsAsSynced(successfulMeals.map { it.copy(isSynced = true) })
+                    }
+                    if(successfulMeals.size < unSyncedMeals.size){
+                        allSyncSuccess = false
                     }
                 }
             }
@@ -60,19 +64,24 @@ class SyncAddToFavoritesWorker @AssistedInject constructor(
                     val unSyncedRestaurantsToFirebase = unSyncedRestaurants.map { item ->
                         async {
                             try {
-                                RetrofitInstance.api.addToFavorite(
+                                val response = api.addToFavorite(
                                     item.userId,
                                     "Restaurant_${item.restaurantId}",
                                     FavoriteClass(item.restaurantId, "Restaurant", item.restaurantId)
-                                ).isSuccessful
-                            }catch (e : Exception){ false }
+                                )
+                                Pair(item, response.isSuccessful)
+                            }catch (e : Exception){
+                                Pair(item, false)
+                            }
                         }
                     }
                     val results = unSyncedRestaurantsToFirebase.awaitAll()
-                    if(results.all { it }){
-                        favoriteDao.markRestaurantsAsSynced(unSyncedRestaurants.map { it.copy(isSynced = true) })
-                    }else {
-                        restaurantsSyncSuccess = false
+                    val successfulRestaurants = results.filter { it.second }.map { it.first }
+                    if(successfulRestaurants.isNotEmpty()){
+                        favoriteDao.markRestaurantsAsSynced(successfulRestaurants.map { it.copy(isSynced = true) })
+                    }
+                    if(successfulRestaurants.size < unSyncedRestaurants.size){
+                        allSyncSuccess = false
                     }
                 }
             }
@@ -84,24 +93,28 @@ class SyncAddToFavoritesWorker @AssistedInject constructor(
                     val unSyncedSnacksToFirebase = unSyncedSnacks.map { item ->
                         async {
                             try {
-                                RetrofitInstance.api.addToFavorite(
+                                val response = api.addToFavorite(
                                     item.userId,
                                     "Snack_${item.snackId}",
                                     FavoriteClass(item.snackId, "Snack", item.restaurantId)
-                                ).isSuccessful
-                            }catch (e : Exception){ false }
+                                )
+                                Pair(item, response.isSuccessful)
+                            }catch (e : Exception){
+                                Pair(item, false)
+                            }
                         }
                     }
                     val results = unSyncedSnacksToFirebase.awaitAll()
-                    if(results.all { it }){
-                        favoriteDao.markSnacksAsSynced(unSyncedSnacks.map { it.copy(isSynced = true) })
-                    }else{
-                        snacksSyncSuccess = false
+                    val successfulSnacks = results.filter { it.second }.map { it.first }
+                    if(successfulSnacks.isNotEmpty()){
+                        favoriteDao.markSnacksAsSynced(successfulSnacks.map { it.copy(isSynced = true) })
+                    }
+                    if(successfulSnacks.size < unSyncedSnacks.size){
+                        allSyncSuccess = false
                     }
                 }
             }
-
-            if (mealsSyncSuccess && snacksSyncSuccess && restaurantsSyncSuccess) {
+            if (allSyncSuccess) {
                 Result.success()
             } else {
                 Result.retry()
@@ -111,5 +124,3 @@ class SyncAddToFavoritesWorker @AssistedInject constructor(
         }
     }
 }
-
-

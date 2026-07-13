@@ -38,66 +38,38 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.applicationhome.data.data.local.entity.CartItemsClass
-import com.example.applicationhome.data.data.local.entity.FavoriteSnacksDatabase
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.model.CartViewModel
-import com.example.applicationhome.ui.theme.model.LoginViewModel
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun AddBox(
-    loginViewModel: LoginViewModel,
     color : Color,
-    food : FavoriteSnacksDatabase,
-    cartViewModel: CartViewModel,
-    message : () -> Unit = {},
+    foodId : Int,
+    plus : () -> Unit = {},
+    minus : () -> Unit = {},
+    delete : () -> Unit = {},
+    active : () -> Unit = {},
+    activeId : Int,
+    count : Int,
     modifier: Modifier = Modifier
 ){
 
     val context = LocalContext.current
-    val id = food.snackId
-    val size = food.priceANDsize.keys.last()
-    val price = food.priceANDsize.values.last()
 
-
-
-    val cartkey = "${id}_${size}"
-    val cartItems by cartViewModel.cartItems.collectAsStateWithLifecycle()
-    val count = cartItems.find { it?.mealKey == cartkey }?.quantity ?:0
-
-    val userData by loginViewModel.userData.collectAsStateWithLifecycle()
-
-    val meal = CartItemsClass(
-        userData.id,
-        cartkey,
-        id,
-        food.name,
-        "Snack",
-        size,
-        count,
-        price,
-        price * count,
-        food.image,
-        food.restaurantId
-    )
-
-    val activid = cartViewModel.activId == id
+    val isActive = activeId == foodId
     var isExpanded by remember { mutableStateOf(false) }
-    val active = cartViewModel.activId
 
     //  بيراقب الـ isExpanded
-    LaunchedEffect(key1 = count, key2 = active) {
-        if (isExpanded && active == id) {
+    LaunchedEffect(key1 = count, key2 = activeId) {
+        if (isExpanded && activeId == foodId) {
             delay(1000.milliseconds)
             isExpanded = false
         }
     }
-    val cartColor = if (!activid || !isExpanded || count == 0) Color.VeryLightGray else Color.Red
-    val targetWidth = if (!activid || !isExpanded) 35.dp else 160.dp
+    val cartColor = if (!isActive || !isExpanded || count == 0) Color.VeryLightGray else Color.Red
+    val targetWidth = if (!isActive || !isExpanded) 35.dp else 160.dp
     Box(
         modifier = modifier.
         animateContentSize().
@@ -106,19 +78,18 @@ fun AddBox(
         clip(CircleShape).
         background(cartColor).
         clickable {
-            cartViewModel.delete(id, size)
+            delete()
             if( count > 0 ) Toast.makeText(context, "Removed From Cart", Toast.LENGTH_SHORT).show()
         }.
         border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)),
         contentAlignment = Alignment.Center
     ){
-        if(count == 0 && !activid || count == 0 && !isExpanded) {
+        if(count == 0 && !isActive || count == 0 && !isExpanded) {
             IconButton(
                 onClick = {
                     isExpanded = true
-                    cartViewModel.active(id)
-                    cartViewModel.plus(meal, size)
-                    if(food.restaurantId == cartViewModel.cartInformation.value?.restaurantId) message()
+                    active()
+                    plus()
                 },
                 modifier = Modifier.fillMaxSize()
             ){
@@ -129,7 +100,7 @@ fun AddBox(
                     modifier = Modifier.fillMaxSize().padding(5.dp)
                 )
             }
-        }else if(count > 0 && !activid || !isExpanded){
+        }else if(count > 0 && !isActive || !isExpanded){
             Box(
                 modifier = modifier.
                 animateContentSize().
@@ -140,10 +111,10 @@ fun AddBox(
                 clickable {
                     isExpanded = true
                     if(count > 0){
-                        cartViewModel.active(id)
+                        active()
                     }else{
-                        cartViewModel.active(id)
-                        cartViewModel.plus(meal, size)
+                        active()
+                        plus()
                     }
                 },
                 contentAlignment = Alignment.Center
@@ -171,7 +142,7 @@ fun AddBox(
                     clip(CircleShape).
                     background(color).
                     clickable {
-                        cartViewModel.plus(meal, size)
+                        plus()
                     },
                     contentAlignment = Alignment.Center
                 ){
@@ -181,7 +152,12 @@ fun AddBox(
                         background(color),
                         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
                     ){
-                        IconButton(onClick = {cartViewModel.minus(meal, size)}, modifier = Modifier.weight(1f).fillMaxHeight()){
+                        IconButton(
+                            onClick = {
+                                minus()
+                            },
+                            modifier = Modifier.weight(1f).fillMaxHeight()
+                        ){
                             Icon(
                                 Icons.Default.Remove,
                                 contentDescription = null,
@@ -205,10 +181,10 @@ fun AddBox(
                         }
                         IconButton(
                             onClick = {
-                                cartViewModel.plus(meal, size)
-                                if(food.restaurantId == cartViewModel.cartInformation.value?.restaurantId) message()
+                                plus()
                             },
-                            modifier = Modifier.weight(1f).fillMaxHeight()){
+                            modifier = Modifier.weight(1f).fillMaxHeight()
+                        ){
                             Icon(
                                 Icons.Default.Add,
                                 contentDescription = null,

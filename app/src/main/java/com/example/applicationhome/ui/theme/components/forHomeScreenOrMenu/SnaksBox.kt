@@ -25,16 +25,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.data.local.entity.FavoriteSnacksDatabase
 import com.example.applicationhome.data.data.model.MealSnacks
-import com.example.applicationhome.data.data.model.Screens
-import com.example.applicationhome.ui.theme.model.CartViewModel
-import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
-import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @Composable
 fun SnaksBox(
@@ -42,14 +37,9 @@ fun SnaksBox(
     modifier: Modifier = Modifier,
     item: FavoriteSnacksDatabase,
     size : String,
-    navigationController : NavHostController,
-    itemScreenViewModel: ItemScreenViewModel,
-    cartViewModel : CartViewModel,
-    actions : @Composable ColumnScope.() -> Unit = {},
-    homeScreenViewModel : HomeScreenViewModel
+    cardNavigationClickable : () -> Unit = {},
+    actions : @Composable ColumnScope.() -> Unit = {}
 ){
-    val networkState = homeScreenViewModel.isNetworkAvailable
-
     val price = item.priceANDsize[size]
 
     if (snackIsLoading) {
@@ -64,12 +54,7 @@ fun SnaksBox(
             modifier = modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
             background(Color.White).
             clickable{
-                if(networkState){
-                    itemScreenViewModel.selectSnak(item, size)
-                    cartViewModel.deletenewCount()
-                }else{
-                    navigationController.navigate(Screens.NoInternetScreen.screen)
-                }
+                cardNavigationClickable()
             }
         ){
             Column(modifier = Modifier.fillMaxSize().background(Color.White)){

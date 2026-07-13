@@ -3,16 +3,19 @@ package com.example.applicationhome.data.data.repository
 import com.example.applicationhome.data.data.local.dao.OrdersDao
 import com.example.applicationhome.data.data.local.entity.OrdersDatabaseClass
 import com.example.applicationhome.data.data.model.OrdersClass
-import com.example.applicationhome.data.data.remote.RetrofitInstance
+import com.example.applicationhome.data.data.remote.FoodAppAPIs
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class OrderRepository @Inject constructor(
-    private val ordersDao : OrdersDao
+    private val ordersDao : OrdersDao,
+    private val api : FoodAppAPIs
 ) {
     private val _loading = MutableStateFlow(false)
     val loading : StateFlow<Boolean> = _loading
@@ -30,7 +33,7 @@ class OrderRepository @Inject constructor(
 
         return try {
             _loading.value = true
-            val response = RetrofitInstance.api.putNewOrder(
+            val response = api.putNewOrder(
                 userId,
                 orderId,
                 orderClass.copy(date = date)
@@ -49,7 +52,7 @@ class OrderRepository @Inject constructor(
 
     suspend fun getOrders(userId: String) : String{
         return try {
-            val response = RetrofitInstance.api.getLastOrders(userId)
+            val response = api.getLastOrders(userId)
             val orders = response.body()
             if(response.isSuccessful && orders != null){
                 val ordersHistory = orders.map { (key, value) ->

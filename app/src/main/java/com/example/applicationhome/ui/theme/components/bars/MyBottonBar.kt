@@ -36,7 +36,7 @@ import androidx.navigation.NavHostController
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
-import com.example.applicationhome.ui.theme.model.CartViewModel
+import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -48,7 +48,7 @@ fun MyBottonBar(
     navigationController : NavHostController,
     dashboardNavController : NavHostController,
     currentRoute :  String?,
-    cartViewModel: CartViewModel,
+    bottomBarViewModel: BottomBarViewModel,
     favoriteViewModel: FavoriteViewModel,
     loginViewModel: LoginViewModel,
     homeListState : LazyListState,
@@ -61,6 +61,7 @@ fun MyBottonBar(
     val favoriteRestaurantsCount by favoriteViewModel.favoriteRestaurantsCount.collectAsStateWithLifecycle()
     val count = favoriteFoodCount + favoriteSnacksCount + favoriteRestaurantsCount
 
+    val cartCount by bottomBarViewModel.totalNumber.collectAsStateWithLifecycle()
     Box(
         modifier = Modifier.width(350.dp).
         height(60.dp).
@@ -151,12 +152,12 @@ fun MyBottonBar(
                 ){
                     BadgedBox(
                         badge = {
-                            if(cartViewModel.totalNumber.value > 0){
+                            if(cartCount > 0){
                                 Badge(
                                     containerColor = Color.DarkOrange,
                                     contentColor = Color.White
                                 ){
-                                    if(cartViewModel.totalNumber.value <= 99) Text(text = cartViewModel.totalNumber.value.toString()) else Text(text = "+99")
+                                    if(cartCount <= 99) Text(text = "$cartCount") else Text(text = "+99")
                                 }
                             }
                         }

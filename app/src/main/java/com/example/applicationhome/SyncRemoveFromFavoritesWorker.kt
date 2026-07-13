@@ -5,7 +5,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.applicationhome.data.data.local.dao.FavoriteDao
-import com.example.applicationhome.data.data.remote.RetrofitInstance
+import com.example.applicationhome.data.data.remote.FoodAppAPIs
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.async
@@ -16,7 +16,8 @@ import kotlinx.coroutines.coroutineScope
 class SyncRemoveFromFavoritesWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val favoriteDao : FavoriteDao
+    private val favoriteDao : FavoriteDao,
+    private val api : FoodAppAPIs
 ): CoroutineWorker(context, workerParameters) {
     override suspend fun doWork(): Result {
         return try {
@@ -39,7 +40,7 @@ class SyncRemoveFromFavoritesWorker @AssistedInject constructor(
                     val unDeletedOnlineMealsToFirebase = unDeletedOnlineMeals.map { item ->
                         async {
                             try {
-                                RetrofitInstance.api.deleteFromFavorite(
+                                api.deleteFromFavorite(
                                     item.userId,
                                     "Meal_${item.mealId}"
                                 ).isSuccessful
@@ -64,7 +65,7 @@ class SyncRemoveFromFavoritesWorker @AssistedInject constructor(
                     val unDeletedOnlineRestaurantsToFirebase = unDeletedOnlineRestaurants.map { item ->
                         async {
                             try {
-                                RetrofitInstance.api.deleteFromFavorite(
+                                api.deleteFromFavorite(
                                     item.userId,
                                     "Restaurant_${item.restaurantId}"
                                 ).isSuccessful
@@ -89,7 +90,7 @@ class SyncRemoveFromFavoritesWorker @AssistedInject constructor(
                     val unDeletedOnlineSnacksToFirebase = unDeletedOnlineSnacks.map { item ->
                         async {
                             try {
-                                RetrofitInstance.api.deleteFromFavorite(
+                                api.deleteFromFavorite(
                                     item.userId,
                                     "Snack_${item.snackId}"
                                 ).isSuccessful

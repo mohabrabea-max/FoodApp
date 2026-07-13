@@ -29,7 +29,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,7 +46,6 @@ import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.forCart.CartButton
 import com.example.applicationhome.ui.theme.components.forConfirmOrder.ConfirmOrderScreenTextField2
 import com.example.applicationhome.ui.theme.components.forConfirmOrder.TextFieldForConfirmOrder
-import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter",
@@ -58,10 +56,8 @@ import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 @Composable
 fun ConfirmOrderScreen(
     navigationController : NavHostController,
-    confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
-    cartViewModel : CartViewModel
+    confirmOrderScreenViewModel : ConfirmOrderScreenViewModel
 ){
-    var cart = cartViewModel.cartItems.collectAsState().value
     var color = if(confirmOrderScreenViewModel.bottonState) Color.DarkOrange else Color.Gray
     var fontcolor = if(confirmOrderScreenViewModel.bottonState) Color.White else Color.Black
     Scaffold(

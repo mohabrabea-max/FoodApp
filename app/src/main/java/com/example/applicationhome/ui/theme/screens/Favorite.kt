@@ -35,8 +35,10 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,6 +53,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
+import com.example.applicationhome.data.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -63,11 +66,8 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.MealB
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantsBox
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
-import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
-import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
-import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -80,12 +80,9 @@ fun Favorite(
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
     itemScreenViewModel : ItemScreenViewModel,
-    cartViewModel : CartViewModel,
     favoriteViewModel : FavoriteViewModel,
     restaurantViewModel: RestaurantViewModel,
-    loginViewModel : LoginViewModel,
     viewRestaurantImageViewModel: ViewRestaurantImageViewModel,
-    homeScreenViewModel : HomeScreenViewModel,
     favoriteListState : LazyGridState
 ){
     val snackBarHostState = remember { SnackbarHostState() }
@@ -97,6 +94,11 @@ fun Favorite(
         context?.finishAffinity()
     }
 
+    val networkState = favoriteViewModel.isNetworkAvailable
+
+    var activeId by remember { mutableStateOf(0) }
+
+    val userData by favoriteViewModel.userData.collectAsStateWithLifecycle()
 
     val favoriteMeals by favoriteViewModel.favoriteMeals.collectAsStateWithLifecycle()
     val favoriteSnacks by favoriteViewModel.favoriteSnacks.collectAsStateWithLifecycle()
@@ -131,8 +133,7 @@ fun Favorite(
                                         itemScreenViewModel,
                                         navigationController,
                                         restaurantViewModel,
-                                        viewRestaurantImageViewModel,
-                                        homeScreenViewModel
+                                        viewRestaurantImageViewModel
                                     )
                                 }
                             }
@@ -140,14 +141,34 @@ fun Favorite(
                         if(favoriteViewModel.selectedCategorieInFavoriteScreen == 1) {
                             item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
                             items(favoriteSnacks) { item ->
+                                val size = item.priceANDsize.keys.last()
+                                val price = item.priceANDsize.values.last()
+                                val snack = CartItemsClass(
+                                    userData.id,
+                                    "${item.snackId}_${size}",
+                                    item.snackId,
+                                    item.name,
+                                    "Snack",
+                                    size,
+                                    restaurantViewModel.quantity("${item.snackId}_${size}"),
+                                    price,
+                                    price * restaurantViewModel.quantity("${item.snackId}_${size}"),
+                                    item.image,
+                                    item.restaurantId
+                                )
                                 SnaksBox(
                                     false,
                                     modifier = Modifier.size(200.dp),
                                     item,
                                     item.priceANDsize.keys.last(),
-                                    navigationController,
-                                    itemScreenViewModel,
-                                    cartViewModel,
+                                    {
+                                        if(networkState){
+                                            itemScreenViewModel.selectSnak(item, size)
+                                            favoriteViewModel.deletenewCount()
+                                        }else{
+                                            navigationController.navigate(Screens.NoInternetScreen.screen)
+                                        }
+                                    },
                                     {
                                         FavoriteSnacks(
                                             modifier = Modifier.clip(CircleShape).border(
@@ -159,29 +180,36 @@ fun Favorite(
                                             favoriteViewModel = favoriteViewModel
                                         )
                                         AddBox(
-                                            loginViewModel,
-                                            color = Color.VeryLightGray,
-                                            food = item,
-                                            cartViewModel
+                                            Color.VeryLightGray,
+                                            item.snackId,
+                                            {favoriteViewModel.plus(snack, size)},
+                                            {favoriteViewModel.minus(snack, size)},
+                                            {favoriteViewModel.delete(item.snackId, size)},
+                                            {activeId = item.snackId},
+                                            activeId,
+                                            restaurantViewModel.quantity("${item.snackId}_${size}")
                                         )
-                                    },
-                                    homeScreenViewModel
+                                    }
                                 )
                             }
                         }
                         if(favoriteViewModel.selectedCategorieInFavoriteScreen == 0) {
                             item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
                             items(favoriteMeals) { item ->
+                                val size = item.sizeOptions.last().size
                                 ItemsBox(
                                     false,
                                     item,
-                                    navigationController,
-                                    itemScreenViewModel,
-                                    cartViewModel,
+                                    {
+                                        itemScreenViewModel.selectItem(item, size)
+                                        navigationController.navigate(Screens.ItemScreen.screen)
+                                        favoriteViewModel.deletenewCount()
+                                    },
                                     {
                                         Favorite(
-                                            modifier = Modifier.clip(CircleShape).size(35.dp)
-                                                .background(Color.White.copy(alpha = 1f)),
+                                            modifier = Modifier.
+                                            clip(CircleShape).
+                                            size(35.dp),
                                             food = item,
                                             favoriteViewModel = favoriteViewModel
                                         )

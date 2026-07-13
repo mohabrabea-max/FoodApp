@@ -49,6 +49,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -60,7 +61,7 @@ import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.Options
 import com.example.applicationhome.ui.theme.components.bars.MyBottonBar
 import com.example.applicationhome.ui.theme.components.profileAndSetting.UserImage
-import com.example.applicationhome.ui.theme.model.CartViewModel
+import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.DrawerViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
@@ -81,7 +82,6 @@ fun DashboardScreen(
     navigationController: NavHostController,
     drawerState : DrawerState,
     itemScreenViewModel: ItemScreenViewModel,
-    cartViewModel : CartViewModel,
     userImageViewModel : UserImageViewModel,
     favoriteViewModel : FavoriteViewModel,
     drawerViewModel: DrawerViewModel,
@@ -90,6 +90,7 @@ fun DashboardScreen(
     restaurantViewModel: RestaurantViewModel,
     viewRestaurantImageViewModel: ViewRestaurantImageViewModel
 ){
+    val bottomBarViewModel : BottomBarViewModel = hiltViewModel()
 
     val dashboardNavController = rememberNavController()
 
@@ -201,7 +202,7 @@ fun DashboardScreen(
                         navigationController,
                         dashboardNavController,
                         currentRoute,
-                        cartViewModel,
+                        bottomBarViewModel,
                         favoriteViewModel,
                         loginViewModel,
                         homeListState,
@@ -241,12 +242,9 @@ fun DashboardScreen(
                         coroutineScope,
                         navigationController,
                         itemScreenViewModel,
-                        cartViewModel,
                         favoriteViewModel,
                         restaurantViewModel,
-                        loginViewModel,
                         viewRestaurantImageViewModel,
-                        homeScreenViewModel,
                         favoriteListState
                     )
                 }

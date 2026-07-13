@@ -16,17 +16,20 @@ import com.example.applicationhome.data.data.model.FavoriteClass
 import com.example.applicationhome.data.data.model.FoodItem
 import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.data.data.model.Snack
-import com.example.applicationhome.data.data.remote.RetrofitInstance
+import com.example.applicationhome.data.data.remote.FoodAppAPIs
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class FavoriteRepository @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val favoriteDao : FavoriteDao
+    private val favoriteDao : FavoriteDao,
+    private val api : FoodAppAPIs,
+    @ApplicationContext private val context: Context
 ){
     private val _mealsFavoriteObject = mutableMapOf<String, FoodItem>()
 
@@ -51,7 +54,7 @@ class FavoriteRepository @Inject constructor(
     suspend fun syncFavoritesInDatabase(userId : String) : String{
         val favoriteList : Map<String, FavoriteClass>
         return try {
-            val response = RetrofitInstance.api.getFavoriteItems(userId)
+            val response = api.getFavoriteItems(userId)
             val favorite = response.body()
             if(response.isSuccessful && favorite != null){
                 favoriteList = favorite
@@ -63,7 +66,7 @@ class FavoriteRepository @Inject constructor(
                         val deferredMeals = mealsFavorite.map { item ->
                             async {
                                 try {
-                                    val response = RetrofitInstance.api.getFavoriteMeals("\"id\"", item.id)
+                                    val response = api.getFavoriteMeals("\"id\"", item.id)
                                     val resultMap = response.body()
                                     if(response.isSuccessful && resultMap != null){
                                         _mealsFavoriteObject += resultMap
@@ -101,7 +104,7 @@ class FavoriteRepository @Inject constructor(
                         val deferredSnacks = snacksFavorite.map { item ->
                             async {
                                 try {
-                                    val response = RetrofitInstance.api.getFavoriteSnacks("\"id\"", item.id)
+                                    val response = api.getFavoriteSnacks("\"id\"", item.id)
                                     val resultMap = response.body()
                                     if(response.isSuccessful && resultMap != null){
                                         _snacksFavoriteObject += resultMap
@@ -138,7 +141,7 @@ class FavoriteRepository @Inject constructor(
                         val deferredRestaurants = restaurantsFavorite.map { item ->
                             async {
                                 try {
-                                    val response = RetrofitInstance.api.getFavoriteRestaurants("\"id\"", item.id)
+                                    val response = api.getFavoriteRestaurants("\"id\"", item.id)
                                     val resultMap = response.body()
                                     if(response.isSuccessful && resultMap != null){
                                         _restaurantsFavoriteObject.putAll(resultMap)
@@ -252,7 +255,7 @@ class FavoriteRepository @Inject constructor(
         _restaurantsFavoriteObject["Restaurant_${resId}"]?.let { return it }
 
         return try {
-            val response = RetrofitInstance.api.getFavoriteRestaurants("\"id\"", resId)
+            val response = api.getFavoriteRestaurants("\"id\"", resId)
             val resultMap = response.body()
             if (response.isSuccessful && resultMap != null) {
                 _restaurantsFavoriteObject.putAll(resultMap) // دمج آمن جوه الـ ConcurrentHashMap

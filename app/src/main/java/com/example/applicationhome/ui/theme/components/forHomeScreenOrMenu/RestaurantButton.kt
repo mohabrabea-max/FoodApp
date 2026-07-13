@@ -32,12 +32,12 @@ import androidx.navigation.NavHostController
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.RedOrange
-import com.example.applicationhome.ui.theme.model.CartViewModel
 
 @Composable
 fun RestaurantButton(
     navigationController: NavHostController,
-    cartViewModel : CartViewModel
+    totalNumber : Int,
+    totalPrice : Double
 ){
     Box(
         modifier = Modifier.fillMaxWidth().
@@ -76,7 +76,7 @@ fun RestaurantButton(
                     contentAlignment = Alignment.Center
                 ){
                     Text(
-                        text = cartViewModel.totalNumber.value.toString(),
+                        text = "$totalNumber",
                         fontSize = 15.sp,
                         style = MaterialTheme.typography.labelLarge,
                         color = Color.White,
@@ -95,7 +95,7 @@ fun RestaurantButton(
                 )
             }
             Text(
-                text = "EGP ${cartViewModel.totalPrice}",
+                text = "EGP $totalPrice",
                 fontSize = 15.sp,
                 style = MaterialTheme.typography.labelLarge,
                 color = Color.White,

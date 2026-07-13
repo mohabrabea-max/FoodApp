@@ -33,16 +33,16 @@ import coil.size.Precision
 import com.example.applicationhome.data.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.phoneNumberState
 import com.example.applicationhome.ui.theme.LightOrange
-import com.example.applicationhome.ui.theme.model.LoginViewModel
+import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 
 @Composable
 fun ConfirmOrderBox(
     food: CartItemsClass,
-    loginViewModel: LoginViewModel
+    confirmOrderScreenViewModel: ConfirmOrderScreenViewModel
 ){
-    LaunchedEffect(loginViewModel.userData.collectAsState().value.phonenumber){
-        if(loginViewModel.userData.value.phonenumber.isNotEmpty()){
-            phoneNumberState.setTextAndPlaceCursorAtEnd(loginViewModel.userData.value.phonenumber)
+    LaunchedEffect(confirmOrderScreenViewModel.userData.collectAsState().value.phonenumber){
+        if(confirmOrderScreenViewModel.userData.value.phonenumber.isNotEmpty()){
+            phoneNumberState.setTextAndPlaceCursorAtEnd(confirmOrderScreenViewModel.userData.value.phonenumber)
         }
     }
     val number = food.quantity

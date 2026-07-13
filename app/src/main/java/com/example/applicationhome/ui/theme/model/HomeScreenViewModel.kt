@@ -1,13 +1,12 @@
 package com.example.applicationhome.ui.theme.model
 
-import android.app.Application
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.data.model.Categories
 import com.example.applicationhome.data.data.model.Offers
@@ -21,9 +20,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    application : Application,
-    private val homeScreenRepository : HomeScreenRepository
-) : AndroidViewModel(application){
+    private val homeScreenRepository : HomeScreenRepository,
+    private val networkObserver: NetworkObserver
+) : ViewModel(){
     var selected by mutableStateOf(0)
 
     var typ by mutableStateOf("All")
@@ -52,8 +51,6 @@ class HomeScreenViewModel @Inject constructor(
     val offers : List<Offers> get() = _offers
     val offersIsLoading : StateFlow<Boolean> = homeScreenRepository.offersIsLoading
 
-
-    private val networkObserver = NetworkObserver(application.applicationContext)
     var isNetworkAvailable by mutableStateOf(true)
 
 

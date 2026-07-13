@@ -42,9 +42,7 @@ import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.forCart.CartButton
 import com.example.applicationhome.ui.theme.components.forCart.PaymentSummary
 import com.example.applicationhome.ui.theme.components.forConfirmOrder.ConfirmOrderBox
-import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
-import com.example.applicationhome.ui.theme.model.LoginViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter",
     "UnrememberedMutableState",
@@ -54,11 +52,11 @@ import com.example.applicationhome.ui.theme.model.LoginViewModel
 @Composable
 fun ConfirmOrderScreen2(
     navigationController : NavHostController,
-    confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
-    cartViewModel: CartViewModel,
-    loginViewModel: LoginViewModel
+    confirmOrderScreenViewModel : ConfirmOrderScreenViewModel
 ){
-    val cart by cartViewModel.cartItems.collectAsStateWithLifecycle()
+    val cart by confirmOrderScreenViewModel.cartItems.collectAsStateWithLifecycle()
+
+    val totalprice = confirmOrderScreenViewModel.totalPrice
 
     val clickState = remember { mutableStateOf(true) }
 
@@ -97,10 +95,10 @@ fun ConfirmOrderScreen2(
                 ){
                     item{Spacer(modifier = Modifier.height(100.dp))}
                     items(cart) { item ->
-                        if(item != null)ConfirmOrderBox(item, loginViewModel)
+                        if(item != null)ConfirmOrderBox(item, confirmOrderScreenViewModel)
                     }
                     item{
-                        PaymentSummary(cartViewModel)
+                        PaymentSummary(totalprice)
                     }
                     item{Spacer(modifier = Modifier.height(100.dp))}
                 }
@@ -117,7 +115,7 @@ fun ConfirmOrderScreen2(
                             clickState.value = false
                             confirmOrderScreenViewModel.uploadOrder(
                                 onSuccess = {
-                                    cartViewModel.clearAllCart()
+                                    confirmOrderScreenViewModel.clearAllCart()
                                     navigationController.navigate(Screens.DashboardScreen.screen){
                                         popUpTo(Screens.DashboardScreen.screen){
                                             inclusive = true

@@ -20,8 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.example.applicationhome.ui.theme.model.CartViewModel
 
 @Composable
-fun PaymentSummary(cartViewModel: CartViewModel){
-    val totalprice = cartViewModel.totalPrice
+fun PaymentSummary(totalprice: Double){
     val delivery = 51.00
     val service = 8.00
     Column(

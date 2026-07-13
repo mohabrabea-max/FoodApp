@@ -4,13 +4,67 @@ import com.example.applicationhome.data.data.local.dao.CartDao
 import com.example.applicationhome.data.data.local.entity.CartClass
 import com.example.applicationhome.data.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.data.model.Restaurants
-import com.example.applicationhome.data.data.remote.RetrofitInstance
+import com.example.applicationhome.data.data.remote.FoodAppAPIs
+import com.example.applicationhome.domain.ApplicationScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
+@OptIn(ExperimentalCoroutinesApi::class)
 class CartRepository @Inject constructor(
-    private val cartdao: CartDao
+    private val userRepository: UserRepository,
+    private val cartdao: CartDao,
+    private val api : FoodAppAPIs,
+    @ApplicationScope private val externalScope: CoroutineScope
 ) {
+    val cartInformation: StateFlow<CartClass?> =
+        userRepository.userData
+            .flatMapLatest { user ->
+                val id = user.id
+                if (id.isNotEmpty()) {
+                    getCartData(id)
+                }else {
+                    flowOf(null)
+                }
+            }.stateIn(
+                scope = externalScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = null
+            )
+
+    val cartItems: StateFlow<List<CartItemsClass?>> =
+        userRepository.userData
+            .flatMapLatest { user ->
+                val id = user.id
+                if (id.isNotEmpty()) {
+                    getCartItems(id)
+                } else {
+                    flowOf(emptyList())
+                }
+            }.stateIn(
+                scope = externalScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList()
+            )
+
+    val totalNumber: StateFlow<Int> =
+        cartItems
+            .map { item -> item.sumOf { it?.quantity ?: 0 } }
+            .stateIn(
+                scope = externalScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = 0
+            )
+
 
     fun getCartItems(id : String): Flow<List<CartItemsClass?>> = cartdao.getCartItems(id)
 
@@ -18,7 +72,7 @@ class CartRepository @Inject constructor(
 
     suspend fun getCartRestaurantData(food : CartItemsClass) : Restaurants?{
         return try {
-            val response = RetrofitInstance.api.getCarRestaurant("\"id\"", food.restaurantId)
+            val response = api.getCarRestaurant("\"id\"", food.restaurantId)
             val resData = response.body()?.values?.first()
             if(response.isSuccessful && resData != null){
                 resData

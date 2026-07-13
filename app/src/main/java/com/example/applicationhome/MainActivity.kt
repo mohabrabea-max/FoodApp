@@ -9,7 +9,6 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.DrawerViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
@@ -30,13 +29,9 @@ class MainActivity : ComponentActivity() {
         // 3. الـ Splash Screen لازم تكون أول سطر في الحياة
         installSplashScreen()
         super.onCreate(savedInstanceState)
-
-        // تم إزالة تعريفات الـ Repositories من هنا لأن الـ lazy بيقوم بالواجب فوق في الأمان
-
         setContent {
             val loginViewModel: LoginViewModel = hiltViewModel()
             val signUpViewModel: SignUpViewModel = hiltViewModel()
-            val cartViewModel: CartViewModel = hiltViewModel()
             val confirmOrderScreenViewModel: ConfirmOrderScreenViewModel = hiltViewModel()
             val orderScreenViewModel: OrderScreenViewModel = hiltViewModel()
             val homeScreenViewModel: HomeScreenViewModel = hiltViewModel()
@@ -51,7 +46,6 @@ class MainActivity : ComponentActivity() {
             FinalScreen(
                 drawerState,
                 itemScreenViewModel,
-                cartViewModel,
                 userImageViewModel,
                 favoriteViewModel,
                 drawerViewModel,

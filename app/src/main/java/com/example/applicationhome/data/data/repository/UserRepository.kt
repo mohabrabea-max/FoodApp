@@ -5,7 +5,7 @@ import com.example.applicationhome.data.data.local.entity.UpdateAccountState
 import com.example.applicationhome.data.data.local.entity.UserClass
 import com.example.applicationhome.data.data.model.FirebasePostResponse
 import com.example.applicationhome.data.data.model.UserClassFireBase
-import com.example.applicationhome.data.data.remote.RetrofitInstance
+import com.example.applicationhome.data.data.remote.FoodAppAPIs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import retrofit2.Response
 import javax.inject.Inject
+import javax.inject.Singleton
 
 //    suspend fun addToMeals(){
 //        try {
@@ -26,9 +27,10 @@ import javax.inject.Inject
 //        }
 //    }
 
-
+@Singleton
 class UserRepository @Inject constructor(
     private val userdao: UsersDao,
+    private val api : FoodAppAPIs,
     externalScope: CoroutineScope
 ) {
     private val _loading = MutableStateFlow(false)
@@ -50,11 +52,11 @@ class UserRepository @Inject constructor(
         try {
             _loading.value = true
             val formatEmail = "\"$emailstate\""
-            val response = RetrofitInstance.api.getUserData(order = "\"email\"", value = formatEmail)
+            val response = api.getUserData(order = "\"email\"", value = formatEmail)
 
             if(response.isSuccessful && response.body() != null){
                 val userMap = response.body()
-                if(userMap != null && userMap.isNotEmpty()){
+                if(!userMap.isNullOrEmpty()){
                     val user = userMap.values.firstOrNull()
                     if(user != null && passwordstate == user.password){
                         val userId = userMap.keys.firstOrNull().toString()
@@ -99,7 +101,7 @@ class UserRepository @Inject constructor(
     suspend fun signUp(userRequest : UserClassFireBase): String {
         try {
             _loading.value = true
-            val response: Response<FirebasePostResponse> = RetrofitInstance.api.signUp(userRequest)
+            val response: Response<FirebasePostResponse> = api.signUp(userRequest)
             if (response.isSuccessful && response.body() != null) {
                 val userId = response.body()?.name.toString()
                 val userData = UserClass(

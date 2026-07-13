@@ -23,10 +23,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,51 +35,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
-import com.example.applicationhome.data.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
-import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.model.CartViewModel
-import com.example.applicationhome.ui.theme.model.LoginViewModel
-import kotlinx.coroutines.CoroutineScope
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomBarForItemScreen(
-    cartViewModel: CartViewModel,
     food : FavoriteFoodDatabase,
     size : String,
-    snackbarHostState : SnackbarHostState,
-    scope : CoroutineScope,
-    navigationController : NavHostController,
-    loginViewModel: LoginViewModel
+    newCount : Int,
+    minusnewCount : () -> Unit = {},
+    plusnewCount : () -> Unit = {},
+    clickable : () -> Unit = {}
 ){
-    val cartInformation by cartViewModel.cartInformation.collectAsStateWithLifecycle()
-
-    val userData by loginViewModel.userData.collectAsStateWithLifecycle()
-
     val price = food.sizeOptions.find { it.size == size }?.price ?: 0.0
-    val totalPrice = cartViewModel.newCount * price
-    val meal = CartItemsClass(
-        userData.id,
-        "${food.mealId}_${size}",
-        food.mealId,
-        food.name,
-        food.type,
-        size,
-        cartViewModel.newCount,
-        price,
-        totalPrice,
-        food.image,
-        food.restaurantId
-    )
+    val totalPrice = newCount * price
+
     var color : Color
     var fontColor : Color
-    if(cartViewModel.newCount == 0){
+    if(newCount == 0){
         color = Color.VeryLightGray
         fontColor = Color.Gray
     }else{
@@ -120,15 +94,15 @@ fun BottomBarForItemScreen(
                 ){
                     IconButton(
                         onClick = {
-                            if(cartViewModel.newCount > 0) {
-                                cartViewModel.minusnewCount()
+                            if(newCount > 0) {
+                                minusnewCount()
                             }
                         },
                         modifier = Modifier.weight(1f).fillMaxHeight()){
                         Icon(
                             Icons.Default.Remove,
                             contentDescription = null,
-                            tint = if(cartViewModel.newCount > 0) Color.DarkOrange else Color.Gray,
+                            tint = if(newCount > 0) Color.DarkOrange else Color.Gray,
                             modifier = Modifier.fillMaxSize().padding(5.dp)
                         )
                     }
@@ -139,7 +113,7 @@ fun BottomBarForItemScreen(
                         contentAlignment = Alignment.Center
                     ){
                         Text(
-                            text = cartViewModel.newCount.toString(),
+                            text = newCount.toString(),
                             fontSize = 15.sp,
                             style = MaterialTheme.typography.labelLarge,
                             color = Color.Black,
@@ -149,15 +123,15 @@ fun BottomBarForItemScreen(
                     }
                     IconButton(
                         onClick = {
-                            if(cartViewModel.newCount < 99) {
-                                cartViewModel.plusnewCount()
+                            if(newCount < 99) {
+                                plusnewCount()
                             }
                         },
                         modifier = Modifier.weight(1f).fillMaxHeight()){
                         Icon(
                             Icons.Default.Add,
                             contentDescription = null,
-                            tint = if(cartViewModel.newCount < 99) Color.DarkOrange else Color.Gray,
+                            tint = if(newCount < 99) Color.DarkOrange else Color.Gray,
                             modifier = Modifier.fillMaxSize().padding(5.dp)
                         )
                     }
@@ -169,18 +143,8 @@ fun BottomBarForItemScreen(
                 clip(RoundedCornerShape(50.dp)).
                 background(color).
                 clickable {
-                    if(cartViewModel.newCount > 0){
-                        cartViewModel.updateCount(meal, size, cartViewModel.newCount)
-                        if(food.restaurantId == cartInformation?.restaurantId || cartInformation != null){
-                            cartViewModel.deletenewCount()
-                            scope.showAddToCartSnackbar(
-                                snackbarHostState,
-                                {
-                                    navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
-                                }
-
-                            )
-                        }
+                    if(newCount > 0){
+                        clickable()
                     }
                 }.
                 padding(15.dp),

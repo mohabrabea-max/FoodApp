@@ -2,10 +2,12 @@ package com.example.applicationhome.ui.theme.model
 
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.data.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.data.model.OrderItemsClass
 import com.example.applicationhome.data.data.model.OrdersClass
 import com.example.applicationhome.data.data.model.UserInformationInOrderClass
@@ -19,7 +21,9 @@ import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextFi
 import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.streettextFieldState
 import com.example.applicationhome.data.data.repository.OrderRepository
 import com.example.applicationhome.data.data.repository.UserRepository
+import com.example.applicationhome.domain.CartUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -29,13 +33,31 @@ import javax.inject.Inject
 class ConfirmOrderScreenViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val cartRepository: CartRepository,
-    private val orderRepository : OrderRepository
+    private val orderRepository : OrderRepository,
+    private val cartUseCase: CartUseCase,
 ) : ViewModel() {
+
+    val cartItems = cartRepository.cartItems
+
+    val userData = userRepository.userData
+
+    var totalPrice by mutableDoubleStateOf(0.0)
+
     val loading : StateFlow<Boolean> = orderRepository.loading
     var bottonState by mutableStateOf(false)
     var phoneNumbertextFieldState by mutableStateOf(false)
     val address1 = "${houseState.text} - ${streetState.text}"
     val address2 = " - ${additionalDirectionsState.text} - ${addressLabelState.text}"
+
+
+    init {
+        viewModelScope.launch (Dispatchers.IO){
+            cartItems.collect { cartList ->
+                updateTotals(cartList)
+            }
+        }
+    }
+
 
     fun bottonstate(){
         if(
@@ -128,6 +150,20 @@ class ConfirmOrderScreenViewModel @Inject constructor(
             }
             onSuccess()
             cleanTextField()
+        }
+    }
+
+    fun clearAllCart(){
+        viewModelScope.launch(Dispatchers.IO) {
+            val userId = userRepository.userData.value.id
+            cartUseCase.clearAllCart(userId)
+        }
+    }
+
+    fun updateTotals(cartItems : List<CartItemsClass?>) {
+        totalPrice = 0.0
+        cartItems.forEach { item ->
+            totalPrice += item?.totalPrice ?: 0.0
         }
     }
 }

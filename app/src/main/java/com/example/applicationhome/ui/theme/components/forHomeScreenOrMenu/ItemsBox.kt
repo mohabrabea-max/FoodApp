@@ -31,23 +31,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
-import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
-import com.example.applicationhome.ui.theme.model.CartViewModel
-import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @Composable
 fun ItemsBox(
     foodMenuIsLoading : Boolean,
     item: FavoriteFoodDatabase,
-    navigationController : NavHostController,
-    itemScreenViewModel: ItemScreenViewModel,
-    cartViewModel: CartViewModel,
+    cardNavigationClickable : () -> Unit = {},
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
     val sizeOptions = item .sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }
@@ -65,11 +59,9 @@ fun ItemsBox(
         Box(
             modifier = Modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
             background(Color.White).
-            aspectRatio(0.65f).
+            aspectRatio(2f). //0.65f
             clickable{
-                itemScreenViewModel.selectItem(item, size)
-                navigationController.navigate(Screens.ItemScreen.screen)
-                cartViewModel.deletenewCount()
+                cardNavigationClickable()
             }.
             padding(start = 20.dp, end = 15.dp, top = 15.dp, bottom = 20.dp)
         ){

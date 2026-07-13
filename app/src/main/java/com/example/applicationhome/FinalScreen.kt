@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -68,7 +69,6 @@ import kotlin.time.Duration.Companion.milliseconds
 fun FinalScreen(
     drawerState : DrawerState,
     itemScreenViewModel: ItemScreenViewModel,
-    cartViewModel : CartViewModel,
     userImageViewModel : UserImageViewModel,
     favoriteViewModel : FavoriteViewModel,
     drawerViewModel: DrawerViewModel,
@@ -105,7 +105,6 @@ fun FinalScreen(
                     navigationController,
                     drawerState,
                     itemScreenViewModel,
-                    cartViewModel,
                     userImageViewModel,
                     favoriteViewModel,
                     drawerViewModel,
@@ -128,12 +127,9 @@ fun FinalScreen(
                 RestaurantScreen(
                     navigationController,
                     itemScreenViewModel,
-                    cartViewModel,
                     favoriteViewModel,
                     restaurantViewModel,
-                    loginViewModel,
-                    viewRestaurantImageViewModel,
-                    homeScreenViewModel
+                    viewRestaurantImageViewModel
                 )
             }
 
@@ -141,10 +137,7 @@ fun FinalScreen(
                 ItemScreen(
                     navigationController,
                     itemScreenViewModel,
-                    cartViewModel,
-                    favoriteViewModel,
-                    loginViewModel,
-                    restaurantViewModel
+                    favoriteViewModel
                 )
             }
 
@@ -153,6 +146,7 @@ fun FinalScreen(
             }
 
             composable(Screens.Cart.screen){
+                val cartViewModel: CartViewModel = hiltViewModel()
                 Cart(
                     navigationController,
                     cartViewModel,
@@ -171,17 +165,14 @@ fun FinalScreen(
             composable(Screens.ConfirmOrderScreen.screen){
                 ConfirmOrderScreen(
                     navigationController,
-                    confirmOrderScreenViewModel,
-                    cartViewModel
+                    confirmOrderScreenViewModel
                 )
             }
 
             composable(Screens.ConfirmOrderScreen2.screen){
                 ConfirmOrderScreen2(
                     navigationController,
-                    confirmOrderScreenViewModel,
-                    cartViewModel,
-                    loginViewModel
+                    confirmOrderScreenViewModel
                 )
             }
 
@@ -192,8 +183,7 @@ fun FinalScreen(
             composable(Screens.OrderScreen.screen){
                 OrderScreen(
                     orderScreenViewModel,
-                    navigationController,
-                    cartViewModel
+                    navigationController
                 )
             }
 

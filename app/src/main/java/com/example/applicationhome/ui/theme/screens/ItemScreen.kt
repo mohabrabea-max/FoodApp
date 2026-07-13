@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.applicationhome.data.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
@@ -51,11 +52,8 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Snaks
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.showAddToCartSnackbar
 import com.example.applicationhome.ui.theme.components.forItemScreen.ItemScreenImage
 import com.example.applicationhome.ui.theme.components.forItemScreen.RatingsAndReviews
-import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
-import com.example.applicationhome.ui.theme.model.LoginViewModel
-import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,13 +61,16 @@ import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 fun ItemScreen(
     navigationController : NavHostController,
     itemScreenViewModel : ItemScreenViewModel,
-    cartViewModel : CartViewModel,
-    favoriteViewModel : FavoriteViewModel,
-    loginViewModel : LoginViewModel,
-    restaurantViewModel : RestaurantViewModel
+    favoriteViewModel : FavoriteViewModel
 ){
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+
+    val userData by itemScreenViewModel.userData.collectAsStateWithLifecycle()
+
+    val cartInformation by itemScreenViewModel.cartInformation.collectAsStateWithLifecycle()
+
+    val newCount = itemScreenViewModel.newCount
 
     val scrollState = rememberLazyListState()
 
@@ -78,7 +79,6 @@ fun ItemScreen(
 
     val price = item?.sizeOptions?.find { it.size == itemScreenViewModel.selectedSize }?.price ?: 0.0
 
-    val cartInformation by cartViewModel.cartInformation.collectAsStateWithLifecycle()
 
     if(item != null){
         Scaffold(
@@ -194,25 +194,51 @@ fun ItemScreen(
                 }
             }
             Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom){
+                val price = item.sizeOptions.find { it.size == size }?.price ?: 0.0
+                val totalPrice = newCount * price
+                val meal = CartItemsClass(
+                    userData.id,
+                    "${item.mealId}_${size}",
+                    item.mealId,
+                    item.name,
+                    item.type,
+                    size,
+                    newCount,
+                    price,
+                    totalPrice,
+                    item.image,
+                    item.restaurantId
+                )
                 BottomBarForItemScreen(
-                    cartViewModel,
                     item,
                     size,
-                    snackbarHostState,
-                    scope,
-                    navigationController,
-                    loginViewModel
+                    newCount,
+                    { itemScreenViewModel.minusnewCount() },
+                    { itemScreenViewModel.plusnewCount() },
+                    {
+                        itemScreenViewModel.updateCount(meal, size, newCount)
+                        if(item.restaurantId == cartInformation?.restaurantId || cartInformation == null){
+                            itemScreenViewModel.deletenewCount()
+                            scope.showAddToCartSnackbar(
+                                snackbarHostState,
+                                {
+                                    navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
+                                }
+
+                            )
+                        }
+                    }
                 )
             }
 
-            if(cartViewModel.errorInCart){
+            if(itemScreenViewModel.errorInCart){
                 AlertDialogMessage(
                     cartInformation?.restaurantName ?: "",
                     "Start",
                     {
-                        cartViewModel.alertDialogFalse()
-                        cartViewModel.clearAndStartNewCart(cartViewModel.newCount)
-                        cartViewModel.deletenewCount()
+                        itemScreenViewModel.alertDialogFalse()
+                        itemScreenViewModel.clearAndStartNewCart(itemScreenViewModel.newCount)
+                        itemScreenViewModel.deletenewCount()
                         scope.showAddToCartSnackbar(
                             snackbarHostState,
                             {
@@ -222,7 +248,7 @@ fun ItemScreen(
                         )
                     },
                     "Cancel",
-                    {cartViewModel.alertDialogFalse()}
+                    {itemScreenViewModel.alertDialogFalse()}
                 )
             }
         }

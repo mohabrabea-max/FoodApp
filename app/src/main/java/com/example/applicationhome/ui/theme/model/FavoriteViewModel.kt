@@ -1,21 +1,23 @@
 package com.example.applicationhome.ui.theme.model
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.data.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
 import com.example.applicationhome.data.data.local.entity.FavoriteRestaurantDatabase
 import com.example.applicationhome.data.data.local.entity.FavoriteSnacksDatabase
-import com.example.applicationhome.data.data.model.FoodItem
-import com.example.applicationhome.data.data.model.Restaurants
-import com.example.applicationhome.data.data.model.Snack
 import com.example.applicationhome.data.data.remote.NetworkObserver
+import com.example.applicationhome.data.data.repository.CartRepository
 import com.example.applicationhome.data.data.repository.FavoriteRepository
 import com.example.applicationhome.data.data.repository.UserRepository
+import com.example.applicationhome.domain.CartUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,11 +32,30 @@ import javax.inject.Inject
 @HiltViewModel
 @OptIn(ExperimentalCoroutinesApi::class)
 class FavoriteViewModel @Inject constructor(
-    userRepository: UserRepository,
+    private val userRepository: UserRepository,
+    cartRepository: CartRepository,
+    private val cartUseCase: CartUseCase,
     private val favoriteRepository : FavoriteRepository,
     private val networkObserver: NetworkObserver
 ) : ViewModel(){
     var isNetworkAvailable by mutableStateOf(false)
+
+
+    val userData = userRepository.userData
+
+    var errorInCart by mutableStateOf(false)
+
+
+    val cartItems = cartRepository.cartItems
+
+
+    var totalPrice by mutableDoubleStateOf(0.0)
+
+    var newCount by mutableStateOf(0)
+
+    var newFoodInCart by mutableStateOf<CartItemsClass?>(null)
+    var newFoodInCartSize by mutableStateOf<String?>(null)
+
 
     var selectedCategorieInFavoriteScreen by mutableIntStateOf(0)
 
@@ -187,13 +208,39 @@ class FavoriteViewModel @Inject constructor(
         }
     }
 
-    suspend fun getRestaurantToView(resId : Int): Restaurants? =
-        favoriteRepository.getRestaurantToView(resId)
+    fun plus(food: CartItemsClass, size : String){
+        viewModelScope.launch(Dispatchers.IO) {
+            val userId = userRepository.userData.value.id
+            val state = cartUseCase.plus(userId, food, size)
+            if(state != null){
+                alertDialogTrue()
+                newFoodInCartSize = state.first
+                newFoodInCart = state.second
+            }
+        }
+    }
 
-    fun getMealToView(mealId : Int): FoodItem? =
-        favoriteRepository.getMealToView("Meal_${mealId}")
+    fun minus(food: CartItemsClass, size : String){
+        viewModelScope.launch(Dispatchers.IO) {
+            val userId = userRepository.userData.value.id
+            cartUseCase.minus(userId, food, size)
+        }
+    }
 
-    fun getSnackToView(snackId : Int): Snack? =
-        favoriteRepository.getSnackToView("Snack_${snackId}")
+    fun delete(foodId: Int, size : String){
+        viewModelScope.launch {
+            val userId = userRepository.userData.value.id
+            cartUseCase.delete(userId, foodId, size)
+        }
+    }
 
+    fun quantity(snackKey : String) = cartItems.value.find { it?.mealKey == snackKey }?.quantity ?: 0
+
+    fun deletenewCount(){
+        newCount = 0
+    }
+
+    fun alertDialogTrue(){
+        errorInCart = true
+    }
 }
