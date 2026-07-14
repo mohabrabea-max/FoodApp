@@ -1,5 +1,6 @@
 package com.example.applicationhome.ui.theme.model
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -11,9 +12,11 @@ import com.example.applicationhome.data.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
 import com.example.applicationhome.data.data.local.entity.FavoriteRestaurantDatabase
 import com.example.applicationhome.data.data.local.entity.FavoriteSnacksDatabase
+import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.data.data.remote.NetworkObserver
 import com.example.applicationhome.data.data.repository.CartRepository
 import com.example.applicationhome.data.data.repository.FavoriteRepository
+import com.example.applicationhome.data.data.repository.ItemScreenRepository
 import com.example.applicationhome.data.data.repository.UserRepository
 import com.example.applicationhome.domain.CartUseCase
 import com.example.applicationhome.domain.GetFavoriteUseCase
@@ -30,6 +33,7 @@ class FavoriteViewModel @Inject constructor(
     cartRepository : CartRepository,
     private val userRepository : UserRepository,
     private val favoriteRepository : FavoriteRepository,
+    private val itemScreenRepository : ItemScreenRepository,
     private val cartUseCase : CartUseCase,
     private val getFavoriteUseCase : GetFavoriteUseCase,
     private val networkObserver : NetworkObserver
@@ -124,6 +128,16 @@ class FavoriteViewModel @Inject constructor(
         selectedCategorieInFavoriteScreen = index
     }
 
+    var typeInRestaurantScreen by mutableStateOf("")
+    var selectedTypeIndex by mutableStateOf(0)
+    fun selectedTypeInFavoriteScreen(index : Int, restaurantId : Int){
+        viewModelScope.launch {
+            val restaurant = favoriteRepository.getRestaurantToView(restaurantId)
+            selectedTypeIndex = index
+            typeInRestaurantScreen = restaurant?.typ?.toList()?.first() ?: ""
+        }
+    }
+
 
 //       *** ---------------------------- \\***  Cart  ***// ---------------------------- ***
 
@@ -176,5 +190,31 @@ class FavoriteViewModel @Inject constructor(
 
     fun alertDialogTrue(){
         errorInCart = true
+    }
+
+
+    //       *** ---------------------------- \\***  Item Screen  ***// ---------------------------- ***
+
+    fun selectItem(item: FavoriteFoodDatabase, size : String) {
+        itemScreenRepository.selectMeal(item, size)
+    }
+
+    fun selectSnack(item: FavoriteSnacksDatabase, size : String){
+        itemScreenRepository.selectSnack(item, size)
+    }
+
+    fun selectRestaurant(item : Restaurants){
+        viewModelScope.launch {
+            try {
+                val newData = favoriteRepository.getRestaurantToView(item.id)
+                if(newData != null) itemScreenRepository.selectRestaurant(newData)
+            }catch (e : Exception){
+                Log.e("SelectRestaurant", "Error fetching fresh data", e)
+            }
+        }
+    }
+
+    fun selectedtype(index : Int, type : String){
+        itemScreenRepository.selectedTypeInRestaurant(index, type)
     }
 }

@@ -72,170 +72,151 @@ fun ItemScreen(
 
     val scrollState = rememberLazyListState()
 
-    val item = itemScreenViewModel.selectedItem
-    val size = itemScreenViewModel.selectedSize
+    val item by itemScreenViewModel.selectedMeal.collectAsStateWithLifecycle()
+    val size by itemScreenViewModel.mealSize.collectAsStateWithLifecycle()
 
-    val price = item?.sizeOptions?.find { it.size == itemScreenViewModel.selectedSize }?.price ?: 0.0
+    val price = item.sizeOptions.find { it.size == size }?.price ?: 0.0
 
 
-    if(item != null){
-        Scaffold(
-            modifier = Modifier.navigationBarsPadding().fillMaxSize(),
-            snackbarHost = {
-                SnackbarHost(hostState = snackbarHostState){ data ->
-                    Snackbar(
-                        containerColor = Color.DeepMatteBlack,
-                        actionColor = Color.DarkOrange,
-                        snackbarData = data,
-                        shape = RoundedCornerShape(15.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.height(160.dp))
-            },
-            topBar = {
-                ItemScreenTopBar(navigationController, scrollState, item, itemScreenViewModel)
+    Scaffold(
+        modifier = Modifier.navigationBarsPadding().fillMaxSize(),
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState){ data ->
+                Snackbar(
+                    containerColor = Color.DeepMatteBlack,
+                    actionColor = Color.DarkOrange,
+                    snackbarData = data,
+                    shape = RoundedCornerShape(15.dp)
+                )
             }
-        ){
-            Box(modifier = Modifier.background(Color.VeryLightGray).padding(10.dp)){
-                LazyColumn(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    state = scrollState,
-                    modifier = Modifier.fillMaxSize()
-                ){
-                    item{
-                        Column{
-                            Spacer(modifier = Modifier.height(50.dp))
-                            ItemScreenImage(scrollState, item.image)
-                        }
+            Spacer(modifier = Modifier.height(160.dp))
+        },
+        topBar = {
+            ItemScreenTopBar(navigationController, scrollState, item, itemScreenViewModel)
+        }
+    ){
+        Box(modifier = Modifier.background(Color.VeryLightGray).padding(10.dp)){
+            LazyColumn(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                state = scrollState,
+                modifier = Modifier.fillMaxSize()
+            ){
+                item{
+                    Column{
+                        Spacer(modifier = Modifier.height(50.dp))
+                        ItemScreenImage(scrollState, item.image)
                     }
-                    item {
-                        //Spacer(modifier = Modifier.height(20.dp))
-                        Column(
-                            modifier = Modifier.fillMaxWidth().
-                            clip(RoundedCornerShape(20.dp)).
-                            background(Color.White).
-                            padding(15.dp)
-                        ){
-                            Text(
-                                text = item.name,
-                                fontSize = 20.sp,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = Color.BrownForFont,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                            Text(
-                                text = item.details,
-                                color = Color.MediumBrownForTitle
-                            )
-
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                            Text(
-                                text = "$price L.E",
-                                fontSize = 30.sp,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = Color.BrownForFont,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(start = 15.dp, bottom = 15.dp)
-                            )
-                        }
+                }
+                item {
+                    //Spacer(modifier = Modifier.height(20.dp))
+                    Column(
+                        modifier = Modifier.fillMaxWidth().
+                        clip(RoundedCornerShape(20.dp)).
+                        background(Color.White).
+                        padding(15.dp)
+                    ){
+                        Text(
+                            text = item.name,
+                            fontSize = 20.sp,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Color.BrownForFont,
+                            fontWeight = FontWeight.Bold
+                        )
 
                         Spacer(modifier = Modifier.height(10.dp))
-                        Box(
-                            modifier = Modifier.fillMaxWidth().
-                            clip(RoundedCornerShape(20.dp)).
-                            background(Color.White)
-                        ){
-                            Column{
-                                Spacer(modifier = Modifier.height(15.dp))
-                                Text(
-                                    text = "Meal snacks",
-                                    fontSize = 16.sp,
-                                    color = Color.Black,
-                                    style = MaterialTheme.typography.labelLarge,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(start = 15.dp)
-                                )
-                                Spacer(modifier = Modifier.height(5.dp))
-                                LazyRow {
-                                    item{Spacer(modifier = Modifier.width(7.dp))}
-                                        item{
-                                            val selectedDetail = item.sizeOptions.find { it.size == size }
-                                            selectedDetail?.snack?.forEach { (snakeId, value) ->
-                                                SnaksBoxForItemScreen(
-                                                    modifier = Modifier.size(170.dp),
-                                                    value
-                                                )
-                                            }
+
+                        Text(
+                            text = item.details,
+                            color = Color.MediumBrownForTitle
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(
+                            text = "$price L.E",
+                            fontSize = 30.sp,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Color.BrownForFont,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(start = 15.dp, bottom = 15.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Box(
+                        modifier = Modifier.fillMaxWidth().
+                        clip(RoundedCornerShape(20.dp)).
+                        background(Color.White)
+                    ){
+                        Column{
+                            Spacer(modifier = Modifier.height(15.dp))
+                            Text(
+                                text = "Meal snacks",
+                                fontSize = 16.sp,
+                                color = Color.Black,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(start = 15.dp)
+                            )
+                            Spacer(modifier = Modifier.height(5.dp))
+                            LazyRow {
+                                item{Spacer(modifier = Modifier.width(7.dp))}
+                                    item{
+                                        val selectedDetail = item.sizeOptions.find { it.size == size }
+                                        selectedDetail?.snack?.forEach { (snakeId, value) ->
+                                            SnaksBoxForItemScreen(
+                                                modifier = Modifier.size(170.dp),
+                                                value
+                                            )
                                         }
-                                    item{Spacer(modifier = Modifier.width(7.dp))}
-                                }
+                                    }
+                                item{Spacer(modifier = Modifier.width(7.dp))}
                             }
                         }
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Box(
-                            modifier = Modifier.fillMaxWidth().
-                            clip(RoundedCornerShape(20.dp)).
-                            background(Color.White).
-                            padding(10.dp)
-                        ){
-                            ItemSize(itemScreenViewModel)
-                        }
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        RatingsAndReviews(navigationController, item.review)
                     }
-                    item{Spacer(modifier = Modifier.height(150.dp))}
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Box(
+                        modifier = Modifier.fillMaxWidth().
+                        clip(RoundedCornerShape(20.dp)).
+                        background(Color.White).
+                        padding(10.dp)
+                    ){
+                        ItemSize(item, size){ selectedSize ->
+                            itemScreenViewModel.selectItem(item, selectedSize)
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    RatingsAndReviews(navigationController, item.review)
                 }
+                item{Spacer(modifier = Modifier.height(150.dp))}
             }
-            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom){
-                val price = item.sizeOptions.find { it.size == size }?.price ?: 0.0
-                val totalPrice = newCount * price
-                val meal = CartItemsClass(
-                    userData.id,
-                    "${item.mealId}_${size}",
-                    item.mealId,
-                    item.name,
-                    item.type,
-                    size,
-                    newCount,
-                    price,
-                    totalPrice,
-                    item.image,
-                    item.restaurantId
-                )
-                BottomBarForItemScreen(
-                    item,
-                    size,
-                    newCount,
-                    { itemScreenViewModel.minusnewCount() },
-                    { itemScreenViewModel.plusnewCount() },
-                    {
-                        itemScreenViewModel.updateCount(meal, size, newCount)
-                        if(item.restaurantId == cartInformation?.restaurantId || cartInformation == null){
-                            itemScreenViewModel.deletenewCount()
-                            scope.showAddToCartSnackbar(
-                                snackbarHostState,
-                                {
-                                    navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
-                                }
-
-                            )
-                        }
-                    }
-                )
-            }
-
-            if(itemScreenViewModel.errorInCart){
-                AlertDialogMessage(
-                    cartInformation?.restaurantName ?: "",
-                    "Start",
-                    {
-                        itemScreenViewModel.alertDialogFalse()
-                        itemScreenViewModel.clearAndStartNewCart(itemScreenViewModel.newCount)
+        }
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom){
+            val price = item.sizeOptions.find { it.size == size }?.price ?: 0.0
+            val totalPrice = newCount * price
+            val meal = CartItemsClass(
+                userData.id,
+                "${item.mealId}_${size}",
+                item.mealId,
+                item.name,
+                item.type,
+                size,
+                newCount,
+                price,
+                totalPrice,
+                item.image,
+                item.restaurantId
+            )
+            BottomBarForItemScreen(
+                item,
+                size,
+                newCount,
+                { itemScreenViewModel.minusnewCount() },
+                { itemScreenViewModel.plusnewCount() },
+                {
+                    itemScreenViewModel.updateCount(meal, size, newCount)
+                    if(item.restaurantId == cartInformation?.restaurantId || cartInformation == null){
                         itemScreenViewModel.deletenewCount()
                         scope.showAddToCartSnackbar(
                             snackbarHostState,
@@ -244,11 +225,30 @@ fun ItemScreen(
                             }
 
                         )
-                    },
-                    "Cancel",
-                    {itemScreenViewModel.alertDialogFalse()}
-                )
-            }
+                    }
+                }
+            )
+        }
+
+        if(itemScreenViewModel.errorInCart){
+            AlertDialogMessage(
+                cartInformation?.restaurantName ?: "",
+                "Start",
+                {
+                    itemScreenViewModel.alertDialogFalse()
+                    itemScreenViewModel.clearAndStartNewCart(itemScreenViewModel.newCount)
+                    itemScreenViewModel.deletenewCount()
+                    scope.showAddToCartSnackbar(
+                        snackbarHostState,
+                        {
+                            navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
+                        }
+
+                    )
+                },
+                "Cancel",
+                {itemScreenViewModel.alertDialogFalse()}
+            )
         }
     }
 }

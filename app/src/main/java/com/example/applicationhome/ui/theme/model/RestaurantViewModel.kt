@@ -1,11 +1,11 @@
 package com.example.applicationhome.ui.theme.model
 
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.data.local.entity.CartItemsClass
@@ -20,14 +20,19 @@ import com.example.applicationhome.data.data.remote.NetworkObserver
 import com.example.applicationhome.data.data.repository.CartRepository
 import com.example.applicationhome.data.data.repository.FavoriteRepository
 import com.example.applicationhome.data.data.repository.HomeScreenRepository
+import com.example.applicationhome.data.data.repository.ItemScreenRepository
 import com.example.applicationhome.data.data.repository.RestaurantScreenRepository
 import com.example.applicationhome.data.data.repository.UserRepository
 import com.example.applicationhome.domain.CartUseCase
 import com.example.applicationhome.domain.GetFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,6 +44,7 @@ class RestaurantViewModel @Inject constructor(
     private val restaurantScreenRepository : RestaurantScreenRepository,
     private val favoriteRepository: FavoriteRepository,
     private val userRepository: UserRepository,
+    private val itemScreenRepository : ItemScreenRepository,
     private val cartUseCase : CartUseCase,
     private val getFavoriteUseCase : GetFavoriteUseCase
 ): ViewModel(){
@@ -50,81 +56,114 @@ class RestaurantViewModel @Inject constructor(
 
 //    *** ---------------------------- \\***  Restaurant Items  ***// ---------------------------- ***
 
+    val resid = itemScreenRepository.resId
 
-    var resid by mutableStateOf(0)
-    var selectedTypeIndex by mutableStateOf(0)
-    var typeInRestaurantScreen by mutableStateOf("")
+    val selectedTypeIndex = itemScreenRepository.selectedTypeIndex
+    val typeInRestaurantScreen = itemScreenRepository.typeInRestaurantScreen
 
     val restaurantCount = homeScreenRepository.restaurantCount
 
 
     private val _foodMenuMap = mutableStateMapOf<String, FoodItem>()
-    val foodMenuList = derivedStateOf {
-        _foodMenuMap.filter { it.value.restaurantId == resid && it.value.category == typeInRestaurantScreen }.values.toList()
-    }
+
+    val foodMenuList : StateFlow<List<FoodItem>> = combine(
+        snapshotFlow{ _foodMenuMap.toMap() },
+        resid,
+        typeInRestaurantScreen
+    ){ menuMap, resId, type ->
+        menuMap.filter {
+            it.value.restaurantId == resId
+                    && it.value.category == type
+        }.values.toList()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
     val foodMenuListIsLoading : StateFlow<Boolean> = restaurantScreenRepository.foodMenuListIsLoading
 
 
     private val _snackMenuMap = mutableStateMapOf<String, Snack>()
-    val snackMenuList = derivedStateOf {
-        _snackMenuMap.filter { it.value.restaurantId == resid }.values.toList()
-    }
+
+    val snackMenuList = combine(
+        snapshotFlow { _snackMenuMap.toMap() },
+        resid
+    ) { menuMap, resId ->
+        menuMap.filter { it.value.restaurantId == resId }.values.toList()
+    }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+    )
+
     val snacksIsLoading : StateFlow<Boolean> = restaurantScreenRepository.snacksIsLoading
 
 
     private val _drinkMenuMap = mutableStateMapOf<String, Drink>()
-    val drinkMenuList = derivedStateOf {
-        _drinkMenuMap.filter { it.value.restaurantId == resid }.values
-    }
+
+    val drinkMenuList = combine(
+        snapshotFlow { _drinkMenuMap.toMap() },
+        resid
+    ){ menuMap, resId ->
+        menuMap.filter { it.value.restaurantId == resId }.values
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
     val drinkMenuIsLoading : StateFlow<Boolean> = restaurantScreenRepository.drinkMenuIsLoading
 
 
-    val _restaurantOffersMenuList = mutableStateMapOf<String, Offers>()
-    val restaurantOffersMenuList = derivedStateOf {
-        _restaurantOffersMenuList.filter { it.value.restaurantId == resid }.values.toList()
-    }
+    val _restaurantOffersMenuMap = mutableStateMapOf<String, Offers>()
+
+    val restaurantOffersMenuList = combine(
+        snapshotFlow { _restaurantOffersMenuMap.toMap() },
+        resid
+    ){ menuMap, resId ->
+        menuMap.filter { it.value.restaurantId == resId }.values.toList()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
     val restaurantOffersLoading : StateFlow<Boolean> = restaurantScreenRepository.restaurantOffersLoading
 
 
 
-    fun loadRestaurantId(resId : Int){
-        resid = resId
-    }
-
-    fun deleteRestaurantId(resId : Int){
-        resid = 0
-    }
-
     fun restaurantData(){
-        val restaurantscount = restaurantCount[resid]
+        val restaurantscount = restaurantCount[resid.value]
         if(restaurantscount != null){
             viewModelScope.launch {
-                if(foodMenuList.value.size < restaurantscount.meals){
-                    val foodMenu = restaurantScreenRepository.uploadFoodMenuFromApi(resid)
-                    _foodMenuMap += foodMenu
+                val foodMenu = async {
+                    if(foodMenuList.value.size < restaurantscount.meals){
+                      restaurantScreenRepository.uploadFoodMenuFromApi(resid.value)
+                    } else { emptyMap() }
                 }
-                if(snackMenuList.value.size < restaurantscount.snacks){
-                    val snackMenu = restaurantScreenRepository.uploadSnacksMenuFromApi(resid)
-                    _snackMenuMap += snackMenu
+
+                val snackMenu = async {
+                    if(snackMenuList.value.size < restaurantscount.snacks){
+                        restaurantScreenRepository.uploadSnacksMenuFromApi(resid.value)
+                    } else { emptyMap() }
                 }
-                if(restaurantOffersMenuList.value.size < restaurantscount.offers){
-                    _restaurantOffersMenuList += restaurantScreenRepository.uploadRestaurantOffersFromApi(resid)
+
+                val offersMenu = async {
+                    if(restaurantOffersMenuList.value.size < restaurantscount.offers){
+                        restaurantScreenRepository.uploadRestaurantOffersFromApi(resid.value)
+                    } else { emptyMap() }
                 }
+
+                _foodMenuMap += foodMenu.await()
+                _snackMenuMap += snackMenu.await()
+                _restaurantOffersMenuMap += offersMenu.await()
             }
         }
     }
 
-    fun selectedTypeInFavoriteScreen(index : Int, restaurantId : Int){
-        viewModelScope.launch {
-            val restaurant = favoriteRepository.getRestaurantToView(restaurantId)
-            selectedTypeIndex = index
-            typeInRestaurantScreen = restaurant?.typ?.toList()?.first() ?: ""
-        }
-    }
-
     fun selectedtype(index : Int, type : String){
-        selectedTypeIndex = index
-        typeInRestaurantScreen = type
+        itemScreenRepository.selectedTypeInRestaurant(index, type)
     }
 
 
@@ -153,7 +192,7 @@ class RestaurantViewModel @Inject constructor(
                 isNetworkAvailable = available
             }
         }
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch{
             cartItems.collect { cartList ->
                 updateTotals(cartList)
             }
@@ -270,5 +309,18 @@ class RestaurantViewModel @Inject constructor(
     }
     fun isRestaurantInFavorite(resId : Int): Flow<Boolean> {
         return getFavoriteUseCase.isRestaurantInFavorite(resId)
+    }
+
+
+    //       *** ---------------------------- \\***  Item Screen  ***// ---------------------------- ***
+
+    val selectedRestaurant = itemScreenRepository.selectedRestaurant
+
+
+    fun selectMeal(item: FavoriteFoodDatabase, size : String) {
+        itemScreenRepository.selectMeal(item, size)
+    }
+    fun selectSnack(item: FavoriteSnacksDatabase, size : String){
+        itemScreenRepository.selectSnack(item, size)
     }
 }

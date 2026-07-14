@@ -28,7 +28,6 @@ import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
-import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 
 
 @Composable
@@ -56,27 +55,31 @@ fun CategoriesBar(homeScreenViewModel: HomeScreenViewModel){
 
 
 @Composable
-fun CategoriesBarForRestaurantsScreen(typ : List<String>, restaurantViewModel : RestaurantViewModel){
+fun CategoriesBarForRestaurantsScreen(
+    typ : List<String>,
+    selectedTypeIndex : Int = 0,
+    selectedType : (Int, String) -> Unit
+){
     ScrollableTabRow(
         modifier = Modifier.fillMaxWidth().
         height(50.dp),
-        selectedTabIndex = restaurantViewModel.selectedTypeIndex,
+        selectedTabIndex = selectedTypeIndex,
         containerColor = Color.White,
         contentColor = Color.Black,
         indicator = { tabPositions ->
-            if (restaurantViewModel.selectedTypeIndex < tabPositions.size) {
+            if (selectedTypeIndex < tabPositions.size) {
                 TabRowDefaults.SecondaryIndicator(
-                    modifier = Modifier.tabIndicatorOffset(tabPositions[restaurantViewModel.selectedTypeIndex]),
+                    modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTypeIndex]),
                     color = Color.DarkOrange
                 )
             }
         }
     ){
         typ.forEachIndexed { index, typ ->
-            val isSelected = restaurantViewModel.selectedTypeIndex == index
+            val isSelected = selectedTypeIndex == index
             Tab(
                 selected = isSelected,
-                onClick = { restaurantViewModel.selectedtype(index, typ) },
+                onClick = { selectedType(index, typ) },
                 text = {
                     Text(
                         text = typ,

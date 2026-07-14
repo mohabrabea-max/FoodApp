@@ -35,13 +35,15 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 
 @Composable
-fun RestaurantHeader(item : Restaurants, viewRestaurantImageViewModel: ViewRestaurantImageViewModel){
-    val background = item.image2
-    val type = item.typ.toList()
-    val logo = item.image
+fun RestaurantHeader(
+    item : Restaurants?,
+    view: () -> Unit
+){
+    val background = item?.image2 ?:""
+    val type = item?.typ?.toList()
+    val logo = item?.image ?: ""
 
     Box(
         modifier = Modifier.fillMaxWidth().height(270.dp),
@@ -56,7 +58,7 @@ fun RestaurantHeader(item : Restaurants, viewRestaurantImageViewModel: ViewResta
             contentDescription = null,
             modifier = Modifier.fillMaxWidth().
             height(230.dp).
-            clickable { viewRestaurantImageViewModel.view(item.image) },
+            clickable { view() },
             contentScale = ContentScale.Crop
         )
         Box(
@@ -90,7 +92,7 @@ fun RestaurantHeader(item : Restaurants, viewRestaurantImageViewModel: ViewResta
                         modifier = Modifier.padding(start = 13.dp)
                     ){
                         Text(
-                            text = item.name,
+                            text = item?.name ?: "",
                             fontSize = 18.sp,
                             color = Color.Black,
                             style = MaterialTheme.typography.labelLarge,
@@ -98,7 +100,7 @@ fun RestaurantHeader(item : Restaurants, viewRestaurantImageViewModel: ViewResta
                             modifier = Modifier.padding(bottom = 5.dp)
                         )
                         Text(
-                            text = type.joinToString(separator = " ", prefix = "", postfix = "")?: "",
+                            text = type?.joinToString(separator = " ", prefix = "", postfix = "") ?: "",
                             fontSize = 10.sp,
                             color = Color.Gray,
                             modifier = Modifier.padding(bottom = 10.dp)
@@ -118,7 +120,7 @@ fun RestaurantHeader(item : Restaurants, viewRestaurantImageViewModel: ViewResta
                                 modifier = Modifier.size(18.dp)
                             )
                             Text(
-                                text = item.review.toString(),
+                                text = "${item?.review ?: 0.0}",
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 style = MaterialTheme.typography.labelLarge,

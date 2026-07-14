@@ -24,8 +24,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,37 +34,24 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.data.local.entity.FavoriteRestaurantDatabase
 import com.example.applicationhome.data.data.model.Restaurants
-import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
-import com.example.applicationhome.ui.theme.model.RestaurantViewModel
-import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 
 @Composable
 fun RestaurantsBox(
     loading : Boolean,
     item : FavoriteRestaurantDatabase,
-    itemScreenViewModel: ItemScreenViewModel,
-    navigationController : NavHostController,
-    restaurantViewModel: RestaurantViewModel,
-    viewRestaurantImageViewModel : ViewRestaurantImageViewModel
+    isRestaurantInFavorite : Boolean,
+    view : () -> Unit,
+    clickable : () -> Unit,
+    addRestaurantsFavorite : () -> Unit,
+    removeRestaurantsFavorite : () -> Unit
 ){
-    val isRestaurantInFavorite by restaurantViewModel.isRestaurantInFavorite(item.restaurantId).collectAsState(initial = false)
-
-    val resScreen = Restaurants(
-        item.restaurantId,
-        listOf(""),
-        item.name,
-        item.image,
-        item.image2
-    )
     if (loading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -83,12 +68,7 @@ fun RestaurantsBox(
         ){
             Box(
                 modifier = Modifier.clickable {
-                    itemScreenViewModel.selectRestaurant(resScreen)
-                    restaurantViewModel.loadRestaurantId(item.restaurantId)
-                    restaurantViewModel.selectedTypeInFavoriteScreen(0, item.restaurantId)
-                    navigationController.navigate(Screens.RestaurantScreen.screen)
-
-                    //coroutineScope.showNetworkSnackBar(snackBarHostState)
+                    clickable()
                 }
             ){
                 Box(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray)){
@@ -107,8 +87,8 @@ fun RestaurantsBox(
                     Row(modifier = Modifier.fillMaxWidth().background(Color.Black.copy(alpha = 0f)).padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween){
                         FavoriteRestaurant(
                             isRestaurantInFavorite,
-                            { restaurantViewModel.addRestaurantsFavorite(item) },
-                            { restaurantViewModel.removeRestaurantsFavorite(item.restaurantId) },
+                            { addRestaurantsFavorite() },
+                            { removeRestaurantsFavorite() },
                             modifier = Modifier.
                             clip(CircleShape).
                             border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
@@ -144,7 +124,7 @@ fun RestaurantsBox(
                         modifier = Modifier.size(50.dp).
                         clip(CircleShape).
                         background(Color.White).
-                        clickable { viewRestaurantImageViewModel.view(item.image) }.
+                        clickable { view() }.
                         shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(40.dp)).
                         border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(40.dp))
                     ){
@@ -171,22 +151,12 @@ fun RestaurantsBox(
 fun RestaurantsBoxHomeScreen(
     loading : Boolean,
     item : Restaurants,
-    itemScreenViewModel: ItemScreenViewModel,
-    navigationController : NavHostController,
-    restaurantViewModel: RestaurantViewModel,
-    viewRestaurantImageViewModel: ViewRestaurantImageViewModel
+    isRestaurantInFavorite : Boolean,
+    view : () -> Unit,
+    clickable : () -> Unit,
+    addRestaurantsFavorite : () -> Unit,
+    removeRestaurantsFavorite : () -> Unit
 ){
-    val isRestaurantInFavorite by restaurantViewModel.isRestaurantInFavorite(item.id).collectAsState(initial = false)
-
-    val favoriteRestaurantDatabase = FavoriteRestaurantDatabase(
-        "",
-        item.id,
-        item.name,
-        item.image,
-        item.image2,
-        false,
-        false
-    )
     if (loading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -202,10 +172,7 @@ fun RestaurantsBoxHomeScreen(
             clip(RoundedCornerShape(30.dp)).
             background(Color.White).
             clickable {
-                restaurantViewModel.loadRestaurantId(item.id)
-                restaurantViewModel.selectedtype(0, item.typ.toList().first())
-                itemScreenViewModel.selectRestaurant(item)
-                navigationController.navigate(Screens.RestaurantScreen.screen)
+                clickable()
             },
             verticalAlignment = Alignment.CenterVertically
         ){
@@ -237,8 +204,8 @@ fun RestaurantsBoxHomeScreen(
                     ){
                         FavoriteRestaurant(
                             isRestaurantInFavorite,
-                            { restaurantViewModel.addRestaurantsFavorite(favoriteRestaurantDatabase) },
-                            { restaurantViewModel.removeRestaurantsFavorite(item.id) },
+                            { addRestaurantsFavorite() },
+                            { removeRestaurantsFavorite() },
                             modifier = Modifier.
                             clip(CircleShape).
                             size(35.dp).
@@ -265,7 +232,7 @@ fun RestaurantsBoxHomeScreen(
                             modifier = Modifier.size(55.dp).
                             clip(CircleShape).
                             background(Color.White).
-                            clickable { viewRestaurantImageViewModel.view(item.image) }.
+                            clickable { view() }.
                             shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(40.dp)).
                             border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(40.dp))
                         ){

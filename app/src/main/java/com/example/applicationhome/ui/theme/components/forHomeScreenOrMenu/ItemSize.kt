@@ -22,16 +22,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.Orange
-import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @Composable
-fun ItemSize(itemScreenViewModel: ItemScreenViewModel){
-    val item = itemScreenViewModel.selectedItem
-    val size = itemScreenViewModel.selectedSize
-    val price = item?.sizeOptions
+fun ItemSize(
+    item : FavoriteFoodDatabase,
+    size : String,
+    selectMeal : (String) -> Unit
+){
+    val mealSizeDetail = item.sizeOptions
     Box(
         modifier = Modifier.
         animateContentSize().
@@ -44,26 +46,25 @@ fun ItemSize(itemScreenViewModel: ItemScreenViewModel){
         contentAlignment = Alignment.Center
     ){
         Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-            if(price != null){
-                price.forEach{ (size2) ->
-                    Box(
-                        modifier = Modifier.weight(1f).
-                        fillMaxHeight().
-                        clickable{
-                            itemScreenViewModel.selectItem(item, size2)
+            mealSizeDetail.forEach{ (size2) ->
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .clickable{
+                            selectMeal(size2)
                         },
-                        contentAlignment = Alignment.Center
-                    ){
-                        val isSelected = (size == size2)
-                        val color = if(isSelected) Color.Orange else Color.White
-                        val fontColor = if(isSelected) Color.Black else Color.DarkOrange
+                    contentAlignment = Alignment.Center
+                ){
+                    val isSelected = (size == size2)
+                    val color = if(isSelected) Color.Orange else Color.White
+                    val fontColor = if(isSelected) Color.Black else Color.DarkOrange
 
-                        Box(modifier = Modifier.fillMaxSize().background(color), contentAlignment = Alignment.Center){
-                            Text(text = size2, color = fontColor)
-                        }
+                    Box(modifier = Modifier.fillMaxSize().background(color), contentAlignment = Alignment.Center){
+                        Text(text = size2, color = fontColor)
                     }
-                    VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(30.dp))
                 }
+                VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(30.dp))
             }
         }
     }

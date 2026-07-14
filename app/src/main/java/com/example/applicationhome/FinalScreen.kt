@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
@@ -37,7 +36,6 @@ import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.showNetworkSnackBar
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
-import com.example.applicationhome.ui.theme.model.DrawerViewModel
 import com.example.applicationhome.ui.theme.model.FinalScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
@@ -45,7 +43,6 @@ import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import com.example.applicationhome.ui.theme.model.SignUpViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
-import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 import com.example.applicationhome.ui.theme.screens.Cart
 import com.example.applicationhome.ui.theme.screens.ConfirmOrderScreen
 import com.example.applicationhome.ui.theme.screens.ConfirmOrderScreen2
@@ -66,16 +63,10 @@ import kotlin.time.Duration.Companion.milliseconds
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinalScreen(
-    drawerState : DrawerState,
-    itemScreenViewModel: ItemScreenViewModel,
     userImageViewModel : UserImageViewModel,
-    drawerViewModel: DrawerViewModel,
     loginViewModel: LoginViewModel,
-    restaurantViewModel: RestaurantViewModel,
     confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
-    orderScreenViewModel : OrderScreenViewModel,
-    viewRestaurantImageViewModel: ViewRestaurantImageViewModel,
-    signUpViewModel : SignUpViewModel
+    orderScreenViewModel : OrderScreenViewModel
 ){
     val finalScreenViewModel : FinalScreenViewModel = hiltViewModel()
 
@@ -103,13 +94,8 @@ fun FinalScreen(
             composable(Screens.DashboardScreen.screen){
                 DashboardScreen(
                     navigationController,
-                    drawerState,
-                    itemScreenViewModel,
                     userImageViewModel,
-                    drawerViewModel,
-                    loginViewModel,
-                    restaurantViewModel,
-                    viewRestaurantImageViewModel
+                    loginViewModel
                 )
             }
 
@@ -122,15 +108,15 @@ fun FinalScreen(
             }
 
             composable(Screens.RestaurantScreen.screen){
+                val restaurantViewModel: RestaurantViewModel = hiltViewModel()
                 RestaurantScreen(
                     navigationController,
-                    itemScreenViewModel,
-                    restaurantViewModel,
-                    viewRestaurantImageViewModel
+                    restaurantViewModel
                 )
             }
 
             composable(Screens.ItemScreen.screen){
+                val itemScreenViewModel: ItemScreenViewModel = hiltViewModel()
                 ItemScreen(
                     navigationController,
                     itemScreenViewModel
@@ -155,6 +141,7 @@ fun FinalScreen(
             }
 
             composable(Screens.SignUpScreen.screen){
+                val signUpViewModel : SignUpViewModel = hiltViewModel()
                 SignUpScreen(navigationController, signUpViewModel)
             }
 

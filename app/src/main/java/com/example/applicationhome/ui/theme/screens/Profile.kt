@@ -28,12 +28,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.profileAndSetting.ProfileBox
 import com.example.applicationhome.ui.theme.model.BirthdayViewModel
+import com.example.applicationhome.ui.theme.model.DashboardScreenViewModel
 import com.example.applicationhome.ui.theme.model.ProfileViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 
@@ -45,6 +47,7 @@ import com.example.applicationhome.ui.theme.model.UserImageViewModel
 fun Profile(
     navigationController : NavHostController,
     userImageViewModel: UserImageViewModel,
+    dashboardScreenViewModel : DashboardScreenViewModel = hiltViewModel(),
     profileViewModel: ProfileViewModel = viewModel(),
     birthdayViewModel: BirthdayViewModel = viewModel()
 ){
@@ -87,7 +90,7 @@ fun Profile(
     ){
         LazyColumn(modifier = Modifier.statusBarsPadding()){
             item {
-                ProfileBox(userImageViewModel, profileViewModel, birthdayViewModel)
+                ProfileBox(userImageViewModel, profileViewModel, birthdayViewModel, dashboardScreenViewModel)
             }
             item { Spacer(modifier = Modifier.height(pading)) }
         }

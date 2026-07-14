@@ -65,29 +65,30 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Resta
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantHeader
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
-import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
-import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun RestaurantScreen(
     navigationController : NavHostController,
-    itemScreenViewModel: ItemScreenViewModel,
-    restaurantViewModel : RestaurantViewModel,
-    viewRestaurantImageViewModel: ViewRestaurantImageViewModel
+    restaurantViewModel : RestaurantViewModel
 ){
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     var activeId by remember { mutableStateOf(0) }
 
-    LaunchedEffect(key1 = restaurantViewModel.resid) {
-        if (restaurantViewModel.resid != 0) {
+    val resid by restaurantViewModel.resid.collectAsStateWithLifecycle()
+
+
+    LaunchedEffect(key1 = resid) {
+        if (restaurantViewModel.resid.value != 0) {
             restaurantViewModel.restaurantData()
+            restaurantViewModel.selectedtype(0, restaurantViewModel.selectedRestaurant.value?.typ?.first() ?: "")
         }
     }
+
     val scrollState = rememberLazyListState()
 
     val searchSize by remember {
@@ -106,14 +107,17 @@ fun RestaurantScreen(
         }
     }
 
+    var viewImageState by remember { mutableStateOf(false) }
+    var imageToView by remember { mutableStateOf("") }
+
     val networkState = restaurantViewModel.isNetworkAvailable
 
     val userData by restaurantViewModel.userData.collectAsStateWithLifecycle()
 
-    val menu by restaurantViewModel.foodMenuList
-    val snacks by restaurantViewModel.snackMenuList
-    val offers by restaurantViewModel.restaurantOffersMenuList
-    val item = itemScreenViewModel.selectedRestaurant
+    val menu by restaurantViewModel.foodMenuList.collectAsStateWithLifecycle()
+    val snacks by restaurantViewModel.snackMenuList.collectAsState()
+    val offers by restaurantViewModel.restaurantOffersMenuList.collectAsStateWithLifecycle()
+    val item by restaurantViewModel.selectedRestaurant.collectAsStateWithLifecycle()
 
     val totalNumber by restaurantViewModel.totalNumber.collectAsStateWithLifecycle()
     val totalPrice = restaurantViewModel.totalPrice
@@ -125,6 +129,9 @@ fun RestaurantScreen(
 
     val foodMenuIsLoading by restaurantViewModel.foodMenuListIsLoading.collectAsStateWithLifecycle()
     val snacksIsLoading by restaurantViewModel.snacksIsLoading.collectAsStateWithLifecycle()
+
+    val typeInRestaurantScreen by restaurantViewModel.typeInRestaurantScreen.collectAsStateWithLifecycle()
+    val selectedTypeIndex by restaurantViewModel.selectedTypeIndex.collectAsStateWithLifecycle()
 
     if(item != null){
         Scaffold(
@@ -140,7 +147,7 @@ fun RestaurantScreen(
                 //Spacer(modifier = Modifier.height(150.dp))
             },
             topBar = {
-                RestaurantTopBar(searchSize, item, scrollState, navigationController, restaurantViewModel, userData.id)
+                RestaurantTopBar(searchSize, item!!, scrollState, navigationController, restaurantViewModel, userData.id)
             }
         ){
             Box(modifier = Modifier.background(Color.VeryLightGray)){
@@ -149,7 +156,10 @@ fun RestaurantScreen(
                     modifier = Modifier.fillMaxSize().background(Color.White)
                 ){
                     item{
-                        RestaurantHeader(item, viewRestaurantImageViewModel)
+                        RestaurantHeader(item){
+                            imageToView = item!!.image
+                            viewImageState = true
+                        }
                     }
                     item{
                         LazyRow (
@@ -195,11 +205,16 @@ fun RestaurantScreen(
                                 }
                             )
                         ){
-                            CategoriesBarForRestaurantsScreen(item.typ, restaurantViewModel)
+                            CategoriesBarForRestaurantsScreen(
+                                item!!.typ,
+                                selectedTypeIndex
+                            ){ index, size ->
+                                restaurantViewModel.selectedtype(index, size)
+                            }
 
                         }
                     }
-                    if(restaurantViewModel.typeInRestaurantScreen == "Snacks"){
+                    if(typeInRestaurantScreen == "Snacks"){
                         items(snacks){ item ->
                             val isSnackInFavorite by restaurantViewModel.isSnackInFavorite(item.id).collectAsState(initial = false)
 
@@ -237,12 +252,8 @@ fun RestaurantScreen(
                                 databaseMenu,
                                 size,
                                 {
-                                    if(networkState){
-                                        itemScreenViewModel.selectSnak(databaseMenu, size)
-                                        restaurantViewModel.deletenewCount()
-                                    }else{
-                                        navigationController.navigate(Screens.NoInternetScreen.screen)
-                                    }
+                                    restaurantViewModel.selectSnack(databaseMenu, size)
+                                    restaurantViewModel.deletenewCount()
                                 },
                                 {
                                     FavoriteSnacks(
@@ -269,7 +280,7 @@ fun RestaurantScreen(
                                 }
                             )
                         }
-                    }else if(restaurantViewModel.typeInRestaurantScreen == "Drink"){
+                    }else if(typeInRestaurantScreen == "Drink"){
 
                     }else{
                         items(menu){ item ->
@@ -294,7 +305,7 @@ fun RestaurantScreen(
                                 foodMenuIsLoading,
                                 databaseMenu,
                                 {
-                                    itemScreenViewModel.selectItem(databaseMenu, size)
+                                    restaurantViewModel.selectMeal(databaseMenu, size)
                                     navigationController.navigate(Screens.ItemScreen.screen)
                                     restaurantViewModel.deletenewCount()
                                 },
@@ -333,7 +344,7 @@ fun RestaurantScreen(
                                 foodMenuIsLoading,
                                 databaseMenu,
                                 {
-                                    itemScreenViewModel.selectItem(databaseMenu, size)
+                                    restaurantViewModel.selectMeal(databaseMenu, size)
                                     navigationController.navigate(Screens.ItemScreen.screen)
                                     restaurantViewModel.deletenewCount()
                                 },
@@ -354,7 +365,7 @@ fun RestaurantScreen(
                     item{Spacer(modifier = Modifier.height(100.dp))}
                 }
 
-                if(restaurantId == restaurantViewModel.resid && cartItems.isNotEmpty()){
+                if(restaurantId == resid && cartItems.isNotEmpty()){
                     Column(modifier = Modifier.align(Alignment.BottomCenter)){
                         Box(contentAlignment = Alignment.Center){
                             RestaurantButton(
@@ -379,8 +390,13 @@ fun RestaurantScreen(
                     )
                 }
 
-                if(viewRestaurantImageViewModel.viewImageState){
-                    RestaurantImageView(viewRestaurantImageViewModel)
+                if(viewImageState){
+                    RestaurantImageView(
+                        imageToView
+                    ) {
+                        imageToView = ""
+                        viewImageState = false
+                    }
                 }
             }
         }

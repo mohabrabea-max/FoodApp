@@ -29,7 +29,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +49,8 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import com.example.applicationhome.data.data.local.entity.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.LightOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -54,9 +60,6 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Resta
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantsBoxHomeScreen
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SearchBox
 import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
-import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
-import com.example.applicationhome.ui.theme.model.RestaurantViewModel
-import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 import kotlinx.coroutines.CoroutineScope
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity")
@@ -66,9 +69,6 @@ fun HomeScreen(
     drawerState : DrawerState,
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
-    itemScreenViewModel: ItemScreenViewModel,
-    restaurantViewModel: RestaurantViewModel,
-    viewRestaurantImageViewModel: ViewRestaurantImageViewModel,
     homeScreenViewModel : HomeScreenViewModel,
     scrollState : LazyListState
 ){
@@ -77,6 +77,9 @@ fun HomeScreen(
     val offersIsLoading by homeScreenViewModel.offersIsLoading.collectAsStateWithLifecycle()
     val restaurantIsLoading by homeScreenViewModel.restaurantsMenuIsLoading.collectAsStateWithLifecycle()
     val pagerState = rememberPagerState(pageCount = {offers.size})
+
+    var viewImageState by remember { mutableStateOf(false) }
+    var imageToView by remember { mutableStateOf("") }
 
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) { context?.finishAffinity() } // ده بيمسح الأبلكيشن من الـ Background ويقفله تماماً
@@ -175,13 +178,33 @@ fun HomeScreen(
                     }
 
                     items(restaurants){ item ->
+                        val isRestaurantInFavorite by homeScreenViewModel.isRestaurantInFavorite(item.id).collectAsState(initial = false)
+
+                        val favoriteRestaurantDatabase = FavoriteRestaurantDatabase(
+                            "",
+                            item.id,
+                            item.name,
+                            item.image,
+                            item.image2,
+                            false,
+                            false
+                        )
+
                         RestaurantsBoxHomeScreen(
                             restaurantIsLoading,
                             item,
-                            itemScreenViewModel,
-                            navigationController,
-                            restaurantViewModel,
-                            viewRestaurantImageViewModel
+                            isRestaurantInFavorite,
+                            {
+                                imageToView = item.image
+                                viewImageState = true
+                            },
+                            {
+                                homeScreenViewModel.selectedtype(0, item.typ.toList().first())
+                                homeScreenViewModel.selectRestaurant(item)
+                                navigationController.navigate(Screens.RestaurantScreen.screen)
+                            },
+                            { homeScreenViewModel.addRestaurantsFavorite(favoriteRestaurantDatabase) },
+                            { homeScreenViewModel.removeRestaurantsFavorite(item.id) }
                         )
                     }
 
@@ -191,8 +214,14 @@ fun HomeScreen(
                 }
             }
         }
-        if(viewRestaurantImageViewModel.viewImageState){
-            RestaurantImageView(viewRestaurantImageViewModel)
+        if(viewImageState){
+            RestaurantImageView(
+                imageToView,
+                {
+                    imageToView = ""
+                    viewImageState = false
+                }
+            )
         }
     }
 }

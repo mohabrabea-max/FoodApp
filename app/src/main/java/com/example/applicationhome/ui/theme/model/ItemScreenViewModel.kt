@@ -1,6 +1,5 @@
 package com.example.applicationhome.ui.theme.model
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -9,10 +8,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
-import com.example.applicationhome.data.data.local.entity.FavoriteSnacksDatabase
-import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.data.data.repository.CartRepository
 import com.example.applicationhome.data.data.repository.FavoriteRepository
+import com.example.applicationhome.data.data.repository.ItemScreenRepository
 import com.example.applicationhome.data.data.repository.UserRepository
 import com.example.applicationhome.domain.CartUseCase
 import com.example.applicationhome.domain.GetFavoriteUseCase
@@ -27,6 +25,7 @@ class ItemScreenViewModel @Inject constructor(
     private val favoriteRepository : FavoriteRepository,
     val cartRepository: CartRepository,
     private val userRepository: UserRepository,
+    private val itemScreenRepository : ItemScreenRepository,
     private val cartUseCase: CartUseCase,
     private val getFavoriteUseCase : GetFavoriteUseCase
 ) : ViewModel() {
@@ -37,31 +36,15 @@ class ItemScreenViewModel @Inject constructor(
 
 //       *** ---------------------------- \\***  Item Screen  ***// ---------------------------- ***
 
-    var selectedSnak by mutableStateOf<FavoriteSnacksDatabase?>(null)
-    var selectedSnackSize by mutableStateOf("Small")
-    var selectedItem by mutableStateOf<FavoriteFoodDatabase?>(null)
-    var selectedSize by mutableStateOf("Small")
-    var selectedRestaurant by mutableStateOf<Restaurants?>(null)
+    val selectedMeal = itemScreenRepository.selectedMeal
+    val mealSize = itemScreenRepository.mealSize
+
+    val selectedSnack = itemScreenRepository.selectedSnack
+    val snackSize = itemScreenRepository.snackSize
 
 
     fun selectItem(item: FavoriteFoodDatabase, size : String) {
-        selectedItem = item
-        selectedSize = size
-    }
-    fun selectSnak(item: FavoriteSnacksDatabase?, size : String){
-        selectedSnak = item
-        selectedSnackSize = size
-    }
-    fun selectRestaurant(item : Restaurants){
-        selectedRestaurant = item
-        viewModelScope.launch {
-            try {
-                val newData = favoriteRepository.getRestaurantToView(item.id)
-                selectedRestaurant = newData
-            }catch (e : Exception){
-                Log.e("SelectRestaurant", "Error fetching fresh data", e)
-            }
-        }
+        itemScreenRepository.selectMeal(item, size)
     }
 
 

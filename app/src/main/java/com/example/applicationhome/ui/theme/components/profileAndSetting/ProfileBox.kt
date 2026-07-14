@@ -54,14 +54,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.applicationhome.data.data.repository.ProfileData
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.model.BirthdayViewModel
-import com.example.applicationhome.ui.theme.model.DrawerViewModel
+import com.example.applicationhome.ui.theme.model.DashboardScreenViewModel
 import com.example.applicationhome.ui.theme.model.ProfileViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import kotlinx.coroutines.coroutineScope
@@ -72,10 +71,10 @@ fun ProfileBox(
     userImageViewModel: UserImageViewModel,
     profileViewModel : ProfileViewModel,
     birthdayViewModel: BirthdayViewModel,
-    drawerViewModel: DrawerViewModel = viewModel()
+    dashboardScreenViewModel: DashboardScreenViewModel
 ){
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
-    var sheetStateViewModel = drawerViewModel.sheetState
+    var sheetStateViewModel = dashboardScreenViewModel.sheetState
     var profile = profileViewModel.profile
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -157,7 +156,7 @@ fun ProfileBox(
                                 modifier = Modifier.weight(1f),
                                 onClick = {
                                     if(item.icon == Icons.Default.Add){
-                                        drawerViewModel.stateTrue()
+                                        dashboardScreenViewModel.stateTrue()
                                     }else{
                                         focusRequester?.requestFocus()
                                     }
@@ -181,7 +180,7 @@ fun ProfileBox(
     }
     if(sheetStateViewModel){
         ModalBottomSheet(
-            onDismissRequest = {drawerViewModel.stateFalse()},
+            onDismissRequest = {dashboardScreenViewModel.stateFalse()},
             sheetState = sheetState
         ){
             val days = ProfileData.days
@@ -230,7 +229,7 @@ fun ProfileBox(
                 // زرار التأكيد
                 Button(
                     onClick = {
-                        drawerViewModel.stateFalse()
+                        dashboardScreenViewModel.stateFalse()
                         birthdayViewModel.birthday(birthdayViewModel.selectedDay, birthdayViewModel.selectedMonth, birthdayViewModel.selectedYear)
                               },
                     modifier = Modifier.fillMaxWidth()

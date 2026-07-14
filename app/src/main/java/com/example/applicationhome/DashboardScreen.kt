@@ -27,7 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,6 +35,7 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -62,14 +63,11 @@ import com.example.applicationhome.ui.theme.components.Options
 import com.example.applicationhome.ui.theme.components.bars.MyBottonBar
 import com.example.applicationhome.ui.theme.components.profileAndSetting.UserImage
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
-import com.example.applicationhome.ui.theme.model.DrawerViewModel
+import com.example.applicationhome.ui.theme.model.DashboardScreenViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
-import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
-import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
-import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 import com.example.applicationhome.ui.theme.screens.Favorite
 import com.example.applicationhome.ui.theme.screens.HomeScreen
 import com.example.applicationhome.ui.theme.screens.Settings
@@ -80,14 +78,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun DashboardScreen(
     navigationController: NavHostController,
-    drawerState : DrawerState,
-    itemScreenViewModel: ItemScreenViewModel,
     userImageViewModel : UserImageViewModel,
-    drawerViewModel: DrawerViewModel,
-    loginViewModel: LoginViewModel,
-    restaurantViewModel: RestaurantViewModel,
-    viewRestaurantImageViewModel: ViewRestaurantImageViewModel
+    loginViewModel: LoginViewModel
 ){
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+    val dashboardScreenViewModel : DashboardScreenViewModel = hiltViewModel()
     val bottomBarViewModel : BottomBarViewModel = hiltViewModel()
 
     val dashboardNavController = rememberNavController()
@@ -107,7 +103,7 @@ fun DashboardScreen(
     val density = LocalDensity.current
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} }
 
-    val stat = drawerViewModel.state
+    val stat = dashboardScreenViewModel.state
     val drawerWidth by animateDpAsState(
         targetValue = if (stat) 250.dp else 70.dp,
         animationSpec = spring(1F), // تقدر تتحكم في السرعة من هنا
@@ -119,7 +115,7 @@ fun DashboardScreen(
         drawerContent = {
             ModalDrawerSheet(drawerContainerColor = Color.White,modifier = Modifier.width(drawerWidth)){
                 IconButton(
-                    onClick = {if(stat) drawerViewModel.stateFalse() else drawerViewModel.stateTrue()},
+                    onClick = {if(stat) dashboardScreenViewModel.stateFalse() else dashboardScreenViewModel.stateTrue()},
                     modifier = Modifier.align(if(stat) Alignment.End else Alignment.CenterHorizontally))
                 {
                     Icon(if(stat) Icons.Default.KeyboardArrowLeft else Icons.Default.KeyboardArrowRight, contentDescription = null, tint = Color.Black)
@@ -182,7 +178,7 @@ fun DashboardScreen(
                         }
                     }
                 }
-                Options(navigationController, drawerState, coroutineScope, drawerViewModel, loginViewModel)
+                Options(navigationController, drawerState, coroutineScope, dashboardScreenViewModel, loginViewModel)
             }
         }
     ){
@@ -224,9 +220,6 @@ fun DashboardScreen(
                         drawerState,
                         coroutineScope,
                         navigationController,
-                        itemScreenViewModel,
-                        restaurantViewModel,
-                        viewRestaurantImageViewModel,
                         homeScreenViewModel,
                         homeListState
                     )
@@ -238,10 +231,7 @@ fun DashboardScreen(
                         drawerState,
                         coroutineScope,
                         navigationController,
-                        itemScreenViewModel,
                         favoriteViewModel,
-                        restaurantViewModel,
-                        viewRestaurantImageViewModel,
                         favoriteListState
                     )
                 }

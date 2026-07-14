@@ -55,6 +55,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.data.local.entity.CartItemsClass
+import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.VeryLightGray
@@ -68,9 +69,6 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Resta
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantsBox
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBox
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
-import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
-import com.example.applicationhome.ui.theme.model.RestaurantViewModel
-import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 import kotlinx.coroutines.CoroutineScope
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity")
@@ -80,10 +78,7 @@ fun Favorite(
     drawerState : DrawerState,
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
-    itemScreenViewModel : ItemScreenViewModel,
     favoriteViewModel : FavoriteViewModel,
-    restaurantViewModel : RestaurantViewModel,
-    viewRestaurantImageViewModel: ViewRestaurantImageViewModel,
     favoriteListState : LazyGridState
 ){
     val snackBarHostState = remember { SnackbarHostState() }
@@ -94,6 +89,9 @@ fun Favorite(
         // ده بيمسح الأبلكيشن من الـ Background ويقفله تماماً
         context?.finishAffinity()
     }
+
+    var viewImageState by remember { mutableStateOf(false) }
+    var imageToView by remember { mutableStateOf("") }
 
     val networkState = favoriteViewModel.isNetworkAvailable
 
@@ -127,13 +125,32 @@ fun Favorite(
                         if(favoriteViewModel.selectedCategorieInFavoriteScreen == 2) {
                             if(favoriteRestaurants.isNotEmpty()){
                                 items(favoriteRestaurants) { item ->
+                                    val isRestaurantInFavorite by favoriteViewModel.isRestaurantInFavorite(item.restaurantId).collectAsState(initial = false)
+
+                                    val resScreen = Restaurants(
+                                        item.restaurantId,
+                                        listOf(""),
+                                        item.name,
+                                        item.image,
+                                        item.image2
+                                    )
+
                                     RestaurantsBox(
                                         false,
                                         item,
-                                        itemScreenViewModel,
-                                        navigationController,
-                                        restaurantViewModel,
-                                        viewRestaurantImageViewModel
+                                        isRestaurantInFavorite,
+                                        {
+                                            imageToView = item.image
+                                            viewImageState = true
+                                        },
+                                        {
+                                            favoriteViewModel.selectRestaurant(resScreen)
+                                            favoriteViewModel.selectedtype(0, resScreen.typ.toList().first())
+                                            favoriteViewModel.selectedTypeInFavoriteScreen(0, item.restaurantId)
+                                            navigationController.navigate(Screens.RestaurantScreen.screen)
+                                        },
+                                        { favoriteViewModel.addRestaurantsFavorite(item) },
+                                        { favoriteViewModel.removeRestaurantsFavorite(item.restaurantId) }
                                     )
                                 }
                             }
@@ -166,7 +183,7 @@ fun Favorite(
                                     item.priceANDsize.keys.last(),
                                     {
                                         if(networkState){
-                                            itemScreenViewModel.selectSnak(item, size)
+                                            favoriteViewModel.selectSnack(item, size)
                                             favoriteViewModel.deletenewCount()
                                         }else{
                                             navigationController.navigate(Screens.NoInternetScreen.screen)
@@ -208,7 +225,7 @@ fun Favorite(
                                     false,
                                     item,
                                     {
-                                        itemScreenViewModel.selectItem(item, size)
+                                        favoriteViewModel.selectItem(item, size)
                                         navigationController.navigate(Screens.ItemScreen.screen)
                                         favoriteViewModel.deletenewCount()
                                     },
@@ -254,8 +271,13 @@ fun Favorite(
                 }
             )
         }
-        if(viewRestaurantImageViewModel.viewImageState){
-            RestaurantImageView(viewRestaurantImageViewModel)
+        if(viewImageState){
+            RestaurantImageView(
+                imageToView
+            ){
+                imageToView = ""
+                viewImageState = false
+            }
         }
     }
 }

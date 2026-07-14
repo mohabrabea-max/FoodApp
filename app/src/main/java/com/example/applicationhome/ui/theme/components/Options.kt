@@ -37,7 +37,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.data.repository.Drawer
 import com.example.applicationhome.ui.theme.DarkOrange
-import com.example.applicationhome.ui.theme.model.DrawerViewModel
+import com.example.applicationhome.ui.theme.model.DashboardScreenViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -49,7 +49,7 @@ fun Options(
     navigationController: NavHostController,
     drawerState : DrawerState,
     coroutineScope : CoroutineScope,
-    drawerViewModel: DrawerViewModel,
+    dashboardScreenViewModel: DashboardScreenViewModel,
     loginViewModel: LoginViewModel
 ){
     val isLogIn = loginViewModel.isLogin.collectAsState().value
@@ -57,7 +57,7 @@ fun Options(
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} } // بنجبر الـ Measurable يشوف إن عرضه دايماً 250dp
     val options = Drawer.optionsData()
     val menuOptions = Drawer.menuOptionsData()
-    var state = drawerViewModel.state
+    var state = dashboardScreenViewModel.state
     val context = LocalContext.current.applicationContext
     val navBackStackEntry by navigationController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route

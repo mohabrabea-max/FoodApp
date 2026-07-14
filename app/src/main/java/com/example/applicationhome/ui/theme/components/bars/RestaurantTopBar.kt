@@ -87,7 +87,7 @@ fun RestaurantTopBar(
                 IconButton(
                     onClick = {
                         if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
-                        restaurantViewModel.deleteRestaurantId(item.id)
+
                     },
                     modifier = Modifier.padding(5.dp).
                     border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
