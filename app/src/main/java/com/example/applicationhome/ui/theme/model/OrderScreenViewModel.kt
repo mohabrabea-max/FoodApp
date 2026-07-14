@@ -11,11 +11,6 @@ import com.example.applicationhome.data.data.repository.OrderRepository
 import com.example.applicationhome.data.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,29 +19,16 @@ import javax.inject.Inject
 class OrderScreenViewModel @Inject constructor(
     private val networkObserver : NetworkObserver,
     private val orderRepository : OrderRepository,
-    userRepository: UserRepository
+    private val userRepository: UserRepository
 ) : ViewModel(){
 
     var isNetworkAvailable by mutableStateOf(false)
 
-    var userId by mutableStateOf("")
+    val userData = userRepository.userData
 
     var selectedOrder by mutableStateOf(OrdersDatabaseClass())
 
-    val ordersHistory : StateFlow<List<OrdersDatabaseClass>> =
-        userRepository.userData.flatMapLatest { user ->
-            val id = user.id
-            if(id.isNotEmpty()){
-                userId = id
-                orderRepository.getOrdersHistoryFromDatabase(id)
-            }else{
-                flowOf(emptyList())
-            }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = emptyList()
-        )
+    val ordersHistory = orderRepository.ordersHistory
 
 
     init {
@@ -64,7 +46,10 @@ class OrderScreenViewModel @Inject constructor(
 
     fun getOrdersHistory(){
         viewModelScope.launch {
-            orderRepository.getOrders(userId)
+            val id = userData.value.id
+            if(id.isNotEmpty()){
+                orderRepository.getOrders(id)
+            }
         }
     }
 }

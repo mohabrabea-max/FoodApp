@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.showNetworkSnackBar
@@ -45,7 +46,6 @@ import com.example.applicationhome.ui.theme.model.SignUpViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import com.example.applicationhome.ui.theme.screens.Cart
 import com.example.applicationhome.ui.theme.screens.ConfirmOrderScreen
-import com.example.applicationhome.ui.theme.screens.ConfirmOrderScreen2
 import com.example.applicationhome.ui.theme.screens.ItemScreen
 import com.example.applicationhome.ui.theme.screens.LastOrdersScreen
 import com.example.applicationhome.ui.theme.screens.LoginScreen
@@ -64,9 +64,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 fun FinalScreen(
     userImageViewModel : UserImageViewModel,
-    loginViewModel: LoginViewModel,
-    confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
-    orderScreenViewModel : OrderScreenViewModel
+    loginViewModel: LoginViewModel
 ){
     val finalScreenViewModel : FinalScreenViewModel = hiltViewModel()
 
@@ -131,8 +129,7 @@ fun FinalScreen(
                 val cartViewModel: CartViewModel = hiltViewModel()
                 Cart(
                     navigationController,
-                    cartViewModel,
-                    confirmOrderScreenViewModel
+                    cartViewModel
                 )
             }
 
@@ -146,28 +143,36 @@ fun FinalScreen(
             }
 
             composable(Screens.ConfirmOrderScreen.screen){
+                val confirmOrderScreenViewModel : ConfirmOrderScreenViewModel = hiltViewModel()
                 ConfirmOrderScreen(
                     navigationController,
                     confirmOrderScreenViewModel
                 )
             }
 
-            composable(Screens.ConfirmOrderScreen2.screen){
-                ConfirmOrderScreen2(
-                    navigationController,
-                    confirmOrderScreenViewModel
-                )
-            }
+            navigation(startDestination = Screens.LastOrdersScreen.screen, route = "Orders"){
+                composable(Screens.LastOrdersScreen.screen){ backStackEntry ->
+                    val parentEntry = remember(backStackEntry){
+                        navigationController.getBackStackEntry("Orders")
+                    }
 
-            composable(Screens.LastOrdersScreen.screen){
-                LastOrdersScreen(navigationController, orderScreenViewModel)
-            }
+                    val orderScreenViewModel : OrderScreenViewModel = hiltViewModel(parentEntry)
 
-            composable(Screens.OrderScreen.screen){
-                OrderScreen(
-                    orderScreenViewModel,
-                    navigationController
-                )
+                    LastOrdersScreen(navigationController, orderScreenViewModel)
+                }
+
+                composable(Screens.OrderScreen.screen){ backStackEntry ->
+                    val parentEntry = remember(backStackEntry){
+                        navigationController.getBackStackEntry("Orders")
+                    }
+
+                    val orderScreenViewModel : OrderScreenViewModel = hiltViewModel(parentEntry)
+
+                    OrderScreen(
+                        orderScreenViewModel,
+                        navigationController
+                    )
+                }
             }
 
             composable(Screens.NoInternetScreen.screen){

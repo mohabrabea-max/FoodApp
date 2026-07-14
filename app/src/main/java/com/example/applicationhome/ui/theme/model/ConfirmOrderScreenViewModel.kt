@@ -36,6 +36,7 @@ class ConfirmOrderScreenViewModel @Inject constructor(
     private val orderRepository : OrderRepository,
     private val cartUseCase: CartUseCase,
 ) : ViewModel() {
+    var confirmOrderPages by mutableStateOf(1)
 
     val cartItems = cartRepository.cartItems
 
@@ -165,5 +166,13 @@ class ConfirmOrderScreenViewModel @Inject constructor(
         cartItems.forEach { item ->
             totalPrice += item?.totalPrice ?: 0.0
         }
+    }
+
+    fun nextPage(){
+        confirmOrderPages += 1
+    }
+
+    fun lastPage(){
+        confirmOrderPages -= 1
     }
 }

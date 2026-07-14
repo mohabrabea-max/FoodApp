@@ -119,6 +119,7 @@ class CartUseCase @Inject constructor(
     suspend fun clearAllCart(userid : String){
         withContext(Dispatchers.IO){
             cartRepository.deleteAllCart(userid)
+            cartRepository.deleteParentCart(userid)
         }
     }
 

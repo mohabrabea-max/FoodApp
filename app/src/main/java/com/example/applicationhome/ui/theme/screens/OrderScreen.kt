@@ -51,7 +51,10 @@ import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun OrderScreen(orderScreenViewModel : OrderScreenViewModel, navigationController : NavHostController){
+fun OrderScreen(
+    orderScreenViewModel : OrderScreenViewModel,
+    navigationController : NavHostController
+){
     val order = orderScreenViewModel.selectedOrder
     Scaffold(
         modifier = Modifier.navigationBarsPadding().fillMaxSize(),

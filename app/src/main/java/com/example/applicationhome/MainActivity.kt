@@ -6,9 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
-import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -20,15 +18,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val loginViewModel: LoginViewModel = hiltViewModel()
-            val confirmOrderScreenViewModel: ConfirmOrderScreenViewModel = hiltViewModel()
-            val orderScreenViewModel: OrderScreenViewModel = hiltViewModel()
             val userImageViewModel: UserImageViewModel = viewModel()
 
             FinalScreen(
                 userImageViewModel,
-                loginViewModel,
-                confirmOrderScreenViewModel,
-                orderScreenViewModel
+                loginViewModel
             )
         }
     }

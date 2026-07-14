@@ -8,11 +8,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.data.repository.CartRepository
+import com.example.applicationhome.data.data.repository.OrderRepository
 import com.example.applicationhome.data.data.repository.UserRepository
 import com.example.applicationhome.domain.CartUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,8 +23,11 @@ import javax.inject.Inject
 class CartViewModel @Inject constructor(
     private val cartUseCase: CartUseCase,
     cartRepository: CartRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    orderRepository: OrderRepository
 ): ViewModel(){
+    val loading : StateFlow<Boolean> = orderRepository.loading
+
     var errorInCart by mutableStateOf(false)
 
     val cartInformation = cartRepository.cartInformation

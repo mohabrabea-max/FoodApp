@@ -40,7 +40,6 @@ fun LastOrdersScreen(
     navigationController : NavHostController,
     orderScreenViewModel : OrderScreenViewModel
 ){
-
     LaunchedEffect(key1 = orderScreenViewModel.isNetworkAvailable) {
         orderScreenViewModel.getOrdersHistory()
     }

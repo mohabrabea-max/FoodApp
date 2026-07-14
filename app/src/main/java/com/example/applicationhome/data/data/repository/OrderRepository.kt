@@ -4,21 +4,46 @@ import com.example.applicationhome.data.data.local.dao.OrdersDao
 import com.example.applicationhome.data.data.local.entity.OrdersDatabaseClass
 import com.example.applicationhome.data.data.model.OrdersClass
 import com.example.applicationhome.data.data.remote.FoodAppAPIs
+import com.example.applicationhome.domain.ApplicationScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+@OptIn(ExperimentalCoroutinesApi::class)
 class OrderRepository @Inject constructor(
+    userRepository: UserRepository,
     private val ordersDao : OrdersDao,
-    private val api : FoodAppAPIs
+    private val api : FoodAppAPIs,
+    @ApplicationScope private val externalScope: CoroutineScope
 ) {
     private val _loading = MutableStateFlow(false)
     val loading : StateFlow<Boolean> = _loading
+
+    val ordersHistory : StateFlow<List<OrdersDatabaseClass>> =
+        userRepository.userData.flatMapLatest { user ->
+            val id = user.id
+            if(id.isNotEmpty()){
+                getOrdersHistoryFromDatabase(id)
+            }else{
+                flowOf(emptyList())
+            }
+        }.stateIn(
+            scope = externalScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
 
     fun getOrdersHistoryFromDatabase(userId : String)
     : Flow<List<OrdersDatabaseClass>> = ordersDao.getAllOrders(userId)
