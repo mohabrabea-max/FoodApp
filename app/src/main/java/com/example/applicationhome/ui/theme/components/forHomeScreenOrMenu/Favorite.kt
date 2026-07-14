@@ -1,6 +1,5 @@
 package com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu
 
-import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.size
@@ -12,41 +11,31 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
-import com.example.applicationhome.data.data.local.entity.FavoriteRestaurantDatabase
-import com.example.applicationhome.data.data.local.entity.FavoriteSnacksDatabase
 import com.example.applicationhome.ui.theme.DarkOrange
-import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun Favorite(
+    isMealInFavorite : Boolean,
+    addMealFavorite : () -> Unit,
+    removeMealFavorite : () -> Unit,
     modifier: Modifier = Modifier,
-    modifier2 : Modifier = Modifier,
-    food: FavoriteFoodDatabase,
-    favoriteViewModel : FavoriteViewModel
+    modifier2 : Modifier = Modifier
 ){
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
-    val favorite by favoriteViewModel.isMealInFavorite(food.mealId).collectAsState(initial = false)
 
     fun favorite1(){
-        if(favorite){
-            favoriteViewModel.removeMealFavorite(food.mealId)
-            Toast.makeText(context, "Remove From Favorite", Toast.LENGTH_SHORT).show()
+        if(isMealInFavorite){
+            removeMealFavorite()
         }else{
-            favoriteViewModel.addMealFavorite(food)
-            Toast.makeText(context, "Add To Favorite", Toast.LENGTH_SHORT).show()
+            addMealFavorite()
         }
 
         scope.launch {
@@ -58,7 +47,7 @@ fun Favorite(
     }
 
     IconButton(modifier = modifier, onClick = {favorite1()}){
-        if(!favorite) {
+        if(!isMealInFavorite) {
             Icon(
                 imageVector = Icons.Default.FavoriteBorder,
                 contentDescription = "More",
@@ -80,23 +69,20 @@ fun Favorite(
 
 @Composable
 fun FavoriteSnacks(
+    isSnackInFavorite : Boolean,
+    addSnackFavorite : () -> Unit,
+    removeSnackFavorite : () -> Unit,
     modifier : Modifier = Modifier,
     modifier2 : Modifier = Modifier,
-    snack : FavoriteSnacksDatabase,
-    favoriteViewModel : FavoriteViewModel
 ){
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
-    val favorite by favoriteViewModel.isSnackInFavorite(snack.snackId).collectAsState(initial = false)
 
     fun favorite1(){
-        if(favorite){
-            favoriteViewModel.removeSnackFavorite(snack.snackId)
-            Toast.makeText(context, "Remove From Favorite", Toast.LENGTH_SHORT).show()
+        if(isSnackInFavorite){
+            removeSnackFavorite()
         }else{
-            favoriteViewModel.addSnackFavorite(snack)
-            Toast.makeText(context, "Add To Favorite", Toast.LENGTH_SHORT).show()
+            addSnackFavorite()
         }
 
         scope.launch {
@@ -108,7 +94,7 @@ fun FavoriteSnacks(
     }
 
     IconButton(modifier = modifier, onClick = {favorite1()}){
-        if(!favorite) {
+        if(!isSnackInFavorite) {
             Icon(
                 imageVector = Icons.Default.FavoriteBorder,
                 contentDescription = "More",
@@ -130,24 +116,21 @@ fun FavoriteSnacks(
 
 @Composable
 fun FavoriteRestaurant(
+    isRestaurantInFavorite : Boolean,
+    addRestaurantsFavorite : () -> Unit,
+    removeRestaurantsFavorite : () -> Unit,
     modifier: Modifier = Modifier,
     modifier2 : Modifier = Modifier,
     color : Color = Color.Black,
-    restaurants: FavoriteRestaurantDatabase,
-    favoriteViewModel : FavoriteViewModel
 ){
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
-    val favorite by favoriteViewModel.isRestaurantInFavorite(restaurants.restaurantId).collectAsState(initial = false)
 
     fun favorite1(){
-        if(favorite){
-            favoriteViewModel.removeRestaurantsFavorite(restaurants.restaurantId)
-            Toast.makeText(context, "Remove From Favorite", Toast.LENGTH_SHORT).show()
+        if(isRestaurantInFavorite){
+            removeRestaurantsFavorite()
         }else{
-            favoriteViewModel.addRestaurantsFavorite(restaurants)
-            Toast.makeText(context, "Add To Favorite", Toast.LENGTH_SHORT).show()
+            addRestaurantsFavorite()
         }
 
         scope.launch {
@@ -159,7 +142,7 @@ fun FavoriteRestaurant(
     }
 
     IconButton(modifier = modifier, onClick = {favorite1()}){
-        if(!favorite) {
+        if(!isRestaurantInFavorite) {
             Icon(
                 imageVector = Icons.Default.BookmarkBorder,
                 contentDescription = "More",

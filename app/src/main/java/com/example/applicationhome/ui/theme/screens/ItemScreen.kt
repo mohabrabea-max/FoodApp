@@ -52,7 +52,6 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Snaks
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.showAddToCartSnackbar
 import com.example.applicationhome.ui.theme.components.forItemScreen.ItemScreenImage
 import com.example.applicationhome.ui.theme.components.forItemScreen.RatingsAndReviews
-import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "SuspiciousIndentation")
@@ -60,8 +59,7 @@ import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 @Composable
 fun ItemScreen(
     navigationController : NavHostController,
-    itemScreenViewModel : ItemScreenViewModel,
-    favoriteViewModel : FavoriteViewModel
+    itemScreenViewModel : ItemScreenViewModel
 ){
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -95,7 +93,7 @@ fun ItemScreen(
                 Spacer(modifier = Modifier.height(160.dp))
             },
             topBar = {
-                ItemScreenTopBar(navigationController, scrollState, item, favoriteViewModel)
+                ItemScreenTopBar(navigationController, scrollState, item, itemScreenViewModel)
             }
         ){
             Box(modifier = Modifier.background(Color.VeryLightGray).padding(10.dp)){

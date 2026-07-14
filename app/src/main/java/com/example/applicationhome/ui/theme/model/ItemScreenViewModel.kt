@@ -15,8 +15,10 @@ import com.example.applicationhome.data.data.repository.CartRepository
 import com.example.applicationhome.data.data.repository.FavoriteRepository
 import com.example.applicationhome.data.data.repository.UserRepository
 import com.example.applicationhome.domain.CartUseCase
+import com.example.applicationhome.domain.GetFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,20 +28,14 @@ class ItemScreenViewModel @Inject constructor(
     val cartRepository: CartRepository,
     private val userRepository: UserRepository,
     private val cartUseCase: CartUseCase,
+    private val getFavoriteUseCase : GetFavoriteUseCase
 ) : ViewModel() {
 
     val userData = userRepository.userData
 
-    val cartInformation = cartRepository.cartInformation
 
-    var totalPrice by mutableDoubleStateOf(0.0)
 
-    var errorInCart by mutableStateOf(false)
-
-    var newCount by mutableStateOf(0)
-
-    var newFoodInCart by mutableStateOf<CartItemsClass?>(null)
-    var newFoodInCartSize by mutableStateOf<String?>(null)
+//       *** ---------------------------- \\***  Item Screen  ***// ---------------------------- ***
 
     var selectedSnak by mutableStateOf<FavoriteSnacksDatabase?>(null)
     var selectedSnackSize by mutableStateOf("Small")
@@ -67,6 +63,21 @@ class ItemScreenViewModel @Inject constructor(
             }
         }
     }
+
+
+//       *** ---------------------------- \\***  Cart  ***// ---------------------------- ***
+
+    val cartInformation = cartRepository.cartInformation
+
+    var totalPrice by mutableDoubleStateOf(0.0)
+
+    var errorInCart by mutableStateOf(false)
+
+    var newCount by mutableStateOf(0)
+
+    var newFoodInCart by mutableStateOf<CartItemsClass?>(null)
+    var newFoodInCartSize by mutableStateOf<String?>(null)
+
 
     fun updateCount(food : CartItemsClass, size : String, newCount : Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -122,5 +133,26 @@ class ItemScreenViewModel @Inject constructor(
 
     fun minusnewCount(){
         newCount -= 1
+    }
+
+
+    //       *** ---------------------------- \\***  Favorite  ***// ---------------------------- ***
+
+    fun addMealFavorite(food : FavoriteFoodDatabase){
+        viewModelScope.launch {
+            getFavoriteUseCase.addMealFavorite(food)
+        }
+    }
+
+
+    fun removeMealFavorite(mealId : Int){
+        viewModelScope.launch {
+            getFavoriteUseCase.removeMealFavorite(mealId)
+        }
+    }
+
+
+    fun isMealInFavorite(foodId : Int): Flow<Boolean> {
+        return getFavoriteUseCase.isMealInFavorite(foodId)
     }
 }

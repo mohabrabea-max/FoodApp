@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -38,15 +39,16 @@ import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Favorite
-import com.example.applicationhome.ui.theme.model.FavoriteViewModel
+import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @Composable
 fun ItemScreenTopBar(
     navigationController : NavHostController,
     scrollState : LazyListState,
     favoriteFoodDatabase : FavoriteFoodDatabase,
-    favoriteViewModel : FavoriteViewModel
+    itemScreenViewModel: ItemScreenViewModel
 ){
+    val isMealInFavorite by itemScreenViewModel.isMealInFavorite(favoriteFoodDatabase.mealId).collectAsState(initial = false)
     val alpha by remember {
         derivedStateOf {
             if(scrollState.firstVisibleItemIndex >= 1){
@@ -122,13 +124,14 @@ fun ItemScreenTopBar(
                     }
                 }
                 Favorite(
+                    isMealInFavorite,
+                    { itemScreenViewModel.addMealFavorite(favoriteFoodDatabase) },
+                    { itemScreenViewModel.removeMealFavorite(favoriteFoodDatabase.mealId) },
                     modifier = Modifier.padding(5.dp).
                     border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
                     shadow(elevation = if(searchSize < 1) 7.dp else 0.dp, spotColor = Color.LightGray, shape = CircleShape).clip(CircleShape).size(40.dp).
                     background(Color.White),
-                    modifier2 = Modifier.size(25.dp),
-                    food = favoriteFoodDatabase,
-                    favoriteViewModel = favoriteViewModel
+                    modifier2 = Modifier.size(25.dp)
                 )
             },
             weight = 2f

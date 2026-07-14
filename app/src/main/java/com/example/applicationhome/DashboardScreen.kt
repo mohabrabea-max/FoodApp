@@ -83,9 +83,7 @@ fun DashboardScreen(
     drawerState : DrawerState,
     itemScreenViewModel: ItemScreenViewModel,
     userImageViewModel : UserImageViewModel,
-    favoriteViewModel : FavoriteViewModel,
     drawerViewModel: DrawerViewModel,
-    homeScreenViewModel : HomeScreenViewModel,
     loginViewModel: LoginViewModel,
     restaurantViewModel: RestaurantViewModel,
     viewRestaurantImageViewModel: ViewRestaurantImageViewModel
@@ -203,8 +201,6 @@ fun DashboardScreen(
                         dashboardNavController,
                         currentRoute,
                         bottomBarViewModel,
-                        favoriteViewModel,
-                        loginViewModel,
                         homeListState,
                         favoriteListState,
                         settingsListState,
@@ -223,12 +219,12 @@ fun DashboardScreen(
                 popExitTransition = { ExitTransition.None }
             ){
                 composable(Screens.HomeScreen.screen){
+                    val homeScreenViewModel : HomeScreenViewModel = hiltViewModel()
                     HomeScreen(
                         drawerState,
                         coroutineScope,
                         navigationController,
                         itemScreenViewModel,
-                        favoriteViewModel,
                         restaurantViewModel,
                         viewRestaurantImageViewModel,
                         homeScreenViewModel,
@@ -237,6 +233,7 @@ fun DashboardScreen(
                 }
 
                 composable(Screens.Favorite.screen){
+                    val favoriteViewModel : FavoriteViewModel = hiltViewModel()
                     Favorite(
                         drawerState,
                         coroutineScope,

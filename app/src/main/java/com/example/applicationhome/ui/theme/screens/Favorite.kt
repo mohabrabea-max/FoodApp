@@ -34,6 +34,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -81,7 +82,7 @@ fun Favorite(
     navigationController : NavHostController,
     itemScreenViewModel : ItemScreenViewModel,
     favoriteViewModel : FavoriteViewModel,
-    restaurantViewModel: RestaurantViewModel,
+    restaurantViewModel : RestaurantViewModel,
     viewRestaurantImageViewModel: ViewRestaurantImageViewModel,
     favoriteListState : LazyGridState
 ){
@@ -129,7 +130,6 @@ fun Favorite(
                                     RestaurantsBox(
                                         false,
                                         item,
-                                        favoriteViewModel,
                                         itemScreenViewModel,
                                         navigationController,
                                         restaurantViewModel,
@@ -141,8 +141,11 @@ fun Favorite(
                         if(favoriteViewModel.selectedCategorieInFavoriteScreen == 1) {
                             item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
                             items(favoriteSnacks) { item ->
+                                val isSnackInFavorite by favoriteViewModel.isSnackInFavorite(item.restaurantId).collectAsState(initial = false)
+
                                 val size = item.priceANDsize.keys.last()
                                 val price = item.priceANDsize.values.last()
+
                                 val snack = CartItemsClass(
                                     userData.id,
                                     "${item.snackId}_${size}",
@@ -150,9 +153,9 @@ fun Favorite(
                                     item.name,
                                     "Snack",
                                     size,
-                                    restaurantViewModel.quantity("${item.snackId}_${size}"),
+                                    favoriteViewModel.quantity("${item.snackId}_${size}"),
                                     price,
-                                    price * restaurantViewModel.quantity("${item.snackId}_${size}"),
+                                    price * favoriteViewModel.quantity("${item.snackId}_${size}"),
                                     item.image,
                                     item.restaurantId
                                 )
@@ -171,13 +174,14 @@ fun Favorite(
                                     },
                                     {
                                         FavoriteSnacks(
+                                            isSnackInFavorite,
+                                            { favoriteViewModel.addSnackFavorite(item) },
+                                            { favoriteViewModel.removeRestaurantsFavorite(item.restaurantId) },
                                             modifier = Modifier.clip(CircleShape).border(
                                                 width = 0.5.dp,
                                                 color = Color.Gray.copy(alpha = 0.2f),
                                                 shape = RoundedCornerShape(30.dp)
-                                            ).size(35.dp).background(Color.VeryLightGray),
-                                            snack = item,
-                                            favoriteViewModel = favoriteViewModel
+                                            ).size(35.dp).background(Color.VeryLightGray)
                                         )
                                         AddBox(
                                             Color.VeryLightGray,
@@ -187,7 +191,7 @@ fun Favorite(
                                             {favoriteViewModel.delete(item.snackId, size)},
                                             {activeId = item.snackId},
                                             activeId,
-                                            restaurantViewModel.quantity("${item.snackId}_${size}")
+                                            favoriteViewModel.quantity("${item.snackId}_${size}")
                                         )
                                     }
                                 )
@@ -196,7 +200,10 @@ fun Favorite(
                         if(favoriteViewModel.selectedCategorieInFavoriteScreen == 0) {
                             item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
                             items(favoriteMeals) { item ->
+                                val isMealInFavorite by favoriteViewModel.isMealInFavorite(item.mealId).collectAsState(initial = false)
+
                                 val size = item.sizeOptions.last().size
+
                                 ItemsBox(
                                     false,
                                     item,
@@ -207,11 +214,12 @@ fun Favorite(
                                     },
                                     {
                                         Favorite(
+                                            isMealInFavorite,
+                                            { favoriteViewModel.addMealFavorite(item) },
+                                            { favoriteViewModel.removeMealFavorite(item.mealId) },
                                             modifier = Modifier.
                                             clip(CircleShape).
                                             size(35.dp),
-                                            food = item,
-                                            favoriteViewModel = favoriteViewModel
                                         )
                                         MealBoxIcon()
                                     }

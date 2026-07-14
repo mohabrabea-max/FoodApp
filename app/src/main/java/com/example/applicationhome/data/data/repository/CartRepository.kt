@@ -21,7 +21,7 @@ import javax.inject.Singleton
 @Singleton
 @OptIn(ExperimentalCoroutinesApi::class)
 class CartRepository @Inject constructor(
-    private val userRepository: UserRepository,
+    userRepository: UserRepository,
     private val cartdao: CartDao,
     private val api : FoodAppAPIs,
     @ApplicationScope private val externalScope: CoroutineScope

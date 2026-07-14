@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -40,7 +41,6 @@ import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.FavoriteRestaurant
-import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,7 +51,7 @@ fun RestaurantTopBar(
     scrollState : LazyListState,
     navigationController : NavHostController,
     restaurantViewModel: RestaurantViewModel,
-    favoriteViewModel: FavoriteViewModel
+    userId : String
 ){
     val alpha by remember {
         derivedStateOf {
@@ -63,8 +63,10 @@ fun RestaurantTopBar(
         }
     }
 
+    val isRestaurantInFavorite by restaurantViewModel.isRestaurantInFavorite(item.id).collectAsState(initial = false)
+
     val favoriteRestaurantDatabase = FavoriteRestaurantDatabase(
-        favoriteViewModel.userId,
+        userId,
         item.id,
         item.name,
         item.image,
@@ -85,7 +87,7 @@ fun RestaurantTopBar(
                 IconButton(
                     onClick = {
                         if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
-                        restaurantViewModel.resid = 0
+                        restaurantViewModel.deleteRestaurantId(item.id)
                     },
                     modifier = Modifier.padding(5.dp).
                     border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
@@ -131,7 +133,11 @@ fun RestaurantTopBar(
                         )
                     }
                 }
+
                 FavoriteRestaurant(
+                    isRestaurantInFavorite,
+                    { restaurantViewModel.addRestaurantsFavorite(favoriteRestaurantDatabase) },
+                    { restaurantViewModel.removeRestaurantsFavorite(item.id) },
                     modifier = Modifier.padding(5.dp).border(
                         width = 1.dp,
                         color = Color.LightGray.copy(alpha = 0.25f),
@@ -142,8 +148,6 @@ fun RestaurantTopBar(
                         shape = CircleShape
                     ).clip(CircleShape).size(40.dp).background(Color.White),
                     modifier2 = Modifier.size(25.dp),
-                    restaurants = favoriteRestaurantDatabase,
-                    favoriteViewModel = favoriteViewModel
                 )
             }
         )

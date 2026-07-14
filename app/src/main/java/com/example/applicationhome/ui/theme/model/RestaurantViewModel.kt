@@ -9,6 +9,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.data.local.entity.CartItemsClass
+import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.data.local.entity.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.data.local.entity.FavoriteSnacksDatabase
 import com.example.applicationhome.data.data.model.Drink
 import com.example.applicationhome.data.data.model.FoodItem
 import com.example.applicationhome.data.data.model.Offers
@@ -20,8 +23,10 @@ import com.example.applicationhome.data.data.repository.HomeScreenRepository
 import com.example.applicationhome.data.data.repository.RestaurantScreenRepository
 import com.example.applicationhome.data.data.repository.UserRepository
 import com.example.applicationhome.domain.CartUseCase
+import com.example.applicationhome.domain.GetFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,39 +34,26 @@ import javax.inject.Inject
 @HiltViewModel
 class RestaurantViewModel @Inject constructor(
     private val networkObserver: NetworkObserver,
-    private val restaurantScreenRepository : RestaurantScreenRepository,
     homeScreenRepository: HomeScreenRepository,
-    private val favoriteRepository: FavoriteRepository,
     cartRepository: CartRepository,
+    private val restaurantScreenRepository : RestaurantScreenRepository,
+    private val favoriteRepository: FavoriteRepository,
     private val userRepository: UserRepository,
-    private val cartUseCase : CartUseCase
+    private val cartUseCase : CartUseCase,
+    private val getFavoriteUseCase : GetFavoriteUseCase
 ): ViewModel(){
 
     var isNetworkAvailable by mutableStateOf(false)
 
     val userData = userRepository.userData
 
-    var errorInCart by mutableStateOf(false)
 
-    val cartInformation = cartRepository.cartInformation
-
-    val cartItems = cartRepository.cartItems
-
-    val totalNumber = cartRepository.totalNumber
-
-    var totalPrice by mutableDoubleStateOf(0.0)
-
-    var newCount by mutableStateOf(0)
-
-    var newFoodInCart by mutableStateOf<CartItemsClass?>(null)
-    var newFoodInCartSize by mutableStateOf<String?>(null)
+//    *** ---------------------------- \\***  Restaurant Items  ***// ---------------------------- ***
 
 
     var resid by mutableStateOf(0)
     var selectedTypeIndex by mutableStateOf(0)
     var typeInRestaurantScreen by mutableStateOf("")
-
-
 
     val restaurantCount = homeScreenRepository.restaurantCount
 
@@ -94,22 +86,13 @@ class RestaurantViewModel @Inject constructor(
     val restaurantOffersLoading : StateFlow<Boolean> = restaurantScreenRepository.restaurantOffersLoading
 
 
-    init {
-        viewModelScope.launch {
-            networkObserver.isNetworkAvailable.collect { available ->
-                isNetworkAvailable = available
-            }
-        }
-        viewModelScope.launch (Dispatchers.IO){
-            cartItems.collect { cartList ->
-                updateTotals(cartList)
-            }
-        }
-    }
-
 
     fun loadRestaurantId(resId : Int){
         resid = resId
+    }
+
+    fun deleteRestaurantId(resId : Int){
+        resid = 0
     }
 
     fun restaurantData(){
@@ -143,6 +126,40 @@ class RestaurantViewModel @Inject constructor(
         selectedTypeIndex = index
         typeInRestaurantScreen = type
     }
+
+
+//       *** ---------------------------- \\***  Cart  ***// ---------------------------- ***
+
+    var errorInCart by mutableStateOf(false)
+
+    val cartInformation = cartRepository.cartInformation
+
+    val cartItems = cartRepository.cartItems
+
+    val totalNumber = cartRepository.totalNumber
+
+    var totalPrice by mutableDoubleStateOf(0.0)
+
+    var newCount by mutableStateOf(0)
+
+    var newFoodInCart by mutableStateOf<CartItemsClass?>(null)
+    var newFoodInCartSize by mutableStateOf<String?>(null)
+
+
+
+    init {
+        viewModelScope.launch {
+            networkObserver.isNetworkAvailable.collect { available ->
+                isNetworkAvailable = available
+            }
+        }
+        viewModelScope.launch (Dispatchers.IO){
+            cartItems.collect { cartList ->
+                updateTotals(cartList)
+            }
+        }
+    }
+
 
     fun plus(food: CartItemsClass, size : String){
         viewModelScope.launch(Dispatchers.IO) {
@@ -206,5 +223,52 @@ class RestaurantViewModel @Inject constructor(
 
     fun alertDialogFalse(){
         errorInCart = false
+    }
+
+
+    //       *** ---------------------------- \\***  Favorite  ***// ---------------------------- ***
+
+    fun addMealFavorite(food : FavoriteFoodDatabase){
+        viewModelScope.launch {
+            getFavoriteUseCase.addMealFavorite(food)
+        }
+    }
+    fun addSnackFavorite(snack : FavoriteSnacksDatabase){
+        viewModelScope.launch {
+            getFavoriteUseCase.addSnackFavorite(snack)
+        }
+    }
+    fun addRestaurantsFavorite(restaurants: FavoriteRestaurantDatabase){
+        viewModelScope.launch {
+            getFavoriteUseCase.addRestaurantsFavorite(restaurants)
+        }
+    }
+
+
+    fun removeMealFavorite(mealId : Int){
+        viewModelScope.launch {
+            getFavoriteUseCase.removeMealFavorite(mealId)
+        }
+    }
+    fun removeSnackFavorite(snackId : Int){
+        viewModelScope.launch {
+            getFavoriteUseCase.removeSnackFavorite(snackId)
+        }
+    }
+    fun removeRestaurantsFavorite(resId : Int){
+        viewModelScope.launch {
+            getFavoriteUseCase.removeRestaurantsFavorite(resId)
+        }
+    }
+
+
+    fun isMealInFavorite(foodId : Int): Flow<Boolean> {
+        return getFavoriteUseCase.isMealInFavorite(foodId)
+    }
+    fun isSnackInFavorite(snackId : Int): Flow<Boolean> {
+        return getFavoriteUseCase.isSnackInFavorite(snackId)
+    }
+    fun isRestaurantInFavorite(resId : Int): Flow<Boolean> {
+        return getFavoriteUseCase.isRestaurantInFavorite(resId)
     }
 }

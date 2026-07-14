@@ -24,6 +24,8 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,7 +45,6 @@ import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
@@ -52,12 +53,13 @@ import com.example.applicationhome.ui.theme.model.ViewRestaurantImageViewModel
 fun RestaurantsBox(
     loading : Boolean,
     item : FavoriteRestaurantDatabase,
-    favoriteViewModel : FavoriteViewModel,
     itemScreenViewModel: ItemScreenViewModel,
     navigationController : NavHostController,
     restaurantViewModel: RestaurantViewModel,
     viewRestaurantImageViewModel : ViewRestaurantImageViewModel
 ){
+    val isRestaurantInFavorite by restaurantViewModel.isRestaurantInFavorite(item.restaurantId).collectAsState(initial = false)
+
     val resScreen = Restaurants(
         item.restaurantId,
         listOf(""),
@@ -104,13 +106,14 @@ fun RestaurantsBox(
 
                     Row(modifier = Modifier.fillMaxWidth().background(Color.Black.copy(alpha = 0f)).padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween){
                         FavoriteRestaurant(
+                            isRestaurantInFavorite,
+                            { restaurantViewModel.addRestaurantsFavorite(item) },
+                            { restaurantViewModel.removeRestaurantsFavorite(item.restaurantId) },
                             modifier = Modifier.
                             clip(CircleShape).
                             border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
                             size(35.dp).
-                            background(Color.VeryLightGray),
-                            restaurants = item,
-                            favoriteViewModel = favoriteViewModel
+                            background(Color.VeryLightGray)
                         )
                     }
                 }
@@ -168,12 +171,13 @@ fun RestaurantsBox(
 fun RestaurantsBoxHomeScreen(
     loading : Boolean,
     item : Restaurants,
-    favoriteViewModel : FavoriteViewModel,
     itemScreenViewModel: ItemScreenViewModel,
     navigationController : NavHostController,
     restaurantViewModel: RestaurantViewModel,
     viewRestaurantImageViewModel: ViewRestaurantImageViewModel
 ){
+    val isRestaurantInFavorite by restaurantViewModel.isRestaurantInFavorite(item.id).collectAsState(initial = false)
+
     val favoriteRestaurantDatabase = FavoriteRestaurantDatabase(
         "",
         item.id,
@@ -232,13 +236,14 @@ fun RestaurantsBoxHomeScreen(
                         horizontalArrangement = Arrangement.End
                     ){
                         FavoriteRestaurant(
+                            isRestaurantInFavorite,
+                            { restaurantViewModel.addRestaurantsFavorite(favoriteRestaurantDatabase) },
+                            { restaurantViewModel.removeRestaurantsFavorite(item.id) },
                             modifier = Modifier.
                             clip(CircleShape).
                             size(35.dp).
                             background(Color.Black.copy(alpha = 0.2f)),
-                            color = Color.White,
-                            restaurants = favoriteRestaurantDatabase,
-                            favoriteViewModel = favoriteViewModel
+                            color = Color.White
                         )
                     }
                 }

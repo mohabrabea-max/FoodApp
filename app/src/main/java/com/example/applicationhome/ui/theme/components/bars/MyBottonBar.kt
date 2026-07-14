@@ -37,8 +37,6 @@ import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.model.BottomBarViewModel
-import com.example.applicationhome.ui.theme.model.FavoriteViewModel
-import com.example.applicationhome.ui.theme.model.LoginViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -49,19 +47,15 @@ fun MyBottonBar(
     dashboardNavController : NavHostController,
     currentRoute :  String?,
     bottomBarViewModel: BottomBarViewModel,
-    favoriteViewModel: FavoriteViewModel,
-    loginViewModel: LoginViewModel,
     homeListState : LazyListState,
     favoriteListState : LazyGridState,
     settingsListState : LazyGridState,
     scope : CoroutineScope
 ){
-    val favoriteFoodCount by favoriteViewModel.favoriteFoodCount.collectAsStateWithLifecycle()
-    val favoriteSnacksCount by favoriteViewModel.favoriteSnacksCount.collectAsStateWithLifecycle()
-    val favoriteRestaurantsCount by favoriteViewModel.favoriteRestaurantsCount.collectAsStateWithLifecycle()
-    val count = favoriteFoodCount + favoriteSnacksCount + favoriteRestaurantsCount
+    val totalInFavorite by bottomBarViewModel.totalInFavorite.collectAsStateWithLifecycle()
 
-    val cartCount by bottomBarViewModel.totalNumber.collectAsStateWithLifecycle()
+    val cartCount by bottomBarViewModel.totalNumberInCart.collectAsStateWithLifecycle()
+
     Box(
         modifier = Modifier.width(350.dp).
         height(60.dp).
@@ -122,12 +116,12 @@ fun MyBottonBar(
                 ){
                     BadgedBox(
                         badge = {
-                            if(count > 0){
+                            if(totalInFavorite > 0){
                                 Badge(
                                     containerColor = Color.DarkOrange,
                                     contentColor = Color.White
                                 ){
-                                    Text(text = count.toString())
+                                    Text(text = "$totalInFavorite")
                                 }
                             }
                         }
@@ -144,7 +138,6 @@ fun MyBottonBar(
             Box(modifier = Modifier.weight(1f)){
                 IconButton(
                     onClick = {
-                        println(loginViewModel.userData.value.id)
                         navigationController.navigate(Screens.Cart.screen){
                             launchSingleTop = true
                         }

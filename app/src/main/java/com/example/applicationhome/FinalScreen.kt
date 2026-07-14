@@ -38,8 +38,7 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.showN
 import com.example.applicationhome.ui.theme.model.CartViewModel
 import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 import com.example.applicationhome.ui.theme.model.DrawerViewModel
-import com.example.applicationhome.ui.theme.model.FavoriteViewModel
-import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
+import com.example.applicationhome.ui.theme.model.FinalScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
@@ -70,9 +69,7 @@ fun FinalScreen(
     drawerState : DrawerState,
     itemScreenViewModel: ItemScreenViewModel,
     userImageViewModel : UserImageViewModel,
-    favoriteViewModel : FavoriteViewModel,
     drawerViewModel: DrawerViewModel,
-    homeScreenViewModel : HomeScreenViewModel,
     loginViewModel: LoginViewModel,
     restaurantViewModel: RestaurantViewModel,
     confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
@@ -80,8 +77,11 @@ fun FinalScreen(
     viewRestaurantImageViewModel: ViewRestaurantImageViewModel,
     signUpViewModel : SignUpViewModel
 ){
+    val finalScreenViewModel : FinalScreenViewModel = hiltViewModel()
+
+    val networkState  = finalScreenViewModel.isNetworkAvailable
+
     val snackBarHostState = remember { SnackbarHostState() }
-    val networkState  = homeScreenViewModel.isNetworkAvailable
 
     val navigationController = rememberNavController()
 
@@ -106,9 +106,7 @@ fun FinalScreen(
                     drawerState,
                     itemScreenViewModel,
                     userImageViewModel,
-                    favoriteViewModel,
                     drawerViewModel,
-                    homeScreenViewModel,
                     loginViewModel,
                     restaurantViewModel,
                     viewRestaurantImageViewModel
@@ -127,7 +125,6 @@ fun FinalScreen(
                 RestaurantScreen(
                     navigationController,
                     itemScreenViewModel,
-                    favoriteViewModel,
                     restaurantViewModel,
                     viewRestaurantImageViewModel
                 )
@@ -136,8 +133,7 @@ fun FinalScreen(
             composable(Screens.ItemScreen.screen){
                 ItemScreen(
                     navigationController,
-                    itemScreenViewModel,
-                    favoriteViewModel
+                    itemScreenViewModel
                 )
             }
 

@@ -17,20 +17,118 @@ import com.example.applicationhome.data.data.model.FoodItem
 import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.data.data.model.Snack
 import com.example.applicationhome.data.data.remote.FoodAppAPIs
+import com.example.applicationhome.domain.ApplicationScope
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+@OptIn(ExperimentalCoroutinesApi::class)
 class FavoriteRepository @Inject constructor(
+    userRepository: UserRepository,
     private val favoriteDao : FavoriteDao,
     private val api : FoodAppAPIs,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    @ApplicationScope private val externalScope: CoroutineScope
 ){
+
+// *** ---------------------- \\***  Favorite Items  ***// ---------------------- ***
+
+    val favoriteMeals : StateFlow<List<FavoriteFoodDatabase>> =
+        userRepository.userData.flatMapLatest { user ->
+            val id = user.id
+            if(id.isNotEmpty()){
+                getFoodFavoriteFromDatabase(id)
+            }else{
+                flowOf(emptyList())
+            }
+        }.stateIn(
+            scope = externalScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    val favoriteSnacks : StateFlow<List<FavoriteSnacksDatabase>> =
+        userRepository.userData.flatMapLatest { user ->
+            val id = user.id
+            if (id.isNotEmpty()) {
+                getSnacksFavoriteFromDatabase(id)
+            } else {
+                flowOf(emptyList())
+            }
+        }.stateIn(
+            scope = externalScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    val favoriteRestaurantsFromDatabase : StateFlow<List<FavoriteRestaurantDatabase>> =
+        userRepository.userData.flatMapLatest { user ->
+            val id = user.id
+            if (id.isNotEmpty()){
+                getRestaurantsFavoriteFromDatabase(id)
+            }else{
+                flowOf(emptyList())
+            }
+        }.stateIn(
+            scope = externalScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+
+// *** ---------------------- \\***  Favorite Count  ***// ---------------------- ***
+
+    val favoriteFoodCount : StateFlow<Int> = favoriteMeals
+        .map { it.size }
+        .stateIn(
+            scope = externalScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
+        )
+
+    val favoriteSnacksCount : StateFlow<Int> = favoriteSnacks
+        .map { it.size }
+        .stateIn(
+            scope = externalScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
+        )
+
+    val favoriteRestaurantsCount : StateFlow<Int> = favoriteRestaurantsFromDatabase
+        .map { it.size }
+        .stateIn(
+            scope = externalScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
+        )
+
+    val totalCountInFavorite : StateFlow<Int> = combine(
+        favoriteFoodCount,
+        favoriteSnacksCount,
+        favoriteRestaurantsCount
+    ){ (food , snacks, restaurants) ->
+        food + snacks + restaurants
+    }.stateIn(
+        scope = externalScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 0
+    )
+
+
     private val _mealsFavoriteObject = mutableMapOf<String, FoodItem>()
 
 
@@ -38,6 +136,8 @@ class FavoriteRepository @Inject constructor(
 
 
     private val _restaurantsFavoriteObject = java.util.concurrent.ConcurrentHashMap<String, Restaurants>()
+
+
 
 
 

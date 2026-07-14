@@ -53,7 +53,6 @@ import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Categ
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.RestaurantsBoxHomeScreen
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SearchBox
-import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
@@ -68,7 +67,6 @@ fun HomeScreen(
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
     itemScreenViewModel: ItemScreenViewModel,
-    favoriteViewModel : FavoriteViewModel,
     restaurantViewModel: RestaurantViewModel,
     viewRestaurantImageViewModel: ViewRestaurantImageViewModel,
     homeScreenViewModel : HomeScreenViewModel,
@@ -180,7 +178,6 @@ fun HomeScreen(
                         RestaurantsBoxHomeScreen(
                             restaurantIsLoading,
                             item,
-                            favoriteViewModel,
                             itemScreenViewModel,
                             navigationController,
                             restaurantViewModel,
