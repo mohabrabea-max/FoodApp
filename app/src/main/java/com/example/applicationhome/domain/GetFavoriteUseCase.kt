@@ -7,8 +7,6 @@ import com.example.applicationhome.data.data.repository.FavoriteRepository
 import com.example.applicationhome.data.data.repository.UserRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -50,24 +48,6 @@ class GetFavoriteUseCase @Inject constructor(
     suspend fun removeRestaurantsFavorite(resId : Int){
         withContext(Dispatchers.IO){
             favoriteRepository.deleteRestaurantFromFavorite(userRepository.userData.value.id, resId)
-        }
-    }
-
-    fun isMealInFavorite(foodId : Int): Flow<Boolean> {
-        return favoriteRepository.favoriteMeals.map { list ->
-            list.any{ it.mealId == foodId }
-        }
-    }
-
-    fun isSnackInFavorite(snackId : Int): Flow<Boolean> {
-        return favoriteRepository.favoriteSnacks.map { list ->
-            list.any{ it.snackId == snackId }
-        }
-    }
-
-    fun isRestaurantInFavorite(resId : Int): Flow<Boolean> {
-        return favoriteRepository.favoriteRestaurantsFromDatabase.map { list ->
-            list.any{ it.restaurantId == resId }
         }
     }
 }

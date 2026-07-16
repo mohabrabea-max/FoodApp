@@ -4,9 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -17,12 +15,10 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         setContent {
-            val loginViewModel: LoginViewModel = hiltViewModel()
             val userImageViewModel: UserImageViewModel = viewModel()
 
             FinalScreen(
-                userImageViewModel,
-                loginViewModel
+                userImageViewModel
             )
         }
     }

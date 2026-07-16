@@ -3,6 +3,7 @@ package com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,19 +39,24 @@ import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
 import com.example.applicationhome.ui.theme.DarkOrange
 
 @Composable
-fun ItemsBox(
+fun MealsBoxForFavoriteScreen(
     foodMenuIsLoading : Boolean,
     item: FavoriteFoodDatabase,
     cardNavigationClickable : () -> Unit = {},
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
+    val interactionSource = remember { MutableInteractionSource() }
+
     val sizeOptions = item .sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }
-    val size = sizeOptions?.size ?: ""
     val price = sizeOptions?.price ?: 0.0
 
     if (foodMenuIsLoading) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.
+            padding(7.dp).
+            shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
+            background(Color.White).
+            aspectRatio(2f),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator() // دايرة التحميل الافتراضية في أندرويد
@@ -59,8 +65,11 @@ fun ItemsBox(
         Box(
             modifier = Modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
             background(Color.White).
-            aspectRatio(2f). //0.65f
-            clickable{
+            aspectRatio(0.65f).
+            clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ){
                 cardNavigationClickable()
             }.
             padding(start = 20.dp, end = 15.dp, top = 15.dp, bottom = 20.dp)
@@ -115,12 +124,14 @@ fun ItemsBox(
 }
 
 @Composable
-fun MealBoxIcon(){
+fun MealBoxIcon(
+    modifier: Modifier = Modifier
+){
     Box(
-        modifier = Modifier.
+        modifier = modifier.padding(5.dp).
+        shadow(elevation = 5.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
         animateContentSize().
         size(35.dp).
-        clip(CircleShape).
         background(Color.White),
         contentAlignment = Alignment.Center
     ){
@@ -128,7 +139,7 @@ fun MealBoxIcon(){
             Icons.Default.ChevronRight,
             contentDescription = null,
             tint = Color.DarkOrange,
-            modifier = Modifier.fillMaxSize().padding(5.dp)
+            modifier = Modifier.fillMaxSize().padding(7.dp)
         )
     }
 }

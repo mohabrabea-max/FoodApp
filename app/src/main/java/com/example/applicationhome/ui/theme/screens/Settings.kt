@@ -5,6 +5,7 @@ import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +48,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.data.model.Screens
@@ -57,6 +61,7 @@ import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.profileAndSetting.SettingsBox
 import com.example.applicationhome.ui.theme.components.profileAndSetting.SettingsOptionsBox
 import com.example.applicationhome.ui.theme.components.profileAndSetting.UserImage
+import com.example.applicationhome.ui.theme.model.SettingsViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -69,14 +74,23 @@ fun Settings(
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
     userImageViewModel: UserImageViewModel,
-    settingsListState : LazyGridState
+    settingsListState : LazyGridState,
+    settingsViewModel : SettingsViewModel
 ){
+    val userData by settingsViewModel.userData.collectAsStateWithLifecycle()
+
+    val description = userData.phonenumber.ifEmpty { userData.email }
+
+    val interactionSource = remember { MutableInteractionSource() }
+
     val profileoptions = ProfileData.profileOptions()
     val context = LocalContext.current as? Activity
+
     BackHandler(enabled = true) {
         // ده بيمسح الأبلكيشن من الـ Background ويقفله تماماً
         context?.finishAffinity()
     }
+
     Scaffold(
         modifier = Modifier.navigationBarsPadding().fillMaxSize(),
         topBar = {
@@ -110,7 +124,10 @@ fun Settings(
                     modifier = Modifier.fillMaxWidth().
                     height(90.dp).
                     background(Color.LightGray).
-                    clickable { navigationController.navigate(Screens.Profile.screen) }
+                    clickable (
+                        interactionSource = interactionSource,
+                        indication = null
+                    ){ navigationController.navigate(Screens.Profile.screen) }
                 ){
                     Row(
                         modifier = Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp),
@@ -127,14 +144,14 @@ fun Settings(
                         Spacer(modifier = Modifier.width(15.dp))
                         Column(modifier = Modifier.weight(2.5f),horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center){
                             Text(
-                                text = "Mohab Rabea",
+                                text = "${userData.firstname} ${userData.lastname}",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.BrownForFont
                             )
                             Spacer(modifier = Modifier.height(5.dp))
                             Text(
-                                text = "01011223344",
+                                text = description,
                                 fontSize = 15.sp,
                                 color = Color.MediumBrownForTitle
                             )

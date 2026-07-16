@@ -1,6 +1,7 @@
 package com.example.applicationhome.ui.theme.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -28,14 +28,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.applicationhome.ui.theme.DeepMatteBlack
+import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
 import com.example.applicationhome.ui.theme.components.profileAndSetting.ProfileBox
-import com.example.applicationhome.ui.theme.model.BirthdayViewModel
-import com.example.applicationhome.ui.theme.model.DashboardScreenViewModel
 import com.example.applicationhome.ui.theme.model.ProfileViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 
@@ -47,13 +44,14 @@ import com.example.applicationhome.ui.theme.model.UserImageViewModel
 fun Profile(
     navigationController : NavHostController,
     userImageViewModel: UserImageViewModel,
-    dashboardScreenViewModel : DashboardScreenViewModel = hiltViewModel(),
-    profileViewModel: ProfileViewModel = viewModel(),
-    birthdayViewModel: BirthdayViewModel = viewModel()
+    profileViewModel: ProfileViewModel
 ){
     var edite by mutableStateOf(false)
+
     var stat = userImageViewModel.stat
+
     var pading = if(stat) 210.dp else 0.dp
+
     Scaffold(
         modifier = Modifier.navigationBarsPadding().
         fillMaxSize(),
@@ -88,9 +86,10 @@ fun Profile(
             }
         }
     ){
-        LazyColumn(modifier = Modifier.statusBarsPadding()){
+        LazyColumn(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray)){
+            item{ Spacer(modifier = Modifier.height(120.dp)) }
             item {
-                ProfileBox(userImageViewModel, profileViewModel, birthdayViewModel, dashboardScreenViewModel)
+                ProfileBox(userImageViewModel, profileViewModel)
             }
             item { Spacer(modifier = Modifier.height(pading)) }
         }

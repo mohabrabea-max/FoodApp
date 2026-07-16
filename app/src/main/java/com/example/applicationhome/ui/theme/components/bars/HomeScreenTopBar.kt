@@ -20,15 +20,12 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -49,43 +46,37 @@ fun HomeScreenTopBar(
     navigationController : NavHostController
 ){
     val density = LocalDensity.current
-    val minOffsetToShowBox = with(density) { 147.dp.toPx() }
+    val minOffsetToShowBox = with(density) { 135.dp.toPx() }
 
     val alpha by remember {
         derivedStateOf {
-            val targetPx = with(density) { 85.dp.toPx() }
+            val startPx = with(density) { 50.dp.toPx() }
+            val endPx = with(density) { 85.dp.toPx() }
+            val currentOffset = scrollState.firstVisibleItemScrollOffset.toFloat()
             if(scrollState.firstVisibleItemIndex > 0){
                 1f
+            }else if(currentOffset < startPx){
+                0f
             }else{
-                ((scrollState.firstVisibleItemScrollOffset / targetPx)).coerceIn(0f, 1f)
+                ((currentOffset - startPx) / ( endPx - startPx )).coerceIn(0f, 1f)
             }
         }
     }
 
-    var scal by remember { mutableStateOf(false) }
-    LaunchedEffect(scrollState){
-        var previousOffset = 0
-        var accumulatedScrollUp = 0f
-        snapshotFlow{ scrollState.firstVisibleItemIndex to scrollState.firstVisibleItemScrollOffset }.
-        collect{ (currentIndex, currentOffset) ->
-            val delta = previousOffset - currentOffset
-            accumulatedScrollUp += delta
-            previousOffset = currentOffset
-            if ((currentOffset > minOffsetToShowBox * 1.7 || scrollState.firstVisibleItemIndex > 0)) {
-                scal = true
-            }else if((currentOffset > minOffsetToShowBox * 1.7 / 2 || scrollState.firstVisibleItemIndex > 0)){
-                scal = true
-            }else{
-                scal = false
-            }
+    val scal by remember {
+        derivedStateOf {
+            scrollState.firstVisibleItemIndex > 0 ||
+            scrollState.firstVisibleItemScrollOffset > (minOffsetToShowBox)
         }
     }
+
 
     Box{
         Column{
             MyTopBar(
                 Color.DarkOrange.copy(alpha = alpha),
                 modifier = Modifier.
+                shadow(elevation = if(alpha == 1f) 5.dp else 0.dp).
                 fillMaxWidth().
                 height(100.dp),
                 null,

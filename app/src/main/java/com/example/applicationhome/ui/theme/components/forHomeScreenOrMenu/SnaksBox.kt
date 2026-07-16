@@ -50,8 +50,10 @@ fun SnaksBox(
             CircularProgressIndicator() // دايرة التحميل الافتراضية في أندرويد
         }
     }else{
-        Card(
-            modifier = modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
+        Box(
+            modifier = modifier.
+            padding(7.dp).
+            shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
             background(Color.White).
             clickable{
                 cardNavigationClickable()

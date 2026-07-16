@@ -66,7 +66,7 @@ import com.example.applicationhome.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.ui.theme.model.DashboardScreenViewModel
 import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
-import com.example.applicationhome.ui.theme.model.LoginViewModel
+import com.example.applicationhome.ui.theme.model.SettingsViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import com.example.applicationhome.ui.theme.screens.Favorite
 import com.example.applicationhome.ui.theme.screens.HomeScreen
@@ -78,8 +78,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DashboardScreen(
     navigationController: NavHostController,
-    userImageViewModel : UserImageViewModel,
-    loginViewModel: LoginViewModel
+    userImageViewModel : UserImageViewModel
 ){
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
@@ -97,9 +96,9 @@ fun DashboardScreen(
     val navBackStackEntry by dashboardNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val isLogin by loginViewModel.isLogin.collectAsStateWithLifecycle()
+    val isLogin by dashboardScreenViewModel.isLogin.collectAsStateWithLifecycle()
 
-    val userState by loginViewModel.userData.collectAsStateWithLifecycle()
+    val userState by dashboardScreenViewModel.userData.collectAsStateWithLifecycle()
     val density = LocalDensity.current
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} }
 
@@ -178,7 +177,7 @@ fun DashboardScreen(
                         }
                     }
                 }
-                Options(navigationController, drawerState, coroutineScope, dashboardScreenViewModel, loginViewModel)
+                Options(navigationController, drawerState, coroutineScope, dashboardScreenViewModel)
             }
         }
     ){
@@ -237,12 +236,14 @@ fun DashboardScreen(
                 }
 
                 composable(Screens.Settings.screen){
+                    val settingsViewModel : SettingsViewModel = hiltViewModel()
                     Settings(
                         drawerState,
                         coroutineScope,
                         navigationController,
                         userImageViewModel,
-                        settingsListState
+                        settingsListState,
+                        settingsViewModel
                     )
                 }
             }

@@ -29,7 +29,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,10 +71,15 @@ fun HomeScreen(
     homeScreenViewModel : HomeScreenViewModel,
     scrollState : LazyListState
 ){
-    val restaurants by homeScreenViewModel.filterRestaurants
-    val offers = homeScreenViewModel.offers
+    val userData by homeScreenViewModel.userData.collectAsStateWithLifecycle()
+    val restaurants by homeScreenViewModel.filterRestaurants.collectAsStateWithLifecycle()
+    val offers by homeScreenViewModel.offers.collectAsStateWithLifecycle()
+
     val offersIsLoading by homeScreenViewModel.offersIsLoading.collectAsStateWithLifecycle()
     val restaurantIsLoading by homeScreenViewModel.restaurantsMenuIsLoading.collectAsStateWithLifecycle()
+
+    val favoriteRestaurantsIds by homeScreenViewModel.favoriteRestaurantsIds.collectAsStateWithLifecycle()
+
     val pagerState = rememberPagerState(pageCount = {offers.size})
 
     var viewImageState by remember { mutableStateOf(false) }
@@ -178,17 +182,7 @@ fun HomeScreen(
                     }
 
                     items(restaurants){ item ->
-                        val isRestaurantInFavorite by homeScreenViewModel.isRestaurantInFavorite(item.id).collectAsState(initial = false)
-
-                        val favoriteRestaurantDatabase = FavoriteRestaurantDatabase(
-                            "",
-                            item.id,
-                            item.name,
-                            item.image,
-                            item.image2,
-                            false,
-                            false
-                        )
+                        val isRestaurantInFavorite = favoriteRestaurantsIds.contains(item.id)
 
                         RestaurantsBoxHomeScreen(
                             restaurantIsLoading,
@@ -203,7 +197,18 @@ fun HomeScreen(
                                 homeScreenViewModel.selectRestaurant(item)
                                 navigationController.navigate(Screens.RestaurantScreen.screen)
                             },
-                            { homeScreenViewModel.addRestaurantsFavorite(favoriteRestaurantDatabase) },
+                            {
+                                val favoriteRestaurantDatabase = FavoriteRestaurantDatabase(
+                                    userData.id,
+                                    item.id,
+                                    item.name,
+                                    item.image,
+                                    item.image2,
+                                    false,
+                                    false
+                                )
+                                homeScreenViewModel.addRestaurantsFavorite(favoriteRestaurantDatabase)
+                            },
                             { homeScreenViewModel.removeRestaurantsFavorite(item.id) }
                         )
                     }

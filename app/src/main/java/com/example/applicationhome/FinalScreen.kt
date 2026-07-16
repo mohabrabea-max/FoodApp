@@ -41,6 +41,7 @@ import com.example.applicationhome.ui.theme.model.FinalScreenViewModel
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 import com.example.applicationhome.ui.theme.model.LoginViewModel
 import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
+import com.example.applicationhome.ui.theme.model.ProfileViewModel
 import com.example.applicationhome.ui.theme.model.RestaurantViewModel
 import com.example.applicationhome.ui.theme.model.SignUpViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
@@ -63,8 +64,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinalScreen(
-    userImageViewModel : UserImageViewModel,
-    loginViewModel: LoginViewModel
+    userImageViewModel : UserImageViewModel
 ){
     val finalScreenViewModel : FinalScreenViewModel = hiltViewModel()
 
@@ -92,13 +92,17 @@ fun FinalScreen(
             composable(Screens.DashboardScreen.screen){
                 DashboardScreen(
                     navigationController,
-                    userImageViewModel,
-                    loginViewModel
+                    userImageViewModel
                 )
             }
 
             composable(Screens.Profile.screen){
-                Profile(navigationController, userImageViewModel)
+                val profileViewModel: ProfileViewModel = hiltViewModel()
+                Profile(
+                    navigationController,
+                    userImageViewModel,
+                    profileViewModel
+                )
             }
 
             composable(Screens.Search.screen){
@@ -134,6 +138,7 @@ fun FinalScreen(
             }
 
             composable(Screens.LoginScreen.screen){
+                val loginViewModel: LoginViewModel = hiltViewModel()
                 LoginScreen(navigationController, loginViewModel)
             }
 

@@ -38,7 +38,6 @@ import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.data.repository.Drawer
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.model.DashboardScreenViewModel
-import com.example.applicationhome.ui.theme.model.LoginViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -49,10 +48,9 @@ fun Options(
     navigationController: NavHostController,
     drawerState : DrawerState,
     coroutineScope : CoroutineScope,
-    dashboardScreenViewModel: DashboardScreenViewModel,
-    loginViewModel: LoginViewModel
+    dashboardScreenViewModel: DashboardScreenViewModel
 ){
-    val isLogIn = loginViewModel.isLogin.collectAsState().value
+    val isLogIn by dashboardScreenViewModel.isLogin.collectAsState()
     val density = LocalDensity.current     //هنا بناخد قياس شاشة الموبايل
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} } // بنجبر الـ Measurable يشوف إن عرضه دايماً 250dp
     val options = Drawer.optionsData()
@@ -158,7 +156,7 @@ fun Options(
                         coroutineScope.launch{
                             drawerState.close()
                             if(isLogIn){
-                                loginViewModel.logout()
+                                dashboardScreenViewModel.logout()
 
                                 Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()
                             }else{

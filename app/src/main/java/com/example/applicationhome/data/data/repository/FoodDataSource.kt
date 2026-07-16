@@ -2,12 +2,10 @@ package com.example.applicationhome.data.data.repository
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AssignmentReturn
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Help
@@ -25,7 +23,6 @@ import androidx.compose.material.icons.filled.ShoppingCartCheckout
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.example.applicationhome.data.data.model.Account
 import com.example.applicationhome.data.data.model.Options
 import com.example.applicationhome.data.data.model.ProfileOptions
 import com.example.applicationhome.data.data.model.Screens
@@ -38,50 +35,6 @@ object ProfileData {
     val months = (1..12).toList()
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
     val years = (1900..currentYear).toList()
-    private val profile = listOf(
-        Account(
-            101,
-            "Email",
-            "mohabrabea@gmail.com",
-            "mohabrabea@gmail.com",
-            null
-        ),
-        Account(
-            102,
-            "First Name",
-            "First Name",
-            null,
-            Icons.Default.Edit
-        ),
-        Account(
-            103,
-            "Last Name",
-            "Last Name",
-            null,
-            Icons.Default.Edit
-        ),
-        Account(
-            104,
-            "Phone number",
-            "01011223344",
-            null,
-            Icons.Default.Edit
-        ),
-        Account(
-            105,
-            "Birthday",
-            "Get offers on your special day",
-            null,
-            Icons.Default.Add
-        ),
-        Account(
-            106,
-            "Country",
-            "Egypt",
-            null,
-            Icons.Default.Add
-        )
-    )
 
     private val profileoptions = listOf(
         ProfileOptions(
@@ -123,9 +76,6 @@ object ProfileData {
         Settings("Logout", Icons.Default.ExitToApp),
         Settings("Delete Account", Icons.Default.Delete)
     )
-    fun profileData(): List<Account>{
-        return profile
-    }
 
     fun profileOptions(): List<ProfileOptions>{
         return profileoptions

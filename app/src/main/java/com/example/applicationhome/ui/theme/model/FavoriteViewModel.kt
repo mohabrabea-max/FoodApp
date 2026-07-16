@@ -23,7 +23,6 @@ import com.example.applicationhome.domain.GetFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -59,6 +58,13 @@ class FavoriteViewModel @Inject constructor(
     val favoriteSnacksCount = favoriteRepository.favoriteSnacksCount
 
     val favoriteRestaurantsCount = favoriteRepository.favoriteRestaurantsCount
+
+
+    val favoriteMealsIds = favoriteRepository.favoriteMealsIds
+
+    val favoriteSnacksIds = favoriteRepository.favoriteSnacksIds
+
+    val favoriteRestaurantsIds = favoriteRepository.favoriteRestaurantsIds
 
 
 
@@ -110,17 +116,6 @@ class FavoriteViewModel @Inject constructor(
         viewModelScope.launch {
             getFavoriteUseCase.removeRestaurantsFavorite(resId)
         }
-    }
-
-
-    fun isMealInFavorite(foodId : Int): Flow<Boolean> {
-        return getFavoriteUseCase.isMealInFavorite(foodId)
-    }
-    fun isSnackInFavorite(snackId : Int): Flow<Boolean> {
-        return getFavoriteUseCase.isSnackInFavorite(snackId)
-    }
-    fun isRestaurantInFavorite(resId : Int): Flow<Boolean> {
-        return getFavoriteUseCase.isRestaurantInFavorite(resId)
     }
 
 

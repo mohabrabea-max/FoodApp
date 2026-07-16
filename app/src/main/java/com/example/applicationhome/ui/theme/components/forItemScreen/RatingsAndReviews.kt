@@ -18,13 +18,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.ui.theme.DarkOrange
+import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Ratings
 
 @Composable
@@ -33,8 +34,9 @@ fun RatingsAndReviews(
     review : Double
 ){
     Column(
-        modifier = Modifier.fillMaxWidth().
-        clip(RoundedCornerShape(20.dp)).
+        modifier = Modifier.
+        shadow(elevation = 10.dp, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(20.dp)).
+        fillMaxWidth().
         background(Color.White).
         padding(15.dp),
         horizontalAlignment = Alignment.Start

@@ -16,7 +16,6 @@ import com.example.applicationhome.domain.CartUseCase
 import com.example.applicationhome.domain.GetFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -121,6 +120,9 @@ class ItemScreenViewModel @Inject constructor(
 
     //       *** ---------------------------- \\***  Favorite  ***// ---------------------------- ***
 
+    val favoriteMealsIds = favoriteRepository.favoriteMealsIds
+
+
     fun addMealFavorite(food : FavoriteFoodDatabase){
         viewModelScope.launch {
             getFavoriteUseCase.addMealFavorite(food)
@@ -132,10 +134,5 @@ class ItemScreenViewModel @Inject constructor(
         viewModelScope.launch {
             getFavoriteUseCase.removeMealFavorite(mealId)
         }
-    }
-
-
-    fun isMealInFavorite(foodId : Int): Flow<Boolean> {
-        return getFavoriteUseCase.isMealInFavorite(foodId)
     }
 }

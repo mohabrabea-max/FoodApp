@@ -3,6 +3,7 @@ package com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,12 +19,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +56,8 @@ fun RestaurantsBox(
     addRestaurantsFavorite : () -> Unit,
     removeRestaurantsFavorite : () -> Unit
 ){
+    val interactionSource = remember { MutableInteractionSource() }
+
     if (loading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -67,7 +73,10 @@ fun RestaurantsBox(
             shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp))
         ){
             Box(
-                modifier = Modifier.clickable {
+                modifier = Modifier.clickable(
+                    interactionSource = interactionSource,
+                    indication = null
+                ){
                     clickable()
                 }
             ){
@@ -84,16 +93,25 @@ fun RestaurantsBox(
                         contentScale = ContentScale.Crop
                     )
 
-                    Row(modifier = Modifier.fillMaxWidth().background(Color.Black.copy(alpha = 0f)).padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween){
-                        FavoriteRestaurant(
+                    Row(
+                        modifier = Modifier.
+                        fillMaxWidth().
+                        background(Color.Black.copy(alpha = 0f)).
+                        padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End
+                    ){
+                        Favorite(
                             isRestaurantInFavorite,
                             { addRestaurantsFavorite() },
                             { removeRestaurantsFavorite() },
                             modifier = Modifier.
                             clip(CircleShape).
-                            border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)).
                             size(35.dp).
-                            background(Color.VeryLightGray)
+                            background(Color.Black.copy(alpha = 0.2f)),
+                            color = Color.White,
+                            icon1 = Icons.Default.Bookmark,
+                            icon2 = Icons.Default.BookmarkBorder
                         )
                     }
                 }
@@ -157,6 +175,8 @@ fun RestaurantsBoxHomeScreen(
     addRestaurantsFavorite : () -> Unit,
     removeRestaurantsFavorite : () -> Unit
 ){
+    val interactionSource = remember { MutableInteractionSource() }
+
     if (loading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -166,12 +186,16 @@ fun RestaurantsBoxHomeScreen(
         }
     }else{
         Row(
-            modifier = Modifier.padding(10.dp).
+            modifier = Modifier.
+            padding(10.dp).
+            shadow(elevation = 10.dp, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(30.dp)).
             fillMaxWidth().
             height(130.dp).
-            clip(RoundedCornerShape(30.dp)).
             background(Color.White).
-            clickable {
+            clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ){
                 clickable()
             },
             verticalAlignment = Alignment.CenterVertically
@@ -180,7 +204,7 @@ fun RestaurantsBoxHomeScreen(
                 modifier = Modifier.
                 fillMaxHeight().
                 width(150.dp).
-                shadow(elevation = 3.dp, spotColor = Color.Gray, shape = RoundedCornerShape(30.dp)).
+                shadow(elevation = 10.dp, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(20.dp)).
                 clip(RoundedCornerShape(30.dp))
             ){
                 Box(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray)){
@@ -202,7 +226,7 @@ fun RestaurantsBoxHomeScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.End
                     ){
-                        FavoriteRestaurant(
+                        Favorite(
                             isRestaurantInFavorite,
                             { addRestaurantsFavorite() },
                             { removeRestaurantsFavorite() },
@@ -210,7 +234,9 @@ fun RestaurantsBoxHomeScreen(
                             clip(CircleShape).
                             size(35.dp).
                             background(Color.Black.copy(alpha = 0.2f)),
-                            color = Color.White
+                            color = Color.White,
+                            icon1 = Icons.Default.Bookmark,
+                            icon2 = Icons.Default.BookmarkBorder
                         )
                     }
                 }

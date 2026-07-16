@@ -16,21 +16,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -42,145 +34,44 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.data.data.repository.ProfileData
-import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
-import com.example.applicationhome.ui.theme.MediumBrownForTitle
-import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.model.BirthdayViewModel
-import com.example.applicationhome.ui.theme.model.DashboardScreenViewModel
 import com.example.applicationhome.ui.theme.model.ProfileViewModel
 import com.example.applicationhome.ui.theme.model.UserImageViewModel
 import kotlinx.coroutines.coroutineScope
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileBox(
+fun ProfileBox(      // TODO: Under maintenance - This feature is currently in progress
     userImageViewModel: UserImageViewModel,
-    profileViewModel : ProfileViewModel,
-    birthdayViewModel: BirthdayViewModel,
-    dashboardScreenViewModel: DashboardScreenViewModel
+    profileViewModel : ProfileViewModel
 ){
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
-    var sheetStateViewModel = dashboardScreenViewModel.sheetState
-    var profile = profileViewModel.profile
+    val sheetStateViewModel = profileViewModel.sheetState
+    val profile = profileViewModel.profile
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+
     val focusRequesters = remember {
         profile.associate { it.id to FocusRequester() }
     }
-    Column(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray).padding(15.dp)){
-        Spacer(modifier = Modifier.height(70.dp))
-        Column(modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)).background(Color.White).padding(17.dp)){
-            Text(text = "Personal Information", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-            Spacer(modifier = Modifier.height(15.dp))
-            profile.forEach{ item ->
-                val state = rememberTextFieldState()
-                val focusRequester = focusRequesters[item.id]
-                Column(modifier = Modifier.fillMaxSize()){
-                    Spacer(modifier = Modifier.height(15.dp))
-                    Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween){
-                        Column (modifier = Modifier.weight(7f), horizontalAlignment = Alignment.Start){
-                            //Spacer(modifier = Modifier.width(15.dp))
-                            Text(text = item.title, fontSize = 17.sp, color = Color.BrownForFont)
-                            Spacer(modifier = Modifier.height(10.dp))
-                            Row {
-                                Spacer(modifier = Modifier.width(3.dp))
-                                if(item.title == "First Name" || item.title == "Last Name" || item.title == "Phone number"){
-                                    Box(contentAlignment = Alignment.CenterStart){
-                                        if (item.value == null && state.text.isEmpty()) {
-                                            Text(
-                                                text = item.empty,
-                                                color = Color.Gray,
-                                                fontSize = 14.sp
-                                            )
-                                        }else if(state.text.isEmpty()){
-                                            Text(
-                                                text = item.value.toString(),
-                                                color = Color.MediumBrownForTitle,
-                                                fontSize = 14.sp
-                                            )
-                                        }
-                                        BasicTextField(
-                                            state = state,
-                                            modifier = Modifier.fillMaxSize().
-                                            then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier).
-                                            onFocusChanged { focusState ->
-                                                if (focusState.isFocused) {
-                                                    userImageViewModel.statetrue()
-                                                }
-                                            },
-                                            keyboardOptions = KeyboardOptions(
-                                                keyboardType =
-                                                    if(item.title == "First Name" || item.title == "Last Name")
-                                                        KeyboardType.Text
-                                                    else
-                                                        KeyboardType.Phone, imeAction = ImeAction.Done
-                                            ),
-                                            onKeyboardAction = {
-                                                userImageViewModel.statefalse()
-                                                keyboardController?.hide()
-                                                focusManager.clearFocus()
-                                                profileViewModel.changeProfileData(item, state)
-                                            },
-                                            textStyle = TextStyle(
-                                                fontSize = 14.sp,
-                                                color = Color.MediumBrownForTitle
-                                            )
-                                        )
-                                    }
 
-                                }else if(item.title == "Email"){
-                                    Text(
-                                        text = item.value.toString(),
-                                        fontSize = 14.sp,
-                                        color = Color.Gray
-                                    )
-                                }
-                            }
-                        }
-                        if(item.icon != null){
-                            IconButton(
-                                modifier = Modifier.weight(1f),
-                                onClick = {
-                                    if(item.icon == Icons.Default.Add){
-                                        dashboardScreenViewModel.stateTrue()
-                                    }else{
-                                        focusRequester?.requestFocus()
-                                    }
-                                }
-                            ){
-                                Icon(
-                                    modifier = Modifier.size(22.dp),
-                                    imageVector = item.icon,
-                                    contentDescription = item.title,
-                                    tint = if(item.icon == Icons.Default.Add) Color.Blue else Color.Gray
-                                )
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(15.dp))
-                    if(item != profile.last()) Divider(color = Color.LightGray.copy(alpha = 0.2f))
-                }
-            }
+    Column(modifier = Modifier.padding(15.dp).fillMaxSize().clip(RoundedCornerShape(10.dp)).background(Color.White).padding(17.dp)){
+        Text(text = "Personal Information", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+        Spacer(modifier = Modifier.height(15.dp))
+        profile.forEach{ item ->
         }
-        Spacer(modifier = Modifier.height(80.dp))
     }
     if(sheetStateViewModel){
         ModalBottomSheet(
-            onDismissRequest = {dashboardScreenViewModel.stateFalse()},
+            onDismissRequest = {profileViewModel.stateFalse()},
             sheetState = sheetState
         ){
             val days = ProfileData.days
@@ -215,13 +106,13 @@ fun ProfileBox(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     // 1. سكرول الأيام
-                    DatePickerWheel(items = days, initialValue = birthdayViewModel.selectedDay) { birthdayViewModel.selectedDay = it }
+                    DatePickerWheel(items = days, initialValue = profileViewModel.selectedDay) { profileViewModel.selectedDay = it }
 
                     // 2. سكرول الشهور
-                    DatePickerWheel(items = months, initialValue = birthdayViewModel.selectedMonth) { birthdayViewModel.selectedMonth = it }
+                    DatePickerWheel(items = months, initialValue = profileViewModel.selectedMonth) { profileViewModel.selectedMonth = it }
 
                     // 3. سكرول السنين
-                    DatePickerWheel(items = years, initialValue = birthdayViewModel.selectedYear) { birthdayViewModel.selectedYear = it }
+                    DatePickerWheel(items = years, initialValue = profileViewModel.selectedYear) { profileViewModel.selectedYear = it }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -229,8 +120,8 @@ fun ProfileBox(
                 // زرار التأكيد
                 Button(
                     onClick = {
-                        dashboardScreenViewModel.stateFalse()
-                        birthdayViewModel.birthday(birthdayViewModel.selectedDay, birthdayViewModel.selectedMonth, birthdayViewModel.selectedYear)
+                        profileViewModel.stateFalse()
+                        profileViewModel.birthday(profileViewModel.selectedDay, profileViewModel.selectedMonth, profileViewModel.selectedYear)
                               },
                     modifier = Modifier.fillMaxWidth()
                 ) {

@@ -28,7 +28,6 @@ import com.example.applicationhome.domain.GetFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -66,7 +65,7 @@ class RestaurantViewModel @Inject constructor(
 
     private val _foodMenuMap = mutableStateMapOf<String, FoodItem>()
 
-    val foodMenuList : StateFlow<List<FoodItem>> = combine(
+    private val _foodMenuList : StateFlow<List<FoodItem>> = combine(
         snapshotFlow{ _foodMenuMap.toMap() },
         resid,
         typeInRestaurantScreen
@@ -83,21 +82,71 @@ class RestaurantViewModel @Inject constructor(
 
     val foodMenuListIsLoading : StateFlow<Boolean> = restaurantScreenRepository.foodMenuListIsLoading
 
+    val favoriteMealsDatabase = combine(
+        userData,
+        _foodMenuList
+    ){ user, menu ->
+        menu.map { item ->
+            FavoriteFoodDatabase(
+                user.id,
+                item.id,
+                item.category,
+                item.name,
+                item.details,
+                item.image.first(),
+                item.sizeOptions,
+                item.restaurantId,
+                item.review,
+                false,
+                false
+            )
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
 
     private val _snackMenuMap = mutableStateMapOf<String, Snack>()
 
-    val snackMenuList = combine(
+    private val _snackMenuList = combine(
         snapshotFlow { _snackMenuMap.toMap() },
         resid
     ) { menuMap, resId ->
         menuMap.filter { it.value.restaurantId == resId }.values.toList()
     }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
     )
 
     val snacksIsLoading : StateFlow<Boolean> = restaurantScreenRepository.snacksIsLoading
+
+    val favoriteSnacksDatabase = combine(
+        userData,
+        _snackMenuList
+    ){ user , snacks ->
+        snacks.map { item ->
+            FavoriteSnacksDatabase(
+                user.id,
+                item.id,
+                item.name,
+                item.details,
+                item.image.first(),
+                item.priceANDsize,
+                item.restaurantId,
+                item.review,
+                false,
+                false
+            )
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
 
 
     private val _drinkMenuMap = mutableStateMapOf<String, Drink>()
@@ -138,13 +187,13 @@ class RestaurantViewModel @Inject constructor(
         if(restaurantscount != null){
             viewModelScope.launch {
                 val foodMenu = async {
-                    if(foodMenuList.value.size < restaurantscount.meals){
+                    if(_foodMenuList.value.size < restaurantscount.meals){
                       restaurantScreenRepository.uploadFoodMenuFromApi(resid.value)
                     } else { emptyMap() }
                 }
 
                 val snackMenu = async {
-                    if(snackMenuList.value.size < restaurantscount.snacks){
+                    if(_snackMenuList.value.size < restaurantscount.snacks){
                         restaurantScreenRepository.uploadSnacksMenuFromApi(resid.value)
                     } else { emptyMap() }
                 }
@@ -267,6 +316,14 @@ class RestaurantViewModel @Inject constructor(
 
     //       *** ---------------------------- \\***  Favorite  ***// ---------------------------- ***
 
+
+    val favoriteMealsIds = favoriteRepository.favoriteMealsIds
+
+    val favoriteSnacksIds = favoriteRepository.favoriteSnacksIds
+
+    val favoriteRestaurantsIds = favoriteRepository.favoriteRestaurantsIds
+
+
     fun addMealFavorite(food : FavoriteFoodDatabase){
         viewModelScope.launch {
             getFavoriteUseCase.addMealFavorite(food)
@@ -298,17 +355,6 @@ class RestaurantViewModel @Inject constructor(
         viewModelScope.launch {
             getFavoriteUseCase.removeRestaurantsFavorite(resId)
         }
-    }
-
-
-    fun isMealInFavorite(foodId : Int): Flow<Boolean> {
-        return getFavoriteUseCase.isMealInFavorite(foodId)
-    }
-    fun isSnackInFavorite(snackId : Int): Flow<Boolean> {
-        return getFavoriteUseCase.isSnackInFavorite(snackId)
-    }
-    fun isRestaurantInFavorite(resId : Int): Flow<Boolean> {
-        return getFavoriteUseCase.isRestaurantInFavorite(resId)
     }
 
 

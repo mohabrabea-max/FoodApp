@@ -10,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.data.remote.NetworkObserver
 import com.example.applicationhome.data.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,8 +24,8 @@ class LoginViewModel @Inject constructor(
     val passwordstate = TextFieldState()
 
     var isNetworkAvailable by mutableStateOf(false)
-    private val _isLogin = MutableStateFlow(false)
-    var isLogin : StateFlow<Boolean> = _isLogin
+
+    val isLogin = userRepository.isLogin
 
     val userData = userRepository.userData
 
@@ -39,11 +38,11 @@ class LoginViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            userRepository.userData.collect { currentUser ->
+            userData.collect { currentUser ->
                 if(currentUser.id.isNotEmpty()){
-                    _isLogin.value = true
+                    userRepository.isLogin()
                 }else{
-                    _isLogin.value = false
+                    userRepository.isLogout()
                 }
             }
         }
@@ -59,7 +58,7 @@ class LoginViewModel @Inject constructor(
     fun logout(){
         viewModelScope.launch {
             userRepository.logOut(userData.value.email)
-            _isLogin.value = false
+            userRepository.isLogout()
         }
     }
 
@@ -67,7 +66,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             val result = userRepository.setUserDataToDatabase(emailstate.text.toString(), passwordstate.text.toString())
             if(result == "Password is true"){
-                _isLogin.value = true
+                userRepository.isLogin()
             }else if(result == "Password is false"){
                 println("Password is false")
             }else{

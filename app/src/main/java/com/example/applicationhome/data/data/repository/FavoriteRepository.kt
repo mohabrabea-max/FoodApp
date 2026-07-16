@@ -61,6 +61,15 @@ class FavoriteRepository @Inject constructor(
             initialValue = emptyList()
         )
 
+    val favoriteMealsIds = favoriteMeals.map { list ->
+        list.map { it.mealId }.toSet()
+    }.stateIn(
+        scope = externalScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptySet()
+    )
+
+
     val favoriteSnacks : StateFlow<List<FavoriteSnacksDatabase>> =
         userRepository.userData.flatMapLatest { user ->
             val id = user.id
@@ -75,6 +84,15 @@ class FavoriteRepository @Inject constructor(
             initialValue = emptyList()
         )
 
+    val favoriteSnacksIds = favoriteSnacks.map { list ->
+        list.map { it.snackId }.toSet()
+    }.stateIn(
+        scope = externalScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptySet()
+    )
+
+
     val favoriteRestaurantsFromDatabase : StateFlow<List<FavoriteRestaurantDatabase>> =
         userRepository.userData.flatMapLatest { user ->
             val id = user.id
@@ -88,6 +106,14 @@ class FavoriteRepository @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+
+    val favoriteRestaurantsIds = favoriteRestaurantsFromDatabase.map { list ->
+        list.map { it.restaurantId }.toSet()
+    }.stateIn(
+        scope = externalScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptySet()
+    )
 
 
 // *** ---------------------- \\***  Favorite Count  ***// ---------------------- ***

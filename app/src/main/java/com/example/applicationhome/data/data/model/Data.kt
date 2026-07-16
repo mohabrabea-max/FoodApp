@@ -103,7 +103,6 @@ data class Account(
     val id : Int,
     val title : String,
     val empty : String,
-    var value: Any?,
     val icon : ImageVector?
 )
 

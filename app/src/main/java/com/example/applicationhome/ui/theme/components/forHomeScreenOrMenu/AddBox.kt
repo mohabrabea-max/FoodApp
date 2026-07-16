@@ -3,7 +3,6 @@ package com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu
 import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -72,6 +72,8 @@ fun AddBox(
     val targetWidth = if (!isActive || !isExpanded) 35.dp else 160.dp
     Box(
         modifier = modifier.
+        padding(5.dp).
+        shadow(elevation = 5.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
         animateContentSize().
         height(35.dp).
         width(targetWidth).
@@ -80,8 +82,7 @@ fun AddBox(
         clickable {
             delete()
             if( count > 0 ) Toast.makeText(context, "Removed From Cart", Toast.LENGTH_SHORT).show()
-        }.
-        border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(30.dp)),
+        },
         contentAlignment = Alignment.Center
     ){
         if(count == 0 && !isActive || count == 0 && !isExpanded) {

@@ -1,10 +1,8 @@
 package com.example.applicationhome.ui.theme.model
 
 import android.util.Log
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -17,10 +15,14 @@ import com.example.applicationhome.data.data.remote.NetworkObserver
 import com.example.applicationhome.data.data.repository.FavoriteRepository
 import com.example.applicationhome.data.data.repository.HomeScreenRepository
 import com.example.applicationhome.data.data.repository.ItemScreenRepository
+import com.example.applicationhome.data.data.repository.UserRepository
 import com.example.applicationhome.domain.GetFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,30 +31,42 @@ class HomeScreenViewModel @Inject constructor(
     private val itemScreenRepository : ItemScreenRepository,
     private val favoriteRepository : FavoriteRepository,
     private val homeScreenRepository : HomeScreenRepository,
+    userRepository: UserRepository,
     private val getFavoriteUseCase : GetFavoriteUseCase,
     private val networkObserver: NetworkObserver
 ) : ViewModel(){
 
+    val userData = userRepository.userData
 
     //       *** ---------------------------- \\***  Home Screen Items  ***// ---------------------------- ***
 
     var selected by mutableStateOf(0)
 
-    var typ by mutableStateOf("All")
+    private val typ = MutableStateFlow("All")
 
 
-    private val _restaurantsMenu = mutableStateMapOf<String, Restaurants>()
+    private val _restaurantsMenu = MutableStateFlow<Map<String, Restaurants>>(emptyMap())
 
     val restaurantsMenuIsLoading : StateFlow<Boolean> = homeScreenRepository.restaurantsMenuIsLoading
 
+    val filterRestaurants = combine(
+        _restaurantsMenu,
+        typ
+    ){ restaurants, type ->
+        val restaurantsList = restaurants.values.toList()
 
-    val filterRestaurants = derivedStateOf {
-        if(typ == "All"){
-            _restaurantsMenu.values.toList()
+        if(type == "All"){
+            restaurantsList
         }else{
-            _restaurantsMenu.filter { it.value.typ.contains(typ) }.values.toList()
+            restaurantsList.filter { it.typ.contains(type) }
         }
-    }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
+
 
 
     private val _categories = mutableStateListOf<Categories>()
@@ -60,8 +74,8 @@ class HomeScreenViewModel @Inject constructor(
     val categoriesIsLoading : StateFlow<Boolean> = homeScreenRepository.categoriesIsLoading
 
 
-    private val _offers = mutableStateListOf<Offers>()
-    val offers : List<Offers> get() = _offers
+    private val _offers = MutableStateFlow<List<Offers>>(emptyList())
+    val offers : StateFlow<List<Offers>> = _offers
     val offersIsLoading : StateFlow<Boolean> = homeScreenRepository.offersIsLoading
 
     var isNetworkAvailable by mutableStateOf(true)
@@ -81,15 +95,15 @@ class HomeScreenViewModel @Inject constructor(
     fun loadDataFromApi() {
         viewModelScope.launch {
             val restaurants = homeScreenRepository.getRestaurantsFromApi()
-            _restaurantsMenu += restaurants
+            _restaurantsMenu.value += restaurants
         }
         viewModelScope.launch {
             _categories.clear()
             _categories += homeScreenRepository.getCategorieslistFromApi()
         }
         viewModelScope.launch {
-            _offers.clear()
-            _offers += homeScreenRepository.getOffersFromApi()
+            _offers.value = emptyList()
+            _offers.value += homeScreenRepository.getOffersFromApi()
         }
         viewModelScope.launch {
             homeScreenRepository.restaurantCount()
@@ -98,12 +112,12 @@ class HomeScreenViewModel @Inject constructor(
 
     fun selected(item : Categories){
         selected = item.id
-        typ = item.type
+        typ.value = item.type
     }
 
     fun unSelected(){
         selected = 0
-        typ = "All"
+        typ.value = "All"
     }
 
 
@@ -128,6 +142,8 @@ class HomeScreenViewModel @Inject constructor(
 
 //       *** ---------------------------- \\***  Favorite  ***// ---------------------------- ***
 
+    val favoriteRestaurantsIds = favoriteRepository.favoriteRestaurantsIds
+
     fun addRestaurantsFavorite(restaurants: FavoriteRestaurantDatabase){
         viewModelScope.launch {
             getFavoriteUseCase.addRestaurantsFavorite(restaurants)
@@ -138,9 +154,5 @@ class HomeScreenViewModel @Inject constructor(
         viewModelScope.launch {
             getFavoriteUseCase.removeRestaurantsFavorite(resId)
         }
-    }
-
-    fun isRestaurantInFavorite(resId : Int): Flow<Boolean> {
-        return getFavoriteUseCase.isRestaurantInFavorite(resId)
     }
 }

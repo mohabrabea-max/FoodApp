@@ -2,7 +2,6 @@ package com.example.applicationhome.ui.theme.components.bars
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,31 +12,32 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
+import com.example.applicationhome.ui.theme.VeryLightGray
+import com.example.applicationhome.ui.theme.components.designsystem.TopBarButtons
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Favorite
 import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
@@ -48,7 +48,9 @@ fun ItemScreenTopBar(
     favoriteFoodDatabase : FavoriteFoodDatabase,
     itemScreenViewModel: ItemScreenViewModel
 ){
-    val isMealInFavorite by itemScreenViewModel.isMealInFavorite(favoriteFoodDatabase.mealId).collectAsState(initial = false)
+    val favoriteMealsIds by itemScreenViewModel.favoriteMealsIds.collectAsStateWithLifecycle()
+    val isMealInFavorite = favoriteMealsIds.contains(favoriteFoodDatabase.mealId)
+
     val alpha by remember {
         derivedStateOf {
             if(scrollState.firstVisibleItemIndex >= 1){
@@ -77,22 +79,17 @@ fun ItemScreenTopBar(
             null,
             Color.White,
             {
-                IconButton(
-                    onClick = {if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() } },
-                    modifier = Modifier.padding(5.dp).
-                    border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
-                    shadow(elevation = if(searchSize < 1) 7.dp else 0.dp, spotColor = Color.LightGray, shape = CircleShape).clip(CircleShape).size(40.dp).
-                    background(Color.White)
-                ){
-                    Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)
-                }
+                TopBarButtons(
+                    { Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black) },
+                    { if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() } }
+                )
             },
             {
                 Box(
                     modifier = Modifier.animateContentSize().padding(5.dp).
-                    border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
-                    shadow(elevation = if(searchSize < 1) 7.dp else 0.dp, spotColor = Color.LightGray, shape = CircleShape).clip(CircleShape).
-                    width(if(searchSize > 1) 120.dp else 40.dp).height(40.dp).
+                    shadow(elevation = 7.dp, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(30.dp)).
+                    width(if(searchSize > 1) 120.dp else 40.dp).
+                    height(40.dp).
                     background(Color.White).
                     clickable {
                         navigationController.navigate(Screens.Search.screen){
@@ -128,10 +125,13 @@ fun ItemScreenTopBar(
                     { itemScreenViewModel.addMealFavorite(favoriteFoodDatabase) },
                     { itemScreenViewModel.removeMealFavorite(favoriteFoodDatabase.mealId) },
                     modifier = Modifier.padding(5.dp).
-                    border(width = 1.dp, color = Color.LightGray.copy(alpha = 0.25f), shape = RoundedCornerShape(30.dp)).
-                    shadow(elevation = if(searchSize < 1) 7.dp else 0.dp, spotColor = Color.LightGray, shape = CircleShape).clip(CircleShape).size(40.dp).
+                    shadow(elevation = 7.dp, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(30.dp)).
+                    size(40.dp).
                     background(Color.White),
-                    modifier2 = Modifier.size(25.dp)
+                    modifier2 = Modifier.size(25.dp),
+                    color = Color.DarkOrange,
+                    icon1 = Icons.Default.Favorite,
+                    icon2 = Icons.Default.FavoriteBorder
                 )
             },
             weight = 2f
