@@ -30,27 +30,20 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
-import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
-import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.designsystem.TopBarButtons
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.Favorite
-import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
 
 @Composable
 fun ItemScreenTopBar(
-    navigationController : NavHostController,
     scrollState : LazyListState,
-    favoriteFoodDatabase : FavoriteFoodDatabase,
-    itemScreenViewModel: ItemScreenViewModel
+    isMealInFavorite : Boolean,
+    backStack : () -> Unit,
+    navigation : () -> Unit,
+    addMealFavorite : () -> Unit,
+    removeMealFavorite : () -> Unit,
 ){
-    val favoriteMealsIds by itemScreenViewModel.favoriteMealsIds.collectAsStateWithLifecycle()
-    val isMealInFavorite = favoriteMealsIds.contains(favoriteFoodDatabase.mealId)
-
     val alpha by remember {
         derivedStateOf {
             if(scrollState.firstVisibleItemIndex >= 1){
@@ -81,7 +74,7 @@ fun ItemScreenTopBar(
             {
                 TopBarButtons(
                     { Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black) },
-                    { if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() } }
+                    { backStack() }
                 )
             },
             {
@@ -92,13 +85,7 @@ fun ItemScreenTopBar(
                     height(40.dp).
                     background(Color.White).
                     clickable {
-                        navigationController.navigate(Screens.Search.screen){
-                            popUpTo(navigationController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
+                        navigation()
                     },
                 ){
                     Row(
@@ -122,8 +109,8 @@ fun ItemScreenTopBar(
                 }
                 Favorite(
                     isMealInFavorite,
-                    { itemScreenViewModel.addMealFavorite(favoriteFoodDatabase) },
-                    { itemScreenViewModel.removeMealFavorite(favoriteFoodDatabase.mealId) },
+                    { addMealFavorite() },
+                    { removeMealFavorite() },
                     modifier = Modifier.padding(5.dp).
                     shadow(elevation = 7.dp, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(30.dp)).
                     size(40.dp).

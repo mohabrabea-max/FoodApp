@@ -65,6 +65,15 @@ class CartRepository @Inject constructor(
                 initialValue = 0
             )
 
+    val totalPrice : StateFlow<Double> =
+        cartItems.map { cartList ->
+            cartList.sumOf { it?.totalPrice?:0.0 }
+        }.stateIn(
+            scope = externalScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0.0
+        )
+
 
     fun getCartItems(id : String): Flow<List<CartItemsClass?>> = cartdao.getCartItems(id)
 

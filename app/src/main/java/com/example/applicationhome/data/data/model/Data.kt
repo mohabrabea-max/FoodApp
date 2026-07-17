@@ -99,11 +99,19 @@ data class Options(
     val screen: String
 )
 
-data class Account(
+data class AccountTextFieldClass(
     val id : Int,
     val title : String,
-    val empty : String,
+    val emptyCount : String,
+    val textField : TextFieldState,
     val icon : ImageVector?
+)
+
+data class ProfileSelection(
+    val id : Int,
+    val title : String,
+    val lastCount : String,
+    val icon : ImageVector
 )
 
 data class Settings(
@@ -143,7 +151,10 @@ data class UserClassFireBase(
 
 data class FirebasePostResponse(val name : String)
 
-data class TextFieldClassFromConfirmOrderScreen(val textState : TextFieldState, val title: String)
+data class TextFieldClassFromConfirmOrderScreen(
+    val textState : TextFieldState,
+    val title: String
+)
 
 
 data class OrderItemsClass(

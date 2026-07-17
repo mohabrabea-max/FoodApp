@@ -121,7 +121,7 @@ fun AddBox(
                 contentAlignment = Alignment.Center
             ){
                 Text(
-                    text = count.toString(),
+                    text = "$count",
                     fontSize = 20.sp,
                     style = MaterialTheme.typography.labelLarge,
                     color = Color.White,

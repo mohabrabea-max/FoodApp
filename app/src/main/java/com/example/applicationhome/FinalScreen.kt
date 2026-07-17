@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
@@ -63,9 +64,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FinalScreen(
-    userImageViewModel : UserImageViewModel
-){
+fun FinalScreen(){
     val finalScreenViewModel : FinalScreenViewModel = hiltViewModel()
 
     val networkState  = finalScreenViewModel.isNetworkAvailable
@@ -90,6 +89,7 @@ fun FinalScreen(
             popExitTransition = { ExitTransition.None }
         ){
             composable(Screens.DashboardScreen.screen){
+                val userImageViewModel: UserImageViewModel = viewModel()
                 DashboardScreen(
                     navigationController,
                     userImageViewModel
@@ -100,7 +100,6 @@ fun FinalScreen(
                 val profileViewModel: ProfileViewModel = hiltViewModel()
                 Profile(
                     navigationController,
-                    userImageViewModel,
                     profileViewModel
                 )
             }

@@ -23,16 +23,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.data.data.model.Categories
 import com.example.applicationhome.data.data.repository.TapRowData.FavoriteTapRow
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.DeepMatteBlack
-import com.example.applicationhome.ui.theme.model.FavoriteViewModel
-import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 
 
 @Composable
-fun CategoriesBar(homeScreenViewModel: HomeScreenViewModel){
-    val categories = homeScreenViewModel.categories
+fun CategoriesBar(
+    categories: List<Categories>,
+    categoriesIsLoading : Boolean,
+    selected : Int,
+    select : (Categories) -> Unit,
+    unSelect : () -> Unit,
+){
     Row(
         modifier = Modifier.fillMaxWidth().
         height(120.dp).
@@ -45,7 +49,13 @@ fun CategoriesBar(homeScreenViewModel: HomeScreenViewModel){
         ){
             item { Spacer(modifier = Modifier.width(4.dp)) }
             items(categories.toList()) { category ->
-                CategoriesBox(category, homeScreenViewModel)
+                CategoriesBox(
+                    category,
+                    categoriesIsLoading,
+                    selected,
+                    { select(category) },
+                    { unSelect() }
+                )
             }
             item { Spacer(modifier = Modifier.width(4.dp)) }
         }
@@ -97,27 +107,30 @@ fun CategoriesBarForRestaurantsScreen(
 
 
 @Composable
-fun favoriteBar(favoriteViewModel: FavoriteViewModel){
+fun favoriteBar(
+    selectedCategoryInFavoriteScreen : Int,
+    selectedFavoriteScreen : (Int) -> Unit
+){
     TabRow(
         modifier = Modifier.fillMaxWidth().
         height(50.dp),
-        selectedTabIndex = favoriteViewModel.selectedCategorieInFavoriteScreen,
+        selectedTabIndex = selectedCategoryInFavoriteScreen,
         containerColor = Color.White,
         contentColor = Color.DeepMatteBlack,
         indicator = { tabPositions ->
-            if (favoriteViewModel.selectedCategorieInFavoriteScreen < tabPositions.size) {
+            if (selectedCategoryInFavoriteScreen < tabPositions.size) {
                 TabRowDefaults.SecondaryIndicator(
-                    modifier = Modifier.tabIndicatorOffset(tabPositions[favoriteViewModel.selectedCategorieInFavoriteScreen]),
+                    modifier = Modifier.tabIndicatorOffset(tabPositions[selectedCategoryInFavoriteScreen]),
                     color = Color.DarkOrange
                 )
             }
         }
     ){
         FavoriteTapRow.forEachIndexed { index, title ->
-            val isSelected = index == favoriteViewModel.selectedCategorieInFavoriteScreen
+            val isSelected = index == selectedCategoryInFavoriteScreen
             Tab(
                 selected = true,
-                onClick = { favoriteViewModel.selectedFavoriteScreen(index) },
+                onClick = { selectedFavoriteScreen(index) },
                 text = {
                     Text(
                         text = title,

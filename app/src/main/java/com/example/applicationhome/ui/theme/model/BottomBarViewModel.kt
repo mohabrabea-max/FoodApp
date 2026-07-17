@@ -1,12 +1,10 @@
 package com.example.applicationhome.ui.theme.model
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.applicationhome.data.data.repository.CartRepository
 import com.example.applicationhome.data.data.repository.FavoriteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,15 +19,15 @@ class BottomBarViewModel @Inject constructor(
     val totalNumberInCart = cartRepository.totalNumber
 
 
-    var selected by mutableStateOf("Home")
+    val selected = MutableStateFlow("Home")
 
     fun home(){
-        selected = "Home"
+        selected.value = "Home"
     }
     fun favorite(){
-        selected = "Favorite"
+        selected.value = "Favorite"
     }
     fun settings(){
-        selected = "Settings"
+        selected.value = "Settings"
     }
 }

@@ -43,8 +43,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.data.model.Screens
-import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.textFieldConfirmOrderScreenList1
-import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.textFieldConfirmOrderScreenList2
 import com.example.applicationhome.ui.theme.BrandBlue
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
@@ -66,15 +64,20 @@ fun ConfirmOrderScreen(
     confirmOrderScreenViewModel : ConfirmOrderScreenViewModel
 ){
     val loading by confirmOrderScreenViewModel.loading.collectAsStateWithLifecycle()
+    val bottonState by confirmOrderScreenViewModel.bottonState.collectAsStateWithLifecycle()
+    val confirmOrderPages by confirmOrderScreenViewModel.confirmOrderPages.collectAsStateWithLifecycle()
+    val phoneNumbertextFieldState by confirmOrderScreenViewModel.phoneNumbertextFieldState.collectAsStateWithLifecycle()
+    val housetextFieldState by confirmOrderScreenViewModel.housetextFieldState.collectAsStateWithLifecycle()
+    val streettextFieldState by confirmOrderScreenViewModel.streettextFieldState.collectAsStateWithLifecycle()
 
     val cart by confirmOrderScreenViewModel.cartItems.collectAsStateWithLifecycle()
 
-    val totalprice = confirmOrderScreenViewModel.totalPrice
+    val totalprice by confirmOrderScreenViewModel.totalPrice.collectAsStateWithLifecycle()
 
     val clickState = remember { mutableStateOf(true) }
 
-    var color = if(confirmOrderScreenViewModel.bottonState) Color.DarkOrange else Color.Gray
-    var fontcolor = if(confirmOrderScreenViewModel.bottonState) Color.White else Color.Black
+    val color = if(bottonState) Color.DarkOrange else Color.Gray
+    val fontcolor = if(bottonState) Color.White else Color.Black
 
     Scaffold(
         modifier = Modifier.navigationBarsPadding().fillMaxSize(),
@@ -90,7 +93,7 @@ fun ConfirmOrderScreen(
                 {
                     IconButton(
                         onClick = {
-                            if(confirmOrderScreenViewModel.confirmOrderPages == 1){
+                            if(confirmOrderPages == 1){
                                 confirmOrderScreenViewModel.lastPage()
                             }else{
                                 if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
@@ -111,7 +114,7 @@ fun ConfirmOrderScreen(
     ){
         Box(modifier = Modifier.background(Color.White)) {
             Box(modifier = Modifier.fillMaxSize()) {
-                if(confirmOrderScreenViewModel.confirmOrderPages == 1){
+                if(confirmOrderPages == 1){
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -182,14 +185,41 @@ fun ConfirmOrderScreen(
 
                         item{Spacer(modifier = Modifier.height(15.dp))}
 
-                        items(textFieldConfirmOrderScreenList1){item ->
-                            TextFieldForConfirmOrder(confirmOrderScreenViewModel, item.textState, item.title)
+                        items(confirmOrderScreenViewModel.textFieldConfirmOrderScreenList1){ item ->
+                            TextFieldForConfirmOrder(
+                                item.textState,
+                                confirmOrderScreenViewModel.houseState,
+                                confirmOrderScreenViewModel.streetState,
+                                item.title,
+                                housetextFieldState,
+                                streettextFieldState,
+                                { confirmOrderScreenViewModel.bottonstate() },
+                                { confirmOrderScreenViewModel.housetextFieldStatetrue() },
+                                { confirmOrderScreenViewModel.streettextFieldtrue() }
+                            )
                         }
 
-                        item{ ConfirmOrderScreenTextField2(confirmOrderScreenViewModel) }
+                        item{
+                            ConfirmOrderScreenTextField2(
+                                confirmOrderScreenViewModel.phoneNumberState,
+                                phoneNumbertextFieldState,
+                                { confirmOrderScreenViewModel.phoneNumbertextFieldtrue() },
+                                { confirmOrderScreenViewModel.bottonstate() }
+                            )
+                        }
 
-                        items(textFieldConfirmOrderScreenList2){item ->
-                            TextFieldForConfirmOrder(confirmOrderScreenViewModel, item.textState, item.title)
+                        items(confirmOrderScreenViewModel.textFieldConfirmOrderScreenList2){item ->
+                            TextFieldForConfirmOrder(
+                                item.textState,
+                                confirmOrderScreenViewModel.houseState,
+                                confirmOrderScreenViewModel.streetState,
+                                item.title,
+                                housetextFieldState,
+                                streettextFieldState,
+                                { confirmOrderScreenViewModel.bottonstate() },
+                                { confirmOrderScreenViewModel.housetextFieldStatetrue() },
+                                { confirmOrderScreenViewModel.streettextFieldtrue() }
+                            )
                         }
 
                         item{Spacer(modifier = Modifier.height(100.dp))}
@@ -201,7 +231,7 @@ fun ConfirmOrderScreen(
                     ){
                         item{Spacer(modifier = Modifier.height(100.dp))}
                         items(cart) { item ->
-                            if(item != null)ConfirmOrderBox(item, confirmOrderScreenViewModel)
+                            if(item != null)ConfirmOrderBox(item)
                         }
                         item{
                             PaymentSummary(totalprice)
@@ -212,14 +242,14 @@ fun ConfirmOrderScreen(
 
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally){
-                if(confirmOrderScreenViewModel.confirmOrderPages == 1){
+                if(confirmOrderPages == 1){
                     CartButton(
                         loading,
                         color,
                         fontcolor,
                         "Save address"
                     ){
-                        if (confirmOrderScreenViewModel.bottonState) {
+                        if (bottonState) {
                             confirmOrderScreenViewModel.nextPage()
                         }
                     }

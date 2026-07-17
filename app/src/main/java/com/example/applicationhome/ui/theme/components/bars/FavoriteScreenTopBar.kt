@@ -23,7 +23,6 @@ import com.example.applicationhome.R
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.favoriteBar
-import com.example.applicationhome.ui.theme.model.FavoriteViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -32,7 +31,8 @@ fun FavoriteScreenTopBar(
     drawerState : DrawerState,
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
-    favoriteViewModel : FavoriteViewModel
+    selectedCategoryInFavoriteScreen : Int,
+    selectedFavoriteScreen : (Int) -> Unit
 ){
     Column(
         modifier = Modifier.fillMaxWidth().height(146.dp).
@@ -62,6 +62,9 @@ fun FavoriteScreenTopBar(
                 }
             }
         )
-        favoriteBar(favoriteViewModel)
+        favoriteBar(
+            selectedCategoryInFavoriteScreen,
+            { item -> selectedFavoriteScreen(item) }
+        )
     }
 }

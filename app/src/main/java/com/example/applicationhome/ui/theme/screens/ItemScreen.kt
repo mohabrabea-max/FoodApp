@@ -36,8 +36,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.data.data.local.entity.CartItemsClass
+import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
@@ -64,11 +66,15 @@ fun ItemScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
+    val errorInCart by itemScreenViewModel.errorInCart.collectAsStateWithLifecycle()
+
     val userData by itemScreenViewModel.userData.collectAsStateWithLifecycle()
 
     val cartInformation by itemScreenViewModel.cartInformation.collectAsStateWithLifecycle()
 
-    val newCount = itemScreenViewModel.newCount
+    val newCount by itemScreenViewModel.newCount.collectAsStateWithLifecycle()
+
+    val favoriteMealsIds by itemScreenViewModel.favoriteMealsIds.collectAsStateWithLifecycle()
 
     val scrollState = rememberLazyListState()
 
@@ -92,7 +98,38 @@ fun ItemScreen(
             Spacer(modifier = Modifier.height(160.dp))
         },
         topBar = {
-            ItemScreenTopBar(navigationController, scrollState, item, itemScreenViewModel)
+            ItemScreenTopBar(
+                scrollState,
+                favoriteMealsIds.contains(item.id),
+                { if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() } },
+                {
+                    navigationController.navigate(Screens.Search.screen){
+                        popUpTo(navigationController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                {
+                    val favoriteFoodDatabase =
+                        FavoriteFoodDatabase(
+                            userData.id,
+                            item.id,
+                            item.category,
+                            item.name,
+                            item.details,
+                            item.image.first(),
+                            item.sizeOptions,
+                            item.restaurantId,
+                            item.review,
+                            false,
+                            false
+                        )
+                    itemScreenViewModel.addMealFavorite(favoriteFoodDatabase)
+                },
+                { itemScreenViewModel.removeMealFavorite(item.id) }
+            )
         }
     ){
         Box(modifier = Modifier.background(Color.VeryLightGray).padding(10.dp)){
@@ -104,7 +141,7 @@ fun ItemScreen(
                 item{
                     Column{
                         Spacer(modifier = Modifier.height(50.dp))
-                        ItemScreenImage(scrollState, item.image)
+                        ItemScreenImage(scrollState, item.image.first())
                     }
                 }
                 item {
@@ -184,7 +221,7 @@ fun ItemScreen(
                         background(Color.White).
                         padding(10.dp)
                     ){
-                        ItemSize(item, size){ selectedSize ->
+                        ItemSize(item.sizeOptions, size){ selectedSize ->
                             itemScreenViewModel.selectItem(item, selectedSize)
                         }
                     }
@@ -200,20 +237,19 @@ fun ItemScreen(
             val totalPrice = newCount * price
             val meal = CartItemsClass(
                 userData.id,
-                "${item.mealId}_${size}",
-                item.mealId,
+                "${item.id}_${size}",
+                item.id,
                 item.name,
-                item.type,
+                item.category,
                 size,
                 newCount,
                 price,
                 totalPrice,
-                item.image,
+                item.image.first(),
                 item.restaurantId
             )
             BottomBarForItemScreen(
-                item,
-                size,
+                price,
                 newCount,
                 { itemScreenViewModel.minusnewCount() },
                 { itemScreenViewModel.plusnewCount() },
@@ -233,13 +269,13 @@ fun ItemScreen(
             )
         }
 
-        if(itemScreenViewModel.errorInCart){
+        if(errorInCart){
             AlertDialogMessage(
                 cartInformation?.restaurantName ?: "",
                 "Start",
                 {
                     itemScreenViewModel.alertDialogFalse()
-                    itemScreenViewModel.clearAndStartNewCart(itemScreenViewModel.newCount)
+                    itemScreenViewModel.clearAndStartNewCart(newCount)
                     itemScreenViewModel.deletenewCount()
                     scope.showAddToCartSnackbar(
                         snackbarHostState,

@@ -72,6 +72,7 @@ fun RestaurantTopBar(
         item.name,
         item.image,
         item.image2,
+        item.typ,
         false,
         false
     )

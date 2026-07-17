@@ -61,6 +61,10 @@ fun LoginScreen(
     navigationController : NavHostController,
     loginViewModel: LoginViewModel
 ){
+    val loading by loginViewModel.loading.collectAsStateWithLifecycle()
+    val isLogin by loginViewModel.isLogin.collectAsStateWithLifecycle()
+    val isNetworkAvailable by loginViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
+
     DisposableEffect(Unit){
         onDispose {
             loginViewModel.clearFields()
@@ -137,7 +141,10 @@ fun LoginScreen(
                     fontSize = 35.sp
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-                LoginTextField(loginViewModel)
+                LoginTextField(
+                    loginViewModel.emailstate,
+                    loginViewModel.passwordstate
+                )
 
                 TextButton(
                     onClick = {},
@@ -154,7 +161,15 @@ fun LoginScreen(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
 
-                LoginButton(loginViewModel, navigationController)
+                LoginButton(
+                    loading,
+                    isLogin,
+                    isNetworkAvailable,
+                    loginViewModel.emailstate.text.isNotEmpty(),
+                    loginViewModel.passwordstate.text.isNotEmpty(),
+                    { navigationController.popBackStack() },
+                    { loginViewModel.login() }
+                )
 
                 Spacer(modifier = Modifier.height(25.dp))
                 Row(
@@ -240,15 +255,20 @@ fun LoginScreen(
 }
 
 @Composable
-fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostController){
+fun LoginButton(
+    loading : Boolean,
+    isLogin : Boolean,
+    isNetworkAvailable : Boolean,
+    emailStateInNotEmpty : Boolean,
+    passwordStateInNotEmpty : Boolean,
+    backStack : () -> Unit,
+    login : () -> Unit
+){
     val clickState = remember { mutableStateOf(true) }
-
-    val loading by loginViewModel.loading.collectAsStateWithLifecycle()
-    val isLogin by loginViewModel.isLogin.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = isLogin){
         if(isLogin){
-            navigationController.popBackStack()
+            backStack()
         }
     }
 
@@ -258,11 +278,11 @@ fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostCon
             .height(50.dp)
             .fillMaxWidth()
             .clip(CircleShape)
-            .background(if(loginViewModel.emailstate.text.isNotEmpty() && loginViewModel.passwordstate.text.isNotEmpty()) Color.DarkOrange else Color.Gray)
+            .background(if(emailStateInNotEmpty && passwordStateInNotEmpty) Color.DarkOrange else Color.Gray)
             .clickable {
-                if(loginViewModel.isNetworkAvailable && clickState.value){
+                if(isNetworkAvailable && clickState.value){
                     clickState.value = false
-                    loginViewModel.login()
+                    login()
                 }
             },
         contentAlignment = Alignment.Center
@@ -276,7 +296,7 @@ fun LoginButton(loginViewModel: LoginViewModel, navigationController: NavHostCon
             Text(
                 text = "Login",
                 style = MaterialTheme.typography.bodyLarge,
-                color = if(loginViewModel.emailstate.text.isNotEmpty() && loginViewModel.passwordstate.text.isNotEmpty()) Color.White else Color.Black,
+                color = if(emailStateInNotEmpty && passwordStateInNotEmpty) Color.White else Color.Black,
                 fontSize = 18.sp
             )
         }

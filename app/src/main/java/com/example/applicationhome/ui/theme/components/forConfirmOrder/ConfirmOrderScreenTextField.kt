@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,12 +35,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.phoneNumberState
-import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 
 
 @Composable
-fun ConfirmOrderScreenTextField2(confirmOrderScreenViewModel : ConfirmOrderScreenViewModel){
+fun ConfirmOrderScreenTextField2(
+    phoneNumberState : TextFieldState,
+    phoneNumbertextFieldState : Boolean,
+    phoneNumbertextFieldtrue : () -> Unit,
+    bottonState : () -> Unit
+){
     var color by remember { mutableStateOf(Color.Gray) }
     var alpha by remember { mutableStateOf(0.2f) }
 
@@ -59,7 +63,7 @@ fun ConfirmOrderScreenTextField2(confirmOrderScreenViewModel : ConfirmOrderScree
         LaunchedEffect(phoneNumberState) {
             snapshotFlow { phoneNumberState.text.toString() }
                 .collect {
-                    confirmOrderScreenViewModel.bottonstate()
+                    bottonState()
                 }
         }
         BasicTextField(
@@ -67,7 +71,7 @@ fun ConfirmOrderScreenTextField2(confirmOrderScreenViewModel : ConfirmOrderScree
             modifier = Modifier.fillMaxSize().
             onFocusChanged { focusState ->
                 if (!focusState.isFocused) {
-                    if((phoneNumberState.text.isEmpty() || phoneNumberState.text.length != 11) && confirmOrderScreenViewModel.phoneNumbertextFieldState){
+                    if((phoneNumberState.text.isEmpty() || phoneNumberState.text.length != 11) && phoneNumbertextFieldState){
                         color = Color.Red
                         alpha = 1f
                     }else{
@@ -78,7 +82,7 @@ fun ConfirmOrderScreenTextField2(confirmOrderScreenViewModel : ConfirmOrderScree
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Done),
             onKeyboardAction = {
-                confirmOrderScreenViewModel.phoneNumbertextFieldtrue()
+                phoneNumbertextFieldtrue()
                 keyboardController?.hide()
                 focusManager.clearFocus()
             },

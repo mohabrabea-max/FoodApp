@@ -71,6 +71,10 @@ fun HomeScreen(
     homeScreenViewModel : HomeScreenViewModel,
     scrollState : LazyListState
 ){
+    val categories by homeScreenViewModel.categories.collectAsStateWithLifecycle()
+    val categoriesIsLoading by homeScreenViewModel.categoriesIsLoading.collectAsStateWithLifecycle()
+    val categorySelected by homeScreenViewModel.selected.collectAsStateWithLifecycle()
+
     val userData by homeScreenViewModel.userData.collectAsStateWithLifecycle()
     val restaurants by homeScreenViewModel.filterRestaurants.collectAsStateWithLifecycle()
     val offers by homeScreenViewModel.offers.collectAsStateWithLifecycle()
@@ -139,7 +143,15 @@ fun HomeScreen(
                     }
                     item{ Box(modifier = Modifier.fillMaxWidth().height(16.dp).background(Color.White)) }
 
-                    item{ CategoriesBar(homeScreenViewModel) }
+                    item{
+                        CategoriesBar(
+                            categories,
+                            categoriesIsLoading,
+                            categorySelected,
+                            { category -> homeScreenViewModel.select(category) },
+                            { homeScreenViewModel.unSelected() }
+                        )
+                    }
 
                     item{ Spacer(modifier = Modifier.height(16.dp)) }
 
@@ -204,6 +216,7 @@ fun HomeScreen(
                                     item.name,
                                     item.image,
                                     item.image2,
+                                    item.typ,
                                     false,
                                     false
                                 )

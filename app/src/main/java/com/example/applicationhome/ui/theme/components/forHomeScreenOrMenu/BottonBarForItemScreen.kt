@@ -35,7 +35,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 
@@ -43,14 +42,12 @@ import com.example.applicationhome.ui.theme.VeryLightGray
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomBarForItemScreen(
-    food : FavoriteFoodDatabase,
-    size : String,
+    price : Double,
     newCount : Int,
     minusnewCount : () -> Unit = {},
     plusnewCount : () -> Unit = {},
     clickable : () -> Unit = {}
 ){
-    val price = food.sizeOptions.find { it.size == size }?.price ?: 0.0
     val totalPrice = newCount * price
 
     var color : Color

@@ -232,6 +232,7 @@ data class FavoriteRestaurantDatabase(
     val name : String = "",
     val image : String = "",
     val image2 : String = "",
+    val type : List<String> = emptyList(),
     val isSynced : Boolean = false,
     val isDeletedOffline : Boolean = false
 )

@@ -1,12 +1,8 @@
 package com.example.applicationhome.data.data.repository
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
 import com.example.applicationhome.data.data.local.dao.UsersDao
 import com.example.applicationhome.data.data.local.entity.UpdateAccountState
 import com.example.applicationhome.data.data.local.entity.UserClass
-import com.example.applicationhome.data.data.model.Account
 import com.example.applicationhome.data.data.model.FirebasePostResponse
 import com.example.applicationhome.data.data.model.UserClassFireBase
 import com.example.applicationhome.data.data.remote.FoodAppAPIs
@@ -139,51 +135,5 @@ class UserRepository @Inject constructor(
 
     fun isLogout(){
         _isLogin.value = false
-    }
-
-
-    //       *** ---------------------------- \\***  Edite Profile  ***// ---------------------------- ***
-
-    private val profile = listOf(
-        Account(
-            101,
-            "Email",
-            "mohabrabea@gmail.com",
-            null
-        ),
-        Account(
-            102,
-            "First Name",
-            "First Name",
-            Icons.Default.Edit
-        ),
-        Account(
-            103,
-            "Last Name",
-            "Last Name",
-            Icons.Default.Edit
-        ),
-        Account(
-            104,
-            "Phone number",
-            "01011223344",
-            Icons.Default.Edit
-        ),
-        Account(
-            105,
-            "Birthday",
-            "Get offers on your special day",
-            Icons.Default.Add
-        ),
-        Account(
-            106,
-            "Country",
-            "Egypt",
-            Icons.Default.Add
-        )
-    )
-
-    fun profileData(): List<Account>{
-        return profile
     }
 }

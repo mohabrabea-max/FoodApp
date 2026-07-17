@@ -28,20 +28,18 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.data.local.entity.FavoriteSnacksDatabase
 import com.example.applicationhome.data.data.model.MealSnacks
 
 @Composable
 fun SnaksBox(
     snackIsLoading : Boolean,
     modifier: Modifier = Modifier,
-    item: FavoriteSnacksDatabase,
-    size : String,
+    name : String,
+    image : String,
+    price : Double?,
     cardNavigationClickable : () -> Unit = {},
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
-    val price = item.priceANDsize[size]
-
     if (snackIsLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -64,7 +62,7 @@ fun SnaksBox(
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(),
                         model = ImageRequest.Builder(LocalContext.current).
-                        data(item.image).
+                        data(image).
                         crossfade(true).
                         precision(Precision.EXACT).
                         build(),
@@ -84,7 +82,7 @@ fun SnaksBox(
                     verticalArrangement = Arrangement.SpaceBetween
                 ){
                     Text(
-                        text = item.name,
+                        text = name,
                         fontSize = 14.sp,
                         color = Color.Black,
                         style = TextStyle(

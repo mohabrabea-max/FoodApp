@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Phone
@@ -33,15 +34,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.applicationhome.ui.theme.model.SignUpViewModel
-import com.example.applicationhome.ui.theme.model.UserImageViewModel
 
 @Composable
-fun SignupTextFieldPage2(signUpViewModel : SignUpViewModel, userImageViewModel : UserImageViewModel = viewModel()){
-    val phonenumberstate = signUpViewModel.phonenumberstate
-    val addressstate = signUpViewModel.addressstate
-
+fun SignupTextFieldPage2(
+    phonenumberstate : TextFieldState,
+    addressstate : TextFieldState
+){
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -63,12 +61,10 @@ fun SignupTextFieldPage2(signUpViewModel : SignUpViewModel, userImageViewModel :
             modifier = Modifier.fillMaxSize().padding(start = 30.dp).
             onFocusChanged { focusState ->
                 if (focusState.isFocused) {
-                    userImageViewModel.statetrue()
                 }
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Done),
             onKeyboardAction = {
-                userImageViewModel.statefalse()
                 keyboardController?.hide()
                 focusManager.clearFocus()
             },
@@ -126,12 +122,10 @@ fun SignupTextFieldPage2(signUpViewModel : SignUpViewModel, userImageViewModel :
             modifier = Modifier.fillMaxSize().padding(start = 30.dp).
             onFocusChanged { focusState ->
                 if (focusState.isFocused) {
-                    userImageViewModel.statetrue()
                 }
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
             onKeyboardAction = {
-                userImageViewModel.statefalse()
                 keyboardController?.hide()
                 focusManager.clearFocus()
             },

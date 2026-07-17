@@ -32,6 +32,12 @@ interface FoodAppAPIs{
         @Query("equalTo") value : String
     ): Response<Map<String, UserClassFireBase>>
 
+    @PUT("users/{userId}.json")
+    suspend fun editeProfile(
+        @Path("userId") userId : String,
+        @Body newData : UserClassFireBase
+    ): Response<Unit>
+
 
 //    @PATCH("snacks/{mealId}.json")
 //    suspend fun addToMeals(

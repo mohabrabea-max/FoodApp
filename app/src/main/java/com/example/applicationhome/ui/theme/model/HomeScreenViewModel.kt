@@ -1,10 +1,5 @@
 package com.example.applicationhome.ui.theme.model
 
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.data.local.entity.FavoriteRestaurantDatabase
@@ -40,7 +35,7 @@ class HomeScreenViewModel @Inject constructor(
 
     //       *** ---------------------------- \\***  Home Screen Items  ***// ---------------------------- ***
 
-    var selected by mutableStateOf(0)
+    val selected = MutableStateFlow(0)
 
     private val typ = MutableStateFlow("All")
 
@@ -69,8 +64,8 @@ class HomeScreenViewModel @Inject constructor(
 
 
 
-    private val _categories = mutableStateListOf<Categories>()
-    val categories : List<Categories> get() = _categories
+    private val _categories = MutableStateFlow<List<Categories>>(emptyList())
+    val categories : StateFlow<List<Categories>> = _categories
     val categoriesIsLoading : StateFlow<Boolean> = homeScreenRepository.categoriesIsLoading
 
 
@@ -78,13 +73,13 @@ class HomeScreenViewModel @Inject constructor(
     val offers : StateFlow<List<Offers>> = _offers
     val offersIsLoading : StateFlow<Boolean> = homeScreenRepository.offersIsLoading
 
-    var isNetworkAvailable by mutableStateOf(true)
+    val isNetworkAvailable = MutableStateFlow(true)
 
 
     init {
         viewModelScope.launch {
             networkObserver.isNetworkAvailable.collect { available ->
-                isNetworkAvailable = available
+                isNetworkAvailable.value = available
                 if(available){
                     loadDataFromApi()
                 }
@@ -98,8 +93,8 @@ class HomeScreenViewModel @Inject constructor(
             _restaurantsMenu.value += restaurants
         }
         viewModelScope.launch {
-            _categories.clear()
-            _categories += homeScreenRepository.getCategorieslistFromApi()
+            _categories.value = emptyList()
+            _categories.value += homeScreenRepository.getCategorieslistFromApi()
         }
         viewModelScope.launch {
             _offers.value = emptyList()
@@ -110,13 +105,13 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
-    fun selected(item : Categories){
-        selected = item.id
+    fun select(item : Categories){
+        selected.value = item.id
         typ.value = item.type
     }
 
     fun unSelected(){
-        selected = 0
+        selected.value = 0
         typ.value = "All"
     }
 
@@ -130,7 +125,7 @@ class HomeScreenViewModel @Inject constructor(
                 val newData = favoriteRepository.getRestaurantToView(item.id)
                 if(newData != null) itemScreenRepository.selectRestaurant(newData)
             }catch (e : Exception){
-                Log.e("SelectRestaurant", "Error fetching fresh data", e)
+                null
             }
         }
     }

@@ -25,7 +25,7 @@ import com.example.applicationhome.data.data.local.entity.UserClass
         FavoriteRestaurantDatabase::class,
         OrdersDatabaseClass::class
     ],
-    version = 34,
+    version = 35,
     exportSchema = false
 )
 

@@ -2,14 +2,12 @@ package com.example.applicationhome.ui.theme.model
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.data.remote.NetworkObserver
 import com.example.applicationhome.data.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,7 +21,7 @@ class LoginViewModel @Inject constructor(
     val emailstate = TextFieldState()
     val passwordstate = TextFieldState()
 
-    var isNetworkAvailable by mutableStateOf(false)
+    val isNetworkAvailable = MutableStateFlow(false)
 
     val isLogin = userRepository.isLogin
 
@@ -32,7 +30,7 @@ class LoginViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             networkObserver.isNetworkAvailable.collect { available ->
-                isNetworkAvailable = available
+                isNetworkAvailable.value = available
             }
 
         }

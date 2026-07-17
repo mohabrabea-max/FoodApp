@@ -1,11 +1,5 @@
 package com.example.applicationhome.ui.theme.model
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.data.local.entity.CartItemsClass
@@ -26,8 +20,8 @@ import com.example.applicationhome.data.data.repository.UserRepository
 import com.example.applicationhome.domain.CartUseCase
 import com.example.applicationhome.domain.GetFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -48,8 +42,6 @@ class RestaurantViewModel @Inject constructor(
     private val getFavoriteUseCase : GetFavoriteUseCase
 ): ViewModel(){
 
-    var isNetworkAvailable by mutableStateOf(false)
-
     val userData = userRepository.userData
 
 
@@ -63,10 +55,10 @@ class RestaurantViewModel @Inject constructor(
     val restaurantCount = homeScreenRepository.restaurantCount
 
 
-    private val _foodMenuMap = mutableStateMapOf<String, FoodItem>()
+    private val _foodMenuMap = MutableStateFlow<Map<String, FoodItem>>(emptyMap())
 
-    private val _foodMenuList : StateFlow<List<FoodItem>> = combine(
-        snapshotFlow{ _foodMenuMap.toMap() },
+    val foodMenuList : StateFlow<List<FoodItem>> = combine(
+        _foodMenuMap,
         resid,
         typeInRestaurantScreen
     ){ menuMap, resId, type ->
@@ -82,36 +74,10 @@ class RestaurantViewModel @Inject constructor(
 
     val foodMenuListIsLoading : StateFlow<Boolean> = restaurantScreenRepository.foodMenuListIsLoading
 
-    val favoriteMealsDatabase = combine(
-        userData,
-        _foodMenuList
-    ){ user, menu ->
-        menu.map { item ->
-            FavoriteFoodDatabase(
-                user.id,
-                item.id,
-                item.category,
-                item.name,
-                item.details,
-                item.image.first(),
-                item.sizeOptions,
-                item.restaurantId,
-                item.review,
-                false,
-                false
-            )
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+    private val _snackMenuMap = MutableStateFlow<Map<String, Snack>>(emptyMap())
 
-
-    private val _snackMenuMap = mutableStateMapOf<String, Snack>()
-
-    private val _snackMenuList = combine(
-        snapshotFlow { _snackMenuMap.toMap() },
+    val snackMenuList = combine(
+        _snackMenuMap,
         resid
     ) { menuMap, resId ->
         menuMap.filter { it.value.restaurantId == resId }.values.toList()
@@ -123,36 +89,12 @@ class RestaurantViewModel @Inject constructor(
 
     val snacksIsLoading : StateFlow<Boolean> = restaurantScreenRepository.snacksIsLoading
 
-    val favoriteSnacksDatabase = combine(
-        userData,
-        _snackMenuList
-    ){ user , snacks ->
-        snacks.map { item ->
-            FavoriteSnacksDatabase(
-                user.id,
-                item.id,
-                item.name,
-                item.details,
-                item.image.first(),
-                item.priceANDsize,
-                item.restaurantId,
-                item.review,
-                false,
-                false
-            )
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
 
 
-
-    private val _drinkMenuMap = mutableStateMapOf<String, Drink>()
+    private val _drinkMenuMap = MutableStateFlow<Map<String, Drink>>(emptyMap())
 
     val drinkMenuList = combine(
-        snapshotFlow { _drinkMenuMap.toMap() },
+        _drinkMenuMap,
         resid
     ){ menuMap, resId ->
         menuMap.filter { it.value.restaurantId == resId }.values
@@ -165,10 +107,10 @@ class RestaurantViewModel @Inject constructor(
     val drinkMenuIsLoading : StateFlow<Boolean> = restaurantScreenRepository.drinkMenuIsLoading
 
 
-    val _restaurantOffersMenuMap = mutableStateMapOf<String, Offers>()
+    val _restaurantOffersMenuMap = MutableStateFlow<Map<String, Offers>>(emptyMap())
 
     val restaurantOffersMenuList = combine(
-        snapshotFlow { _restaurantOffersMenuMap.toMap() },
+        _restaurantOffersMenuMap,
         resid
     ){ menuMap, resId ->
         menuMap.filter { it.value.restaurantId == resId }.values.toList()
@@ -183,30 +125,30 @@ class RestaurantViewModel @Inject constructor(
 
 
     fun restaurantData(){
-        val restaurantscount = restaurantCount[resid.value]
-        if(restaurantscount != null){
+        val restaurantsCount = restaurantCount[resid.value]
+        if(restaurantsCount != null){
             viewModelScope.launch {
                 val foodMenu = async {
-                    if(_foodMenuList.value.size < restaurantscount.meals){
+                    if(foodMenuList.value.size < restaurantsCount.meals){
                       restaurantScreenRepository.uploadFoodMenuFromApi(resid.value)
                     } else { emptyMap() }
                 }
 
                 val snackMenu = async {
-                    if(_snackMenuList.value.size < restaurantscount.snacks){
+                    if(snackMenuList.value.size < restaurantsCount.snacks){
                         restaurantScreenRepository.uploadSnacksMenuFromApi(resid.value)
                     } else { emptyMap() }
                 }
 
                 val offersMenu = async {
-                    if(restaurantOffersMenuList.value.size < restaurantscount.offers){
+                    if(restaurantOffersMenuList.value.size < restaurantsCount.offers){
                         restaurantScreenRepository.uploadRestaurantOffersFromApi(resid.value)
                     } else { emptyMap() }
                 }
 
-                _foodMenuMap += foodMenu.await()
-                _snackMenuMap += snackMenu.await()
-                _restaurantOffersMenuMap += offersMenu.await()
+                _foodMenuMap.value += foodMenu.await()
+                _snackMenuMap.value += snackMenu.await()
+                _restaurantOffersMenuMap.value += offersMenu.await()
             }
         }
     }
@@ -218,7 +160,9 @@ class RestaurantViewModel @Inject constructor(
 
 //       *** ---------------------------- \\***  Cart  ***// ---------------------------- ***
 
-    var errorInCart by mutableStateOf(false)
+    val isNetworkAvailable = MutableStateFlow(false)
+
+    val errorInCart = MutableStateFlow(false)
 
     val cartInformation = cartRepository.cartInformation
 
@@ -226,43 +170,38 @@ class RestaurantViewModel @Inject constructor(
 
     val totalNumber = cartRepository.totalNumber
 
-    var totalPrice by mutableDoubleStateOf(0.0)
+    val totalPrice = cartRepository.totalPrice
 
-    var newCount by mutableStateOf(0)
+    val newCount = MutableStateFlow(0)
 
-    var newFoodInCart by mutableStateOf<CartItemsClass?>(null)
-    var newFoodInCartSize by mutableStateOf<String?>(null)
+    val newFoodInCart = MutableStateFlow<CartItemsClass?>(null)
+    val newFoodInCartSize = MutableStateFlow<String?>(null)
 
 
 
     init {
         viewModelScope.launch {
             networkObserver.isNetworkAvailable.collect { available ->
-                isNetworkAvailable = available
-            }
-        }
-        viewModelScope.launch{
-            cartItems.collect { cartList ->
-                updateTotals(cartList)
+                isNetworkAvailable.value = available
             }
         }
     }
 
 
     fun plus(food: CartItemsClass, size : String){
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             val userId = userRepository.userData.value.id
             val state = cartUseCase.plus(userId, food, size)
             if(state != null){
                 alertDialogTrue()
-                newFoodInCartSize = state.first
-                newFoodInCart = state.second
+                newFoodInCartSize.value = state.first
+                newFoodInCart.value = state.second
             }
         }
     }
 
     fun minus(food: CartItemsClass, size : String){
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             val userId = userRepository.userData.value.id
             cartUseCase.minus(userId, food, size)
         }
@@ -270,17 +209,16 @@ class RestaurantViewModel @Inject constructor(
 
     fun clearAndStartNewCart(count : Int) {
         viewModelScope.launch {
-            totalPrice = 0.0
-            val newFood = newFoodInCart
-            val newSize = newFoodInCartSize
+            val newFood = newFoodInCart.value
+            val newSize = newFoodInCartSize.value
             val userId = userRepository.userData.value.id
-            val finally = cartUseCase.clearAndStartNewCart(userId, newFoodInCart, newFoodInCartSize)
+            val finally = cartUseCase.clearAndStartNewCart(userId, newFoodInCart.value, newFoodInCartSize.value)
 
             if(finally && newFood != null && newSize != null){
                 cartUseCase.updateCount(userId, newFood, newSize, count)
                 deletenewCount()
-                newFoodInCart = null
-                newFoodInCartSize = null
+                newFoodInCart.value = null
+                newFoodInCartSize.value = null
             }
         }
     }
@@ -292,25 +230,16 @@ class RestaurantViewModel @Inject constructor(
         }
     }
 
-    fun updateTotals(cartItems : List<CartItemsClass?>) {
-        totalPrice = 0.0
-        cartItems.forEach { item ->
-            totalPrice += item?.totalPrice ?: 0.0
-        }
-    }
-
-    fun quantity(snackKey : String) = cartItems.value.find { it?.mealKey == snackKey }?.quantity ?: 0
-
     fun deletenewCount(){
-        newCount = 0
+        newCount.value = 0
     }
 
     fun alertDialogTrue(){
-        errorInCart = true
+        errorInCart.value = true
     }
 
     fun alertDialogFalse(){
-        errorInCart = false
+        errorInCart.value = false
     }
 
 
@@ -363,10 +292,10 @@ class RestaurantViewModel @Inject constructor(
     val selectedRestaurant = itemScreenRepository.selectedRestaurant
 
 
-    fun selectMeal(item: FavoriteFoodDatabase, size : String) {
+    fun selectMeal(item: FoodItem, size : String) {
         itemScreenRepository.selectMeal(item, size)
     }
-    fun selectSnack(item: FavoriteSnacksDatabase, size : String){
+    fun selectSnack(item: Snack, size : String){
         itemScreenRepository.selectSnack(item, size)
     }
 }

@@ -48,6 +48,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.data.data.model.Screens
@@ -66,6 +67,14 @@ fun SignUpScreen(
     navigationController : NavHostController,
     signUpViewModel : SignUpViewModel
 ){
+    val signupPages by signUpViewModel.signupPages.collectAsStateWithLifecycle()
+
+    val loading by signUpViewModel.loading.collectAsState()
+    val isLogin by signUpViewModel.isEmailChecked.collectAsState()
+
+    val page by signUpViewModel.signupPages.collectAsStateWithLifecycle()
+    val state by signUpViewModel.bottonState.collectAsStateWithLifecycle()
+
     DisposableEffect(Unit){
         onDispose {
             signUpViewModel.clearFields()
@@ -84,7 +93,7 @@ fun SignUpScreen(
                 {
                     IconButton(
                         onClick = {
-                            if(signUpViewModel.signupPages == 1){
+                            if(signupPages == 1){
                                 if (navigationController.previousBackStackEntry != null) {
                                     navigationController.popBackStack()
                                 }
@@ -132,11 +141,20 @@ fun SignUpScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
                 item {
-                    if(signUpViewModel.signupPages == 1){
+                    if(signupPages == 1){
                         Spacer(modifier = Modifier.height(70.dp))
-                        NameTextField(signUpViewModel)
+                        NameTextField(
+                            signUpViewModel.firstnamestate,
+                            signUpViewModel.lastnamestate,
+                            { signUpViewModel.bottonstate() }
+                        )
                         Spacer(modifier = Modifier.height(25.dp))
-                        SignupTextField(signUpViewModel)
+                        SignupTextField(
+                            signUpViewModel.emailstate,
+                            signUpViewModel.passwordstate,
+                            signUpViewModel.confirmpasswordstate,
+                            { signUpViewModel.bottonstate() }
+                        )
                         Spacer(modifier = Modifier.height(25.dp))
                     }else{
                         Spacer(modifier = Modifier.height(50.dp))
@@ -148,7 +166,10 @@ fun SignUpScreen(
                             fontSize = 25.sp
                         )
                         Spacer(modifier = Modifier.height(50.dp))
-                        SignupTextFieldPage2(signUpViewModel)
+                        SignupTextFieldPage2(
+                            signUpViewModel.phonenumberstate,
+                            signUpViewModel.addressstate
+                        )
                         Spacer(modifier = Modifier.height(25.dp))
                     }
 
@@ -157,7 +178,16 @@ fun SignUpScreen(
                         verticalArrangement = Arrangement.Bottom,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
-                        SignUpButton(signUpViewModel, navigationController)
+                        SignUpButton(
+                            page,
+                            state,
+                            loading,
+                            isLogin,
+                            { signUpViewModel.nextPage() },
+                            { signUpViewModel.createAccount() },
+                            { signUpViewModel.signUpButton() },
+                            { navigationController.popBackStack() }
+                        )
 
                         Spacer(modifier = Modifier.height(25.dp))
                         Row(
@@ -245,20 +275,23 @@ fun SignUpScreen(
 }
 
 @Composable
-fun SignUpButton(signUpViewModel: SignUpViewModel, navigationController: NavHostController){
+fun SignUpButton(
+    page : Int,
+    state : Boolean,
+    loading : Boolean,
+    isLogin : Boolean,
+    nextPage : () -> Unit,
+    createAccount : () -> Unit,
+    signUpButton : () -> Unit,
+    backStack : () -> Unit
+){
     val clickState = remember { mutableStateOf(true) }
 
-    val page = signUpViewModel.signupPages
-    val state = signUpViewModel.bottonState
     val scope = rememberCoroutineScope()
-
-    val loading by signUpViewModel.loading.collectAsState()
-
-    val isLogin by signUpViewModel.isEmailChecked.collectAsState()
 
     LaunchedEffect(isLogin){
         if(isLogin){
-            signUpViewModel.nextPage()
+            nextPage()
         }
     }
     Box(
@@ -270,12 +303,12 @@ fun SignUpButton(signUpViewModel: SignUpViewModel, navigationController: NavHost
             .background(if(state || page == 2) Color.DarkOrange else Color.Gray)
             .clickable {
                 if(state && page == 1){
-                    signUpViewModel.createAccount()
+                    createAccount()
                 }else if(page == 2 && clickState.value){
                     scope.launch {
                         clickState.value = false
-                        signUpViewModel.signUpButton()
-                        navigationController.popBackStack()
+                        signUpButton()
+                        backStack()
                     }
 
                 }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -35,16 +36,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.applicationhome.ui.theme.model.SignUpViewModel
-import com.example.applicationhome.ui.theme.model.UserImageViewModel
 
 
 @Composable
-fun NameTextField(signUpViewModel : SignUpViewModel, userImageViewModel: UserImageViewModel = viewModel()){
-    val firstnamestate = signUpViewModel.firstnamestate
-    val lastnamestate = signUpViewModel.lastnamestate
-
+fun NameTextField(
+    firstnamestate : TextFieldState,
+    lastnamestate : TextFieldState,
+    bottonstate : () -> Unit
+){
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     Row(
@@ -62,7 +61,7 @@ fun NameTextField(signUpViewModel : SignUpViewModel, userImageViewModel: UserIma
             LaunchedEffect(firstnamestate) {
                 snapshotFlow { firstnamestate.text.toString() }
                     .collect {
-                        signUpViewModel.bottonstate()
+                        bottonstate()
                     }
             }
             BasicTextField(
@@ -70,12 +69,10 @@ fun NameTextField(signUpViewModel : SignUpViewModel, userImageViewModel: UserIma
                 modifier = Modifier.fillMaxSize().
                 onFocusChanged { focusState ->
                     if (focusState.isFocused) {
-                        userImageViewModel.statetrue()
                     }
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
                 onKeyboardAction = {
-                    userImageViewModel.statefalse()
                     keyboardController?.hide()
                     focusManager.clearFocus()
                 },
@@ -117,7 +114,7 @@ fun NameTextField(signUpViewModel : SignUpViewModel, userImageViewModel: UserIma
             LaunchedEffect(lastnamestate) {
                 snapshotFlow { lastnamestate.text.toString() }
                     .collect {
-                        signUpViewModel.bottonstate()
+                        bottonstate()
                     }
             }
             BasicTextField(
@@ -125,12 +122,10 @@ fun NameTextField(signUpViewModel : SignUpViewModel, userImageViewModel: UserIma
                 modifier = Modifier.fillMaxSize().
                 onFocusChanged { focusState ->
                     if (focusState.isFocused) {
-                        userImageViewModel.statetrue()
                     }
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
                 onKeyboardAction = {
-                    userImageViewModel.statefalse()
                     keyboardController?.hide()
                     focusManager.clearFocus()
                 },
@@ -165,11 +160,12 @@ fun NameTextField(signUpViewModel : SignUpViewModel, userImageViewModel: UserIma
 
 
 @Composable
-fun SignupTextField(signUpViewModel: SignUpViewModel, userImageViewModel : UserImageViewModel = viewModel()){
-    val emailstate = signUpViewModel.emailstate
-    val passwordstate = signUpViewModel.passwordstate
-    val confirmpasswordstate = signUpViewModel.confirmpasswordstate
-
+fun SignupTextField(
+    emailstate : TextFieldState,
+    passwordstate : TextFieldState,
+    confirmpasswordstate : TextFieldState,
+    bottonstate : () -> Unit
+){
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -184,7 +180,7 @@ fun SignupTextField(signUpViewModel: SignUpViewModel, userImageViewModel : UserI
         LaunchedEffect(emailstate) {
             snapshotFlow { emailstate.text.toString() }
                 .collect {
-                    signUpViewModel.bottonstate()
+                    bottonstate()
                 }
         }
         BasicTextField(
@@ -192,12 +188,10 @@ fun SignupTextField(signUpViewModel: SignUpViewModel, userImageViewModel : UserI
             modifier = Modifier.fillMaxSize().padding(start = 30.dp).
             onFocusChanged { focusState ->
                 if (focusState.isFocused) {
-                    userImageViewModel.statetrue()
                 }
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
             onKeyboardAction = {
-                userImageViewModel.statefalse()
                 keyboardController?.hide()
                 focusManager.clearFocus()
             },
@@ -248,7 +242,7 @@ fun SignupTextField(signUpViewModel: SignUpViewModel, userImageViewModel : UserI
         LaunchedEffect(passwordstate) {
             snapshotFlow { passwordstate.text.toString() }
                 .collect {
-                    signUpViewModel.bottonstate()
+                    bottonstate()
                 }
         }
         BasicTextField(
@@ -256,12 +250,10 @@ fun SignupTextField(signUpViewModel: SignUpViewModel, userImageViewModel : UserI
             modifier = Modifier.fillMaxSize().padding(start = 30.dp).
             onFocusChanged { focusState ->
                 if (focusState.isFocused) {
-                    userImageViewModel.statetrue()
                 }
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
             onKeyboardAction = {
-                userImageViewModel.statefalse()
                 keyboardController?.hide()
                 focusManager.clearFocus()
             },
@@ -312,7 +304,7 @@ fun SignupTextField(signUpViewModel: SignUpViewModel, userImageViewModel : UserI
         LaunchedEffect(confirmpasswordstate) {
             snapshotFlow { confirmpasswordstate.text.toString() }
                 .collect {
-                    signUpViewModel.bottonstate()
+                    bottonstate()
                 }
         }
         BasicTextField(
@@ -320,12 +312,10 @@ fun SignupTextField(signUpViewModel: SignUpViewModel, userImageViewModel : UserI
             modifier = Modifier.fillMaxSize().padding(start = 30.dp).
             onFocusChanged { focusState ->
                 if (focusState.isFocused) {
-                    userImageViewModel.statetrue()
                 }
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
             onKeyboardAction = {
-                userImageViewModel.statefalse()
                 keyboardController?.hide()
                 focusManager.clearFocus()
             },

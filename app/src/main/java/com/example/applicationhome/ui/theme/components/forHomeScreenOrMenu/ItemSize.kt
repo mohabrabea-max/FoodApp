@@ -22,18 +22,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.data.model.MealSizeDetail
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.Orange
 
 @Composable
 fun ItemSize(
-    item : FavoriteFoodDatabase,
+    mealSizeDetail : List<MealSizeDetail>,
     size : String,
     selectMeal : (String) -> Unit
 ){
-    val mealSizeDetail = item.sizeOptions
     Box(
         modifier = Modifier.
         animateContentSize().

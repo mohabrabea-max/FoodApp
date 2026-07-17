@@ -35,14 +35,19 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.houseState
-import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.housetextFieldState
-import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.streetState
-import com.example.applicationhome.data.data.repository.ConfirmOrderScreenTextField.streettextFieldState
-import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
 
 @Composable
-fun TextFieldForConfirmOrder(confirmOrderScreenViewModel : ConfirmOrderScreenViewModel, textState : TextFieldState, title : String){
+fun TextFieldForConfirmOrder(
+    textState : TextFieldState,
+    houseState : TextFieldState,
+    streetState : TextFieldState,
+    title : String,
+    housetextFieldState : Boolean,
+    streettextFieldState :  Boolean,
+    bottonState : () -> Unit,
+    housetextFieldStatetrue : () -> Unit,
+    streettextFieldtrue : () -> Unit
+){
     var color by remember { mutableStateOf(Color.Gray) }
     var alpha by remember { mutableStateOf(0.2f) }
     val focusManager = LocalFocusManager.current
@@ -59,7 +64,7 @@ fun TextFieldForConfirmOrder(confirmOrderScreenViewModel : ConfirmOrderScreenVie
         LaunchedEffect(textState) {
             snapshotFlow { textState.text.toString() }
                 .collect {
-                    confirmOrderScreenViewModel.bottonstate()
+                    bottonState()
                 }
         }
         BasicTextField(
@@ -87,8 +92,8 @@ fun TextFieldForConfirmOrder(confirmOrderScreenViewModel : ConfirmOrderScreenVie
                 imeAction = ImeAction.Done
             ),
             onKeyboardAction = {
-                if(textState == houseState) { confirmOrderScreenViewModel.housetextFieldStatetrue() }
-                else if(textState == streetState) { confirmOrderScreenViewModel.streettextFieldtrue() }
+                if(textState == houseState) { housetextFieldStatetrue() }
+                else if(textState == streetState) { streettextFieldtrue() }
                 keyboardController?.hide()
                 focusManager.clearFocus()
             },

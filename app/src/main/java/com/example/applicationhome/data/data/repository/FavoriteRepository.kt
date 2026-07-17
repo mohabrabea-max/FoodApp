@@ -291,6 +291,7 @@ class FavoriteRepository @Inject constructor(
                                 item.name,
                                 item.image,
                                 item.image2,
+                                item.typ,
                                 true,
                                 false
                             )

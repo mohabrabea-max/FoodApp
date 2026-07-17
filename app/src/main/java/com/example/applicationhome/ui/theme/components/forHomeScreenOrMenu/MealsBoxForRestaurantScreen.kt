@@ -33,12 +33,12 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.data.model.FoodItem
 
 @Composable
 fun MealsBoxForRestaurantScreen(
     foodMenuIsLoading : Boolean,
-    item: FavoriteFoodDatabase,
+    item: FoodItem,
     cardNavigationClickable : () -> Unit = {},
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
@@ -121,7 +121,7 @@ fun MealsBoxForRestaurantScreen(
                         clip(RoundedCornerShape(10.dp)).
                         align(Alignment.CenterEnd),
                         model = ImageRequest.Builder(LocalContext.current).
-                        data(item.image).
+                        data(item.image.first()).
                         crossfade(true).
                         size(400, 400).
                         precision(Precision.EXACT).

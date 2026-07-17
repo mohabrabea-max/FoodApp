@@ -10,6 +10,20 @@ import com.google.gson.reflect.TypeToken
 class FavoriteConverters{
     private val gson = Gson()
 
+
+    @TypeConverter
+    fun fromStringList(typeList : List<String>): String?{
+        return gson.toJson(typeList)
+    }
+
+    @TypeConverter
+    fun toStringList(json: String?): List<String>? {
+        if(json == null) return null
+        val type = object : TypeToken<List<String>>() {}.type
+        return gson.fromJson(json, type)
+    }
+
+
     @TypeConverter
     fun fromMealSizeDetailList(mealSizeOptions : List<MealSizeDetail>): String? {
         return gson.toJson(mealSizeOptions)

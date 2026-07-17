@@ -1,6 +1,5 @@
 package com.example.applicationhome.data.data.repository
 
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AssignmentReturn
 import androidx.compose.material.icons.filled.Call
@@ -20,14 +19,10 @@ import androidx.compose.material.icons.filled.RestaurantMenu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SettingsBrightness
 import androidx.compose.material.icons.filled.ShoppingCartCheckout
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.example.applicationhome.data.data.model.Options
 import com.example.applicationhome.data.data.model.ProfileOptions
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.data.model.Settings
-import com.example.applicationhome.data.data.model.TextFieldClassFromConfirmOrderScreen
 import java.util.Calendar
 
 object ProfileData {
@@ -105,24 +100,4 @@ object Drawer {
 
 object TapRowData {
     val FavoriteTapRow = listOf("Meals", "Snacks", "Restaurants")
-}
-
-object ConfirmOrderScreenTextField{
-    val phoneNumberState = TextFieldState()
-    val houseState = TextFieldState()
-    var housetextFieldState by mutableStateOf(false)
-    val streetState = TextFieldState()
-    var streettextFieldState by mutableStateOf(false)
-
-    val additionalDirectionsState = TextFieldState()
-    val addressLabelState = TextFieldState()
-
-    val textFieldConfirmOrderScreenList1 = listOf(
-        TextFieldClassFromConfirmOrderScreen(houseState, "House"),
-        TextFieldClassFromConfirmOrderScreen(streetState, "Street"),
-    )
-    val textFieldConfirmOrderScreenList2 = listOf(
-        TextFieldClassFromConfirmOrderScreen(additionalDirectionsState, "Additional directions (optional)"),
-        TextFieldClassFromConfirmOrderScreen(addressLabelState, "Address label (optional)"),
-    )
 }

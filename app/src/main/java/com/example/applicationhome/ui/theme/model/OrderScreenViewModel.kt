@@ -1,8 +1,5 @@
 package com.example.applicationhome.ui.theme.model
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.data.local.entity.OrdersDatabaseClass
@@ -11,6 +8,7 @@ import com.example.applicationhome.data.data.repository.OrderRepository
 import com.example.applicationhome.data.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,14 +17,14 @@ import javax.inject.Inject
 class OrderScreenViewModel @Inject constructor(
     private val networkObserver : NetworkObserver,
     private val orderRepository : OrderRepository,
-    private val userRepository: UserRepository
+    userRepository: UserRepository
 ) : ViewModel(){
 
-    var isNetworkAvailable by mutableStateOf(false)
+    val isNetworkAvailable = MutableStateFlow(false)
 
     val userData = userRepository.userData
 
-    var selectedOrder by mutableStateOf(OrdersDatabaseClass())
+    val selectedOrder = MutableStateFlow(OrdersDatabaseClass())
 
     val ordersHistory = orderRepository.ordersHistory
 
@@ -34,14 +32,14 @@ class OrderScreenViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             networkObserver.isNetworkAvailable.collect { available ->
-                isNetworkAvailable = available
+                isNetworkAvailable.value = available
             }
         }
     }
 
 
     fun selectorder(order : OrdersDatabaseClass){
-        selectedOrder = order
+        selectedOrder.value = order
     }
 
     fun getOrdersHistory(){

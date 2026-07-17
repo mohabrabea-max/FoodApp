@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,31 +24,32 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.data.model.Categories
-import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
 
 @Composable
-fun CategoriesBox(category : Categories, homeScreenViewModel: HomeScreenViewModel){
-    val selected = homeScreenViewModel.selected
+fun CategoriesBox(
+    category : Categories,
+    categoriesIsLoading : Boolean,
+    selected : Int,
+    select : () -> Unit,
+    unSelect : () -> Unit,
+){
     val size = if(selected == category.id) 65.dp else 70.dp
     val alpha = if(selected == category.id) 1f else 0f
-
-    val categoriesIsLoading by homeScreenViewModel.categoriesIsLoading.collectAsStateWithLifecycle()
 
     if (categoriesIsLoading) {
         Column(
             modifier = Modifier.clickable {
                 if(selected == 0){
-                    homeScreenViewModel.selected(category)
+                    select()
                 }else if(selected != category.id){
-                    homeScreenViewModel.unSelected()
-                    homeScreenViewModel.selected(category)
+                    unSelect()
+                    select()
                 }else{
-                    homeScreenViewModel.unSelected()
+                    unSelect()
                 }
             },
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -74,12 +74,12 @@ fun CategoriesBox(category : Categories, homeScreenViewModel: HomeScreenViewMode
         Column(
             modifier = Modifier.clickable {
                 if(selected == 0){
-                    homeScreenViewModel.selected(category)
+                    select()
                 }else if(selected != category.id){
-                    homeScreenViewModel.unSelected()
-                    homeScreenViewModel.selected(category)
+                    unSelect()
+                    select()
                 }else{
-                    homeScreenViewModel.unSelected()
+                    unSelect()
                 }
             },
             horizontalAlignment = Alignment.CenterHorizontally,

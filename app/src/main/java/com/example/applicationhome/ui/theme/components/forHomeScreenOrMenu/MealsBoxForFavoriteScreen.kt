@@ -35,19 +35,20 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.data.model.MealSizeDetail
 import com.example.applicationhome.ui.theme.DarkOrange
 
 @Composable
 fun MealsBoxForFavoriteScreen(
     foodMenuIsLoading : Boolean,
-    item: FavoriteFoodDatabase,
+    name : String,
+    image : String,
+    sizeOptions: MealSizeDetail?,
     cardNavigationClickable : () -> Unit = {},
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
     val interactionSource = remember { MutableInteractionSource() }
 
-    val sizeOptions = item .sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }
     val price = sizeOptions?.price ?: 0.0
 
     if (foodMenuIsLoading) {
@@ -79,7 +80,7 @@ fun MealsBoxForFavoriteScreen(
                     AsyncImage(
                         modifier = Modifier.padding(top = 15.dp, end = 5.dp).fillMaxSize().clip(RoundedCornerShape(10.dp)),
                         model = ImageRequest.Builder(LocalContext.current).
-                        data(item.image).
+                        data(image).
                         crossfade(true).
                         size(400, 400).
                         precision(Precision.EXACT).
@@ -98,14 +99,14 @@ fun MealsBoxForFavoriteScreen(
                 Column(modifier = Modifier.fillMaxWidth().weight(1f),
                     verticalArrangement = Arrangement.SpaceBetween){
                     Text(
-                        text = item.name,
+                        text = name,
                         fontSize = 14.sp,
                         color = Color.Black,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = item.name,
+                        text = name,
                         fontSize = 11.sp,
                         color = Color.Gray,
                         style = MaterialTheme.typography.titleLarge

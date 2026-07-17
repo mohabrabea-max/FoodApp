@@ -1,12 +1,10 @@
 package com.example.applicationhome.ui.theme.model
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -14,8 +12,8 @@ import javax.inject.Inject
 class DashboardScreenViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel(){
-    var state by mutableStateOf(true)
-    var sheetState by mutableStateOf(false)
+    val state = MutableStateFlow(true)
+    val sheetState = MutableStateFlow(false)
 
     val isLogin = userRepository.isLogin
 
@@ -34,12 +32,12 @@ class DashboardScreenViewModel @Inject constructor(
     }
 
     fun stateTrue(){
-        state = true
-        sheetState = true
+        state.value = true
+        sheetState.value = true
     }
     fun stateFalse(){
-        state = false
-        sheetState = false
+        state.value = false
+        sheetState.value = false
     }
 
     fun logout(){

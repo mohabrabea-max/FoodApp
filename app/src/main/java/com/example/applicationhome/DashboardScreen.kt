@@ -102,7 +102,7 @@ fun DashboardScreen(
     val density = LocalDensity.current
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} }
 
-    val stat = dashboardScreenViewModel.state
+    val stat by dashboardScreenViewModel.state.collectAsStateWithLifecycle()
     val drawerWidth by animateDpAsState(
         targetValue = if (stat) 250.dp else 70.dp,
         animationSpec = spring(1F), // تقدر تتحكم في السرعة من هنا

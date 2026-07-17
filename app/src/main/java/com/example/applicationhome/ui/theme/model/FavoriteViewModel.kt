@@ -1,18 +1,15 @@
 package com.example.applicationhome.ui.theme.model
 
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
 import com.example.applicationhome.data.data.local.entity.FavoriteRestaurantDatabase
 import com.example.applicationhome.data.data.local.entity.FavoriteSnacksDatabase
-import com.example.applicationhome.data.data.model.Restaurants
+import com.example.applicationhome.data.data.model.FoodItem
+import com.example.applicationhome.data.data.model.Snack
 import com.example.applicationhome.data.data.remote.NetworkObserver
 import com.example.applicationhome.data.data.repository.CartRepository
 import com.example.applicationhome.data.data.repository.FavoriteRepository
@@ -23,6 +20,7 @@ import com.example.applicationhome.domain.GetFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,14 +36,12 @@ class FavoriteViewModel @Inject constructor(
     private val networkObserver : NetworkObserver
 ) : ViewModel(){
 
-    var isNetworkAvailable by mutableStateOf(false)
-
     val userData = userRepository.userData
 
 
 //        *** ---------------------------- \\***  Favorite  ***// ---------------------------- ***
 
-    var selectedCategorieInFavoriteScreen by mutableIntStateOf(0)
+    val selectedCategorieInFavoriteScreen = MutableStateFlow(0)
 
     val favoriteMeals = favoriteRepository.favoriteMeals
 
@@ -67,6 +63,7 @@ class FavoriteViewModel @Inject constructor(
     val favoriteRestaurantsIds = favoriteRepository.favoriteRestaurantsIds
 
 
+    val isNetworkAvailable = MutableStateFlow(false)
 
     init {
         viewModelScope.launch {
@@ -74,7 +71,7 @@ class FavoriteViewModel @Inject constructor(
                 val id = user.id
                 if (id.isNotEmpty()) {
                     networkObserver.isNetworkAvailable.collect { available ->
-                        isNetworkAvailable = available
+                        isNetworkAvailable.value = available
                         if (available) {
                             favoriteRepository.syncFavoritesInDatabase(id)
                         }
@@ -120,34 +117,24 @@ class FavoriteViewModel @Inject constructor(
 
 
     fun selectedFavoriteScreen(index: Int){
-        selectedCategorieInFavoriteScreen = index
-    }
-
-    var typeInRestaurantScreen by mutableStateOf("")
-    var selectedTypeIndex by mutableStateOf(0)
-    fun selectedTypeInFavoriteScreen(index : Int, restaurantId : Int){
-        viewModelScope.launch {
-            val restaurant = favoriteRepository.getRestaurantToView(restaurantId)
-            selectedTypeIndex = index
-            typeInRestaurantScreen = restaurant?.typ?.toList()?.first() ?: ""
-        }
+        selectedCategorieInFavoriteScreen.value = index
     }
 
 
 //       *** ---------------------------- \\***  Cart  ***// ---------------------------- ***
 
-    var errorInCart by mutableStateOf(false)
+    val errorInCart = MutableStateFlow(false)
 
 
     val cartItems = cartRepository.cartItems
 
 
-    var totalPrice by mutableDoubleStateOf(0.0)
+    val totalPrice = cartRepository.totalPrice
 
-    var newCount by mutableStateOf(0)
+    val newCount = MutableStateFlow(0)
 
-    var newFoodInCart by mutableStateOf<CartItemsClass?>(null)
-    var newFoodInCartSize by mutableStateOf<String?>(null)
+    val newFoodInCart = MutableStateFlow<CartItemsClass?>(null)
+    val newFoodInCartSize = MutableStateFlow<String?>(null)
 
 
 
@@ -157,8 +144,8 @@ class FavoriteViewModel @Inject constructor(
             val state = cartUseCase.plus(userId, food, size)
             if(state != null){
                 alertDialogTrue()
-                newFoodInCartSize = state.first
-                newFoodInCart = state.second
+                newFoodInCartSize.value = state.first
+                newFoodInCart.value = state.second
             }
         }
     }
@@ -177,39 +164,44 @@ class FavoriteViewModel @Inject constructor(
         }
     }
 
-    fun quantity(snackKey : String) = cartItems.value.find { it?.mealKey == snackKey }?.quantity ?: 0
-
     fun deletenewCount(){
-        newCount = 0
+        newCount.value = 0
     }
 
     fun alertDialogTrue(){
-        errorInCart = true
+        errorInCart.value = true
     }
 
 
     //       *** ---------------------------- \\***  Item Screen  ***// ---------------------------- ***
 
-    fun selectItem(item: FavoriteFoodDatabase, size : String) {
-        itemScreenRepository.selectMeal(item, size)
-    }
+    val typeInRestaurantScreen = MutableStateFlow("")
+    val selectedTypeIndex = MutableStateFlow(0)
 
-    fun selectSnack(item: FavoriteSnacksDatabase, size : String){
-        itemScreenRepository.selectSnack(item, size)
-    }
-
-    fun selectRestaurant(item : Restaurants){
+    fun selectedTypeInFavoriteScreen(
+        index : Int,
+        restaurantId : Int,
+        navigation : () -> Unit
+        ){
         viewModelScope.launch {
-            try {
-                val newData = favoriteRepository.getRestaurantToView(item.id)
-                if(newData != null) itemScreenRepository.selectRestaurant(newData)
-            }catch (e : Exception){
-                Log.e("SelectRestaurant", "Error fetching fresh data", e)
-            }
+            val restaurant = favoriteRepository.getRestaurantToView(restaurantId)
+
+            if(restaurant != null) itemScreenRepository.selectRestaurant(restaurant)
+
+            selectedTypeIndex.value = index
+            typeInRestaurantScreen.value = restaurant?.typ?.toList()?.first() ?: ""
+
+            itemScreenRepository.selectedTypeInRestaurant(selectedTypeIndex.value, typeInRestaurantScreen.value)
+
+            navigation()
         }
     }
 
-    fun selectedtype(index : Int, type : String){
-        itemScreenRepository.selectedTypeInRestaurant(index, type)
+    fun selectItem(item: FoodItem, size : String) {
+        itemScreenRepository.selectMeal(item, size)
+    }
+
+    fun selectSnack(item: Snack, size : String){
+        itemScreenRepository.selectSnack(item, size)
     }
 }

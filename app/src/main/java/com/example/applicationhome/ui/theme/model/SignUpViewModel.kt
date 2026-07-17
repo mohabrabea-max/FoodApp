@@ -2,10 +2,6 @@ package com.example.applicationhome.ui.theme.model
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.data.model.UserClassFireBase
@@ -32,12 +28,12 @@ class SignUpViewModel @Inject constructor(
     val phonenumberstate = TextFieldState()
     val addressstate = TextFieldState()
 
-    var bottonState by mutableStateOf(false)
+    val bottonState = MutableStateFlow(false)
 
 
-    private val _signUpResult = MutableLiveData<String>()
+    private val _signUpResult = MutableStateFlow<String>("")
 
-    var signupPages by mutableStateOf(1)
+    var signupPages = MutableStateFlow(1)
 
     private val _isEmailChecked = MutableStateFlow(false)
     var isEmailChecked : StateFlow<Boolean> = _isEmailChecked
@@ -56,7 +52,7 @@ class SignUpViewModel @Inject constructor(
             )
 
             if (state == "The operation was successful Account created"){
-                signupPages = 1
+                signupPages.value = 1
                 _isEmailChecked.value = false
             }
         }
@@ -85,9 +81,9 @@ class SignUpViewModel @Inject constructor(
             && passwordstate.text.length >= 8
             && passwordstate.text == confirmpasswordstate.text
         ){
-            bottonState = true
+            bottonState.value = true
         } else {
-            bottonState = false
+            bottonState.value = false
         }
     }
 
@@ -103,10 +99,10 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun nextPage(){
-        signupPages += 1
+        signupPages.value += 1
     }
 
     fun lastPage(){
-        signupPages -= 1
+        signupPages.value -= 1
     }
 }

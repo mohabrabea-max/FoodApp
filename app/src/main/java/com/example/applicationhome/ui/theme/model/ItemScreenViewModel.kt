@@ -1,13 +1,10 @@
 package com.example.applicationhome.ui.theme.model
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.data.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.data.model.FoodItem
 import com.example.applicationhome.data.data.repository.CartRepository
 import com.example.applicationhome.data.data.repository.FavoriteRepository
 import com.example.applicationhome.data.data.repository.ItemScreenRepository
@@ -16,6 +13,7 @@ import com.example.applicationhome.domain.CartUseCase
 import com.example.applicationhome.domain.GetFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -42,7 +40,7 @@ class ItemScreenViewModel @Inject constructor(
     val snackSize = itemScreenRepository.snackSize
 
 
-    fun selectItem(item: FavoriteFoodDatabase, size : String) {
+    fun selectItem(item: FoodItem, size : String) {
         itemScreenRepository.selectMeal(item, size)
     }
 
@@ -51,14 +49,14 @@ class ItemScreenViewModel @Inject constructor(
 
     val cartInformation = cartRepository.cartInformation
 
-    var totalPrice by mutableDoubleStateOf(0.0)
+    val totalPrice = MutableStateFlow(0.0)
 
-    var errorInCart by mutableStateOf(false)
+    val errorInCart = MutableStateFlow(false)
 
-    var newCount by mutableStateOf(0)
+    val newCount = MutableStateFlow(0)
 
-    var newFoodInCart by mutableStateOf<CartItemsClass?>(null)
-    var newFoodInCartSize by mutableStateOf<String?>(null)
+    val newFoodInCart = MutableStateFlow<CartItemsClass?>(null)
+    val newFoodInCartSize = MutableStateFlow<String?>(null)
 
 
     fun updateCount(food : CartItemsClass, size : String, newCount : Int) {
@@ -67,25 +65,24 @@ class ItemScreenViewModel @Inject constructor(
             val state = cartUseCase.updateCount(userId, food, size, newCount)
             if(state != null){
                 alertDialogTrue()
-                newFoodInCartSize = state.first
-                newFoodInCart = state.second
+                newFoodInCartSize.value = state.first
+                newFoodInCart.value = state.second
             }
         }
     }
 
     fun clearAndStartNewCart(count : Int) {
         viewModelScope.launch {
-            totalPrice = 0.0
-            val newFood = newFoodInCart
-            val newSize = newFoodInCartSize
+            val newFood = newFoodInCart.value
+            val newSize = newFoodInCartSize.value
             val userId = userRepository.userData.value.id
-            val finally = cartUseCase.clearAndStartNewCart(userId, newFoodInCart, newFoodInCartSize)
+            val finally = cartUseCase.clearAndStartNewCart(userId, newFoodInCart.value, newFoodInCartSize.value)
 
             if(finally && newFood != null && newSize != null){
                 cartUseCase.updateCount(userId, newFood, newSize, count)
                 deletenewCount()
-                newFoodInCart = null
-                newFoodInCartSize = null
+                newFoodInCart.value = null
+                newFoodInCartSize.value = null
             }
         }
     }
@@ -98,23 +95,23 @@ class ItemScreenViewModel @Inject constructor(
     }
 
     fun deletenewCount(){
-        newCount = 0
+        newCount.value = 0
     }
 
     fun alertDialogTrue(){
-        errorInCart = true
+        errorInCart.value = true
     }
 
     fun alertDialogFalse(){
-        errorInCart = false
+        errorInCart.value = false
     }
 
     fun plusnewCount(){
-        newCount += 1
+        newCount.value += 1
     }
 
     fun minusnewCount(){
-        newCount -= 1
+        newCount.value -= 1
     }
 
 
