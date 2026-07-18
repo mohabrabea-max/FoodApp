@@ -158,6 +158,16 @@ sealed class ProfileEditResult {
     object PhoneNumberIncomplete : ProfileEditResult()
 }
 
+data class City(
+    val englishName: String,
+    val arabicName: String
+)
+
+data class Governorate(
+    val name: String,
+    val cities: List<City>
+)
+
 data class FirebasePostResponse(val name : String)
 
 data class TextFieldClassFromConfirmOrderScreen(

@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.data.data.model.AccountTextFieldClass
 import com.example.applicationhome.data.data.model.ProfileEditResult
-import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DarkOrange
 import com.example.applicationhome.ui.theme.VeryLightGray
 
@@ -88,7 +87,8 @@ fun EditProfileTextField(
                             errorOutput == ProfileEditResult.PhoneNumberIncomplete &&
                             item.title == "Phone number"
                         ) Color.Red
-                        else Color.BrownForFont
+                        else Color.Gray,
+                    fontSize = 15.sp
                 )
             },
 
@@ -96,7 +96,7 @@ fun EditProfileTextField(
                 Text(
                     text = item.emptyCount,
                     color = Color.Gray,
-                    fontSize = 14.sp
+                    fontSize = 15.sp
                 )
             },
 

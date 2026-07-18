@@ -48,7 +48,7 @@ import com.example.applicationhome.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.bars.ItemScreenTopBar
 import com.example.applicationhome.ui.theme.components.forCart.AlertDialogMessage
-import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.BottomBarForItemScreen
+import com.example.applicationhome.ui.theme.components.forItemScreen.BottomBarForItemScreen
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.ItemSize
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.SnaksBoxForItemScreen
 import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.showAddToCartSnackbar

@@ -15,6 +15,10 @@ import com.example.applicationhome.data.data.repository.ProfileRepository
 import com.example.applicationhome.data.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,6 +36,7 @@ class ProfileViewModel @Inject constructor(
     val lastNameTextField = TextFieldState()
     val phoneNumberTextField = TextFieldState()
     val addressTextField = TextFieldState()
+
 
     val profileTextFields  = listOf(
         AccountTextFieldClass(
@@ -67,14 +72,68 @@ class ProfileViewModel @Inject constructor(
 
     val selectedDate = MutableStateFlow("")
 
+    val selectedGovernorate = MutableStateFlow("")
+
+    val selectedCity = MutableStateFlow("")
+
+    val searchString = MutableStateFlow("")
+
+    private val allLocations = profileRepository.getLocations()
+
+    val filteredGovernoratesList = searchString
+        .map { item ->
+            allLocations.filter { it.name.startsWith(item, ignoreCase = true) }
+                .map { it.name }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    private val allCities = selectedGovernorate
+        .map { governorate ->
+            allLocations.find { it.name == governorate }?.cities ?: emptyList()
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    val filteredCitiesList = combine(
+        allCities,
+        searchString
+    ){ cities, search ->
+        cities.filter {
+            it.englishName.startsWith(search, ignoreCase = true) ||
+            it.arabicName .startsWith(search, ignoreCase = true)
+        }
+            .map { it.englishName }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
+
     fun selectDate(date : String){
         selectedDate.value = date
     }
 
+    fun selectGovernorate(governorate : String){
+        selectedCity.value = ""
+        selectedGovernorate.value = governorate
+    }
+    fun unselectGovernorate(){
+        selectedCity.value = ""
+        selectedGovernorate.value = ""
+    }
 
-    val selectedGovernorate = MutableStateFlow("")
-
-    val selectedCity = MutableStateFlow("")
+    fun selectCity(city : String){
+        selectedCity.value = city
+    }
+    fun unselectCity(){
+        selectedCity.value = ""
+    }
 
     val profileSelection = listOf(
         ProfileSelection(
@@ -116,10 +175,17 @@ class ProfileViewModel @Inject constructor(
                 }
 
                 selectedDate.value = user.birthday
+
+                selectedGovernorate.value = user.governorate
+
+                selectedCity.value = user.city
             }
         }
     }
 
+    fun filterCities(search : String){
+        searchString.value = search
+    }
 
     private fun buttonClick(){
         isButtonClicked.value = true

@@ -1,4 +1,4 @@
-package com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu
+package com.example.applicationhome.ui.theme.components.forItemScreen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
