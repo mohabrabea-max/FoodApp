@@ -38,7 +38,7 @@ import kotlinx.coroutines.coroutineScope
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DateModalBottomSheet(
+fun DateBottomSheet(
     selectedDay : Int,
     selectedMonth : Int,
     selectedYear : Int,

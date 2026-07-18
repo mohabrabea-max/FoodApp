@@ -11,15 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.applicationhome.ui.theme.model.CartViewModel
 
 @Composable
 fun PaymentSummary(totalprice: Double){
@@ -114,8 +111,7 @@ fun PaymentSummary(totalprice: Double){
 
 
 @Composable
-fun PaymentSummaryCartScreen(cartViewModel: CartViewModel){
-    val totalprice by cartViewModel.totalPrice.collectAsStateWithLifecycle()
+fun PaymentSummaryCartScreen(totalprice: Double){
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier.fillMaxWidth().background(Color.White).padding(20.dp)

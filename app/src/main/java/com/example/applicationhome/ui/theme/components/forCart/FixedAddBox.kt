@@ -19,8 +19,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,20 +27,14 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.data.local.entity.CartItemsClass
 import com.example.applicationhome.ui.theme.DarkOrange
-import com.example.applicationhome.ui.theme.model.CartViewModel
 
 @Composable
 fun FixedAddBox(
-    cartViewModel : CartViewModel,
-    size : String,
-    cartKey : String,
-    foodItem : CartItemsClass
+    quantity : Int,
+    plus : () -> Unit,
+    minus : () -> Unit
 ){
-    val cartItems by cartViewModel.cartItems.collectAsState()
-    val quantity = cartItems.find { it?.mealKey == cartKey }?.quantity
-
     Row(
         modifier = Modifier.fillMaxSize()
             .pointerInput(Unit) {
@@ -56,7 +48,7 @@ fun FixedAddBox(
             modifier = Modifier.size(30.dp).clip(CircleShape).background(Color.White),
             contentAlignment = Alignment.Center
         ){
-            IconButton(onClick = { cartViewModel.minus(foodItem, size) }){
+            IconButton(onClick = { minus() }){
                 Icon(Icons.Default.Remove, contentDescription = null, tint = Color.DarkOrange)
             }
         }
@@ -75,7 +67,7 @@ fun FixedAddBox(
             modifier = Modifier.size(30.dp).clip(CircleShape).background(Color.DarkOrange),
             contentAlignment = Alignment.Center
         ){
-            IconButton(onClick = { cartViewModel.plus(foodItem, size) }){
+            IconButton(onClick = { plus() }){
                 Icon(Icons.Default.Add, contentDescription = null, tint = Color.White)
             }
         }

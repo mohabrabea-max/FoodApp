@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.data.data.local.entity.UserClass
 import com.example.applicationhome.data.data.model.AccountTextFieldClass
+import com.example.applicationhome.data.data.model.ProfileEditResult
 import com.example.applicationhome.data.data.model.ProfileSelection
 import com.example.applicationhome.data.data.model.UserClassFireBase
 import com.example.applicationhome.data.data.repository.ProfileRepository
@@ -63,17 +64,23 @@ class ProfileViewModel @Inject constructor(
         )
     )
 
+
+    val selectedDate = MutableStateFlow("")
+
+    fun selectDate(date : String){
+        selectedDate.value = date
+    }
+
+
+    val selectedGovernorate = MutableStateFlow("")
+
+    val selectedCity = MutableStateFlow("")
+
     val profileSelection = listOf(
         ProfileSelection(
-            106,
-            "Birthday",
-            "1 / 1 / 2000",
-            Icons.Default.Add
-        ),
-        ProfileSelection(
             107,
-            "Country",
-            "Country",
+            "Governorate",
+            "Governorate",
             Icons.Default.Add
         ),
         ProfileSelection(
@@ -107,6 +114,8 @@ class ProfileViewModel @Inject constructor(
                 addressTextField.edit {
                     replace(0, length, user.address)
                 }
+
+                selectedDate.value = user.birthday
             }
         }
     }
@@ -124,6 +133,9 @@ class ProfileViewModel @Inject constructor(
             userData.value.email,
             userData.value.password,
             phoneNumberTextField.text.toString(),
+            selectedDate.value,
+            selectedGovernorate.value,
+            selectedCity.value,
             addressTextField.text.toString(),
             true
         )
@@ -131,23 +143,34 @@ class ProfileViewModel @Inject constructor(
         isDataEdited.value = userData.value != userDataDatabase
     }
 
-    fun editeProfile(): String{
+    fun editeProfile(): ProfileEditResult {
         if(
             firstNameTextField.text.isEmpty() ||
             lastNameTextField.text.isEmpty()
         ){
             buttonClick()
-            return "Data Incomplete"
+            return ProfileEditResult.DataIncomplete
         }
 
-        viewModelScope.launch {
+        val validPrefixes = listOf("010", "011", "012", "015")
+        if(
+            (
+                phoneNumberTextField.text.length != 11
+                || !validPrefixes.any { phoneNumberTextField.text.startsWith(it) }
+            )
+            && phoneNumberTextField.text.isNotEmpty()
+        ) return ProfileEditResult.PhoneNumberIncomplete
 
+        viewModelScope.launch {
             val userDataFireBase = UserClassFireBase(
                 firstNameTextField.text.toString(),
                 lastNameTextField.text.toString(),
                 userData.value.email,
                 userData.value.password,
                 phoneNumberTextField.text.toString(),
+                selectedDate.value,
+                selectedGovernorate.value,
+                selectedCity.value,
                 addressTextField.text.toString()
             )
 
@@ -158,53 +181,16 @@ class ProfileViewModel @Inject constructor(
                 userData.value.email,
                 userData.value.password,
                 phoneNumberTextField.text.toString(),
+                selectedDate.value,
+                selectedGovernorate.value,
+                selectedCity.value,
                 addressTextField.text.toString(),
                 true
             )
 
             profileRepository.editeProfile(userData.value.id, userDataFireBase, userDataDatabase)
+            isDataEdited.value = false
         }
-        return "Success"
-    }
-
-
-    //       *** ---------------------------- \\***  Birthday Sheet  ***// ---------------------------- ***
-
-    val state = MutableStateFlow(true)
-    val sheetState = MutableStateFlow(false)
-
-
-    fun stateTrue(){
-        state.value = true
-        sheetState.value = true
-    }
-    fun stateFalse(){
-        state.value = false
-        sheetState.value = false
-    }
-
-
-    //       *** ---------------------------- \\***  Birthday  ***// ---------------------------- ***
-
-    var selectedDay = MutableStateFlow(1)
-    var selectedMonth = MutableStateFlow(1)
-    var selectedYear = MutableStateFlow(2000)
-
-    fun birthday(day : Int, month : Int, year : Int){
-        selectedDay.value = day
-        selectedMonth.value = month
-        selectedYear.value = year
-    }
-
-    fun setDay(newDay : Int){
-        selectedDay.value = newDay
-    }
-
-    fun setMonth(newMonth : Int){
-        selectedDay.value = newMonth
-    }
-
-    fun setYear(newYear : Int){
-        selectedDay.value = newYear
+        return ProfileEditResult.Success
     }
 }

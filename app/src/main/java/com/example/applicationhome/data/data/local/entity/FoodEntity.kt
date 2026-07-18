@@ -137,6 +137,9 @@ data class UserClass(
     val email : String = "",
     val password : String = "",
     val phonenumber : String = "",
+    val birthday : String = "",
+    val governorate : String = "",
+    val city : String = "",
     val address : String = "",
     val isActive : Boolean = false
 )
@@ -144,17 +147,6 @@ data class UserClass(
 data class UpdateAccountState(
     val email : String = "",
     val isActive : Boolean = false
-)
-
-data class UpdateName(
-    val email : String = "",
-    val firstname : String = "",
-    val lastname : String = ""
-)
-
-data class UpdatePhoneNumber(
-    val email : String = "",
-    val phonenumber : String = ""
 )
 
 

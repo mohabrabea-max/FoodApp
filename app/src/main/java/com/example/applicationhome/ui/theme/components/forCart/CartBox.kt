@@ -37,17 +37,16 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.data.data.local.entity.CartItemsClass
 import com.example.applicationhome.ui.theme.LightOrange
-import com.example.applicationhome.ui.theme.model.CartViewModel
 
 @Composable
 fun CartBox(
     food: CartItemsClass,
-    cartViewModel: CartViewModel
+    plus : () -> Unit,
+    minus : () -> Unit,
+    delete : () -> Unit
 ){
     val size = food.size
     val sizeInTitle = if(size.contains("Pieces")) "" else " (${size})"
-
-    val cartKey = "${food.mealId}_${size}"
 
     Box(
         modifier = Modifier.
@@ -106,7 +105,7 @@ fun CartBox(
                     weight(1.8f),
                     verticalAlignment = Alignment.CenterVertically
                 ){
-                    IconButton(onClick = { cartViewModel.delete(food.mealId, size) }, modifier = Modifier.weight(1f)){
+                    IconButton(onClick = { delete() }, modifier = Modifier.weight(1f)){
                         Icon(Icons.Default.Delete, contentDescription = null, tint = Color.Red)
                     }
                     Box(
@@ -116,7 +115,11 @@ fun CartBox(
                         clip(CircleShape).
                         background(Color.LightOrange.copy(alpha = 0.7f))
                     ){
-                        FixedAddBox(cartViewModel,size, cartKey, food)
+                        FixedAddBox(
+                            food.quantity,
+                            { plus() },
+                            { minus() }
+                        )
                     }
                 }
             }

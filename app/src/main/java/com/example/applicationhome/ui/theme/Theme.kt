@@ -13,16 +13,16 @@ import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
     primary = Color.DarkOrange,
-    secondary = PurpleGrey80,
-    tertiary = Pink80,
-    background = Color.VeryLightGray, // 👈 غير ده للون الفاتح بتاعك
+    surfaceContainerHigh = Color.White,
+    surfaceContainerHighest = Color.White,
+    background = Color.VeryLightGray,
     surface = Color.VeryLightGray
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = Color.DarkOrange,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
+    surfaceContainerHigh = Color.White,
+    surfaceContainerHighest = Color.White,
     background = Color.VeryLightGray,
     surface = Color.VeryLightGray
 
@@ -41,7 +41,7 @@ private val LightColorScheme = lightColorScheme(
 fun ApplicationHomeTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

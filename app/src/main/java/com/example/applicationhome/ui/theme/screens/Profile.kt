@@ -26,6 +26,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,11 +38,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.applicationhome.data.data.model.ProfileEditResult
 import com.example.applicationhome.ui.theme.BrownForFont
 import com.example.applicationhome.ui.theme.DeepMatteBlack
 import com.example.applicationhome.ui.theme.VeryLightGray
 import com.example.applicationhome.ui.theme.components.bars.MyTopBar
-import com.example.applicationhome.ui.theme.components.profileAndSetting.DateModalBottomSheet
+import com.example.applicationhome.ui.theme.components.profileAndSetting.BirthdayDialog
 import com.example.applicationhome.ui.theme.components.profileAndSetting.EditProfileTextField
 import com.example.applicationhome.ui.theme.model.ProfileViewModel
 
@@ -53,21 +56,20 @@ fun Profile(
     navigationController : NavHostController,
     profileViewModel: ProfileViewModel
 ){
-    val selectedDay by profileViewModel.selectedDay.collectAsStateWithLifecycle()
-    val selectedMonth by profileViewModel.selectedMonth.collectAsStateWithLifecycle()
-    val selectedYear by profileViewModel.selectedYear.collectAsStateWithLifecycle()
+    val errors = remember { mutableStateOf<ProfileEditResult>(ProfileEditResult.Success) }
+
+    val selectedDate by profileViewModel.selectedDate.collectAsStateWithLifecycle()
 
     val isButtonClicked by profileViewModel.isButtonClicked.collectAsStateWithLifecycle()
 
     val isDataEdited by profileViewModel.isDataEdited.collectAsStateWithLifecycle()
-
-    val sheetStateViewModel by profileViewModel.sheetState.collectAsStateWithLifecycle()
 
     val profileTextFields = profileViewModel.profileTextFields
     val profileSelection = profileViewModel.profileSelection
 
 
     Scaffold(
+        containerColor = Color.White,
         modifier = Modifier.navigationBarsPadding().
         fillMaxSize(),
         topBar = {
@@ -91,7 +93,9 @@ fun Profile(
                     actions = {
                         IconButton(
                             onClick = {
-                                if(isDataEdited) profileViewModel.editeProfile()
+                                if(isDataEdited){
+                                    errors.value = profileViewModel.editeProfile()
+                                }
                             },
                             enabled = isDataEdited
                         ){
@@ -118,24 +122,35 @@ fun Profile(
                     profileTextFields.forEach{ item ->
                         Column(modifier = Modifier.fillMaxSize()){
 
-                            Spacer(modifier = Modifier.height(15.dp))
+                            Spacer(modifier = Modifier.height(10.dp))
 
                             EditProfileTextField(
                                 item,
                                 isButtonClicked,
+                                errors.value,
                                 { profileViewModel.isDataChanged() }
                             )
 
-                            Spacer(modifier = Modifier.height(15.dp))
-
-                            Divider(color = Color.LightGray.copy(alpha = 0.2f))
+                            Spacer(modifier = Modifier.height(10.dp))
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    BirthdayDialog(
+                        selectedDate,
+                        { date ->
+                            profileViewModel.selectDate(date)
+                        },
+                        { profileViewModel.isDataChanged() }
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     profileSelection.forEach{ item ->
                         Column(modifier = Modifier.fillMaxSize()){
 
-                            Spacer(modifier = Modifier.height(15.dp))
+                            Spacer(modifier = Modifier.height(10.dp))
 
                             Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                                 Column(
@@ -153,7 +168,7 @@ fun Profile(
 
                                 IconButton(
                                     modifier = Modifier.weight(1f),
-                                    onClick = { profileViewModel.stateTrue() }
+                                    onClick = {  }
                                 ){
                                     Icon(
                                         modifier = Modifier.size(22.dp),
@@ -164,25 +179,25 @@ fun Profile(
                                 }
                             }
 
-                            if(item != profileSelection.last()) Spacer(modifier = Modifier.height(15.dp))
+                            if(item != profileSelection.last()) Spacer(modifier = Modifier.height(10.dp))
                             else Spacer(modifier = Modifier.height(5.dp))
 
                             if(item != profileSelection.last()) Divider(color = Color.LightGray.copy(alpha = 0.2f))
                         }
                     }
                 }
-                if(sheetStateViewModel){
-                    DateModalBottomSheet(
-                        selectedDay,
-                        selectedMonth,
-                        selectedYear,
-                        { profileViewModel.stateFalse() },
-                        { profileViewModel.setDay(it) },
-                        { profileViewModel.setMonth(it) },
-                        { profileViewModel.setYear(it) },
-                        { profileViewModel.birthday(selectedDay, selectedMonth, selectedYear) }
-                    )
-                }
+//                if(sheetStateViewModel){
+//                    DateModalBottomSheet(
+//                        selectedDay,
+//                        selectedMonth,
+//                        selectedYear,
+//                        { profileViewModel.stateFalse() },
+//                        { profileViewModel.setDay(it) },
+//                        { profileViewModel.setMonth(it) },
+//                        { profileViewModel.setYear(it) },
+//                        { profileViewModel.birthday(selectedDay, selectedMonth, selectedYear) }
+//                    )
+//                }
             }
         }
     }

@@ -72,6 +72,8 @@ fun Cart(
 
     val cartItems by cartViewModel.cartItems.collectAsStateWithLifecycle()
 
+    val totalPrice by cartViewModel.totalPrice.collectAsStateWithLifecycle()
+
     Scaffold(
         modifier = Modifier.navigationBarsPadding().
         fillMaxSize(),
@@ -123,10 +125,18 @@ fun Cart(
                         item{Spacer(modifier = Modifier.height(100.dp))}
 
                         items(cartItems) { item ->
-                            if(item != null) CartBox(item, cartViewModel)
+                            if(item != null) {
+                                CartBox(
+                                    item,
+                                    { cartViewModel.plus(item, item.size) },
+                                    { cartViewModel.minus(item, item.size) },
+                                    { cartViewModel.delete(item.mealId, item.size) }
+                                )
+                            }
+
                         }
                         item{
-                            PaymentSummaryCartScreen(cartViewModel)
+                            PaymentSummaryCartScreen(totalPrice)
                         }
                         item{Spacer(modifier = Modifier.height(100.dp))}
                     }

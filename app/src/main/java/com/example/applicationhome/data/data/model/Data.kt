@@ -146,8 +146,17 @@ data class UserClassFireBase(
     val email : String = "",
     val password : String = "",
     val phonenumber : String = "",
+    val birthday : String = "",
+    val governorate : String = "",
+    val city : String = "",
     val address : String = ""
 )
+
+sealed class ProfileEditResult {
+    object Success : ProfileEditResult()
+    object DataIncomplete : ProfileEditResult()
+    object PhoneNumberIncomplete : ProfileEditResult()
+}
 
 data class FirebasePostResponse(val name : String)
 
