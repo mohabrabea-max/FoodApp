@@ -156,6 +156,7 @@ sealed class ProfileEditResult {
     object Success : ProfileEditResult()
     object DataIncomplete : ProfileEditResult()
     object PhoneNumberIncomplete : ProfileEditResult()
+    object NetworkError : ProfileEditResult()
 }
 
 data class City(

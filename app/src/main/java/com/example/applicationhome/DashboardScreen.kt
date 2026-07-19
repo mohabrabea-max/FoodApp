@@ -57,20 +57,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.applicationhome.core.ui.components.Options
+import com.example.applicationhome.core.ui.components.bars.MyBottonBar
+import com.example.applicationhome.core.ui.components.profileAndSetting.UserImage
+import com.example.applicationhome.core.ui.theme.VeryLightGray
+import com.example.applicationhome.core.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.core.ui.theme.model.DashboardScreenViewModel
+import com.example.applicationhome.core.ui.theme.model.UserImageViewModel
 import com.example.applicationhome.data.data.model.Screens
-import com.example.applicationhome.ui.theme.VeryLightGray
-import com.example.applicationhome.ui.theme.components.Options
-import com.example.applicationhome.ui.theme.components.bars.MyBottonBar
-import com.example.applicationhome.ui.theme.components.profileAndSetting.UserImage
-import com.example.applicationhome.ui.theme.model.BottomBarViewModel
-import com.example.applicationhome.ui.theme.model.DashboardScreenViewModel
-import com.example.applicationhome.ui.theme.model.FavoriteViewModel
-import com.example.applicationhome.ui.theme.model.HomeScreenViewModel
-import com.example.applicationhome.ui.theme.model.SettingsViewModel
-import com.example.applicationhome.ui.theme.model.UserImageViewModel
-import com.example.applicationhome.ui.theme.screens.Favorite
-import com.example.applicationhome.ui.theme.screens.HomeScreen
-import com.example.applicationhome.ui.theme.screens.Settings
+import com.example.applicationhome.features.favorite.ui.Favorite
+import com.example.applicationhome.features.favorite.ui.FavoriteViewModel
+import com.example.applicationhome.features.homescreen.ui.HomeScreen
+import com.example.applicationhome.features.homescreen.ui.HomeScreenViewModel
+import com.example.applicationhome.features.settings.ui.Settings
+import com.example.applicationhome.features.settings.ui.SettingsViewModel
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -156,7 +156,9 @@ fun DashboardScreen(
                             clip(CircleShape),
                             contentAlignment = Alignment.Center
                         ){
-                            UserImage(userImageViewModel)
+                            UserImage(
+                                userImageViewModel
+                            )
                         }
                         Spacer(modifier = Modifier.width(10.dp))
                         if(stat){
@@ -177,7 +179,12 @@ fun DashboardScreen(
                         }
                     }
                 }
-                Options(navigationController, drawerState, coroutineScope, dashboardScreenViewModel)
+                Options(
+                    navigationController,
+                    drawerState,
+                    coroutineScope,
+                    dashboardScreenViewModel
+                )
             }
         }
     ){

@@ -34,30 +34,31 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showNetworkSnackBar
+import com.example.applicationhome.core.ui.theme.model.FinalScreenViewModel
+import com.example.applicationhome.core.ui.theme.model.UserImageViewModel
+import com.example.applicationhome.core.ui.theme.screens.NoInternetScreen
 import com.example.applicationhome.data.data.model.Screens
-import com.example.applicationhome.ui.theme.components.forHomeScreenOrMenu.showNetworkSnackBar
-import com.example.applicationhome.ui.theme.model.CartViewModel
-import com.example.applicationhome.ui.theme.model.ConfirmOrderScreenViewModel
-import com.example.applicationhome.ui.theme.model.FinalScreenViewModel
-import com.example.applicationhome.ui.theme.model.ItemScreenViewModel
-import com.example.applicationhome.ui.theme.model.LoginViewModel
-import com.example.applicationhome.ui.theme.model.OrderScreenViewModel
-import com.example.applicationhome.ui.theme.model.ProfileViewModel
-import com.example.applicationhome.ui.theme.model.RestaurantViewModel
-import com.example.applicationhome.ui.theme.model.SignUpViewModel
-import com.example.applicationhome.ui.theme.model.UserImageViewModel
-import com.example.applicationhome.ui.theme.screens.Cart
-import com.example.applicationhome.ui.theme.screens.ConfirmOrderScreen
-import com.example.applicationhome.ui.theme.screens.ItemScreen
-import com.example.applicationhome.ui.theme.screens.LastOrdersScreen
-import com.example.applicationhome.ui.theme.screens.LoginScreen
-import com.example.applicationhome.ui.theme.screens.NoInternetScreen
-import com.example.applicationhome.ui.theme.screens.Notifications
-import com.example.applicationhome.ui.theme.screens.OrderScreen
-import com.example.applicationhome.ui.theme.screens.Profile
-import com.example.applicationhome.ui.theme.screens.RestaurantScreen
-import com.example.applicationhome.ui.theme.screens.Search
-import com.example.applicationhome.ui.theme.screens.SignUpScreen
+import com.example.applicationhome.features.Notifications.Notifications
+import com.example.applicationhome.features.cart.ui.Cart
+import com.example.applicationhome.features.cart.ui.CartViewModel
+import com.example.applicationhome.features.confirmorder.ui.ConfirmOrderScreen
+import com.example.applicationhome.features.confirmorder.ui.ConfirmOrderScreenViewModel
+import com.example.applicationhome.features.itemscreen.ui.ItemScreen
+import com.example.applicationhome.features.itemscreen.ui.ItemScreenViewModel
+import com.example.applicationhome.features.login.ui.LoginScreen
+import com.example.applicationhome.features.login.ui.LoginViewModel
+import com.example.applicationhome.features.orders.ui.OrderScreenViewModel
+import com.example.applicationhome.features.orders.ui.lastorders.LastOrdersScreen
+import com.example.applicationhome.features.orders.ui.orderscreen.OrderScreen
+import com.example.applicationhome.features.profile.ui.Profile
+import com.example.applicationhome.features.profile.ui.ProfileViewModel
+import com.example.applicationhome.features.restaurantscreen.ui.RestaurantScreen
+import com.example.applicationhome.features.restaurantscreen.ui.RestaurantViewModel
+import com.example.applicationhome.features.search.ui.Search
+import com.example.applicationhome.features.search.ui.SearchViewModel
+import com.example.applicationhome.features.signupscreen.ui.SignUpScreen
+import com.example.applicationhome.features.signupscreen.ui.SignUpViewModel
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -105,7 +106,11 @@ fun FinalScreen(){
             }
 
             composable(Screens.Search.screen){
-                Search()
+                val searchViewModel : SearchViewModel = hiltViewModel()
+                Search(
+                    navigationController,
+                    searchViewModel
+                )
             }
 
             composable(Screens.RestaurantScreen.screen){
