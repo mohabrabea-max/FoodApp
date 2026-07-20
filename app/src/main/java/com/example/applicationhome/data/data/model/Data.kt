@@ -90,8 +90,12 @@ data class Restaurants(
     val image2 : String = "",
     @SerializedName("rating")
     val review : Double = 0.0,
-    val background : Color = Color.White
+    val background : Color = Color.White,
+    val searchKeywords: String = "",
+    val topFiveMeals : String = ""
 )
+
+
 
 data class Options(
     val title : String,

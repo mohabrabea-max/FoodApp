@@ -79,7 +79,8 @@ fun ItemScreenTopBar(
                             tint = Color.Black
                         )
                     },
-                    { backStack() }
+                    { backStack() },
+                    border = 0.dp
                 )
             },
             {

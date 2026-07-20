@@ -10,8 +10,8 @@ import androidx.compose.ui.text.withStyle
 فانكشن بتفلتر النص بتخلي جزء حروف تخينة و جزء حروف رفيعة
 الString لو بادئ بحروف في باراميتر searchText الحروف دي هتبقى رفيعة و باقي النص هيبقى زي ما هو
  */
-fun String.formatSingleWordInSearch(searchText : String): AnnotatedString{
-    return buildAnnotatedString {
+fun String.formatSingleWordInSearch(searchText : String): AnnotatedString =
+    buildAnnotatedString {
         if(searchText.isNotEmpty() && this@formatSingleWordInSearch.startsWith(searchText, ignoreCase = true)){
             withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)){
                 append(this@formatSingleWordInSearch.substring(0, searchText.length))
@@ -21,4 +21,3 @@ fun String.formatSingleWordInSearch(searchText : String): AnnotatedString{
             append(this@formatSingleWordInSearch)
         }
     }
-}

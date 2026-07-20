@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.applicationhome.data.local.dao.CartDao
 import com.example.applicationhome.data.local.dao.FavoriteDao
+import com.example.applicationhome.data.local.dao.FoodAndRestaurantsDao
 import com.example.applicationhome.data.local.dao.OrdersDao
 import com.example.applicationhome.data.local.dao.UsersDao
 import com.example.applicationhome.data.local.entity.CartClass
@@ -36,5 +37,6 @@ abstract class UsersDatabase : RoomDatabase(){
     abstract val cartDao : CartDao
     abstract val favoriteDao : FavoriteDao
     abstract val ordersDao : OrdersDao
+    abstract val foodAndRestaurantsDao : FoodAndRestaurantsDao
 
 }

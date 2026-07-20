@@ -15,6 +15,7 @@ import com.example.applicationhome.data.local.entity.UserClass
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -85,7 +86,8 @@ class ProfileViewModel @Inject constructor(
 
     val selectedCity = MutableStateFlow("")
 
-    val searchString = MutableStateFlow("")
+    private val _searchString = MutableStateFlow("")
+    val searchString : StateFlow<String> = _searchString.asStateFlow()
 
 
     //------------------------------- Locations ------------------------------
@@ -101,7 +103,7 @@ class ProfileViewModel @Inject constructor(
         )
 
 
-    val filteredGovernoratesList = searchString
+    val filteredGovernoratesList = _searchString
         .map { item ->
             allLocations.filter { it.name.contains(item, ignoreCase = true) }
                 .map { it.name }
@@ -113,7 +115,7 @@ class ProfileViewModel @Inject constructor(
 
     val filteredCitiesList = combine(
         allCities,
-        searchString
+        _searchString
     ) { cities, search ->
         cities.filter {
             it.englishName.contains(search, ignoreCase = true) ||
@@ -208,7 +210,7 @@ class ProfileViewModel @Inject constructor(
 
     //------------------------------- Checked Functions ------------------------------
     fun searchFilter(search : String){
-        searchString.value = search
+        _searchString.value = search
     }
 
     private fun buttonClick(){

@@ -83,6 +83,7 @@ dependencies {
 
     // Room
     implementation("androidx.room:room-runtime:2.7.0")
+    implementation(libs.androidx.paging.common)
     implementation(libs.androidx.room.ktx)
     ksp("androidx.room:room-compiler:2.7.0")
     // WorkManager
@@ -101,6 +102,8 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    implementation("androidx.paging:paging-compose:3.3.0")
 }
 configurations.all {
     resolutionStrategy {

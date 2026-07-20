@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,10 +38,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,13 +55,14 @@ import kotlinx.coroutines.coroutineScope
 @Composable
 fun SelectBottomSheet(
     searchBoxTitle : String,
+    searchTextField : String,
     stringList : List<String>,
     unShowBottomSheet : () -> Unit,
     select : (String) -> Unit,
     unselect : () -> Unit,
     filter : (String) -> Unit
 ){
-    var searchTextField by rememberSaveable { mutableStateOf("") }
+    val interactionSource = remember { MutableInteractionSource() }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -104,7 +103,10 @@ fun SelectBottomSheet(
                         clip(shape = RoundedCornerShape(30.dp)).
                         background(Color.White).
                         border(width = 1.dp, color = Color.Gray.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)).
-                        clickable {
+                        clickable(
+                            interactionSource = interactionSource,
+                            indication = null
+                        ) {
                             unShowBottomSheet()
                             filter("")
                         },
@@ -122,7 +124,6 @@ fun SelectBottomSheet(
 
                     onValueChange = {
                         newText ->
-                        searchTextField = newText
                         filter(newText)
                     },
 
@@ -145,7 +146,6 @@ fun SelectBottomSheet(
                         if (searchTextField.isNotEmpty()) {
                             IconButton(
                                 onClick = {
-                                    searchTextField = ""
                                     filter("")
                                 }
                             ){
@@ -185,7 +185,10 @@ fun SelectBottomSheet(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(60.dp)
-                                .clickable { unselect() }
+                                .clickable(
+                                    interactionSource = interactionSource,
+                                    indication = null
+                                ) { unselect() }
                                 .padding(horizontal = 20.dp),
                             horizontalArrangement = Arrangement.Start,
                             verticalAlignment = Alignment.CenterVertically
@@ -198,7 +201,7 @@ fun SelectBottomSheet(
                         }
 
                         Divider(
-                            color = Color.LightGray,
+                            color = Color.LightGray.copy(alpha = 0.6f),
                             modifier = Modifier
                                 .padding(horizontal = 20.dp)
                                 .align(Alignment.CenterHorizontally)
@@ -210,8 +213,11 @@ fun SelectBottomSheet(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(70.dp)
-                                .clickable { select(item) }
+                                .height(67.dp)
+                                .clickable(
+                                    interactionSource = interactionSource,
+                                    indication = null
+                                ) { select(item) }
                                 .padding(horizontal = 20.dp),
                             contentAlignment = Alignment.CenterStart
                         ){
@@ -219,7 +225,7 @@ fun SelectBottomSheet(
                         }
 
                         if(item != stringList.last()) Divider(
-                            color = Color.LightGray,
+                            color = Color.LightGray.copy(alpha = 0.6f),
                             modifier = Modifier
                                 .padding(horizontal = 20.dp)
                                 .align(Alignment.CenterHorizontally)

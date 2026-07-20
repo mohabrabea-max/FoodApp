@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.applicationhome.data.local.dao.CartDao
 import com.example.applicationhome.data.local.dao.FavoriteDao
+import com.example.applicationhome.data.local.dao.FoodAndRestaurantsDao
 import com.example.applicationhome.data.local.dao.OrdersDao
 import com.example.applicationhome.data.local.dao.UsersDao
 import dagger.Module
@@ -50,6 +51,12 @@ object DatabaseModule {
     @Singleton
     fun provideOrdersDao(database: UsersDatabase): OrdersDao {
         return database.ordersDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideFoodAndRestaurantsDao(database: UsersDatabase): FoodAndRestaurantsDao {
+        return database.foodAndRestaurantsDao
     }
 }
 

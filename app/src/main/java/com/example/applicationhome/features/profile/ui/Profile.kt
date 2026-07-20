@@ -71,6 +71,8 @@ fun Profile(
 
     val profileTextFields = profileViewModel.profileTextFields
 
+    val searchString by profileViewModel.searchString.collectAsStateWithLifecycle()
+
     val buttonColor = if(isDataEdited) Color.BrandBlue else Color.LightGray
     val buttonFontColor = if(isDataEdited) Color.White else Color.Black
 
@@ -177,6 +179,7 @@ fun Profile(
         if(showGovernorateBottomSheet){
             SelectBottomSheet(
                 "Search Governorates",
+                searchString,
                 filteredGovernoratesList,
                 { showGovernorateBottomSheet = false },
                 {
@@ -194,6 +197,7 @@ fun Profile(
         if(showCityBottomSheet){
             SelectBottomSheet(
                 "Search Cities",
+                searchString,
                 filteredCitiesList,
                 { showCityBottomSheet = false },
                 {

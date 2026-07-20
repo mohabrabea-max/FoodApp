@@ -96,7 +96,8 @@ fun RestaurantTopBar(
                         if (navigationController.previousBackStackEntry != null) {
                             navigationController.popBackStack()
                         }
-                    }
+                    },
+                    border = 0.dp
                 )
             },
             {
