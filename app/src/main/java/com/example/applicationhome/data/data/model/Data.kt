@@ -10,9 +10,10 @@ sealed interface Food{
     val id: Int
     val name : String
     val details : String
-    val image : List<String>
+    val image : String
     var restaurantId : Int
     val review : Double
+    val updatedAt : Long
 }
 
     data class FoodItem(
@@ -20,26 +21,26 @@ sealed interface Food{
         val category : String = "ALL",
         override val name : String = "",
         override val details : String = "",
-        @SerializedName("images")
-        override val image : List<String> = listOf(""),
+        override val image : String = "",
         @SerializedName("sizes")
         val sizeOptions : List<MealSizeDetail> = listOf(),
         override var restaurantId : Int = 0,
         @SerializedName("rating")
-        override val review : Double = 0.0
+        override val review : Double = 0.0,
+        override val updatedAt : Long = 0L
     ): Food
 
     data class Snack(
         override val id : Int = 0,
         override val name : String = "",
         override val details : String = "",
-        @SerializedName("images")
-        override val image : List<String> = listOf(""),
+        override val image : String = "",
         @SerializedName("prices")
         val priceANDsize : Map<String, Double> = emptyMap(),
         override var restaurantId : Int = 0,
         @SerializedName("rating")
-        override val review : Double = 0.0
+        override val review : Double = 0.0,
+        override val updatedAt : Long = 0L
     ): Food
 
 data class Drink(
@@ -47,7 +48,8 @@ data class Drink(
     val name : String,
     val image : List<String>,
     val priceANDsize : Map<String, Double>,
-    var restaurantId : Int
+    var restaurantId : Int,
+    val updatedAt : Long = 0L
 )
 
 data class MealSizeDetail(
@@ -76,7 +78,8 @@ data class Offers(
     val id : Int = 0,
     @SerializedName("title")
     val name : String = "",
-    val image : String = ""
+    val image : String = "",
+    val updatedAt : Long = 0L
 )
 
 data class Restaurants(
@@ -92,7 +95,8 @@ data class Restaurants(
     val review : Double = 0.0,
     val background : Color = Color.White,
     val searchKeywords: String = "",
-    val topFiveMeals : String = ""
+    val topFiveMeals : String = "",
+    val updatedAt : Long = 0L
 )
 
 

@@ -29,6 +29,10 @@ class HomeScreenRepository @Inject constructor(
     val restaurantCount : Map<Int, RestaurantsCount> get() = _restaurantCount
 
 
+    fun getRestaurantsFromDatabase(){
+
+    }
+
     suspend fun restaurantCount(){
         try {
             val restaurants = api.getRestaurantCount()

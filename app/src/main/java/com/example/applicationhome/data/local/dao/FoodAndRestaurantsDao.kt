@@ -8,10 +8,36 @@ import androidx.room.Query
 import com.example.applicationhome.data.local.entity.MealsEntity
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.local.entity.SearchHistory
+import com.example.applicationhome.data.local.entity.SnacksEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FoodAndRestaurantsDao {
+
+    //----------------------------------------------------------------\\ Sync Data //----------------------------------------------------------------
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun syncMealsToDatabase(meals : List<MealsEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun syncSnacksToDatabase(snacks : List<SnacksEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun syncRestaurantsToDatabase(restaurants : List<RestaurantsEntity>)
+
+
+    @Query("SELECT * FROM meals_entity WHERE restaurantId = :restaurantId")
+    fun getMealsFromDatabase(restaurantId : Int): Flow<MealsEntity>
+
+    @Query("SELECT * FROM snacks_entity WHERE restaurantId = :restaurantId")
+    fun getSnacksFromDatabase(restaurantId : Int): Flow<SnacksEntity>
+
+    @Query("SELECT * FROM restaurants_entity")
+    fun getAllRestaurantsFromDatabase(): Flow<List<RestaurantsEntity>>
+
+    @Query("SELECT * FROM restaurants_entity WHERE id = :restaurantId")
+    suspend fun getRestaurantsFromDatabase(restaurantId : Int): RestaurantsEntity
+
 
     //----------------------------------------------------------------\\ Search //----------------------------------------------------------------
 

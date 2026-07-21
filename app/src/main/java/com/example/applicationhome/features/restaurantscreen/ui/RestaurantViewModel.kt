@@ -124,6 +124,16 @@ class RestaurantViewModel @Inject constructor(
 
 
 
+    init {
+        viewModelScope.launch {
+            networkObserver.isNetworkAvailable.collect { available ->
+                isNetworkAvailable.value = available
+            }
+        }
+    }
+
+
+
     fun restaurantData(){
         val restaurantsCount = restaurantCount[resid.value]
         if(restaurantsCount != null){
@@ -176,16 +186,6 @@ class RestaurantViewModel @Inject constructor(
 
     val newFoodInCart = MutableStateFlow<CartItemsClass?>(null)
     val newFoodInCartSize = MutableStateFlow<String?>(null)
-
-
-
-    init {
-        viewModelScope.launch {
-            networkObserver.isNetworkAvailable.collect { available ->
-                isNetworkAvailable.value = available
-            }
-        }
-    }
 
 
     fun plus(food: CartItemsClass, size : String){

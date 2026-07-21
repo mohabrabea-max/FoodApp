@@ -11,6 +11,7 @@ import com.example.applicationhome.data.data.model.Categories
 import com.example.applicationhome.data.data.model.Offers
 import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +29,7 @@ class HomeScreenViewModel @Inject constructor(
     private val homeScreenRepository : HomeScreenRepository,
     userRepository: UserRepository,
     private val getFavoriteUseCase : GetFavoriteUseCase,
-    private val networkObserver: NetworkObserver
+    private val networkObserver : NetworkObserver
 ) : ViewModel(){
 
     val userData = userRepository.userData
@@ -89,10 +90,6 @@ class HomeScreenViewModel @Inject constructor(
 
     fun loadDataFromApi() {
         viewModelScope.launch {
-            val restaurants = homeScreenRepository.getRestaurantsFromApi()
-            _restaurantsMenu.value += restaurants
-        }
-        viewModelScope.launch {
             _categories.value = emptyList()
             _categories.value += homeScreenRepository.getCategorieslistFromApi()
         }
@@ -102,6 +99,9 @@ class HomeScreenViewModel @Inject constructor(
         }
         viewModelScope.launch {
             homeScreenRepository.restaurantCount()
+        }
+        viewModelScope.launch {
+
         }
     }
 
@@ -118,12 +118,12 @@ class HomeScreenViewModel @Inject constructor(
 
     //       *** ---------------------------- \\***  Item Screen  ***// ---------------------------- ***
 
-    fun selectRestaurant(item : Restaurants){
+    fun selectRestaurant(item : RestaurantsEntity){
         itemScreenRepository.selectRestaurant(item)
         viewModelScope.launch {
             try {
                 val newData = favoriteRepository.getRestaurantToView(item.id)
-                if(newData != null) itemScreenRepository.selectRestaurant(newData)
+                itemScreenRepository.selectRestaurant(newData)
             }catch (e : Exception){
                 null
             }

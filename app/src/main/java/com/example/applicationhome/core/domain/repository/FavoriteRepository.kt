@@ -13,9 +13,11 @@ import com.example.applicationhome.data.data.model.FoodItem
 import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.data.data.model.Snack
 import com.example.applicationhome.data.local.dao.FavoriteDao
+import com.example.applicationhome.data.local.dao.FoodAndRestaurantsDao
 import com.example.applicationhome.data.local.entity.FavoriteFoodDatabase
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantDatabase
 import com.example.applicationhome.data.local.entity.FavoriteSnacksDatabase
+import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.remote.FoodAppAPIs
 import com.example.applicationhome.domain.ApplicationScope
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -41,7 +43,8 @@ import javax.inject.Singleton
 class FavoriteRepository @Inject constructor(
     userRepository: UserRepository,
     private val favoriteDao : FavoriteDao,
-    private val api : FoodAppAPIs,
+    private val foodAndRestaurantsDao : FoodAndRestaurantsDao,
+    //private val api : FoodAppAPIs,
     @ApplicationContext private val context: Context,
     @ApplicationScope private val externalScope: CoroutineScope
 ){
@@ -166,8 +169,6 @@ class FavoriteRepository @Inject constructor(
 
 
 
-
-
     fun getFoodFavoriteFromDatabase(userId : String)
     : Flow<List<FavoriteFoodDatabase>> = favoriteDao.getFoodFromDatabase(userId)
 
@@ -217,7 +218,7 @@ class FavoriteRepository @Inject constructor(
                                 item.category,
                                 item.name,
                                 item.details,
-                                item.image.first(),
+                                item.image,
                                 item.sizeOptions,
                                 item.restaurantId,
                                 item.review,
@@ -254,7 +255,7 @@ class FavoriteRepository @Inject constructor(
                                 item.id,
                                 item.name,
                                 item.details,
-                                item.image.first(),
+                                item.image,
                                 item.priceANDsize,
                                 item.restaurantId,
                                 item.review,
@@ -379,16 +380,6 @@ class FavoriteRepository @Inject constructor(
         return _snacksFavoriteObject[snackKey]
     }
 
-    suspend fun getRestaurantToView(resId : Int): Restaurants? {
-        _restaurantsFavoriteObject["Restaurant_${resId}"]?.let { return it }
-
-        return try {
-            val response = api.getFavoriteRestaurants("\"id\"", resId)
-            val resultMap = response.body()
-            if (response.isSuccessful && resultMap != null) {
-                _restaurantsFavoriteObject.putAll(resultMap) // دمج آمن جوه الـ ConcurrentHashMap
-                resultMap["Restaurant_${resId}"]
-            } else { null }
-        } catch (e: Exception) { null }
-    }
+    suspend fun getRestaurantToView(resId : Int): RestaurantsEntity =
+        foodAndRestaurantsDao.getRestaurantsFromDatabase(resId)
 }

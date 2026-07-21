@@ -16,6 +16,7 @@ import com.example.applicationhome.data.local.entity.MealsEntity
 import com.example.applicationhome.data.local.entity.RestaurantWithFeaturedMeals
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.local.entity.SearchHistory
+import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -40,7 +41,8 @@ class SearchViewModel @Inject constructor(
     private val searchRepository : SearchRepository,
     private val itemScreenRepository : ItemScreenRepository,
     private val favoriteRepository : FavoriteRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val networkObserver : NetworkObserver
 ): ViewModel() {
 
     val userData = userRepository.userData
@@ -112,6 +114,17 @@ class SearchViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+
+    val isNetworkAvailable = MutableStateFlow(true)
+
+
+    init {
+        viewModelScope.launch {
+            networkObserver.isNetworkAvailable.collect { available ->
+                isNetworkAvailable.value = available
+            }
+        }
+    }
 
 
 

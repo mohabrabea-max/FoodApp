@@ -39,6 +39,27 @@ interface FoodAppAPIs{
     ): Response<Unit>
 
 
+
+    //                              فانكشن بتجيب الوجبات اللي بعد اخر ابديت بس
+    @GET("meals.json")
+    suspend fun getMealsByLastUpdate(
+        @Query("orderBy") orderBy: String = "\"updatedAt\"",
+        @Query("startAt") lastSyncTimestamp: Long
+    ): Response<Map<String, FoodItem>>
+
+    @GET("snacks.json")
+    suspend fun getSnacksByLastUpdate(
+        @Query("orderBy") orderBy: String = "\"updatedAt\"",
+        @Query("startAt") lastSyncTimestamp: Long
+    ): Response<Map<String, Snack>>
+
+    @GET("restaurants.json")
+    suspend fun getRestaurantsByLastUpdate(
+        @Query("orderBy") orderBy: String = "\"updatedAt\"",
+        @Query("startAt") lastSyncTimestamp: Long
+    ): Response<Map<String, Restaurants>>
+
+
 //    @PATCH("snacks/{mealId}.json")
 //    suspend fun addToMeals(
 //        @Path("mealId") mealId : String,
