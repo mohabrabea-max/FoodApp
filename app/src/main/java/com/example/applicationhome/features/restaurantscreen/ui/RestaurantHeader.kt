@@ -34,11 +34,11 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.data.data.model.Restaurants
+import com.example.applicationhome.data.local.entity.RestaurantsEntity
 
 @Composable
 fun RestaurantHeader(
-    item : Restaurants?,
+    item : RestaurantsEntity?,
     view: () -> Unit
 ){
     val background = item?.image2 ?:""

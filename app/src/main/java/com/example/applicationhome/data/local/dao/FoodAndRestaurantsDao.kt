@@ -26,17 +26,22 @@ interface FoodAndRestaurantsDao {
     suspend fun syncRestaurantsToDatabase(restaurants : List<RestaurantsEntity>)
 
 
+    //----------------------------------------------------------------\\ Get Data //----------------------------------------------------------------
+
     @Query("SELECT * FROM meals_entity WHERE restaurantId = :restaurantId")
-    fun getMealsFromDatabase(restaurantId : Int): Flow<MealsEntity>
+    fun getMealsFromDatabase(restaurantId : Int): Flow<List<MealsEntity>>
 
     @Query("SELECT * FROM snacks_entity WHERE restaurantId = :restaurantId")
-    fun getSnacksFromDatabase(restaurantId : Int): Flow<SnacksEntity>
+    fun getSnacksFromDatabase(restaurantId : Int): Flow<List<SnacksEntity>>
 
     @Query("SELECT * FROM restaurants_entity")
     fun getAllRestaurantsFromDatabase(): Flow<List<RestaurantsEntity>>
 
+    @Query("SELECT * FROM restaurants_entity WHERE id IN (:resIds)")
+    fun getRestaurantsFromDatabaseByIds(resIds : List<Int>): Flow<List<RestaurantsEntity>>
+
     @Query("SELECT * FROM restaurants_entity WHERE id = :restaurantId")
-    suspend fun getRestaurantsFromDatabase(restaurantId : Int): RestaurantsEntity
+    suspend fun getOneRestaurantFromDatabase(restaurantId : Int): RestaurantsEntity
 
 
     //----------------------------------------------------------------\\ Search //----------------------------------------------------------------
@@ -58,7 +63,7 @@ interface FoodAndRestaurantsDao {
     //----------------------------------------------------------------\\ Search History //----------------------------------------------------------------
 
     @Query("SELECT * FROM search_history WHERE userId = :userid")
-    fun getSearchHistory(userid : String): Flow<List<String>>
+    fun getSearchHistory(userid : String): Flow<List<SearchHistory>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addSearchTextToHistory(searchHistory : SearchHistory)

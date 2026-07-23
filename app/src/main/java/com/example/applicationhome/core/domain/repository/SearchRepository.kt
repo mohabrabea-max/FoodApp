@@ -32,7 +32,7 @@ class SearchRepository @Inject constructor(
     suspend fun getTopFiveMealsToView(mealIds: List<Int>): List<MealsEntity> =
         foodAndRestaurantsDao.getTopFiveMealsToView(mealIds)
 
-    fun getSearchHistory(userid : String): Flow<List<String>> =
+    fun getSearchHistory(userid : String): Flow<List<SearchHistory>> =
         foodAndRestaurantsDao.getSearchHistory(userid)
 
     suspend fun addSearchTextToHistory(searchHistory : SearchHistory){

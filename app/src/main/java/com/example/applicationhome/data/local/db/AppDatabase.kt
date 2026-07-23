@@ -10,10 +10,15 @@ import com.example.applicationhome.data.local.dao.OrdersDao
 import com.example.applicationhome.data.local.dao.UsersDao
 import com.example.applicationhome.data.local.entity.CartClass
 import com.example.applicationhome.data.local.entity.CartItemsClass
-import com.example.applicationhome.data.local.entity.FavoriteFoodDatabase
-import com.example.applicationhome.data.local.entity.FavoriteRestaurantDatabase
-import com.example.applicationhome.data.local.entity.FavoriteSnacksDatabase
+import com.example.applicationhome.data.local.entity.FavoriteMealEntity
+import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
+import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
+import com.example.applicationhome.data.local.entity.MealsEntity
 import com.example.applicationhome.data.local.entity.OrdersDatabaseClass
+import com.example.applicationhome.data.local.entity.RestaurantsEntity
+import com.example.applicationhome.data.local.entity.SearchFtsEntity
+import com.example.applicationhome.data.local.entity.SearchHistory
+import com.example.applicationhome.data.local.entity.SnacksEntity
 import com.example.applicationhome.data.local.entity.UserClass
 
 @Database(
@@ -21,12 +26,17 @@ import com.example.applicationhome.data.local.entity.UserClass
         UserClass::class,
         CartClass::class,
         CartItemsClass::class,
-        FavoriteFoodDatabase::class,
-        FavoriteSnacksDatabase::class,
-        FavoriteRestaurantDatabase::class,
-        OrdersDatabaseClass::class
+        MealsEntity::class,
+        SnacksEntity::class,
+        RestaurantsEntity::class,
+        OrdersDatabaseClass::class,
+        SearchFtsEntity::class,
+        SearchHistory::class,
+        FavoriteMealEntity::class,
+        FavoriteSnackEntity::class,
+        FavoriteRestaurantEntity::class
     ],
-    version = 36,
+    version = 40,
     exportSchema = false
 )
 

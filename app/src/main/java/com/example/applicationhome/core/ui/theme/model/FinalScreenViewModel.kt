@@ -1,14 +1,13 @@
 package com.example.applicationhome.core.ui.theme.model
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,7 +17,7 @@ class FinalScreenViewModel @Inject constructor(
     private val syncAllDataRepository : SyncAllDataRepository,
     private val networkObserver: NetworkObserver
 ) : ViewModel() {
-    var isNetworkAvailable by mutableStateOf(false)
+    val isNetworkAvailable = MutableStateFlow(false)
 
     val mealsLastSyncTime =
         syncAllDataRepository.mealsLastSyncTime
@@ -47,13 +46,25 @@ class FinalScreenViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             networkObserver.isNetworkAvailable.collect { available ->
-                isNetworkAvailable = available
+                isNetworkAvailable.value = available
                 if(available){
-                    syncAllDataRepository.syncAllMealsToDatabase(mealsLastSyncTime.value)
-                    syncAllDataRepository.syncAllSnacksToDatabase(snacksLastSyncTime.value)
-                    syncAllDataRepository.syncAllRestaurantsToDatabase(restaurantsLastSyncTime.value)
+                    syncDataParallel()
                 }
             }
+        }
+    }
+
+    private fun syncDataParallel() {
+        viewModelScope.launch {
+            // ننتظر أول قيمة حقيقية تأتي من الـ DataStore بدلاً من استخدام .value الحالية مباشرة لتجنب قيم الـ 0L المبدئية
+            val mealsTime = mealsLastSyncTime.first()
+            val snacksTime = snacksLastSyncTime.first()
+            val restaurantsTime = restaurantsLastSyncTime.first()
+
+            // تشغيل الـ 3 عملية sync بالتوازي للأداء الأفضل
+            launch { syncAllDataRepository.syncAllMealsToDatabase(mealsTime) }
+            launch { syncAllDataRepository.syncAllSnacksToDatabase(snacksTime) }
+            launch { syncAllDataRepository.syncAllRestaurantsToDatabase(restaurantsTime) }
         }
     }
 }

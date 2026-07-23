@@ -66,8 +66,8 @@ class SyncAddToFavoritesWorker @AssistedInject constructor(
                             try {
                                 val response = api.addToFavorite(
                                     item.userId,
-                                    "Restaurant_${item.restaurantId}",
-                                    FavoriteClass(item.restaurantId, "Restaurant", item.restaurantId)
+                                    "Restaurant_${item.resId}",
+                                    FavoriteClass(item.resId, "Restaurant", item.resId)
                                 )
                                 Pair(item, response.isSuccessful)
                             }catch (e : Exception){

@@ -8,12 +8,12 @@ import com.example.applicationhome.core.domain.repository.ItemScreenRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
 import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
-import com.example.applicationhome.data.data.model.FoodItem
-import com.example.applicationhome.data.data.model.Snack
 import com.example.applicationhome.data.local.entity.CartItemsClass
-import com.example.applicationhome.data.local.entity.FavoriteFoodDatabase
-import com.example.applicationhome.data.local.entity.FavoriteRestaurantDatabase
-import com.example.applicationhome.data.local.entity.FavoriteSnacksDatabase
+import com.example.applicationhome.data.local.entity.FavoriteMealEntity
+import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
+import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
+import com.example.applicationhome.data.local.entity.MealsEntity
+import com.example.applicationhome.data.local.entity.SnacksEntity
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -80,17 +80,17 @@ class FavoriteViewModel @Inject constructor(
     }
 
 
-    fun addMealFavorite(food : FavoriteFoodDatabase){
+    fun addMealFavorite(food : FavoriteMealEntity){
         viewModelScope.launch {
             getFavoriteUseCase.addMealFavorite(food)
         }
     }
-    fun addSnackFavorite(snack : FavoriteSnacksDatabase){
+    fun addSnackFavorite(snack : FavoriteSnackEntity){
         viewModelScope.launch {
             getFavoriteUseCase.addSnackFavorite(snack)
         }
     }
-    fun addRestaurantsFavorite(restaurants: FavoriteRestaurantDatabase){
+    fun addRestaurantsFavorite(restaurants: FavoriteRestaurantEntity){
         viewModelScope.launch {
             getFavoriteUseCase.addRestaurantsFavorite(restaurants)
         }
@@ -195,11 +195,11 @@ class FavoriteViewModel @Inject constructor(
         }
     }
 
-    fun selectItem(item: FoodItem, size : String) {
+    fun selectItem(item: MealsEntity, size : String) {
         itemScreenRepository.selectMeal(item, size)
     }
 
-    fun selectSnack(item: Snack, size : String){
+    fun selectSnack(item: SnacksEntity, size : String){
         itemScreenRepository.selectSnack(item, size)
     }
 }

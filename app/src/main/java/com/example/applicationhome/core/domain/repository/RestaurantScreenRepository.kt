@@ -1,9 +1,11 @@
 package com.example.applicationhome.core.domain.repository
 
-import com.example.applicationhome.data.data.model.FoodItem
 import com.example.applicationhome.data.data.model.Offers
-import com.example.applicationhome.data.data.model.Snack
+import com.example.applicationhome.data.local.dao.FoodAndRestaurantsDao
+import com.example.applicationhome.data.local.entity.MealsEntity
+import com.example.applicationhome.data.local.entity.SnacksEntity
 import com.example.applicationhome.data.remote.FoodAppAPIs
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -11,6 +13,7 @@ import javax.inject.Singleton
 
 @Singleton
 class RestaurantScreenRepository @Inject constructor(
+    private val foodAndRestaurantsDao : FoodAndRestaurantsDao,
     private val api : FoodAppAPIs
 ) {
     private val _foodMenuListIsLoading = MutableStateFlow(true)
@@ -29,41 +32,11 @@ class RestaurantScreenRepository @Inject constructor(
     val restaurantOffersLoading : StateFlow<Boolean> = _restaurantOffersLoading
 
 
-    suspend fun uploadFoodMenuFromApi(resId : Int): Map<String, FoodItem> {
-        val foodMenu = try {
-            _foodMenuListIsLoading.value = true
-            val response = api.foodmenu("\"restaurantId\"", resId)
-            val foodMenu = response.body()
-            if(response.isSuccessful && foodMenu != null){
-                foodMenu
-            }else{
-                emptyMap()
-            }
-        } catch (e: Exception) {
-            emptyMap()
-        } finally {
-            _foodMenuListIsLoading.value = false
-        }
-        return foodMenu
-    }
+    fun getMealsFromDatabase(resId : Int): Flow<List<MealsEntity>> =
+        foodAndRestaurantsDao.getMealsFromDatabase(resId)
 
-    suspend fun uploadSnacksMenuFromApi(resId : Int): Map<String, Snack> {
-        val snacksMenu = try {
-            _snacksIsLoading.value = true
-            val response = api.snacksMenu("\"restaurantId\"", resId)
-            val snacksmenu = response.body()
-            if(response.isSuccessful && snacksmenu != null){
-                snacksmenu
-            }else{
-                emptyMap()
-            }
-        } catch (e: Exception) {
-            emptyMap()
-        } finally {
-            _snacksIsLoading.value = false
-        }
-        return snacksMenu
-    }
+    fun getSnacksFromDatabase(resId : Int): Flow<List<SnacksEntity>> =
+        foodAndRestaurantsDao.getSnacksFromDatabase(resId)
 
     suspend fun uploadRestaurantOffersFromApi(resId : Int): Map<String, Offers> {
         val restaurantOffers = try {

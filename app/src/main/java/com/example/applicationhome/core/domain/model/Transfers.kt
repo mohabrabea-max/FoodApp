@@ -7,18 +7,6 @@ import com.example.applicationhome.data.local.entity.MealsEntity
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.local.entity.SnacksEntity
 
-fun MealsEntity.mealsEntityToFoodItem(): FoodItem =
-    FoodItem(
-        this.id,
-        this.category,
-        this.name,
-        this.details,
-        this.image,
-        this.sizeOptions,
-        this.restaurantId,
-        this.review
-    )
-
 fun FoodItem.foodItemToMealsEntity(): MealsEntity =
     MealsEntity(
         this.id,
@@ -30,6 +18,7 @@ fun FoodItem.foodItemToMealsEntity(): MealsEntity =
         this.restaurantId,
         this.review
     )
+
 
 fun Snack.snackToSnacksEntity(): SnacksEntity =
     SnacksEntity(
@@ -43,19 +32,6 @@ fun Snack.snackToSnacksEntity(): SnacksEntity =
     )
 
 
-fun RestaurantsEntity.restaurantsEntityToRestaurants(): Restaurants =
-    Restaurants(
-        this.id,
-        this.typ,
-        this.name,
-        this.image,
-        this.image2,
-        this.review,
-        this.background,
-        this.searchKeywords,
-        this.topFiveMeals
-    )
-
 fun Restaurants.restaurantsToRestaurantsEntity(): RestaurantsEntity =
     RestaurantsEntity(
         this.id,
@@ -64,7 +40,7 @@ fun Restaurants.restaurantsToRestaurantsEntity(): RestaurantsEntity =
         this.image,
         this.image2,
         this.review,
-        this.background,
+        this.background.toString(),
         this.searchKeywords,
         this.topFiveMeals
     )

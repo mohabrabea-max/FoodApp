@@ -11,24 +11,27 @@ import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
 import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
 import com.example.applicationhome.data.data.model.Drink
-import com.example.applicationhome.data.data.model.FoodItem
 import com.example.applicationhome.data.data.model.Offers
-import com.example.applicationhome.data.data.model.Snack
 import com.example.applicationhome.data.local.entity.CartItemsClass
-import com.example.applicationhome.data.local.entity.FavoriteFoodDatabase
-import com.example.applicationhome.data.local.entity.FavoriteRestaurantDatabase
-import com.example.applicationhome.data.local.entity.FavoriteSnacksDatabase
+import com.example.applicationhome.data.local.entity.FavoriteMealEntity
+import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
+import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
+import com.example.applicationhome.data.local.entity.MealsEntity
+import com.example.applicationhome.data.local.entity.SnacksEntity
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class RestaurantViewModel @Inject constructor(
     private val networkObserver: NetworkObserver,
@@ -55,32 +58,46 @@ class RestaurantViewModel @Inject constructor(
     val restaurantCount = homeScreenRepository.restaurantCount
 
 
-    private val _foodMenuMap = MutableStateFlow<Map<String, FoodItem>>(emptyMap())
+    private val _foodMenuList : StateFlow<List<MealsEntity>> =
+        resid.flatMapLatest { item ->
+            restaurantScreenRepository.getMealsFromDatabase(item)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
-    val foodMenuList : StateFlow<List<FoodItem>> = combine(
-        _foodMenuMap,
+
+    val foodMenuList : StateFlow<List<MealsEntity>> = combine(
+        _foodMenuList,
         resid,
         typeInRestaurantScreen
-    ) { menuMap, resId, type ->
-        menuMap.filter {
-            it.value.restaurantId == resId
-                    && it.value.category == type
-        }.values.toList()
+    ) { menuList, resId, type ->
+        menuList.filter {
+            it.restaurantId == resId
+                    && it.category == type
+        }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-
     val foodMenuListIsLoading : StateFlow<Boolean> = restaurantScreenRepository.foodMenuListIsLoading
 
-    private val _snackMenuMap = MutableStateFlow<Map<String, Snack>>(emptyMap())
+    private val _snackMenuList : StateFlow<List<SnacksEntity>> =
+        resid.flatMapLatest { item ->
+            restaurantScreenRepository.getSnacksFromDatabase(item)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
-    val snackMenuList = combine(
-        _snackMenuMap,
+    val snackMenuList : StateFlow<List<SnacksEntity>> = combine(
+        _snackMenuList,
         resid
     ) { menuMap, resId ->
-        menuMap.filter { it.value.restaurantId == resId }.values.toList()
+        menuMap.filter { it.restaurantId == resId }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -138,26 +155,12 @@ class RestaurantViewModel @Inject constructor(
         val restaurantsCount = restaurantCount[resid.value]
         if(restaurantsCount != null){
             viewModelScope.launch {
-                val foodMenu = async {
-                    if(foodMenuList.value.size < restaurantsCount.meals){
-                      restaurantScreenRepository.uploadFoodMenuFromApi(resid.value)
-                    } else { emptyMap() }
-                }
-
-                val snackMenu = async {
-                    if(snackMenuList.value.size < restaurantsCount.snacks){
-                        restaurantScreenRepository.uploadSnacksMenuFromApi(resid.value)
-                    } else { emptyMap() }
-                }
-
                 val offersMenu = async {
                     if(restaurantOffersMenuList.value.size < restaurantsCount.offers){
                         restaurantScreenRepository.uploadRestaurantOffersFromApi(resid.value)
                     } else { emptyMap() }
                 }
 
-                _foodMenuMap.value += foodMenu.await()
-                _snackMenuMap.value += snackMenu.await()
                 _restaurantOffersMenuMap.value += offersMenu.await()
             }
         }
@@ -253,17 +256,17 @@ class RestaurantViewModel @Inject constructor(
     val favoriteRestaurantsIds = favoriteRepository.favoriteRestaurantsIds
 
 
-    fun addMealFavorite(food : FavoriteFoodDatabase){
+    fun addMealFavorite(food : FavoriteMealEntity){
         viewModelScope.launch {
             getFavoriteUseCase.addMealFavorite(food)
         }
     }
-    fun addSnackFavorite(snack : FavoriteSnacksDatabase){
+    fun addSnackFavorite(snack : FavoriteSnackEntity){
         viewModelScope.launch {
             getFavoriteUseCase.addSnackFavorite(snack)
         }
     }
-    fun addRestaurantsFavorite(restaurants: FavoriteRestaurantDatabase){
+    fun addRestaurantsFavorite(restaurants: FavoriteRestaurantEntity){
         viewModelScope.launch {
             getFavoriteUseCase.addRestaurantsFavorite(restaurants)
         }
@@ -292,10 +295,10 @@ class RestaurantViewModel @Inject constructor(
     val selectedRestaurant = itemScreenRepository.selectedRestaurant
 
 
-    fun selectMeal(item: FoodItem, size : String) {
+    fun selectMeal(item: MealsEntity, size : String) {
         itemScreenRepository.selectMeal(item, size)
     }
-    fun selectSnack(item: Snack, size : String){
+    fun selectSnack(item: SnacksEntity, size : String){
         itemScreenRepository.selectSnack(item, size)
     }
 }

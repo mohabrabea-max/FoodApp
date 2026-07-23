@@ -29,7 +29,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import com.example.applicationhome.data.data.model.Categories
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.features.homescreen.ui.CategoriesBar
 import com.example.applicationhome.features.profile.ui.SearchResults
@@ -41,12 +40,12 @@ fun Search(
     searchViewModel : SearchViewModel
 ){
     val cartTotalNumber by searchViewModel.cartTotalNumber.collectAsStateWithLifecycle()
+    val categories by searchViewModel.categories.collectAsStateWithLifecycle()
 
     val interactionSource = remember { MutableInteractionSource() }
 
     val searchHistory by searchViewModel.searchHistory.collectAsStateWithLifecycle()
     val searchHistoryAfterFiltering by searchViewModel.searchHistoryAfterFiltering.collectAsStateWithLifecycle()
-    val searchList by searchViewModel.searchSuggestions.collectAsStateWithLifecycle()
 
     val search by searchViewModel.searchString.collectAsStateWithLifecycle()
     val searchSuggestions by searchViewModel.searchSuggestions.collectAsStateWithLifecycle()
@@ -80,7 +79,7 @@ fun Search(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.Start
         ){
-            if(search.isNotEmpty()){
+            if(search.isNotEmpty() && !searchClickable){
                 //       --------------------------\\ Last Search //--------------------------
                 if(searchHistoryAfterFiltering.isNotEmpty()) items(searchHistoryAfterFiltering){ item ->
                     SearchSuggestions(
@@ -101,7 +100,7 @@ fun Search(
                 }
 
                 //       --------------------------\\ New Search //--------------------------
-                items(searchList){ item ->
+                items(searchSuggestions){ item ->
                     SearchSuggestions(
                         text = item,
                         searchText = search,
@@ -112,7 +111,7 @@ fun Search(
                         northWestClickable = { searchViewModel.searchFilter(item) }
                     )
 
-                    if(item != searchList.last()) Divider(
+                    if(item != searchSuggestions.last()) Divider(
                         color = Color.LightGray.copy(alpha = 0.6f),
                         modifier = Modifier
                             .padding(horizontal = 20.dp)
@@ -123,17 +122,10 @@ fun Search(
                 //       --------------------------\\ Categories Bar //--------------------------
                 item{
                     CategoriesBar(
-                        listOf(
-                            Categories(0, "Pizza", "Pizza"),
-                            Categories(0, "Pizza", "Pizza"),
-                            Categories(0, "Pizza", "Pizza"),
-                            Categories(0, "Pizza", "Pizza"),
-                            Categories(0, "Pizza", "Pizza"),
-                            Categories(0, "Pizza", "Pizza")
-                        ),
+                        categories,
                         false,
                         0,
-                        {},
+                        { searchViewModel.clickSearch(it.name) },
                         {}
                     )
 

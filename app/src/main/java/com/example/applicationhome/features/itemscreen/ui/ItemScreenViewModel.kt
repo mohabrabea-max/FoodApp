@@ -8,9 +8,9 @@ import com.example.applicationhome.core.domain.repository.ItemScreenRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
 import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
-import com.example.applicationhome.data.data.model.FoodItem
 import com.example.applicationhome.data.local.entity.CartItemsClass
-import com.example.applicationhome.data.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.local.entity.FavoriteMealEntity
+import com.example.applicationhome.data.local.entity.MealsEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +40,7 @@ class ItemScreenViewModel @Inject constructor(
     val snackSize = itemScreenRepository.snackSize
 
 
-    fun selectItem(item: FoodItem, size : String) {
+    fun selectItem(item: MealsEntity, size : String) {
         itemScreenRepository.selectMeal(item, size)
     }
 
@@ -120,7 +120,7 @@ class ItemScreenViewModel @Inject constructor(
     val favoriteMealsIds = favoriteRepository.favoriteMealsIds
 
 
-    fun addMealFavorite(food : FavoriteFoodDatabase){
+    fun addMealFavorite(food : FavoriteMealEntity){
         viewModelScope.launch {
             getFavoriteUseCase.addMealFavorite(food)
         }

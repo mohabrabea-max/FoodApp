@@ -1,10 +1,12 @@
 package com.example.applicationhome.data.local.entity
 
-import androidx.compose.ui.graphics.Color
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Fts4
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 import com.example.applicationhome.data.data.model.MealSizeDetail
 import com.example.applicationhome.data.data.model.OrderItemsClass
 import com.example.applicationhome.data.data.model.UserInformationInOrderClass
@@ -40,7 +42,7 @@ data class RestaurantsEntity(
     val image : String = "",
     val image2 : String = "",
     val review : Double = 0.0,
-    val background : Color = Color.White,
+    val background : String = "",
     val searchKeywords: String = "",
     val topFiveMeals : String = ""
 )
@@ -62,7 +64,7 @@ data class SearchFtsEntity(
 
 @Entity(tableName = "search_history")
 data class SearchHistory(
-    @PrimaryKey val userId : String,
+    @PrimaryKey val userId : String = "",
     val title : String = "",
     val time : String = ""
 )
@@ -118,57 +120,105 @@ data class CartClass(
 )
 
 
+//        *** ---------------------------- \\***  Favorite Meals  ***// ---------------------------- ***
+
 @Entity(
-    tableName = "favorite_food",
-    primaryKeys = ["userId", "mealId"]
+    tableName = "favorite_meals",
+    primaryKeys = ["mealId", "userId"],
+    foreignKeys = [
+        ForeignKey(
+            entity = MealsEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["mealId"],
+            onDelete = ForeignKey.CASCADE // لو الوجبة اتمسحت من النظام تتمسح تلقائياً من المفضلة
+        )
+    ]
 )
-data class FavoriteFoodDatabase(
-    val userId : String = "",
+data class FavoriteMealEntity(
     val mealId : Int = 0,
-    val type : String = "",
-    val name : String = "",
-    val details : String = "",
-    val image : String = "",
-    val sizeOptions : List<MealSizeDetail> = emptyList(),
+    val userId : String = "",
     val restaurantId : Int = 0,
-    val review : Double = 0.0,
     val isSynced : Boolean = false,
     val isDeletedOffline : Boolean = false
 )
 
+data class MealWithFavoriteStatus(
+    @Embedded val meal : MealsEntity,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "mealId"
+    )
+    val favoriteInfo : FavoriteMealEntity?
+){
+    val isFavorite : Boolean get() = favoriteInfo != null
+}
+
+
+//        *** ---------------------------- \\***  Favorite Snacks  ***// ---------------------------- ***
 
 @Entity(
     tableName = "favorite_snacks",
-    primaryKeys = ["userId", "snackId"]
+    primaryKeys = ["snackId", "userId"],
+    foreignKeys = [
+        ForeignKey(
+            entity = SnacksEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["snackId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
 )
-data class FavoriteSnacksDatabase(
-    val userId : String = "",
+data class FavoriteSnackEntity(
     val snackId : Int = 0,
-    val name : String = "",
-    val details : String = "",
-    val image : String = "",
-    val priceANDsize : Map<String, Double> = emptyMap(),
+    val userId : String = "",
     val restaurantId : Int = 0,
-    val review : Double = 0.0,
     val isSynced : Boolean = false,
     val isDeletedOffline : Boolean = false
 )
 
+data class SnackWithFavoriteStatus(
+    @Embedded val snack : SnacksEntity,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "snackId"
+    )
+    val favoriteInfo : FavoriteSnackEntity?
+){
+    val isFavorite : Boolean get() = favoriteInfo != null
+}
+
+
+//        *** ---------------------------- \\***  Favorite Restaurants  ***// ---------------------------- ***
 
 @Entity(
-    tableName = "favorite_restaurant",
-    primaryKeys = ["userId", "restaurantId"]
+    tableName = "favorite_restaurants",
+    primaryKeys = ["resId", "userId"],
+    foreignKeys = [
+        ForeignKey(
+            entity = RestaurantsEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["resId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
 )
-data class FavoriteRestaurantDatabase(
+data class FavoriteRestaurantEntity(
+    val resId : Int = 0,
     val userId : String = "",
-    val restaurantId : Int = 0,
-    val name : String = "",
-    val image : String = "",
-    val image2 : String = "",
-    val type : List<String> = emptyList(),
     val isSynced : Boolean = false,
     val isDeletedOffline : Boolean = false
 )
+
+data class RestaurantWithFavoriteStatus(
+    @Embedded val restaurant : RestaurantsEntity,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "resId"
+    )
+    val favoriteInfo : FavoriteRestaurantEntity?
+){
+    val isFavorite : Boolean get() = favoriteInfo != null
+}
 
 
 @Entity(

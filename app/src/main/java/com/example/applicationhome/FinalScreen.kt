@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -65,10 +66,8 @@ import kotlin.time.Duration.Companion.milliseconds
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FinalScreen(){
-    val finalScreenViewModel : FinalScreenViewModel = hiltViewModel()
-
-    val networkState  = finalScreenViewModel.isNetworkAvailable
+fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
+    val networkState by finalScreenViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
 
     val snackBarHostState = remember { SnackbarHostState() }
 

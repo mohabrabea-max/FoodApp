@@ -104,6 +104,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     implementation("androidx.paging:paging-compose:3.3.0")
+    implementation("androidx.room:room-paging:2.7.0")
 
     implementation("commons-net:commons-net:3.9.0")
 }

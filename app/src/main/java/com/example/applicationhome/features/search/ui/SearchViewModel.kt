@@ -5,13 +5,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import com.example.applicationhome.core.domain.model.mealsEntityToFoodItem
-import com.example.applicationhome.core.domain.model.restaurantsEntityToRestaurants
 import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
+import com.example.applicationhome.core.domain.repository.HomeScreenRepository
 import com.example.applicationhome.core.domain.repository.ItemScreenRepository
 import com.example.applicationhome.core.domain.repository.SearchRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
+import com.example.applicationhome.data.data.model.Categories
 import com.example.applicationhome.data.local.entity.MealsEntity
 import com.example.applicationhome.data.local.entity.RestaurantWithFeaturedMeals
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
@@ -41,11 +41,26 @@ class SearchViewModel @Inject constructor(
     private val searchRepository : SearchRepository,
     private val itemScreenRepository : ItemScreenRepository,
     private val favoriteRepository : FavoriteRepository,
+    private val homeScreenRepository : HomeScreenRepository,
     private val userRepository: UserRepository,
     private val networkObserver : NetworkObserver
 ): ViewModel() {
 
     val userData = userRepository.userData
+
+
+    //       *** ---------------------------- \\***  Categories  ***// ---------------------------- ***
+
+    private val _categories = MutableStateFlow<List<Categories>>(emptyList())
+    val categories : StateFlow<List<Categories>> = _categories
+
+    fun loadCategories(){
+        viewModelScope.launch {
+            _categories.value = emptyList()
+            _categories.value += homeScreenRepository.getCategorieslistFromApi()
+        }
+    }
+
 
     //       *** ---------------------------- \\***  Search  ***// ---------------------------- ***
 
@@ -93,7 +108,7 @@ class SearchViewModel @Inject constructor(
         userData.flatMapLatest { user ->
             val id = user.id
             if(id.isNotEmpty()){
-                searchRepository.getSearchHistory(id)
+                searchRepository.getSearchHistory(id).map { it -> it.map { it.title } }
             }else{
                 flowOf(emptyList())
             }
@@ -122,6 +137,9 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             networkObserver.isNetworkAvailable.collect { available ->
                 isNetworkAvailable.value = available
+                if(available){
+                    loadCategories()
+                }
             }
         }
     }
@@ -155,22 +173,18 @@ class SearchViewModel @Inject constructor(
     //       *** ---------------------------- \\***  Item Screen  ***// ---------------------------- ***
 
     fun selectMeal(item: MealsEntity) {
-        val foodItem = item.mealsEntityToFoodItem()
-
         val size = item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }?.size ?: ""
 
-        itemScreenRepository.selectMeal(foodItem, size)
+        itemScreenRepository.selectMeal(item, size)
     }
 
     fun selectRestaurant(item : RestaurantsEntity){
-        val restaurant = item.restaurantsEntityToRestaurants()
-
-        itemScreenRepository.selectRestaurant(restaurant)
+        itemScreenRepository.selectRestaurant(item)
 
         viewModelScope.launch {
             try {
                 val newData = favoriteRepository.getRestaurantToView(item.id)
-                if(newData != null) itemScreenRepository.selectRestaurant(newData)
+                itemScreenRepository.selectRestaurant(newData)
             }catch (e : Exception){
                 null
             }

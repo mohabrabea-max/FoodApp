@@ -67,7 +67,7 @@ class SyncRemoveFromFavoritesWorker @AssistedInject constructor(
                             try {
                                 api.deleteFromFavorite(
                                     item.userId,
-                                    "Restaurant_${item.restaurantId}"
+                                    "Restaurant_${item.resId}"
                                 ).isSuccessful
                             }catch (e : Exception){ false }
                         }
@@ -75,7 +75,7 @@ class SyncRemoveFromFavoritesWorker @AssistedInject constructor(
                     val results = unDeletedOnlineRestaurantsToFirebase.awaitAll()
                     if(results.all { it }){
                         unDeletedOnlineRestaurants.groupBy { it.userId }.forEach { (userId, mealsGroup) ->
-                            favoriteDao.deleteRestaurantFromDatabase(userId, mealsGroup.map { it.restaurantId })
+                            favoriteDao.deleteRestaurantFromDatabase(userId, mealsGroup.map { it.resId })
                         }
                     }else{
                         restaurantsSyncSuccess = false

@@ -3,9 +3,11 @@ package com.example.applicationhome.core.domain.repository
 import androidx.compose.runtime.mutableStateMapOf
 import com.example.applicationhome.data.data.model.Categories
 import com.example.applicationhome.data.data.model.Offers
-import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.data.data.model.RestaurantsCount
+import com.example.applicationhome.data.local.dao.FoodAndRestaurantsDao
+import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.remote.FoodAppAPIs
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -13,6 +15,7 @@ import javax.inject.Singleton
 
 @Singleton
 class HomeScreenRepository @Inject constructor(
+    private val foodAndRestaurantsDao : FoodAndRestaurantsDao,
     private val api : FoodAppAPIs
 ) {
     private val _restaurantsMenuIsLoading = MutableStateFlow(true)
@@ -29,9 +32,8 @@ class HomeScreenRepository @Inject constructor(
     val restaurantCount : Map<Int, RestaurantsCount> get() = _restaurantCount
 
 
-    fun getRestaurantsFromDatabase(){
-
-    }
+    fun getRestaurantsFromDatabase(): Flow<List<RestaurantsEntity>> =
+        foodAndRestaurantsDao.getAllRestaurantsFromDatabase()
 
     suspend fun restaurantCount(){
         try {
@@ -47,23 +49,23 @@ class HomeScreenRepository @Inject constructor(
         }
     }
 
-    suspend fun getRestaurantsFromApi(): Map<String, Restaurants> {
-        val restaurants = try {
-            _restaurantsMenuIsLoading.value = true
-            val response = api.restaurants()
-            val restaurants = response.body()
-            if(response.isSuccessful && restaurants != null){
-                restaurants
-            }else{
-                emptyMap()
-            }
-        } catch (e: Exception) {
-            emptyMap()
-        } finally {
-            _restaurantsMenuIsLoading.value = false
-        }
-        return restaurants
-    }
+//    suspend fun getRestaurantsFromApi(): Map<String, Restaurants> {
+//        val restaurants = try {
+//            _restaurantsMenuIsLoading.value = true
+//            val response = api.restaurants()
+//            val restaurants = response.body()
+//            if(response.isSuccessful && restaurants != null){
+//                restaurants
+//            }else{
+//                emptyMap()
+//            }
+//        } catch (e: Exception) {
+//            emptyMap()
+//        } finally {
+//            _restaurantsMenuIsLoading.value = false
+//        }
+//        return restaurants
+//    }
 
     suspend fun getCategorieslistFromApi(): List<Categories> {
         val categoriesList = try {

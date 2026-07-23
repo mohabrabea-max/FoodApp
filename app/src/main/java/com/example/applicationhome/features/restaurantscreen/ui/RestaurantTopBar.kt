@@ -39,15 +39,15 @@ import com.example.applicationhome.core.ui.components.designsystem.TopBarButtons
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.data.data.model.Screens
-import com.example.applicationhome.data.local.entity.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
+import com.example.applicationhome.data.local.entity.RestaurantsEntity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RestaurantTopBar(
     searchSize : Float,
-    item : Restaurants,
+    item : RestaurantsEntity,
     scrollState : LazyListState,
     navigationController : NavHostController,
     restaurantViewModel: RestaurantViewModel,
@@ -66,16 +66,6 @@ fun RestaurantTopBar(
     val favoriteRestaurantsIds by restaurantViewModel.favoriteRestaurantsIds.collectAsStateWithLifecycle()
     val isRestaurantInFavorite = favoriteRestaurantsIds.contains(item.id)
 
-    val favoriteRestaurantDatabase = FavoriteRestaurantDatabase(
-        userId,
-        item.id,
-        item.name,
-        item.image,
-        item.image2,
-        item.typ,
-        false,
-        false
-    )
 
     Column{
         RestaurantScreenTopBar(
@@ -140,7 +130,15 @@ fun RestaurantTopBar(
 
                 Favorite(
                     isRestaurantInFavorite,
-                    { restaurantViewModel.addRestaurantsFavorite(favoriteRestaurantDatabase) },
+                    {
+                        val restaurantsEntity = FavoriteRestaurantEntity(
+                            item.id,
+                            userId,
+                            false,
+                            false
+                        )
+                        restaurantViewModel.addRestaurantsFavorite(restaurantsEntity)
+                    },
                     { restaurantViewModel.removeRestaurantsFavorite(item.id) },
                     modifier = Modifier.padding(5.dp).shadow(
                         elevation = 7.dp,

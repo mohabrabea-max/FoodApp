@@ -40,12 +40,12 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
 import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.data.local.entity.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.local.entity.RestaurantsEntity
 
 @Composable
 fun RestaurantsBox(
     loading : Boolean,
-    item : FavoriteRestaurantDatabase,
+    item : RestaurantsEntity,
     isRestaurantInFavorite : Boolean,
     view : () -> Unit,
     clickable : () -> Unit,

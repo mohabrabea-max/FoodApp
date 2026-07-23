@@ -9,8 +9,7 @@ import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
 import com.example.applicationhome.data.data.model.Categories
 import com.example.applicationhome.data.data.model.Offers
-import com.example.applicationhome.data.data.model.Restaurants
-import com.example.applicationhome.data.local.entity.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,7 +40,13 @@ class HomeScreenViewModel @Inject constructor(
     private val typ = MutableStateFlow("All")
 
 
-    private val _restaurantsMenu = MutableStateFlow<Map<String, Restaurants>>(emptyMap())
+    private val _restaurantsMenu : StateFlow<List<RestaurantsEntity>> =
+        homeScreenRepository.getRestaurantsFromDatabase()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList()
+            )
 
     val restaurantsMenuIsLoading : StateFlow<Boolean> = homeScreenRepository.restaurantsMenuIsLoading
 
@@ -49,7 +54,7 @@ class HomeScreenViewModel @Inject constructor(
         _restaurantsMenu,
         typ
     ) { restaurants, type ->
-        val restaurantsList = restaurants.values.toList()
+        val restaurantsList = restaurants.toList()
 
         if (type == "All") {
             restaurantsList
@@ -139,7 +144,7 @@ class HomeScreenViewModel @Inject constructor(
 
     val favoriteRestaurantsIds = favoriteRepository.favoriteRestaurantsIds
 
-    fun addRestaurantsFavorite(restaurants: FavoriteRestaurantDatabase){
+    fun addRestaurantsFavorite(restaurants: FavoriteRestaurantEntity){
         viewModelScope.launch {
             getFavoriteUseCase.addRestaurantsFavorite(restaurants)
         }

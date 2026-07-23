@@ -44,12 +44,12 @@ import coil.size.Precision
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
 import com.example.applicationhome.core.ui.theme.BrownForFont
 import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.data.data.model.Restaurants
+import com.example.applicationhome.data.local.entity.RestaurantsEntity
 
 @Composable
 fun RestaurantsBoxHomeScreen(
     loading : Boolean,
-    item : Restaurants,
+    item : RestaurantsEntity,
     isRestaurantInFavorite : Boolean,
     view : () -> Unit,
     clickable : () -> Unit,

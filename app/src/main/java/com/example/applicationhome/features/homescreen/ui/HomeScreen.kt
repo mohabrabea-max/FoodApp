@@ -56,7 +56,7 @@ import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.LightOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.Screens
-import com.example.applicationhome.data.local.entity.FavoriteRestaurantDatabase
+import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import kotlinx.coroutines.CoroutineScope
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity")
@@ -238,19 +238,13 @@ fun HomeScreen(
                                 navigationController.navigate(Screens.RestaurantScreen.screen)
                             },
                             {
-                                val favoriteRestaurantDatabase = FavoriteRestaurantDatabase(
-                                    userData.id,
+                                val favoriteRestaurantDatabase = FavoriteRestaurantEntity(
                                     item.id,
-                                    item.name,
-                                    item.image,
-                                    item.image2,
-                                    item.typ,
+                                    userData.id,
                                     false,
                                     false
                                 )
-                                homeScreenViewModel.addRestaurantsFavorite(
-                                    favoriteRestaurantDatabase
-                                )
+                                homeScreenViewModel.addRestaurantsFavorite(favoriteRestaurantDatabase)
                             },
                             { homeScreenViewModel.removeRestaurantsFavorite(item.id) }
                         )

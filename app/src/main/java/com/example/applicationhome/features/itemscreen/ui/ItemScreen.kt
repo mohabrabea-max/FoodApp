@@ -48,7 +48,7 @@ import com.example.applicationhome.core.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.local.entity.CartItemsClass
-import com.example.applicationhome.data.local.entity.FavoriteFoodDatabase
+import com.example.applicationhome.data.local.entity.FavoriteMealEntity
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -111,16 +111,10 @@ fun ItemScreen(
                 },
                 {
                     val favoriteFoodDatabase =
-                        FavoriteFoodDatabase(
-                            userData.id,
+                        FavoriteMealEntity(
                             item.id,
-                            item.category,
-                            item.name,
-                            item.details,
-                            item.image.first(),
-                            item.sizeOptions,
+                            userData.id,
                             item.restaurantId,
-                            item.review,
                             false,
                             false
                         )
@@ -141,7 +135,7 @@ fun ItemScreen(
                         Spacer(modifier = Modifier.height(50.dp))
                         ItemScreenImage(
                             scrollState,
-                            item.image.first()
+                            item.image
                         )
                     }
                 }
@@ -241,25 +235,26 @@ fun ItemScreen(
         Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom){
             val price = item.sizeOptions.find { it.size == size }?.price ?: 0.0
             val totalPrice = newCount * price
-            val meal = CartItemsClass(
-                userData.id,
-                "${item.id}_${size}",
-                item.id,
-                item.name,
-                item.category,
-                size,
-                newCount,
-                price,
-                totalPrice,
-                item.image.first(),
-                item.restaurantId
-            )
             BottomBarForItemScreen(
                 price,
                 newCount,
                 { itemScreenViewModel.minusnewCount() },
                 { itemScreenViewModel.plusnewCount() },
                 {
+                    val meal = CartItemsClass(
+                        userData.id,
+                        "${item.id}_${size}",
+                        item.id,
+                        item.name,
+                        item.category,
+                        size,
+                        newCount,
+                        price,
+                        totalPrice,
+                        item.image,
+                        item.restaurantId
+                    )
+
                     itemScreenViewModel.updateCount(meal, size, newCount)
                     if (item.restaurantId == cartInformation?.restaurantId || cartInformation == null) {
                         itemScreenViewModel.deletenewCount()

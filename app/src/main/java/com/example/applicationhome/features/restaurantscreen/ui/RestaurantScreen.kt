@@ -60,8 +60,8 @@ import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.core.ui.theme.screens.NoInternetScreen
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.local.entity.CartItemsClass
-import com.example.applicationhome.data.local.entity.FavoriteFoodDatabase
-import com.example.applicationhome.data.local.entity.FavoriteSnacksDatabase
+import com.example.applicationhome.data.local.entity.FavoriteMealEntity
+import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -235,7 +235,7 @@ fun RestaurantScreen(
                                 snacksIsLoading,
                                 modifier = Modifier.size(200.dp),
                                 item.name,
-                                item.image.first(),
+                                item.image,
                                 item.priceANDsize[size],
                                 {
                                     restaurantViewModel.selectSnack(item, size)
@@ -246,15 +246,10 @@ fun RestaurantScreen(
                                         isSnackInFavorite,
                                         {
                                             val favoriteSnacksDatabase =
-                                                FavoriteSnacksDatabase(
-                                                    userData.id,
+                                                FavoriteSnackEntity(
                                                     item.id,
-                                                    item.name,
-                                                    item.details,
-                                                    item.image.first(),
-                                                    item.priceANDsize,
+                                                    userData.id,
                                                     item.restaurantId,
-                                                    item.review,
                                                     false,
                                                     false
                                                 )
@@ -290,7 +285,7 @@ fun RestaurantScreen(
                                                 quantity,
                                                 price,
                                                 price * quantity,
-                                                item.image.first(),
+                                                item.image,
                                                 item.restaurantId
                                             )
                                             restaurantViewModel.plus(snack, size)
@@ -309,7 +304,7 @@ fun RestaurantScreen(
                                                 quantity,
                                                 price,
                                                 price * quantity,
-                                                item.image.first(),
+                                                item.image,
                                                 item.restaurantId
                                             )
                                             restaurantViewModel.minus(snack, size)
@@ -344,16 +339,10 @@ fun RestaurantScreen(
                                         isMealInFavorite,
                                         {
                                             val favoriteFoodDatabase =
-                                                FavoriteFoodDatabase(
-                                                    userData.id,
+                                                FavoriteMealEntity(
                                                     item.id,
-                                                    item.category,
-                                                    item.name,
-                                                    item.details,
-                                                    item.image.first(),
-                                                    item.sizeOptions,
+                                                    userData.id,
                                                     item.restaurantId,
-                                                    item.review,
                                                     false,
                                                     false
                                                 )
@@ -389,16 +378,10 @@ fun RestaurantScreen(
                                         isMealInFavorite,
                                         {
                                             val favoriteFoodDatabase =
-                                                FavoriteFoodDatabase(
-                                                    userData.id,
+                                                FavoriteMealEntity(
                                                     item.id,
-                                                    item.category,
-                                                    item.name,
-                                                    item.details,
-                                                    item.image.first(),
-                                                    item.sizeOptions,
+                                                    userData.id,
                                                     item.restaurantId,
-                                                    item.review,
                                                     false,
                                                     false
                                                 )
