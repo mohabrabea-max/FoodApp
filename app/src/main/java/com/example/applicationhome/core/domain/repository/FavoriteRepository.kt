@@ -123,7 +123,7 @@ class FavoriteRepository @Inject constructor(
 // *** ---------------------- \\***  Favorite Count  ***// ---------------------- ***
 
     val favoriteFoodCount : StateFlow<Int> = favoriteMeals
-        .map { it.size }
+        .map { it -> it.filter { it.isFavorite }.size }
         .stateIn(
             scope = externalScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -131,7 +131,7 @@ class FavoriteRepository @Inject constructor(
         )
 
     val favoriteSnacksCount : StateFlow<Int> = favoriteSnacks
-        .map { it.size }
+        .map { it -> it.filter { it.isFavorite }.size }
         .stateIn(
             scope = externalScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -139,7 +139,7 @@ class FavoriteRepository @Inject constructor(
         )
 
     val favoriteRestaurantsCount : StateFlow<Int> = favoriteRestaurantsFromDatabase
-        .map { it.size }
+        .map { it -> it.filter { it.isFavorite }.size }
         .stateIn(
             scope = externalScope,
             started = SharingStarted.WhileSubscribed(5000),

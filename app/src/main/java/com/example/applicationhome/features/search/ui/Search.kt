@@ -22,6 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +41,9 @@ fun Search(
     navigationController : NavHostController,
     searchViewModel : SearchViewModel
 ){
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val cartTotalNumber by searchViewModel.cartTotalNumber.collectAsStateWithLifecycle()
     val categories by searchViewModel.categories.collectAsStateWithLifecycle()
 
@@ -69,7 +74,11 @@ fun Search(
                     searchViewModel.searchFilter("")
                 },
                 cartClick = { navigationController.navigate(Screens.Cart.screen) },
-                onQueryChange = { searchViewModel.clickSearch(it) }
+                onQueryChange = { searchViewModel.searchFilter(it.text) },
+                clickSearch = { if(it.isNotEmpty()) searchViewModel.clickSearch(it) },
+                unClickSearch = {searchViewModel.unClickSearch()},
+                focusManager = focusManager,
+                keyboardController = keyboardController
             )
         }
     ){ paddingValues ->
@@ -79,16 +88,21 @@ fun Search(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.Start
         ){
-            if(search.isNotEmpty() && !searchClickable){
+            if(search.text.isNotEmpty() && !searchClickable){
                 //       --------------------------\\ Last Search //--------------------------
                 if(searchHistoryAfterFiltering.isNotEmpty()) items(searchHistoryAfterFiltering){ item ->
                     SearchSuggestions(
                         text = item,
-                        searchText = search,
+                        searchText = search.text,
                         textColor = Color.Gray,
                         startIcon = Icons.Default.History,
                         iconsColor = Color.Gray,
-                        textClickable = { searchViewModel.clickSearch(item) },
+                        textClickable = {
+                            keyboardController?.hide()
+                            focusManager.clearFocus()
+
+                            searchViewModel.clickSearch(item)
+                        },
                         northWestClickable = { searchViewModel.searchFilter(item) }
                     )
 
@@ -103,11 +117,16 @@ fun Search(
                 items(searchSuggestions){ item ->
                     SearchSuggestions(
                         text = item,
-                        searchText = search,
+                        searchText = search.text,
                         textColor = Color.Black,
                         startIcon = Icons.Default.Search,
                         iconsColor = Color.Black,
-                        textClickable = { searchViewModel.clickSearch(item) },
+                        textClickable = {
+                            keyboardController?.hide()
+                            focusManager.clearFocus()
+
+                            searchViewModel.clickSearch(item)
+                        },
                         northWestClickable = { searchViewModel.searchFilter(item) }
                     )
 
@@ -118,14 +137,19 @@ fun Search(
                     )
                 }
 
-            }else if(!searchClickable){
+            }else if(search.text.isEmpty()){
                 //       --------------------------\\ Categories Bar //--------------------------
                 item{
                     CategoriesBar(
                         categories,
                         false,
                         0,
-                        { searchViewModel.clickSearch(it.name) },
+                        {
+                            keyboardController?.hide()
+                            focusManager.clearFocus()
+
+                            searchViewModel.clickSearch(it.name)
+                        },
                         {}
                     )
 
@@ -153,7 +177,12 @@ fun Search(
                             searchHistory.forEach { item ->
                                 SearchHistoryBox(
                                     text = item,
-                                    clickable = {  }
+                                    clickable = {
+                                        keyboardController?.hide()
+                                        focusManager.clearFocus()
+
+                                        searchViewModel.clickSearch(item)
+                                    }
                                 )
                             }
                         }
@@ -161,7 +190,7 @@ fun Search(
                 }
 
                 //       --------------------------\\ Search Results //--------------------------
-            }else{
+            }else if(search.text.isNotEmpty() && searchClickable){
                 items(
                     count = searchResults.itemCount,
                     key = searchResults.itemKey { it.restaurant.id }
@@ -172,11 +201,14 @@ fun Search(
                         SearchResults(
                             item,
                             mealClickable = { item ->
-                                searchViewModel.selectMeal(item)
+                                searchViewModel.selectMeal(item){
+                                    navigationController.navigate(Screens.ItemScreen.screen)
+                                }
                             },
                             restaurantClickable = {
-                                searchViewModel.selectedtype(0, item.restaurant.typ.toList().first())
-                                searchViewModel.selectRestaurant(item.restaurant)
+                                searchViewModel.selectRestaurant(item.restaurant, 0, item.restaurant.typ.toList().first()){
+                                    navigationController.navigate(Screens.RestaurantScreen.screen)
+                                }
                             }
                         )
                     }
@@ -185,3 +217,18 @@ fun Search(
         }
     }
 }
+
+//combinedClickable
+
+
+// Modifier
+//            .combinedClickable(
+//                onClick = {
+//                    // 👈 الأكشن لما يضغط ضغطة عادية
+//                    onItemClick()
+//                },
+//                onLongClick = {
+//                    // 🚀 الأكشن لما يضغط ضغطة طويلة!
+//                    onItemLongClick()
+//                }
+//            )

@@ -46,7 +46,11 @@ interface FoodAndRestaurantsDao {
 
     //----------------------------------------------------------------\\ Search //----------------------------------------------------------------
 
-    @Query("SELECT name FROM search_fts WHERE search_fts MATCH :searchText || '*' LIMIT 10")
+    @Query("""
+            SELECT r.searchKeywords FROM restaurants_entity r
+            JOIN search_fts fts ON r.id = fts.rowid
+            WHERE search_fts MATCH :searchText LIMIT 10
+            """)
     fun getSearchSuggestions(searchText: String): Flow<List<String>>
 
     @Query("""

@@ -8,6 +8,7 @@ import com.example.applicationhome.data.local.entity.MealsEntity
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.local.entity.SearchHistory
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,8 +16,17 @@ import javax.inject.Singleton
 class SearchRepository @Inject constructor(
     private val foodAndRestaurantsDao : FoodAndRestaurantsDao
 ) {
-    fun getSearchSuggestions(searchText: String): Flow<List<String>> =
-        foodAndRestaurantsDao.getSearchSuggestions(searchText)
+    fun getSearchSuggestions(searchText: String): Flow<List<String>>{
+        val trimmedSearchText = searchText.trim()
+
+        if(trimmedSearchText.isEmpty()){
+            return flowOf(emptyList())
+        }
+
+        val formattedSearchText = "$trimmedSearchText*"
+        return foodAndRestaurantsDao.getSearchSuggestions(formattedSearchText)
+    }
+
 
     fun getRestaurantSearchResults(searchText: String): Flow<PagingData<RestaurantsEntity>>{
         return Pager(

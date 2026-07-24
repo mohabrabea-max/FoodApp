@@ -40,7 +40,7 @@ fun Restaurants.restaurantsToRestaurantsEntity(): RestaurantsEntity =
         this.image,
         this.image2,
         this.review,
-        this.background.toString(),
+        this.background,
         this.searchKeywords,
         this.topFiveMeals
     )

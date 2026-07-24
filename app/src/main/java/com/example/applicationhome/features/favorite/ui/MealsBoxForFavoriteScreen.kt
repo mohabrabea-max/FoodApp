@@ -67,12 +67,12 @@ fun MealsBoxForFavoriteScreen(
             ){
                 cardNavigationClickable()
             }.
-            padding(start = 20.dp, end = 15.dp, top = 15.dp, bottom = 20.dp)
+            padding(15.dp)
         ){
             Column(modifier = Modifier.fillMaxSize().background(Color.White)){
-                Box(modifier = Modifier.fillMaxWidth().weight(2f), contentAlignment = Alignment.Center){
+                Box(modifier = Modifier.fillMaxWidth().weight(1.5f), contentAlignment = Alignment.Center){
                     AsyncImage(
-                        modifier = Modifier.padding(top = 15.dp, end = 5.dp).fillMaxSize().clip(RoundedCornerShape(10.dp)),
+                        modifier = Modifier.fillMaxSize(0.9f).clip(RoundedCornerShape(10.dp)),
                         model = ImageRequest.Builder(LocalContext.current).
                         data(image).
                         crossfade(true).

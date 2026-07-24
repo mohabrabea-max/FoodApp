@@ -123,8 +123,7 @@ class HomeScreenViewModel @Inject constructor(
 
     //       *** ---------------------------- \\***  Item Screen  ***// ---------------------------- ***
 
-    fun selectRestaurant(item : RestaurantsEntity){
-        itemScreenRepository.selectRestaurant(item)
+    fun selectRestaurant(item : RestaurantsEntity, navigation : () -> Unit){
         viewModelScope.launch {
             try {
                 val newData = favoriteRepository.getRestaurantToView(item.id)
@@ -132,10 +131,14 @@ class HomeScreenViewModel @Inject constructor(
             }catch (e : Exception){
                 null
             }
+
+            selectedtype(0, item.typ.toList().first())
+
+            navigation()
         }
     }
 
-    fun selectedtype(index : Int, type : String){
+    private fun selectedtype(index : Int, type : String){
         itemScreenRepository.selectedTypeInRestaurant(index, type)
     }
 

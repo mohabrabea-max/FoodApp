@@ -2,6 +2,8 @@ package com.example.applicationhome.core.ui.theme.model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.core.domain.repository.CartRepository
+import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,7 +12,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DashboardScreenViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository : UserRepository,
+    private val favoriteRepository : FavoriteRepository,
+    private val cartRepository : CartRepository
 ) : ViewModel(){
     val state = MutableStateFlow(true)
     val sheetState = MutableStateFlow(false)
@@ -18,6 +22,11 @@ class DashboardScreenViewModel @Inject constructor(
     val isLogin = userRepository.isLogin
 
     val userData = userRepository.userData
+
+    val totalInFavorite = favoriteRepository.totalCountInFavorite
+
+
+    val totalNumberInCart = cartRepository.totalNumber
 
     init {
         viewModelScope.launch {

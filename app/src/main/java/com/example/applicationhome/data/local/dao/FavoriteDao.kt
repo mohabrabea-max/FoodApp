@@ -1,11 +1,10 @@
 package com.example.applicationhome.data.local.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import androidx.room.Upsert
 import com.example.applicationhome.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
@@ -21,15 +20,13 @@ interface FavoriteDao {
 
     @Transaction
     @Query("""
-        SELECT * FROM meals_entity
-        WHERE id IN(
-        SELECT mealId FROM favorite_meals
-        WHERE userId =:userId AND isDeletedOffline = 0
-        )
+        SELECT m.* FROM meals_entity m
+        INNER JOIN favorite_meals f ON m.id = f.mealId
+        WHERE f.userId = :userId AND f.isDeletedOffline = 0
             """)
     fun getFoodFromDatabase(userId : String) : Flow<List<MealWithFavoriteStatus>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun addFoodToFavorite(foodItem : List<FavoriteMealEntity>)
 
     @Query("DELETE FROM favorite_meals WHERE userId = :userId AND mealId IN (:mealIds)")
@@ -55,15 +52,13 @@ interface FavoriteDao {
 
     @Transaction
     @Query("""
-        SELECT * FROM snacks_entity
-        WHERE id IN(
-        SELECT snackId FROM favorite_snacks
-        WHERE userId =:userId AND isDeletedOffline = 0
-        )
+        SELECT m.* FROM snacks_entity m
+        INNER JOIN favorite_snacks f ON m.id = f.snackId
+        WHERE f.userId = :userId AND f.isDeletedOffline = 0
             """)
     fun getSnacksFromDatabase(userId : String) : Flow<List<SnackWithFavoriteStatus>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun addSnacksToFavorite(snacksItems : List<FavoriteSnackEntity>)
 
     @Query("DELETE FROM favorite_snacks WHERE userId = :userId AND snackId IN (:snackIds)")
@@ -89,15 +84,13 @@ interface FavoriteDao {
 
     @Transaction
     @Query("""
-        SELECT * FROM restaurants_entity
-        WHERE id IN(
-        SELECT resId FROM favorite_restaurants
-        WHERE userId =:userId AND isDeletedOffline = 0
-        )
+        SELECT m.* FROM restaurants_entity m
+        INNER JOIN favorite_restaurants f ON m.id = f.resId
+        WHERE f.userId = :userId AND f.isDeletedOffline = 0
             """)
     fun getRestaurantsFromDatabase(userId : String) : Flow<List<RestaurantWithFavoriteStatus>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun addRestaurantToFavorite(restaurant : List<FavoriteRestaurantEntity>)
 
     @Query("DELETE FROM favorite_restaurants WHERE userId = :userId AND resId IN (:resIds)")

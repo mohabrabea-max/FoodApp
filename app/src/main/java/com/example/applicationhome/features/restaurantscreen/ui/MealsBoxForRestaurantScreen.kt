@@ -121,7 +121,7 @@ fun MealsBoxForRestaurantScreen(
                         clip(RoundedCornerShape(10.dp)).
                         align(Alignment.CenterEnd),
                         model = ImageRequest.Builder(LocalContext.current).
-                        data(item.image.first()).
+                        data(item.image).
                         crossfade(true).
                         size(400, 400).
                         precision(Precision.EXACT).

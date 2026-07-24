@@ -1,5 +1,8 @@
 package com.example.applicationhome.features.search.ui
 
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -25,6 +28,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -66,17 +70,42 @@ class SearchViewModel @Inject constructor(
 
     val cartTotalNumber = cartRepository.totalNumber
 
-    private val _searchString = MutableStateFlow("")
-    val searchString : StateFlow<String> = _searchString.asStateFlow()
+    private val _searchString = MutableStateFlow(TextFieldValue(""))
+    val searchString : StateFlow<TextFieldValue> = _searchString.asStateFlow()
 
     private val _searchClickable = MutableStateFlow(false)
     val searchClickable : StateFlow<Boolean> = _searchClickable.asStateFlow()
 
 
     val searchSuggestions : StateFlow<List<String>> =
-        _searchString.flatMapLatest { searchText ->
-            searchRepository.getSearchSuggestions(searchText)
-        }.stateIn(
+        combine(
+            _searchString.map { it.text.trim() }.distinctUntilChanged(),
+            snapshotFlow { searchHistoryAfterFiltering }
+        ){ searchString, searchHistory ->
+            searchString to searchHistory
+
+        }
+        .flatMapLatest { (searchString, searchHistory) ->
+            if (searchString.isEmpty()) {
+                flowOf(emptyList())
+            } else {
+                searchRepository.getSearchSuggestions(searchString)
+                .map { list ->
+                    if (searchString.isEmpty()) {
+                        emptyList()
+                    } else {
+                        list.flatMap { it.split(",") }
+                        .map { it.trim() }
+                        .filter { suggestion ->
+                            suggestion.contains(searchString, ignoreCase = true)
+                            && searchHistory.value.none { suggestion.equals(it, ignoreCase = true)}
+                        }
+                        .distinct()
+                    }
+                }
+            }
+        }
+        .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
@@ -84,7 +113,7 @@ class SearchViewModel @Inject constructor(
 
     val searchResults : Flow<PagingData<RestaurantWithFeaturedMeals>> =
         _searchString.flatMapLatest { searchText ->
-            searchRepository.getRestaurantSearchResults(searchText)
+            searchRepository.getRestaurantSearchResults(searchText.text)
         }.map { pagingData ->
             pagingData.map { restaurant ->
                 val mealIds = restaurant.topFiveMeals
@@ -123,7 +152,7 @@ class SearchViewModel @Inject constructor(
             searchHistory,
             _searchString
         ){ history, search ->
-            history.filter { it.startsWith(search) }
+            history.filter { it.startsWith(search.text, ignoreCase = true) }
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -147,7 +176,10 @@ class SearchViewModel @Inject constructor(
 
 
     fun searchFilter(search : String){
-        _searchString.value = search
+        _searchString.value = TextFieldValue(
+            text = search,
+            selection = TextRange(search.length)
+        )
     }
 
     fun clickSearch(search : String){
@@ -169,29 +201,36 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    fun unClickSearch(){
+        _searchClickable.value = false
+    }
+
 
     //       *** ---------------------------- \\***  Item Screen  ***// ---------------------------- ***
 
-    fun selectMeal(item: MealsEntity) {
-        val size = item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }?.size ?: ""
+    fun selectMeal(item: MealsEntity, navigation : () -> Unit) {
+        val size = item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces", ignoreCase = true) }?.size ?: ""
 
         itemScreenRepository.selectMeal(item, size)
+
+        navigation()
     }
 
-    fun selectRestaurant(item : RestaurantsEntity){
+    fun selectRestaurant(item : RestaurantsEntity, index : Int, type : String, navigation : () -> Unit){
         itemScreenRepository.selectRestaurant(item)
 
         viewModelScope.launch {
-            try {
-                val newData = favoriteRepository.getRestaurantToView(item.id)
-                itemScreenRepository.selectRestaurant(newData)
-            }catch (e : Exception){
-                null
-            }
+            val newData = favoriteRepository.getRestaurantToView(item.id)
+
+            itemScreenRepository.selectRestaurant(newData)
+
+            selectedtype(index, type)
+
+            navigation()
         }
     }
 
-    fun selectedtype(index : Int, type : String){
+    private fun selectedtype(index : Int, type : String){
         itemScreenRepository.selectedTypeInRestaurant(index, type)
     }
 }

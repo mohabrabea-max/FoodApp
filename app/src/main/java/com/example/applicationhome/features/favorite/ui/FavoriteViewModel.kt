@@ -70,9 +70,6 @@ class FavoriteViewModel @Inject constructor(
                 if (id.isNotEmpty()) {
                     networkObserver.isNetworkAvailable.collect { available ->
                         isNetworkAvailable.value = available
-                        if (available) {
-                            favoriteRepository.syncFavoritesInDatabase(id)
-                        }
                     }
                 }
             }
@@ -184,10 +181,10 @@ class FavoriteViewModel @Inject constructor(
         viewModelScope.launch {
             val restaurant = favoriteRepository.getRestaurantToView(restaurantId)
 
-            if(restaurant != null) itemScreenRepository.selectRestaurant(restaurant)
+            itemScreenRepository.selectRestaurant(restaurant)
 
             selectedTypeIndex.value = index
-            typeInRestaurantScreen.value = restaurant?.typ?.toList()?.first() ?: ""
+            typeInRestaurantScreen.value = restaurant.typ.toList().first()
 
             itemScreenRepository.selectedTypeInRestaurant(selectedTypeIndex.value, typeInRestaurantScreen.value)
 

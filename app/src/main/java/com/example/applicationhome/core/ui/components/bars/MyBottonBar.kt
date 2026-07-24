@@ -35,7 +35,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.DeepMatteBlack
-import com.example.applicationhome.core.ui.theme.model.BottomBarViewModel
+import com.example.applicationhome.core.ui.theme.model.DashboardScreenViewModel
 import com.example.applicationhome.data.data.model.Screens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -46,15 +46,15 @@ fun MyBottonBar(
     navigationController : NavHostController,
     dashboardNavController : NavHostController,
     currentRoute :  String?,
-    bottomBarViewModel: BottomBarViewModel,
+    dashboardScreenViewModel: DashboardScreenViewModel,
     homeListState : LazyListState,
     favoriteListState : LazyGridState,
     settingsListState : LazyGridState,
     scope : CoroutineScope
 ){
-    val totalInFavorite by bottomBarViewModel.totalInFavorite.collectAsStateWithLifecycle()
+    val totalInFavorite by dashboardScreenViewModel.totalInFavorite.collectAsStateWithLifecycle()
 
-    val cartCount by bottomBarViewModel.totalNumberInCart.collectAsStateWithLifecycle()
+    val cartCount by dashboardScreenViewModel.totalNumberInCart.collectAsStateWithLifecycle()
 
     Box(
         modifier = Modifier.width(350.dp).

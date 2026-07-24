@@ -41,18 +41,15 @@ fun SearchSuggestions(
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) { textClickable() }
             .padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ){
-        Row(
-            modifier = Modifier
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null
-                ) { textClickable() },
-            verticalAlignment = Alignment.CenterVertically
-        ){
+        Row(verticalAlignment = Alignment.CenterVertically){
             Icon(
                 imageVector = startIcon,
                 contentDescription = "Search Icon",

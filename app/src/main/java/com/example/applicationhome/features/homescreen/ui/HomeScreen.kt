@@ -233,9 +233,9 @@ fun HomeScreen(
                                 viewImageState = true
                             },
                             {
-                                homeScreenViewModel.selectedtype(0, item.typ.toList().first())
-                                homeScreenViewModel.selectRestaurant(item)
-                                navigationController.navigate(Screens.RestaurantScreen.screen)
+                                homeScreenViewModel.selectRestaurant(item){
+                                    navigationController.navigate(Screens.RestaurantScreen.screen)
+                                }
                             },
                             {
                                 val favoriteRestaurantDatabase = FavoriteRestaurantEntity(

@@ -49,7 +49,12 @@ fun SearchResults(
 ){
     val interactionSource = remember { MutableInteractionSource() }
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ){ restaurantClickable() },
         horizontalAlignment = Alignment.CenterHorizontally
     ){
 
@@ -69,11 +74,7 @@ fun SearchResults(
                 modifier = Modifier
                     .size(80.dp)
                     .clip(RoundedCornerShape(20.dp))
-                    .border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(20.dp))
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = null
-                    ){ restaurantClickable() },
+                    .border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(20.dp)),
                 contentScale = ContentScale.Crop
             )
             Column(
@@ -120,7 +121,7 @@ fun SearchResults(
 
         //------------------------------\\ Restaurant Meals //------------------------------
         LazyRow(
-            modifier = Modifier.height(200.dp),
+            modifier = Modifier.height(270.dp),
             verticalAlignment = Alignment.CenterVertically
         ){
             item{ Spacer(modifier = Modifier.width(15.dp)) }
@@ -133,19 +134,6 @@ fun SearchResults(
                     item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") },
                     { mealClickable(item) }
                 )
-//                        Box(
-//                            modifier = Modifier
-//                                .size(120.dp)
-//                                .shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp))
-//                                .background(Color.LightGray)
-//                                .aspectRatio(0.65f)
-//                                .clickable(
-//                                    interactionSource = interactionSource,
-//                                    indication = null
-//                                ){ }
-//                                .padding(start = 20.dp, end = 15.dp, top = 15.dp, bottom = 20.dp)
-//                        )
-                Spacer(modifier = Modifier.width(10.dp))
             }
         }
 

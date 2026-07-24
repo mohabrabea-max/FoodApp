@@ -139,6 +139,7 @@ class RestaurantViewModel @Inject constructor(
 
     val restaurantOffersLoading : StateFlow<Boolean> = restaurantScreenRepository.restaurantOffersLoading
 
+    val isNetworkAvailable = MutableStateFlow(false)
 
 
     init {
@@ -172,8 +173,6 @@ class RestaurantViewModel @Inject constructor(
 
 
 //       *** ---------------------------- \\***  Cart  ***// ---------------------------- ***
-
-    val isNetworkAvailable = MutableStateFlow(false)
 
     val errorInCart = MutableStateFlow(false)
 

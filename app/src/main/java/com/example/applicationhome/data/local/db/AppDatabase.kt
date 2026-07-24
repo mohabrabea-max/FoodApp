@@ -36,7 +36,7 @@ import com.example.applicationhome.data.local.entity.UserClass
         FavoriteSnackEntity::class,
         FavoriteRestaurantEntity::class
     ],
-    version = 40,
+    version = 46,
     exportSchema = false
 )
 

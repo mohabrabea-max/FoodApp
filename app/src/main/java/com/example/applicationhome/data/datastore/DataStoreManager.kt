@@ -38,12 +38,12 @@ class DataStoreManager @Inject constructor(
         saveLastSyncTime(DataStoreKeys.MEALS_LAST_SYNC, timestamp)
     }
 
-    val snacksLastSyncTimeFlow: Flow<Long> = getSyncTime(RESTAURANTS_LAST_SYNC)
+    val snacksLastSyncTimeFlow: Flow<Long> = getSyncTime(SNACKS_LAST_SYNC)
     suspend fun updateSnacksSyncTime(timestamp: Long) {
         saveLastSyncTime(DataStoreKeys.SNACKS_LAST_SYNC, timestamp)
     }
 
-    val restaurantsLastSyncTimeFlow: Flow<Long> = getSyncTime(SNACKS_LAST_SYNC)
+    val restaurantsLastSyncTimeFlow: Flow<Long> = getSyncTime(RESTAURANTS_LAST_SYNC)
     suspend fun updateRestaurantsSyncTime(timestamp: Long) {
         saveLastSyncTime(DataStoreKeys.RESTAURANTS_LAST_SYNC, timestamp)
     }

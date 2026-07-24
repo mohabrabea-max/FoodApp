@@ -18,7 +18,7 @@ class HomeScreenRepository @Inject constructor(
     private val foodAndRestaurantsDao : FoodAndRestaurantsDao,
     private val api : FoodAppAPIs
 ) {
-    private val _restaurantsMenuIsLoading = MutableStateFlow(true)
+    private val _restaurantsMenuIsLoading = MutableStateFlow(false)
     val restaurantsMenuIsLoading : StateFlow<Boolean> = _restaurantsMenuIsLoading
 
     private val _categoriesIsLoading = MutableStateFlow(true)

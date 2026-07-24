@@ -38,12 +38,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.core.ui.components.designsystem.TopBarButtons
@@ -56,19 +58,20 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 fun SearchScreenTopBar(
     totalInCart : Int,
-    searchText : String,
+    searchText : TextFieldValue,
     backClick : () -> Unit,
     cartClick : () -> Unit,
-    onQueryChange : (String) -> Unit
+    onQueryChange : (TextFieldValue) -> Unit,
+    clickSearch : (String) -> Unit,
+    unClickSearch : () -> Unit,
+    focusManager: FocusManager,
+    keyboardController: SoftwareKeyboardController?
 ){
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-
     var localSearchString by remember(searchText) { mutableStateOf(searchText) }
 
     LaunchedEffect(localSearchString){
-        if(localSearchString.isEmpty()){
-            onQueryChange("")
+        if(localSearchString.text.isEmpty()){
+            onQueryChange(TextFieldValue(""))
         }
 
         delay(250.milliseconds)
@@ -109,7 +112,12 @@ fun SearchScreenTopBar(
                 modifier = Modifier
                     .padding(horizontal = 10.dp)
                     .weight(1f)
-                    .height(40.dp),
+                    .height(40.dp)
+                    .onFocusChanged { focusState ->
+                        if(focusState.isFocused){
+                            unClickSearch()
+                        }
+                    },
 
                 singleLine = true,
 
@@ -123,7 +131,7 @@ fun SearchScreenTopBar(
 
                 keyboardActions = KeyboardActions(
                     onSearch = {
-                        onQueryChange(localSearchString)
+                        clickSearch(localSearchString.text)
                         keyboardController?.hide()
                         focusManager.clearFocus()
                     }
@@ -151,7 +159,7 @@ fun SearchScreenTopBar(
                             modifier = Modifier.weight(1f),
                             contentAlignment = Alignment.CenterStart
                         ) {
-                            if (localSearchString.isEmpty()) {
+                            if (localSearchString.text.isEmpty()) {
                                 Text(
                                     text = "Search for food or restaurant",
                                     color = Color.Gray,
@@ -161,11 +169,11 @@ fun SearchScreenTopBar(
                             innerTextField()
                         }
 
-                        if (localSearchString.isNotEmpty()) {
+                        if (localSearchString.text.isNotEmpty()) {
                             IconButton(
                                 onClick = {
-                                    localSearchString = ""
-                                    onQueryChange("")
+                                    localSearchString = TextFieldValue("")
+                                    onQueryChange(TextFieldValue(""))
                                 },
                                 modifier = Modifier.size(24.dp)
                             ) {

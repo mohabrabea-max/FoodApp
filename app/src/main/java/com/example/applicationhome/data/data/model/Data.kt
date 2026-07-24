@@ -1,7 +1,6 @@
 package com.example.applicationhome.data.data.model
 
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.google.gson.annotations.SerializedName
 
@@ -93,7 +92,7 @@ data class Restaurants(
     val image2 : String = "",
     @SerializedName("rating")
     val review : Double = 0.0,
-    val background : Color = Color.White,
+    val background : String = "",
     val searchKeywords: String = "",
     val topFiveMeals : String = "",
     val updatedAt : Long = 0L

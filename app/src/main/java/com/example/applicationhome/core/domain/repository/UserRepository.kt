@@ -70,6 +70,9 @@ class UserRepository @Inject constructor(
                             user.email,
                             user.password,
                             user.phonenumber,
+                            user.birthday,
+                            user.governorate,
+                            user.city,
                             user.address,
                             isActive = true
                         )
@@ -114,6 +117,9 @@ class UserRepository @Inject constructor(
                     userRequest.email,
                     userRequest.password,
                     userRequest.phonenumber,
+                    userRequest.birthday,
+                    userRequest.governorate,
+                    userRequest.city,
                     userRequest.address,
                     isActive = true
                 )

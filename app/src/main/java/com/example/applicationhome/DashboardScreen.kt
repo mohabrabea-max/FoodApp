@@ -61,7 +61,6 @@ import com.example.applicationhome.core.ui.components.Options
 import com.example.applicationhome.core.ui.components.bars.MyBottonBar
 import com.example.applicationhome.core.ui.components.profileAndSetting.UserImage
 import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.core.ui.theme.model.BottomBarViewModel
 import com.example.applicationhome.core.ui.theme.model.DashboardScreenViewModel
 import com.example.applicationhome.core.ui.theme.model.UserImageViewModel
 import com.example.applicationhome.data.data.model.Screens
@@ -83,7 +82,6 @@ fun DashboardScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     val dashboardScreenViewModel : DashboardScreenViewModel = hiltViewModel()
-    val bottomBarViewModel : BottomBarViewModel = hiltViewModel()
 
     val dashboardNavController = rememberNavController()
 
@@ -202,7 +200,7 @@ fun DashboardScreen(
                         navigationController,
                         dashboardNavController,
                         currentRoute,
-                        bottomBarViewModel,
+                        dashboardScreenViewModel,
                         homeListState,
                         favoriteListState,
                         settingsListState,

@@ -53,19 +53,22 @@ data class RestaurantWithFeaturedMeals(
 )
 
 @Entity(tableName = "search_fts")
-@Fts4
+@Fts4(
+    contentEntity = RestaurantsEntity::class,
+    tokenizerArgs = ["tokenchars=,"]
+)
 data class SearchFtsEntity(
     @PrimaryKey
     @ColumnInfo(name = "rowid")
     val rowid : Int = 0,
     val name : String = "",
-    val description: String = ""
+    val searchKeywords: String = ""
 )
 
 @Entity(tableName = "search_history")
 data class SearchHistory(
-    @PrimaryKey val userId : String = "",
-    val title : String = "",
+    val userId : String = "",
+    @PrimaryKey val title : String = "",
     val time : String = ""
 )
 
