@@ -9,9 +9,7 @@ import androidx.work.WorkManager
 import com.example.applicationhome.SyncAddToFavoritesWorker
 import com.example.applicationhome.SyncRemoveFromFavoritesWorker
 import com.example.applicationhome.data.data.model.FavoriteClass
-import com.example.applicationhome.data.data.model.FoodItem
-import com.example.applicationhome.data.data.model.Restaurants
-import com.example.applicationhome.data.data.model.Snack
+import com.example.applicationhome.data.datastore.DataStoreManager
 import com.example.applicationhome.data.local.dao.FavoriteDao
 import com.example.applicationhome.data.local.dao.FoodAndRestaurantsDao
 import com.example.applicationhome.data.local.entity.FavoriteMealEntity
@@ -34,7 +32,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -44,6 +41,7 @@ class FavoriteRepository @Inject constructor(
     userRepository: UserRepository,
     private val favoriteDao : FavoriteDao,
     private val foodAndRestaurantsDao : FoodAndRestaurantsDao,
+    private val dataStoreManager: DataStoreManager,
     private val api : FoodAppAPIs,
     @ApplicationContext private val context: Context,
     @ApplicationScope private val externalScope: CoroutineScope
@@ -159,15 +157,9 @@ class FavoriteRepository @Inject constructor(
     )
 
 
-    private val _mealsFavoriteObject = mutableMapOf<String, FoodItem>()
+    // *** ---------------------- \\***  Favorite Functions  ***// ---------------------- ***
 
-
-    private val _snacksFavoriteObject = mutableMapOf<String, Snack>()
-
-
-    private val _restaurantsFavoriteObject = ConcurrentHashMap<String, Restaurants>()
-
-
+    val favoriteLastSyncTime : Flow<Long?> = dataStoreManager.favoriteLastSyncTimeFlow
 
     fun getFoodFavoriteFromDatabase(userId : String)
     : Flow<List<MealWithFavoriteStatus>> = favoriteDao.getFoodFromDatabase(userId)
@@ -286,14 +278,6 @@ class FavoriteRepository @Inject constructor(
             ExistingWorkPolicy.KEEP,
             syncRequest
         )
-    }
-
-    fun getMealToView(mealKey : String): FoodItem?{
-        return _mealsFavoriteObject[mealKey]
-    }
-
-    fun getSnackToView(snackKey : String): Snack?{
-        return _snacksFavoriteObject[snackKey]
     }
 
     suspend fun getRestaurantToView(resId : Int): RestaurantsEntity =

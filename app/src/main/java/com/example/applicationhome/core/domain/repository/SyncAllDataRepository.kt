@@ -6,7 +6,12 @@ import com.example.applicationhome.core.domain.model.snackToSnacksEntity
 import com.example.applicationhome.data.datastore.DataStoreManager
 import com.example.applicationhome.data.local.dao.FoodAndRestaurantsDao
 import com.example.applicationhome.data.remote.FoodAppAPIs
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,22 +23,15 @@ class SyncAllDataRepository @Inject constructor(
     private val foodAndRestaurantsDao : FoodAndRestaurantsDao,
     private val dataStoreManager : DataStoreManager
 ) {
-    val mealsLastSyncTime : Flow<Long> = dataStoreManager.mealsLastSyncTimeFlow
-
-    val snacksLastSyncTime : Flow<Long> = dataStoreManager.snacksLastSyncTimeFlow
-
-    val restaurantsLastSyncTime : Flow<Long> = dataStoreManager.restaurantsLastSyncTimeFlow
-
-
-
-    suspend fun syncAllMealsToDatabase(mealsLastSyncTime : Long){
+    private suspend fun syncAllMealsToDatabase(){
         try {
-            val response = api.getMealsByLastUpdate(lastSyncTimestamp = mealsLastSyncTime)
+            val lastSyncTime = dataStoreManager.mealsLastSyncTimeFlow.filterNotNull().first()
+            val response = api.getMealsByLastUpdate(lastSyncTimestamp = lastSyncTime + 1)
             val meals = response.body()
             if(response.isSuccessful && meals != null){
                 try {
                     foodAndRestaurantsDao.syncMealsToDatabase(meals.values.map { it.foodItemToMealsEntity() })
-                    val newestTimestamp = meals.values.maxOfOrNull { it.updatedAt } ?: mealsLastSyncTime
+                    val newestTimestamp = meals.values.maxOfOrNull { it.updatedAt } ?: lastSyncTime
                     dataStoreManager.updateMealsSyncTime(newestTimestamp)
                 }catch (e: Exception){
 
@@ -44,15 +42,19 @@ class SyncAllDataRepository @Inject constructor(
         }
     }
 
-    suspend fun syncAllSnacksToDatabase(snacksLastSyncTime : Long){
+    private suspend fun syncAllSnacksToDatabase(){
         try {
-            val response = api.getSnacksByLastUpdate(lastSyncTimestamp = snacksLastSyncTime)
+            val lastSyncTime = dataStoreManager.snacksLastSyncTimeFlow.filterNotNull().first()
+            val response = api.getSnacksByLastUpdate(lastSyncTimestamp = lastSyncTime + 1)
             val snacks = response.body()
             if(response.isSuccessful && snacks != null){
                 try {
                     foodAndRestaurantsDao.syncSnacksToDatabase(snacks.values.map { it.snackToSnacksEntity() })
-                    val newestTimestamp = snacks.values.maxOfOrNull { it.updatedAt } ?: snacksLastSyncTime
+                    val newestTimestamp = snacks.values.maxOfOrNull { it.updatedAt } ?: lastSyncTime
                     dataStoreManager.updateSnacksSyncTime(newestTimestamp)
+                    if(snacks.isNotEmpty()){
+                        println("hhhhhhhhhhhhhhhhhhhh")
+                    }
                 }catch (e: Exception){
 
                 }
@@ -62,14 +64,15 @@ class SyncAllDataRepository @Inject constructor(
         }
     }
 
-    suspend fun syncAllRestaurantsToDatabase(restaurantsLastSyncTime : Long){
+    private suspend fun syncAllRestaurantsToDatabase(){
         try {
-            val response = api.getRestaurantsByLastUpdate(lastSyncTimestamp = restaurantsLastSyncTime)
+            val lastSyncTime = dataStoreManager.restaurantsLastSyncTimeFlow.filterNotNull().first()
+            val response = api.getRestaurantsByLastUpdate(lastSyncTimestamp = lastSyncTime + 1)
             val restaurants = response.body()
             if(response.isSuccessful && restaurants != null){
                 try {
                     foodAndRestaurantsDao.syncRestaurantsToDatabase(restaurants.values.map { it.restaurantsToRestaurantsEntity() })
-                    val newestTimestamp = restaurants.values.maxOfOrNull { it.updatedAt } ?: restaurantsLastSyncTime
+                    val newestTimestamp = restaurants.values.maxOfOrNull { it.updatedAt } ?: lastSyncTime
                     dataStoreManager.updateRestaurantsSyncTime(newestTimestamp)
                 }catch (e: Exception){
 
@@ -77,6 +80,16 @@ class SyncAllDataRepository @Inject constructor(
             }
         } catch(e: Exception){
 
+        }
+    }
+
+    suspend fun syncDataParallel() {
+        withContext(Dispatchers.IO){
+            coroutineScope {
+                launch { syncAllMealsToDatabase() }
+                launch { syncAllSnacksToDatabase() }
+                launch { syncAllRestaurantsToDatabase() }
+            }
         }
     }
 }

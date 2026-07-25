@@ -1,10 +1,11 @@
 package com.example.applicationhome.data.local.dao
 
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import androidx.room.Upsert
 import com.example.applicationhome.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
@@ -26,7 +27,7 @@ interface FavoriteDao {
             """)
     fun getFoodFromDatabase(userId : String) : Flow<List<MealWithFavoriteStatus>>
 
-    @Upsert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addFoodToFavorite(foodItem : List<FavoriteMealEntity>)
 
     @Query("DELETE FROM favorite_meals WHERE userId = :userId AND mealId IN (:mealIds)")
@@ -58,7 +59,7 @@ interface FavoriteDao {
             """)
     fun getSnacksFromDatabase(userId : String) : Flow<List<SnackWithFavoriteStatus>>
 
-    @Upsert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addSnacksToFavorite(snacksItems : List<FavoriteSnackEntity>)
 
     @Query("DELETE FROM favorite_snacks WHERE userId = :userId AND snackId IN (:snackIds)")
@@ -90,7 +91,7 @@ interface FavoriteDao {
             """)
     fun getRestaurantsFromDatabase(userId : String) : Flow<List<RestaurantWithFavoriteStatus>>
 
-    @Upsert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addRestaurantToFavorite(restaurant : List<FavoriteRestaurantEntity>)
 
     @Query("DELETE FROM favorite_restaurants WHERE userId = :userId AND resId IN (:resIds)")

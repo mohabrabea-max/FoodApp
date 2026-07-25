@@ -137,7 +137,8 @@ data class ProfileOptions(
 data class FavoriteClass(
     val id : Int,
     val typ : String,
-    val restaurants : Int
+    val restaurants : Int,
+    val updatedAt : Long = 0L
 )
 
 data class RestaurantsCount(

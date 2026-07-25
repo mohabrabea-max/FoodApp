@@ -132,8 +132,7 @@ data class CartClass(
         ForeignKey(
             entity = MealsEntity::class,
             parentColumns = ["id"],
-            childColumns = ["mealId"],
-            onDelete = ForeignKey.CASCADE // لو الوجبة اتمسحت من النظام تتمسح تلقائياً من المفضلة
+            childColumns = ["mealId"]
         )
     ]
 )
@@ -166,8 +165,7 @@ data class MealWithFavoriteStatus(
         ForeignKey(
             entity = SnacksEntity::class,
             parentColumns = ["id"],
-            childColumns = ["snackId"],
-            onDelete = ForeignKey.CASCADE
+            childColumns = ["snackId"]
         )
     ]
 )
@@ -200,8 +198,7 @@ data class SnackWithFavoriteStatus(
         ForeignKey(
             entity = RestaurantsEntity::class,
             parentColumns = ["id"],
-            childColumns = ["resId"],
-            onDelete = ForeignKey.CASCADE
+            childColumns = ["resId"]
         )
     ]
 )

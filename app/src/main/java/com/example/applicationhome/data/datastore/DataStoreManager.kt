@@ -7,6 +7,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.FAVORITE_LAST_SYNC
+import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.MEALS_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.RESTAURANTS_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.SNACKS_LAST_SYNC
 import com.example.applicationhome.data.remote.NetworkTimeProvider
@@ -30,22 +32,28 @@ class DataStoreManager @Inject constructor(
         val MEALS_LAST_SYNC = longPreferencesKey("meals_last_sync")
         val SNACKS_LAST_SYNC = longPreferencesKey("snacks_last_sync")
         val RESTAURANTS_LAST_SYNC = longPreferencesKey("restaurants_last_sync")
+        val FAVORITE_LAST_SYNC = longPreferencesKey("favorite_last_sync")
     }
 
 
-    val mealsLastSyncTimeFlow: Flow<Long> = getSyncTime(DataStoreKeys.MEALS_LAST_SYNC)
+    val mealsLastSyncTimeFlow : Flow<Long?> = getSyncTime(MEALS_LAST_SYNC)
     suspend fun updateMealsSyncTime(timestamp: Long) {
-        saveLastSyncTime(DataStoreKeys.MEALS_LAST_SYNC, timestamp)
+        saveLastSyncTime(MEALS_LAST_SYNC, timestamp)
     }
 
-    val snacksLastSyncTimeFlow: Flow<Long> = getSyncTime(SNACKS_LAST_SYNC)
+    val snacksLastSyncTimeFlow : Flow<Long?> = getSyncTime(SNACKS_LAST_SYNC)
     suspend fun updateSnacksSyncTime(timestamp: Long) {
-        saveLastSyncTime(DataStoreKeys.SNACKS_LAST_SYNC, timestamp)
+        saveLastSyncTime(SNACKS_LAST_SYNC, timestamp)
     }
 
-    val restaurantsLastSyncTimeFlow: Flow<Long> = getSyncTime(RESTAURANTS_LAST_SYNC)
+    val restaurantsLastSyncTimeFlow : Flow<Long?> = getSyncTime(RESTAURANTS_LAST_SYNC)
     suspend fun updateRestaurantsSyncTime(timestamp: Long) {
-        saveLastSyncTime(DataStoreKeys.RESTAURANTS_LAST_SYNC, timestamp)
+        saveLastSyncTime(RESTAURANTS_LAST_SYNC, timestamp)
+    }
+
+    val favoriteLastSyncTimeFlow : Flow<Long?> = getSyncTime(FAVORITE_LAST_SYNC)
+    suspend fun updateFavoriteSyncTime(timestamp: Long) {
+        saveLastSyncTime(FAVORITE_LAST_SYNC, timestamp)
     }
 
 
