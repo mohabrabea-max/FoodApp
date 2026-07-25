@@ -48,4 +48,12 @@ class SearchRepository @Inject constructor(
     suspend fun addSearchTextToHistory(searchHistory : SearchHistory){
         foodAndRestaurantsDao.addSearchTextToHistory(searchHistory)
     }
+
+    suspend fun addGuestSearchHistoryToUser(userId: String){
+        foodAndRestaurantsDao.addGuestSearchHistoryToUser(userId)
+    }
+
+    suspend fun deleteFromSearchHistory(searchTitle : String){
+        foodAndRestaurantsDao.deleteFromSearchHistory(searchTitle)
+    }
 }

@@ -49,24 +49,6 @@ class HomeScreenRepository @Inject constructor(
         }
     }
 
-//    suspend fun getRestaurantsFromApi(): Map<String, Restaurants> {
-//        val restaurants = try {
-//            _restaurantsMenuIsLoading.value = true
-//            val response = api.restaurants()
-//            val restaurants = response.body()
-//            if(response.isSuccessful && restaurants != null){
-//                restaurants
-//            }else{
-//                emptyMap()
-//            }
-//        } catch (e: Exception) {
-//            emptyMap()
-//        } finally {
-//            _restaurantsMenuIsLoading.value = false
-//        }
-//        return restaurants
-//    }
-
     suspend fun getCategorieslistFromApi(): List<Categories> {
         val categoriesList = try {
             _categoriesIsLoading.value = true

@@ -30,6 +30,18 @@ interface FavoriteDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addFoodToFavorite(foodItem : List<FavoriteMealEntity>)
 
+    @Query(" UPDATE OR REPLACE favorite_meals SET userId =:userId WHERE userId = '' AND isDeletedOffline = 0 ")
+    suspend fun updateGuestMealsFavoriteToUser(userId : String)
+
+    @Query("DELETE FROM favorite_meals WHERE userId = ''")
+    suspend fun deleteGuestMealsFavorite()
+
+    @Transaction
+    suspend fun addGuestMealsFavoriteToUser(userId: String){
+        updateGuestMealsFavoriteToUser(userId)
+        deleteGuestMealsFavorite()
+    }
+
     @Query("DELETE FROM favorite_meals WHERE userId = :userId AND mealId IN (:mealIds)")
     suspend fun deleteFoodFromDatabase(userId: String, mealIds: List<Int>)
 
@@ -53,14 +65,26 @@ interface FavoriteDao {
 
     @Transaction
     @Query("""
-        SELECT m.* FROM snacks_entity m
-        INNER JOIN favorite_snacks f ON m.id = f.snackId
-        WHERE f.userId = :userId AND f.isDeletedOffline = 0
+            SELECT m.* FROM snacks_entity m
+            INNER JOIN favorite_snacks f ON m.id = f.snackId
+            WHERE f.userId = :userId AND f.isDeletedOffline = 0
             """)
     fun getSnacksFromDatabase(userId : String) : Flow<List<SnackWithFavoriteStatus>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addSnacksToFavorite(snacksItems : List<FavoriteSnackEntity>)
+
+    @Query("UPDATE OR REPLACE favorite_snacks SET userId = :userId WHERE userId = '' AND isDeletedOffline = 0 ")
+    suspend fun updateGuestSnacksFavoriteToUser(userId : String)
+
+    @Query("DELETE FROM favorite_snacks WHERE userId = ''")
+    suspend fun deleteGuestSnacksFavorite()
+
+    @Transaction
+    suspend fun addGuestSnacksFavoriteToUser(userId: String){
+        updateGuestSnacksFavoriteToUser(userId)
+        deleteGuestSnacksFavorite()
+    }
 
     @Query("DELETE FROM favorite_snacks WHERE userId = :userId AND snackId IN (:snackIds)")
     suspend fun deleteSnacksFromDatabase(userId: String, snackIds: List<Int>)
@@ -85,14 +109,26 @@ interface FavoriteDao {
 
     @Transaction
     @Query("""
-        SELECT m.* FROM restaurants_entity m
-        INNER JOIN favorite_restaurants f ON m.id = f.resId
-        WHERE f.userId = :userId AND f.isDeletedOffline = 0
+            SELECT m.* FROM restaurants_entity m
+            INNER JOIN favorite_restaurants f ON m.id = f.resId
+            WHERE f.userId = :userId AND f.isDeletedOffline = 0
             """)
     fun getRestaurantsFromDatabase(userId : String) : Flow<List<RestaurantWithFavoriteStatus>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addRestaurantToFavorite(restaurant : List<FavoriteRestaurantEntity>)
+
+    @Query("UPDATE OR REPLACE favorite_restaurants SET userId = :userId WHERE userId = '' AND isDeletedOffline = 0 ")
+    suspend fun updateGuestRestaurantsFavoriteToUser(userId : String)
+
+    @Query("DELETE FROM favorite_restaurants WHERE userId = ''")
+    suspend fun deleteGuestRestaurantsFavorite()
+
+    @Transaction
+    suspend fun addGuestRestaurantsFavoriteToUser(userId: String){
+        updateGuestRestaurantsFavoriteToUser(userId)
+        deleteGuestRestaurantsFavorite()
+    }
 
     @Query("DELETE FROM favorite_restaurants WHERE userId = :userId AND resId IN (:resIds)")
     suspend fun deleteRestaurantFromDatabase(userId: String, resIds: List<Int>)
@@ -111,4 +147,18 @@ interface FavoriteDao {
 
     @Query("DELETE FROM favorite_restaurants WHERE isDeletedOffline = 1 AND isSynced = 0")
     suspend fun cleanUpLocalOnlyDeletedRestaurants()
+
+
+    //              --------------------------------------   Transaction    -------------------------------------
+
+    @Transaction
+    suspend fun addAllToFavorite(
+        foodItems : List<FavoriteMealEntity>,
+        snacksItems : List<FavoriteSnackEntity>,
+        restaurant : List<FavoriteRestaurantEntity>
+    ){
+        addFoodToFavorite(foodItems)
+        addSnacksToFavorite(snacksItems)
+        addRestaurantToFavorite(restaurant)
+    }
 }

@@ -253,9 +253,7 @@ fun RestaurantScreen(
                                                     false,
                                                     false
                                                 )
-                                            restaurantViewModel.addSnackFavorite(
-                                                favoriteSnacksDatabase
-                                            )
+                                            restaurantViewModel.addSnackFavorite(favoriteSnacksDatabase)
                                         },
                                         { restaurantViewModel.removeSnackFavorite(item.id) },
                                         modifier = Modifier.padding(5.dp).shadow(

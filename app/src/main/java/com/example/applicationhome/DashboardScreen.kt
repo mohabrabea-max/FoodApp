@@ -27,7 +27,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.AssignmentReturn
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.ShoppingCartCheckout
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,8 +44,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,13 +60,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationhome.core.ui.components.Options
-import com.example.applicationhome.core.ui.components.bars.MyBottonBar
+import com.example.applicationhome.core.ui.components.bars.MyBottomBar
 import com.example.applicationhome.core.ui.components.profileAndSetting.UserImage
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.core.ui.theme.model.DashboardScreenViewModel
@@ -79,6 +88,8 @@ fun DashboardScreen(
     navigationController: NavHostController,
     userImageViewModel : UserImageViewModel
 ){
+    var isMenuExpanded by remember { mutableStateOf(false) }
+
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     val dashboardScreenViewModel : DashboardScreenViewModel = hiltViewModel()
@@ -192,11 +203,14 @@ fun DashboardScreen(
             fillMaxSize(),
             bottomBar = {
                 Box(
-                    modifier = Modifier.navigationBarsPadding().fillMaxWidth().
-                    pointerInput(Unit) { detectTapGestures { } },
+                    modifier = Modifier
+                        .navigationBarsPadding()
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp)
+                        .pointerInput(Unit) { detectTapGestures { } },
                     contentAlignment = Alignment.BottomCenter
                 ){
-                    MyBottonBar(
+                    MyBottomBar(
                         navigationController,
                         dashboardNavController,
                         currentRoute,
@@ -204,8 +218,66 @@ fun DashboardScreen(
                         homeListState,
                         favoriteListState,
                         settingsListState,
-                        coroutineScope
+                        coroutineScope,
+                        { isMenuExpanded = true }
                     )
+
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(end = 24.dp)
+                    ) {
+                        DropdownMenu(
+                            expanded = isMenuExpanded,
+                            onDismissRequest = { isMenuExpanded = false },
+                            shape = RoundedCornerShape(20.dp),
+                            shadowElevation = 7.dp,
+                            containerColor = Color.White
+                        ){
+                            DropdownMenuItem(
+                                text = { Text("Orders History") },
+                                leadingIcon = { Icon(Icons.Outlined.ShoppingCartCheckout, contentDescription = null) },
+                                onClick = {
+                                    isMenuExpanded = false
+                                    navigationController.navigate(Screens.LastOrdersScreen.screen)
+                                }
+                            )
+
+                            DropdownMenuItem(
+                                text = { Text("Returns") },
+                                leadingIcon = { Icon(Icons.Outlined.AssignmentReturn, contentDescription = null) },
+                                onClick = {
+                                    isMenuExpanded = false
+                                }
+                            )
+
+                            DropdownMenuItem(
+                                text = { Text("Edite profile") },
+                                leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = null) },
+                                onClick = {
+                                    isMenuExpanded = false
+                                    navigationController.navigate(Screens.Profile.screen)
+                                }
+                            )
+
+                            DropdownMenuItem(
+                                text = { Text("Settings") },
+                                leadingIcon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
+                                onClick = {
+                                    isMenuExpanded = false
+                                    dashboardNavController.navigate(Screens.Settings.screen){
+                                        popUpTo(dashboardNavController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+
+                                        launchSingleTop = true
+
+                                        restoreState = true
+                                    }
+                                }
+                            )
+                        }
+                    }
                 }
             }
         ){

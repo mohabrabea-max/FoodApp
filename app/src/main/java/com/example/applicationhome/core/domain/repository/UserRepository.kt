@@ -7,7 +7,6 @@ import com.example.applicationhome.data.local.entity.UpdateAccountState
 import com.example.applicationhome.data.local.entity.UserClass
 import com.example.applicationhome.data.remote.FoodAppAPIs
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -40,7 +39,7 @@ class UserRepository @Inject constructor(
     val isLogin : StateFlow<Boolean> = _isLogin
 
     val userData : StateFlow<UserClass> =
-        getActiveUserFromDatabase()
+        userdao.getActiveUser(true)
             .map { userInDb ->
                 userInDb ?: UserClass(firstname = "Guest")
             }.stateIn(
@@ -49,9 +48,8 @@ class UserRepository @Inject constructor(
                 initialValue = UserClass(firstname = "Guest")
             )
 
-    fun getActiveUserFromDatabase() : Flow<UserClass?> = userdao.getActiveUser(true)
 
-    suspend fun setUserDataToDatabase(emailstate : String, passwordstate : String?): String {
+    suspend fun setUserDataToDatabase(emailstate : String, passwordstate : String?): Pair<String, UserClass> {
         try {
             _loading.value = true
             val formatEmail = "\"$emailstate\""
@@ -77,18 +75,26 @@ class UserRepository @Inject constructor(
                             isActive = true
                         )
                         userdao.addUser(data)
-                        return "Password is true"
+                        return Pair("Password is true", data)
                     } else {
-                        return "Password is false"
+                        return Pair("Password is false", UserClass(firstname = "Guest"))
                     }
                 } else {
-                    return "Email is false"
+                    return Pair("Email is false", UserClass(firstname = "Guest"))
                 }
             } else {
-                return "Network error"
+                val errorCode = response.code()
+
+                val errorMessage = when (errorCode) {
+                    401 -> "Unauthorized error ($errorCode)"
+                    404 -> "Not found ($errorCode)"
+                    in 500..599 -> "Server down ($errorCode)"
+                    else -> "HTTP Error: $errorCode"
+                }
+                return Pair(errorMessage, UserClass(firstname = "Guest"))
             }
         } catch (e : Exception){
-            return "خطأ في الشبكة: ${e.message}"
+            return Pair("خطأ في الشبكة: ${e.message}", UserClass(firstname = "Guest"))
         } finally {
             _loading.value = false
         }
@@ -126,7 +132,14 @@ class UserRepository @Inject constructor(
                 userdao.addUser(userData)
                 return "The operation was successful Account created"
             } else {
-                return "The operation failed"
+                val errorCode = response.code()
+
+                return when (errorCode) {
+                    401 -> "Unauthorized error ($errorCode)"
+                    404 -> "Not found ($errorCode)"
+                    in 500..599 -> "Server down ($errorCode)"
+                    else -> "HTTP Error: $errorCode"
+                }
             }
         } catch (e: Exception) {
             return "خطأ في الشبكة: ${e.message}"

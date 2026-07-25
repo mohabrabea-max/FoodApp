@@ -35,6 +35,15 @@ class ProfileRepository @Inject constructor(
             if(response.isSuccessful){
                 usersDao.addUser(userDataDatabase)
                 _isDataEdited.value = false
+            }else{
+                val errorCode = response.code()
+
+                when (errorCode) {
+                    401 -> "Unauthorized error ($errorCode)"
+                    404 -> "Not found ($errorCode)"
+                    in 500..599 -> "Server down ($errorCode)"
+                    else -> "HTTP Error: $errorCode"
+                }
             }
         }catch (e: Exception){
             _loading.value = false

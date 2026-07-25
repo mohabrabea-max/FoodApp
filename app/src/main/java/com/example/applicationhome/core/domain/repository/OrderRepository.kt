@@ -66,7 +66,14 @@ class OrderRepository @Inject constructor(
             if(response.isSuccessful){
                 "Success"
             }else{
-                "Network error"
+                val errorCode = response.code()
+
+                when (errorCode) {
+                    401 -> "Unauthorized error ($errorCode)"
+                    404 -> "Not found ($errorCode)"
+                    in 500..599 -> "Server down ($errorCode)"
+                    else -> "HTTP Error: $errorCode"
+                }
             }
         } catch (e : Exception){
             "خطأ في الشبكة: ${e.message}"
@@ -98,8 +105,17 @@ class OrderRepository @Inject constructor(
                     )
                 }
                 ordersDao.addNewOrders(ordersHistory)
+                "Success"
+            }else{
+                val errorCode = response.code()
+
+                when (errorCode) {
+                    401 -> "Unauthorized error ($errorCode)"
+                    404 -> "Not found ($errorCode)"
+                    in 500..599 -> "Server down ($errorCode)"
+                    else -> "HTTP Error: $errorCode"
+                }
             }
-            "Success"
         } catch (E : Exception){
             E.printStackTrace()
             "Network error"

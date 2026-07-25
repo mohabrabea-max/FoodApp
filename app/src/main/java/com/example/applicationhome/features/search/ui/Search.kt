@@ -10,21 +10,29 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -89,8 +97,11 @@ fun Search(
             horizontalAlignment = Alignment.Start
         ){
             if(search.text.isNotEmpty() && !searchClickable){
+
                 //       --------------------------\\ Last Search //--------------------------
                 if(searchHistoryAfterFiltering.isNotEmpty()) items(searchHistoryAfterFiltering){ item ->
+                    var isMenuExpanded by remember { mutableStateOf(false) }
+
                     SearchSuggestions(
                         text = item,
                         searchText = search.text,
@@ -103,8 +114,33 @@ fun Search(
 
                             searchViewModel.clickSearch(item)
                         },
-                        northWestClickable = { searchViewModel.searchFilter(item) }
+                        northWestClickable = { searchViewModel.searchFilter(item) },
+                        longClick = { isMenuExpanded = true }
                     )
+
+                    DropdownMenu(
+                        expanded = isMenuExpanded,
+                        onDismissRequest = { isMenuExpanded = false },
+                        offset = DpOffset(x = 25.dp, y = 120.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        shadowElevation = 10.dp,
+                        containerColor = Color.White
+                    ){
+                        DropdownMenuItem(
+                            text = { Text("Delete", color = Color.Red) },
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Outlined.Clear,
+                                    contentDescription = null,
+                                    tint = Color.Red
+                                )
+                            },
+                            onClick = {
+                                isMenuExpanded = false
+                                searchViewModel.deleteFromSearchHistory(item)
+                            }
+                        )
+                    }
 
                     Divider(
                         color = Color.LightGray.copy(alpha = 0.6f),
@@ -138,6 +174,7 @@ fun Search(
                 }
 
             }else if(search.text.isEmpty()){
+
                 //       --------------------------\\ Categories Bar //--------------------------
                 item{
                     CategoriesBar(
@@ -182,7 +219,8 @@ fun Search(
                                         focusManager.clearFocus()
 
                                         searchViewModel.clickSearch(item)
-                                    }
+                                    },
+                                    delete = { searchViewModel.deleteFromSearchHistory(item) }
                                 )
                             }
                         }

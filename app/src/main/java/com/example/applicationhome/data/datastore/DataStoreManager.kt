@@ -11,7 +11,6 @@ import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.MEALS_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.RESTAURANTS_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.SNACKS_LAST_SYNC
-import com.example.applicationhome.data.remote.NetworkTimeProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,8 +24,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 class DataStoreManager @Inject constructor(
-    private val dataStore: DataStore<Preferences>,
-    private val networkTimeProvider : NetworkTimeProvider
+    private val dataStore: DataStore<Preferences>
 ) {
     private object DataStoreKeys {
         val MEALS_LAST_SYNC = longPreferencesKey("meals_last_sync")

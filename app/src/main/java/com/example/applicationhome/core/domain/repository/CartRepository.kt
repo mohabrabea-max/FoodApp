@@ -93,7 +93,16 @@ class CartRepository @Inject constructor(
         }
     }
 
-    suspend fun createNewCart(userId : String, food: CartItemsClass, size : String, type : String, priceOfOne : Double, res : Restaurants, number: Int) : String{
+    suspend fun createNewCart(
+        userId : String,
+        food: CartItemsClass,
+        size : String,
+        type : String,
+        priceOfOne : Double,
+        res : Restaurants,
+        number: Int
+    ) : String{
+
         val mealKey = "${food.mealId}_$size"
         val cartObject = CartClass(userId, res.id, res.name, res.image)
         return try {
@@ -120,7 +129,15 @@ class CartRepository @Inject constructor(
         }
     }
 
-    suspend fun addMealToCart(userId : String, food: CartItemsClass, size : String, type : String, priceOfOne : Double, number: Int): String{
+    suspend fun addMealToCart(
+        userId : String,
+        food: CartItemsClass,
+        size : String,
+        type : String,
+        priceOfOne : Double,
+        number: Int
+    ): String{
+
         val mealKey = "${food.mealId}_$size"
         val cartItemsObject = CartItemsClass(
             userId,
@@ -143,7 +160,13 @@ class CartRepository @Inject constructor(
         }
     }
 
-    suspend fun updateQuantity(userId : String, food: CartItemsClass, size : String, priceOfOne : Double, number: Int): String{
+    suspend fun updateQuantity(
+        userId : String,
+        food: CartItemsClass,
+        size : String,
+        priceOfOne : Double,
+        number: Int
+    ): String{
         val mealKey = "${food.mealId}_${size}"
         return try {
             cartdao.updateCartItem(
@@ -185,22 +208,4 @@ class CartRepository @Inject constructor(
             "خطأ في الشبكة: ${e.message}"
         }
     }
-
-//    suspend fun getMeal(mealId : Int): FoodItem? {
-//        val mealKey = "Meal_${mealId}"
-//        if(foodMenuList[mealKey] != null){
-//            return foodMenuList[mealKey]
-//        }else{
-//            return try {
-//                val response = RetrofitInstance.api.getCartMeal(mealKey)
-//                if(response.isSuccessful){
-//                    return response.body()?.values?.firstOrNull()
-//                }else{
-//                    null
-//                }
-//            }catch (e : Exception){
-//                null
-//            }
-//        }
-//    }
 }

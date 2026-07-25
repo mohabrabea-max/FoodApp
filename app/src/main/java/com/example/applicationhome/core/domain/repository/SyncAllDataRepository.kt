@@ -36,6 +36,15 @@ class SyncAllDataRepository @Inject constructor(
                 }catch (e: Exception){
 
                 }
+            }else{
+                val errorCode = response.code()
+
+                when (errorCode) {
+                    401 -> "Unauthorized error ($errorCode)"
+                    404 -> "Not found ($errorCode)"
+                    in 500..599 -> "Server down ($errorCode)"
+                    else -> "HTTP Error: $errorCode"
+                }
             }
         } catch(e: Exception){
 
@@ -52,11 +61,17 @@ class SyncAllDataRepository @Inject constructor(
                     foodAndRestaurantsDao.syncSnacksToDatabase(snacks.values.map { it.snackToSnacksEntity() })
                     val newestTimestamp = snacks.values.maxOfOrNull { it.updatedAt } ?: lastSyncTime
                     dataStoreManager.updateSnacksSyncTime(newestTimestamp)
-                    if(snacks.isNotEmpty()){
-                        println("hhhhhhhhhhhhhhhhhhhh")
-                    }
                 }catch (e: Exception){
 
+                }
+            }else{
+                val errorCode = response.code()
+
+                when (errorCode) {
+                    401 -> "Unauthorized error ($errorCode)"
+                    404 -> "Not found ($errorCode)"
+                    in 500..599 -> "Server down ($errorCode)"
+                    else -> "HTTP Error: $errorCode"
                 }
             }
         } catch(e: Exception){
@@ -76,6 +91,15 @@ class SyncAllDataRepository @Inject constructor(
                     dataStoreManager.updateRestaurantsSyncTime(newestTimestamp)
                 }catch (e: Exception){
 
+                }
+            }else{
+                val errorCode = response.code()
+
+                when (errorCode) {
+                    401 -> "Unauthorized error ($errorCode)"
+                    404 -> "Not found ($errorCode)"
+                    in 500..599 -> "Server down ($errorCode)"
+                    else -> "HTTP Error: $errorCode"
                 }
             }
         } catch(e: Exception){

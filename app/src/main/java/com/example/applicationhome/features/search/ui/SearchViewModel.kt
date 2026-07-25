@@ -83,7 +83,6 @@ class SearchViewModel @Inject constructor(
             snapshotFlow { searchHistoryAfterFiltering }
         ){ searchString, searchHistory ->
             searchString to searchHistory
-
         }
         .flatMapLatest { (searchString, searchHistory) ->
             if (searchString.isEmpty()) {
@@ -136,11 +135,7 @@ class SearchViewModel @Inject constructor(
     val searchHistory : StateFlow<List<String>> =
         userData.flatMapLatest { user ->
             val id = user.id
-            if(id.isNotEmpty()){
-                searchRepository.getSearchHistory(id).map { it -> it.map { it.title } }
-            }else{
-                flowOf(emptyList())
-            }
+            searchRepository.getSearchHistory(id).map { it -> it.map { it.title } }
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -203,6 +198,12 @@ class SearchViewModel @Inject constructor(
 
     fun unClickSearch(){
         _searchClickable.value = false
+    }
+
+    fun deleteFromSearchHistory(searchTitle : String){
+        viewModelScope.launch {
+            searchRepository.deleteFromSearchHistory(searchTitle)
+        }
     }
 
 

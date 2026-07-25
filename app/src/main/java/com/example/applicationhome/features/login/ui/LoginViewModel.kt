@@ -4,6 +4,8 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.core.domain.repository.FavoriteRepository
+import com.example.applicationhome.core.domain.repository.SearchRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,6 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val userRepository: UserRepository,
+    private val favoriteRepository: FavoriteRepository,
+    private val searchRepository: SearchRepository,
     private val networkObserver: NetworkObserver
 ) : ViewModel() {
     val loading : StateFlow<Boolean> = userRepository.loading
@@ -63,12 +67,21 @@ class LoginViewModel @Inject constructor(
     fun login(){
         viewModelScope.launch {
             val result = userRepository.setUserDataToDatabase(emailstate.text.toString(), passwordstate.text.toString())
-            if(result == "Password is true"){
-                userRepository.isLogin()
-            }else if(result == "Password is false"){
-                println("Password is false")
-            }else{
-                println("Email is false")
+
+            when (result.first) {
+                "Password is true" -> {
+                    userRepository.isLogin()
+
+                    favoriteRepository.addGuestFavoriteToUser(result.second.id)
+
+                    searchRepository.addGuestSearchHistoryToUser(result.second.id)
+                }
+                "Password is false" -> {
+                    println("Password is false")
+                }
+                else -> {
+                    println("Email is false")
+                }
             }
         }
     }

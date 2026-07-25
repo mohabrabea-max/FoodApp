@@ -4,6 +4,8 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.core.domain.repository.FavoriteRepository
+import com.example.applicationhome.core.domain.repository.SearchRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.data.data.model.UserClassFireBase
 import com.example.applicationhome.data.remote.NetworkObserver
@@ -16,6 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val userRepository: UserRepository,
+    private val favoriteRepository: FavoriteRepository,
+    private val searchRepository: SearchRepository,
     private val networkObserver: NetworkObserver
 ) : ViewModel() {
     val loading : StateFlow<Boolean> = userRepository.loading
@@ -90,8 +94,12 @@ class SignUpViewModel @Inject constructor(
     fun createAccount(){
         viewModelScope.launch {
             val result = userRepository.setUserDataToDatabase(emailstate.text.toString(), null)
-            if(result == "Email is false"){
+            if(result.first == "Email is false"){
                 _isEmailChecked.value = true
+
+                favoriteRepository.addGuestFavoriteToUser(result.second.id)
+
+                searchRepository.addGuestSearchHistoryToUser(result.second.id)
             }else{
                 _isEmailChecked.value = false
             }

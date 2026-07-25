@@ -71,4 +71,10 @@ interface FoodAndRestaurantsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addSearchTextToHistory(searchHistory : SearchHistory)
+
+    @Query("UPDATE OR REPLACE search_history SET userId = :userId WHERE userId = ''")
+    suspend fun addGuestSearchHistoryToUser(userId: String)
+
+    @Query("DELETE FROM search_history WHERE title = :searchTitle")
+    suspend fun deleteFromSearchHistory(searchTitle : String)
 }

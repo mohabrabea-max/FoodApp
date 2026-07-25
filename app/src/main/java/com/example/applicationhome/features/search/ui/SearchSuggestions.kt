@@ -1,6 +1,7 @@
 package com.example.applicationhome.features.search.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,7 +34,8 @@ fun SearchSuggestions(
     startIcon : ImageVector,
     iconsColor : Color = Color.Black,
     textClickable : () -> Unit,
-    northWestClickable : () -> Unit
+    northWestClickable : () -> Unit,
+    longClick : () -> Unit = {}
 ){
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -41,10 +43,14 @@ fun SearchSuggestions(
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
-            .clickable(
+            .combinedClickable(
                 interactionSource = interactionSource,
-                indication = null
-            ) { textClickable() }
+                indication = null,
+
+                onClick = { textClickable() },
+
+                onLongClick = { longClick() }
+            )
             .padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween

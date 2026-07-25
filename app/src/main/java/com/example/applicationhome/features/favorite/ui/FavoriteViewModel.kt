@@ -65,13 +65,8 @@ class FavoriteViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            userRepository.userData.collect { user ->
-                val id = user.id
-                if (id.isNotEmpty()) {
-                    networkObserver.isNetworkAvailable.collect { available ->
-                        isNetworkAvailable.value = available
-                    }
-                }
+            networkObserver.isNetworkAvailable.collect { available ->
+                isNetworkAvailable.value = available
             }
         }
     }

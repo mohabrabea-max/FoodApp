@@ -8,7 +8,6 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.applicationhome.SyncAddToFavoritesWorker
 import com.example.applicationhome.SyncRemoveFromFavoritesWorker
-import com.example.applicationhome.data.data.model.FavoriteClass
 import com.example.applicationhome.data.datastore.DataStoreManager
 import com.example.applicationhome.data.local.dao.FavoriteDao
 import com.example.applicationhome.data.local.dao.FoodAndRestaurantsDao
@@ -24,16 +23,20 @@ import com.example.applicationhome.domain.ApplicationScope
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.cancellation.CancellationException
 
 @Singleton
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -52,11 +55,7 @@ class FavoriteRepository @Inject constructor(
     val favoriteMeals : StateFlow<List<MealWithFavoriteStatus>> =
         userRepository.userData.flatMapLatest { user ->
             val id = user.id
-            if(id.isNotEmpty()){
-                getFoodFavoriteFromDatabase(id)
-            }else{
-                flowOf(emptyList())
-            }
+            getFoodFavoriteFromDatabase(id)
         }.stateIn(
             scope = externalScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -75,11 +74,7 @@ class FavoriteRepository @Inject constructor(
     val favoriteSnacks : StateFlow<List<SnackWithFavoriteStatus>> =
         userRepository.userData.flatMapLatest { user ->
             val id = user.id
-            if (id.isNotEmpty()) {
-                getSnacksFavoriteFromDatabase(id)
-            } else {
-                flowOf(emptyList())
-            }
+            getSnacksFavoriteFromDatabase(id)
         }.stateIn(
             scope = externalScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -98,11 +93,7 @@ class FavoriteRepository @Inject constructor(
     val favoriteRestaurantsFromDatabase : StateFlow<List<RestaurantWithFavoriteStatus>> =
         userRepository.userData.flatMapLatest { user ->
             val id = user.id
-            if (id.isNotEmpty()){
-                getRestaurantsFavoriteFromDatabase(id)
-            }else{
-                flowOf(emptyList())
-            }
+            getRestaurantsFavoriteFromDatabase(id)
         }.stateIn(
             scope = externalScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -159,61 +150,80 @@ class FavoriteRepository @Inject constructor(
 
     // *** ---------------------- \\***  Favorite Functions  ***// ---------------------- ***
 
-    val favoriteLastSyncTime : Flow<Long?> = dataStoreManager.favoriteLastSyncTimeFlow
-
     fun getFoodFavoriteFromDatabase(userId : String)
     : Flow<List<MealWithFavoriteStatus>> = favoriteDao.getFoodFromDatabase(userId)
 
     fun getSnacksFavoriteFromDatabase(userId : String)
-            : Flow<List<SnackWithFavoriteStatus>> = favoriteDao.getSnacksFromDatabase(userId)
+    : Flow<List<SnackWithFavoriteStatus>> = favoriteDao.getSnacksFromDatabase(userId)
 
     fun getRestaurantsFavoriteFromDatabase(userId : String)
     : Flow<List<RestaurantWithFavoriteStatus>> = favoriteDao.getRestaurantsFromDatabase(userId)
 
 
     suspend fun syncFavoritesInDatabase(userId : String) : String{
-        val favoriteList : Map<String, FavoriteClass>
         return try {
-            val response = api.getFavoriteItems(userId)
+            val favoriteLastSyncTime = dataStoreManager.favoriteLastSyncTimeFlow.filterNotNull().first()
+            val response = api.getFavoriteItems(userId, lastSyncTimestamp = favoriteLastSyncTime + 1)
             val favorite = response.body()
             if(response.isSuccessful && favorite != null){
-                favoriteList = favorite
-                val mealsFavorite = favoriteList.filter { it.value.typ == "Meal" }.values.map { item ->
-                    FavoriteMealEntity(
-                        item.id,
-                        userId,
-                        item.restaurants,
-                        true,
-                        false
-                    )
+                val mealsFavorite = mutableListOf<FavoriteMealEntity>()
+                val snacksFavorite = mutableListOf<FavoriteSnackEntity>()
+                val restaurantsFavorite = mutableListOf<FavoriteRestaurantEntity>()
+
+                favorite.values.forEach { item ->
+                    when(item.typ){
+                        "Meal" ->
+                            mealsFavorite.add(
+                                FavoriteMealEntity(
+                                    item.id,
+                                    userId,
+                                    item.restaurants,
+                                    true,
+                                    false
+                                )
+                            )
+
+                        "Snack" ->
+                        snacksFavorite.add(
+                            FavoriteSnackEntity(
+                                item.id,
+                                userId,
+                                item.restaurants,
+                                true,
+                                false
+                            )
+                        )
+
+                        "Restaurant" ->
+                        restaurantsFavorite.add(
+                            FavoriteRestaurantEntity(
+                                item.id,
+                                userId,
+                                true,
+                                false
+                            )
+                        )
+                    }
                 }
-                val snacksFavorite = favoriteList.filter { it.value.typ == "Snack" }.values.map { item ->
-                    FavoriteSnackEntity(
-                        item.id,
-                        userId,
-                        item.restaurants,
-                        true,
-                        false
-                    )
+
+                favoriteDao.addAllToFavorite(mealsFavorite, snacksFavorite, restaurantsFavorite)
+
+                val newestTimestamp = favorite.values.maxOfOrNull { it.updatedAt } ?: favoriteLastSyncTime
+                dataStoreManager.updateFavoriteSyncTime(newestTimestamp)
+                "Success"
+            }else{
+                // عشان نمسك رقم الايرور
+                val errorCode = response.code()
+
+                when (errorCode) {
+                    401 -> "Unauthorized error ($errorCode)"
+                    404 -> "Not found ($errorCode)"
+                    in 500..599 -> "Server down ($errorCode)"
+                    else -> "HTTP Error: $errorCode"
                 }
-                val restaurantsFavorite = favoriteList.filter { it.value.typ == "Restaurant" }.values.map { item ->
-                    FavoriteRestaurantEntity(
-                        item.id,
-                        userId,
-                        true,
-                        false
-                    )
-                }
-
-                favoriteDao.addFoodToFavorite(mealsFavorite)
-
-                favoriteDao.addSnacksToFavorite(snacksFavorite)
-
-                favoriteDao.addRestaurantToFavorite(restaurantsFavorite)
-
             }
-            "Success"
         }catch (e : Exception){
+            if (e is CancellationException) throw e
             "Network error"
         }
     }
@@ -279,6 +289,16 @@ class FavoriteRepository @Inject constructor(
             syncRequest
         )
     }
+
+
+    suspend fun addGuestFavoriteToUser(userId : String){
+        coroutineScope{
+            launch { favoriteDao.addGuestMealsFavoriteToUser(userId) }
+            launch { favoriteDao.addGuestSnacksFavoriteToUser(userId) }
+            launch { favoriteDao.addGuestRestaurantsFavoriteToUser(userId) }
+        }
+    }
+
 
     suspend fun getRestaurantToView(resId : Int): RestaurantsEntity =
         foodAndRestaurantsDao.getOneRestaurantFromDatabase(resId)
