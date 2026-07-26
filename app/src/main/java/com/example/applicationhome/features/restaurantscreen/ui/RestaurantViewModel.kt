@@ -11,17 +11,16 @@ import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
 import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
 import com.example.applicationhome.data.data.model.Drink
-import com.example.applicationhome.data.data.model.Offers
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
 import com.example.applicationhome.data.local.entity.MealsEntity
+import com.example.applicationhome.data.local.entity.OffersEntity
 import com.example.applicationhome.data.local.entity.SnacksEntity
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -55,8 +54,6 @@ class RestaurantViewModel @Inject constructor(
     val selectedTypeIndex = itemScreenRepository.selectedTypeIndex
     val typeInRestaurantScreen = itemScreenRepository.typeInRestaurantScreen
 
-    val restaurantCount = homeScreenRepository.restaurantCount
-
 
     private val _foodMenuList : StateFlow<List<MealsEntity>> =
         resid.flatMapLatest { item ->
@@ -82,7 +79,6 @@ class RestaurantViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-    val foodMenuListIsLoading : StateFlow<Boolean> = restaurantScreenRepository.foodMenuListIsLoading
 
     private val _snackMenuList : StateFlow<List<SnacksEntity>> =
         resid.flatMapLatest { item ->
@@ -104,10 +100,6 @@ class RestaurantViewModel @Inject constructor(
         initialValue = emptyList()
     )
 
-    val snacksIsLoading : StateFlow<Boolean> = restaurantScreenRepository.snacksIsLoading
-
-
-
     private val _drinkMenuMap = MutableStateFlow<Map<String, Drink>>(emptyMap())
 
     val drinkMenuList = combine(
@@ -121,23 +113,16 @@ class RestaurantViewModel @Inject constructor(
         initialValue = emptyList()
     )
 
-    val drinkMenuIsLoading : StateFlow<Boolean> = restaurantScreenRepository.drinkMenuIsLoading
 
+    val restaurantOffersMenuList : StateFlow<List<OffersEntity>> =
+        resid.flatMapLatest{ id ->
+            restaurantScreenRepository.getRestaurantOffersFromDatabase(id)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
-    val _restaurantOffersMenuMap = MutableStateFlow<Map<String, Offers>>(emptyMap())
-
-    val restaurantOffersMenuList = combine(
-        _restaurantOffersMenuMap,
-        resid
-    ) { menuMap, resId ->
-        menuMap.filter { it.value.restaurantId == resId }.values.toList()
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
-
-    val restaurantOffersLoading : StateFlow<Boolean> = restaurantScreenRepository.restaurantOffersLoading
 
     val isNetworkAvailable = MutableStateFlow(false)
 
@@ -151,22 +136,6 @@ class RestaurantViewModel @Inject constructor(
     }
 
 
-
-    fun restaurantData(){
-        val restaurantsCount = restaurantCount[resid.value]
-        if(restaurantsCount != null){
-            viewModelScope.launch {
-                val offersMenu = async {
-                    if(restaurantOffersMenuList.value.size < restaurantsCount.offers){
-                        restaurantScreenRepository.uploadRestaurantOffersFromApi(resid.value)
-                    } else { emptyMap() }
-                }
-
-                _restaurantOffersMenuMap.value += offersMenu.await()
-            }
-        }
-    }
-
     fun selectedtype(index : Int, type : String){
         itemScreenRepository.selectedTypeInRestaurant(index, type)
     }
@@ -174,7 +143,7 @@ class RestaurantViewModel @Inject constructor(
 
 //       *** ---------------------------- \\***  Cart  ***// ---------------------------- ***
 
-    val errorInCart = MutableStateFlow(false)
+    var errorInCart = MutableStateFlow(Pair(false,""))
 
     val cartInformation = cartRepository.cartInformation
 
@@ -183,8 +152,6 @@ class RestaurantViewModel @Inject constructor(
     val totalNumber = cartRepository.totalNumber
 
     val totalPrice = cartRepository.totalPrice
-
-    val newCount = MutableStateFlow(0)
 
     val newFoodInCart = MutableStateFlow<CartItemsClass?>(null)
     val newFoodInCartSize = MutableStateFlow<String?>(null)
@@ -195,9 +162,13 @@ class RestaurantViewModel @Inject constructor(
             val userId = userRepository.userData.value.id
             val state = cartUseCase.plus(userId, food, size)
             if(state != null){
-                alertDialogTrue()
-                newFoodInCartSize.value = state.first
-                newFoodInCart.value = state.second
+                if(state.first == "User Id Is Empty"){
+                    alertDialogTrue(Pair(true, "User Id Is Empty"))
+                }else{
+                    alertDialogTrue(Pair(true, "Error In Restaurant"))
+                    newFoodInCartSize.value = state.first
+                    newFoodInCart.value = state.second
+                }
             }
         }
     }
@@ -218,7 +189,6 @@ class RestaurantViewModel @Inject constructor(
 
             if(finally && newFood != null && newSize != null){
                 cartUseCase.updateCount(userId, newFood, newSize, count)
-                deletenewCount()
                 newFoodInCart.value = null
                 newFoodInCartSize.value = null
             }
@@ -232,16 +202,12 @@ class RestaurantViewModel @Inject constructor(
         }
     }
 
-    fun deletenewCount(){
-        newCount.value = 0
-    }
-
-    fun alertDialogTrue(){
-        errorInCart.value = true
+    private fun alertDialogTrue(error : Pair<Boolean, String>){
+        errorInCart.value = error
     }
 
     fun alertDialogFalse(){
-        errorInCart.value = false
+        errorInCart.value = Pair(false,"")
     }
 
 

@@ -9,7 +9,6 @@ import com.example.applicationhome.core.domain.usecase.CartUseCase
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,16 +23,11 @@ class CartViewModel @Inject constructor(
 ): ViewModel(){
     val loading : StateFlow<Boolean> = orderRepository.loading
 
-    val errorInCart = MutableStateFlow(false)
-
     val cartInformation = cartRepository.cartInformation
 
     val cartItems = cartRepository.cartItems
 
     val totalNumber = cartRepository.totalNumber
-
-    val newFoodInCart = MutableStateFlow<CartItemsClass?>(null)
-    val newFoodInCartSize = MutableStateFlow<String?>(null)
 
     val totalPrice = cartRepository.totalPrice
 
@@ -42,12 +36,7 @@ class CartViewModel @Inject constructor(
     fun plus(food: CartItemsClass, size : String){
         viewModelScope.launch {
             val userId = userRepository.userData.value.id
-            val state = cartUseCase.plus(userId, food, size)
-            if(state != null){
-                alertDialogTrue()
-                newFoodInCartSize.value = state.first
-                newFoodInCart.value = state.second
-            }
+            cartUseCase.plus(userId, food, size)
         }
     }
 
@@ -63,10 +52,5 @@ class CartViewModel @Inject constructor(
             val userId = userRepository.userData.value.id
             cartUseCase.delete(userId, foodId, size)
         }
-    }
-
-
-    fun alertDialogTrue(){
-        errorInCart.value = true
     }
 }

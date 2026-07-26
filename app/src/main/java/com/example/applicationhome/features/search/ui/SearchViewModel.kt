@@ -14,7 +14,7 @@ import com.example.applicationhome.core.domain.repository.HomeScreenRepository
 import com.example.applicationhome.core.domain.repository.ItemScreenRepository
 import com.example.applicationhome.core.domain.repository.SearchRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
-import com.example.applicationhome.data.data.model.Categories
+import com.example.applicationhome.data.local.entity.CategoriesEntity
 import com.example.applicationhome.data.local.entity.MealsEntity
 import com.example.applicationhome.data.local.entity.RestaurantWithFeaturedMeals
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
@@ -55,15 +55,8 @@ class SearchViewModel @Inject constructor(
 
     //       *** ---------------------------- \\***  Categories  ***// ---------------------------- ***
 
-    private val _categories = MutableStateFlow<List<Categories>>(emptyList())
-    val categories : StateFlow<List<Categories>> = _categories
-
-    fun loadCategories(){
-        viewModelScope.launch {
-            _categories.value = emptyList()
-            _categories.value += homeScreenRepository.getCategorieslistFromApi()
-        }
-    }
+    val categories : StateFlow<List<CategoriesEntity>> =
+        homeScreenRepository.categoriesFromDatabase
 
 
     //       *** ---------------------------- \\***  Search  ***// ---------------------------- ***
@@ -161,9 +154,6 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             networkObserver.isNetworkAvailable.collect { available ->
                 isNetworkAvailable.value = available
-                if(available){
-                    loadCategories()
-                }
             }
         }
     }

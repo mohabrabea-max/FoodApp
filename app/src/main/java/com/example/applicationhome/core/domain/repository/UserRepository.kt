@@ -6,6 +6,7 @@ import com.example.applicationhome.data.local.dao.UsersDao
 import com.example.applicationhome.data.local.entity.UpdateAccountState
 import com.example.applicationhome.data.local.entity.UserClass
 import com.example.applicationhome.data.remote.FoodAppAPIs
+import com.example.applicationhome.domain.ApplicationScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,7 +31,7 @@ import javax.inject.Singleton
 class UserRepository @Inject constructor(
     private val userdao: UsersDao,
     private val api : FoodAppAPIs,
-    externalScope: CoroutineScope
+    @ApplicationScope externalScope: CoroutineScope
 ) {
     private val _loading = MutableStateFlow(false)
     val loading : StateFlow<Boolean> = _loading

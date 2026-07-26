@@ -5,7 +5,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.example.applicationhome.data.local.entity.CategoriesEntity
 import com.example.applicationhome.data.local.entity.MealsEntity
+import com.example.applicationhome.data.local.entity.OffersEntity
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.local.entity.SearchHistory
 import com.example.applicationhome.data.local.entity.SnacksEntity
@@ -25,6 +27,12 @@ interface FoodAndRestaurantsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun syncRestaurantsToDatabase(restaurants : List<RestaurantsEntity>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun syncCategoriesToDatabase(categories : List<CategoriesEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun syncOffersToDatabase(offers : List<OffersEntity>)
+
 
     //----------------------------------------------------------------\\ Get Data //----------------------------------------------------------------
 
@@ -42,6 +50,15 @@ interface FoodAndRestaurantsDao {
 
     @Query("SELECT * FROM restaurants_entity WHERE id = :restaurantId")
     suspend fun getOneRestaurantFromDatabase(restaurantId : Int): RestaurantsEntity
+
+    @Query("SELECT * FROM categories_entity")
+    fun getAllCategoriesFromDatabase(): Flow<List<CategoriesEntity>>
+
+    @Query("SELECT * FROM offers_entity")
+    fun getAllOffersFromDatabase(): Flow<List<OffersEntity>>
+
+    @Query("SELECT * FROM offers_entity WHERE restaurantId = :resId")
+    fun getRestaurantOffersFromDatabase(resId : Int): Flow<List<OffersEntity>>
 
 
     //----------------------------------------------------------------\\ Search //----------------------------------------------------------------

@@ -179,7 +179,6 @@ fun Search(
                 item{
                     CategoriesBar(
                         categories,
-                        false,
                         0,
                         {
                             keyboardController?.hide()

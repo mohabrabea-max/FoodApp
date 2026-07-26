@@ -11,6 +11,27 @@ import com.example.applicationhome.data.data.model.MealSizeDetail
 import com.example.applicationhome.data.data.model.OrderItemsClass
 import com.example.applicationhome.data.data.model.UserInformationInOrderClass
 
+@Entity(tableName = "categories_entity")
+data class CategoriesEntity(
+    @PrimaryKey val id : Int = 0,
+    val name : String = "",
+    val type : String = "ALL",
+    val image : String = "",
+    val icon : String = "",
+    val updatedAt : Long = 0L
+)
+
+
+@Entity(tableName = "offers_entity")
+data class OffersEntity(
+    val restaurantId : Int = 0,
+    @PrimaryKey val id : Int = 0,
+    val name : String = "",
+    val image : String = "",
+    val updatedAt : Long = 0L
+)
+
+
 @Entity(tableName = "meals_entity")
 data class MealsEntity(
     @PrimaryKey val id : Int = 0,

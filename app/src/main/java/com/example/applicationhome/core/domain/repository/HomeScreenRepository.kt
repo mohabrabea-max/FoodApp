@@ -1,81 +1,47 @@
 package com.example.applicationhome.core.domain.repository
 
-import androidx.compose.runtime.mutableStateMapOf
-import com.example.applicationhome.data.data.model.Categories
-import com.example.applicationhome.data.data.model.Offers
-import com.example.applicationhome.data.data.model.RestaurantsCount
 import com.example.applicationhome.data.local.dao.FoodAndRestaurantsDao
+import com.example.applicationhome.data.local.entity.CategoriesEntity
+import com.example.applicationhome.data.local.entity.OffersEntity
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
-import com.example.applicationhome.data.remote.FoodAppAPIs
+import com.example.applicationhome.domain.ApplicationScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class HomeScreenRepository @Inject constructor(
     private val foodAndRestaurantsDao : FoodAndRestaurantsDao,
-    private val api : FoodAppAPIs
+    @ApplicationScope externalScope: CoroutineScope
 ) {
-    private val _restaurantsMenuIsLoading = MutableStateFlow(false)
-    val restaurantsMenuIsLoading : StateFlow<Boolean> = _restaurantsMenuIsLoading
+    val categoriesFromDatabase : StateFlow<List<CategoriesEntity>> =
+        getAllCategoriesFromDatabase()
+            .stateIn(
+                scope = externalScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList()
+            )
 
-    private val _categoriesIsLoading = MutableStateFlow(true)
-    val categoriesIsLoading : StateFlow<Boolean> = _categoriesIsLoading
+    val offersFromDatabase : StateFlow<List<OffersEntity>> =
+        getAllOffersFromDatabase()
+            .stateIn(
+                scope = externalScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList()
+            )
 
-    private val _offersIsLoading = MutableStateFlow(true)
-    val offersIsLoading : StateFlow<Boolean> = _offersIsLoading
-
-
-    private val _restaurantCount = mutableStateMapOf<Int, RestaurantsCount>()
-    val restaurantCount : Map<Int, RestaurantsCount> get() = _restaurantCount
 
 
     fun getRestaurantsFromDatabase(): Flow<List<RestaurantsEntity>> =
         foodAndRestaurantsDao.getAllRestaurantsFromDatabase()
 
-    suspend fun restaurantCount(){
-        try {
-            val restaurants = api.getRestaurantCount()
-            val countList = restaurants.body()
-            if(restaurants.isSuccessful && countList != null){
-                _restaurantCount += countList
-            }else{
-                null
-            }
-        }catch (e : Exception){
-            null
-        }
-    }
+    private fun getAllCategoriesFromDatabase() : Flow<List<CategoriesEntity>> =
+        foodAndRestaurantsDao.getAllCategoriesFromDatabase()
 
-    suspend fun getCategorieslistFromApi(): List<Categories> {
-        val categoriesList = try {
-            _categoriesIsLoading.value = true
-            api.categorieslist()
-        } catch (e: Exception) {
-            emptyList()
-        } finally {
-            _categoriesIsLoading.value = false
-        }
-        return categoriesList
-    }
-
-    suspend fun getOffersFromApi(): List<Offers> {
-        val offers = try {
-            _offersIsLoading.value = true
-            val response = api.offers()
-            val offers = response.body()
-            if(response.isSuccessful && offers != null){
-                offers
-            }else{
-                emptyList()
-            }
-        } catch (e: Exception) {
-            emptyList()
-        } finally {
-            _offersIsLoading.value = false
-        }
-        return offers
-    }
+    private fun getAllOffersFromDatabase(): Flow<List<OffersEntity>> =
+        foodAndRestaurantsDao.getAllOffersFromDatabase()
 }

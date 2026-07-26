@@ -51,7 +51,7 @@ class ItemScreenViewModel @Inject constructor(
 
     val totalPrice = MutableStateFlow(0.0)
 
-    val errorInCart = MutableStateFlow(false)
+    var errorInCart = MutableStateFlow(Pair(false,""))
 
     val newCount = MutableStateFlow(0)
 
@@ -59,17 +59,24 @@ class ItemScreenViewModel @Inject constructor(
     val newFoodInCartSize = MutableStateFlow<String?>(null)
 
 
-    fun updateCount(food : CartItemsClass, size : String, newCount : Int) {
+    fun updateCount(food : CartItemsClass, size : String, newCount : Int, cartError: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val userId = userRepository.userData.value.id
             val state = cartUseCase.updateCount(userId, food, size, newCount)
             if(state != null){
-                alertDialogTrue()
-                newFoodInCartSize.value = state.first
-                newFoodInCart.value = state.second
+                if(state.first == "User Id Is Empty"){
+                    alertDialogTrue(Pair(true, "User Id Is Empty"))
+                }else{
+                    alertDialogTrue(Pair(true, "Error In Restaurant"))
+                    newFoodInCartSize.value = state.first
+                    newFoodInCart.value = state.second
+                    cartError()
+                }
             }
         }
     }
+
+
 
     fun clearAndStartNewCart(count : Int) {
         viewModelScope.launch {
@@ -98,12 +105,12 @@ class ItemScreenViewModel @Inject constructor(
         newCount.value = 0
     }
 
-    fun alertDialogTrue(){
-        errorInCart.value = true
+    fun alertDialogTrue(error : Pair<Boolean, String>){
+        errorInCart.value = error
     }
 
     fun alertDialogFalse(){
-        errorInCart.value = false
+        errorInCart.value = Pair(false, "")
     }
 
     fun plusnewCount(){

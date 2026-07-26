@@ -70,15 +70,11 @@ fun HomeScreen(
     scrollState : LazyListState
 ){
     val categories by homeScreenViewModel.categories.collectAsStateWithLifecycle()
-    val categoriesIsLoading by homeScreenViewModel.categoriesIsLoading.collectAsStateWithLifecycle()
     val categorySelected by homeScreenViewModel.selected.collectAsStateWithLifecycle()
 
     val userData by homeScreenViewModel.userData.collectAsStateWithLifecycle()
     val restaurants by homeScreenViewModel.filterRestaurants.collectAsStateWithLifecycle()
     val offers by homeScreenViewModel.offers.collectAsStateWithLifecycle()
-
-    val offersIsLoading by homeScreenViewModel.offersIsLoading.collectAsStateWithLifecycle()
-    val restaurantIsLoading by homeScreenViewModel.restaurantsMenuIsLoading.collectAsStateWithLifecycle()
 
     val favoriteRestaurantsIds by homeScreenViewModel.favoriteRestaurantsIds.collectAsStateWithLifecycle()
 
@@ -152,7 +148,6 @@ fun HomeScreen(
                     item{
                         CategoriesBar(
                             categories,
-                            categoriesIsLoading,
                             categorySelected,
                             { category -> homeScreenViewModel.select(category) },
                             { homeScreenViewModel.unSelected() },
@@ -195,19 +190,17 @@ fun HomeScreen(
                                 Box(
                                     modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)).background(Color.White).clickable {  }
                                 ){
-                                    if(!offersIsLoading){
-                                        AsyncImage(
-                                            modifier = Modifier.fillMaxSize(),
-                                            model = ImageRequest.Builder(LocalContext.current).
-                                            data(currentOffer.image).
-                                            crossfade(true).
-                                            size(400, 400).
-                                            precision(Precision.EXACT).
-                                            build(),
-                                            contentDescription = null,
-                                            contentScale = ContentScale.Crop
-                                        )
-                                    }
+                                    AsyncImage(
+                                        modifier = Modifier.fillMaxSize(),
+                                        model = ImageRequest.Builder(LocalContext.current).
+                                        data(currentOffer.image).
+                                        crossfade(true).
+                                        size(400, 400).
+                                        precision(Precision.EXACT).
+                                        build(),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.Crop
+                                    )
                                 }
                             }
                         }
@@ -225,7 +218,6 @@ fun HomeScreen(
                         val isRestaurantInFavorite = favoriteRestaurantsIds.contains(item.id)
 
                         RestaurantsBoxHomeScreen(
-                            restaurantIsLoading,
                             item,
                             isRestaurantInFavorite,
                             {

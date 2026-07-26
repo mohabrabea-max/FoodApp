@@ -7,7 +7,6 @@ import com.example.applicationhome.data.data.model.FoodItem
 import com.example.applicationhome.data.data.model.Offers
 import com.example.applicationhome.data.data.model.OrdersClass
 import com.example.applicationhome.data.data.model.Restaurants
-import com.example.applicationhome.data.data.model.RestaurantsCount
 import com.example.applicationhome.data.data.model.Snack
 import com.example.applicationhome.data.data.model.UserClassFireBase
 import retrofit2.Response
@@ -66,29 +65,11 @@ interface FoodAppAPIs{
 //        @Body data : Map<String, Int>
 //    ): Response<CartClass>
 
-
-    @GET("meals/{mealKey}.json")
-    suspend fun getCartMeal(
-        @Path("mealKey") mealKey : String
-    ): Response<Map<String, FoodItem>>
-
     @GET("restaurants.json")
     suspend fun getCarRestaurant(
         @Query("orderBy") order : String,
         @Query("equalTo") value : Int
     ): Response<Map<String, Restaurants>>
-
-    @GET("meals.json")
-    suspend fun getFavoriteMeals(
-        @Query("orderBy") order : String,
-        @Query("equalTo") value : Int
-    ): Response<Map<String, FoodItem>>
-
-    @GET("snacks.json")
-    suspend fun getFavoriteSnacks(
-        @Query("orderBy") order : String,
-        @Query("equalTo") value : Int
-    ): Response<Map<String, Snack>>
 
     @PUT("favorite/{userId}/{mealKey}.json")
     suspend fun addToFavorite(
@@ -110,29 +91,19 @@ interface FoodAppAPIs{
         @Query("startAt") lastSyncTimestamp: Long
     ): Response<Map<String, FavoriteClass>>
 
-    @GET("restaurants.json")
-    suspend fun getFavoriteRestaurants(
-        @Query("orderBy") order : String,
-        @Query("equalTo") value : Int
-    ): Response<Map<String, Restaurants>>
-
-
-
-
-    @GET("restaurants_count.json")
-    suspend fun getRestaurantCount(): Response<Map<Int, RestaurantsCount>>
 
     @GET("categories.json")
-    suspend fun categorieslist(): List<Categories>
+    suspend fun categorieslist(
+        @Query("orderBy") orderBy : String = "\"updatedAt\"",
+        @Query("startAt") lastSyncTimestamp:  Long
+    ): Response<Map<String, Categories>>
+
 
     @GET("offers.json")
-    suspend fun restaurantOffers(
-        @Query("orderBy") order : String,
-        @Query("equalTo") value : Int
+    suspend fun offers(
+        @Query("orderBy") orderBy : String = "\"updatedAt\"",
+        @Query("startAt") lastSyncTimestamp:  Long
     ): Response<Map<String, Offers>>
-
-    @GET("offers.json")
-    suspend fun offers(): Response<List<Offers>>
 
 
 

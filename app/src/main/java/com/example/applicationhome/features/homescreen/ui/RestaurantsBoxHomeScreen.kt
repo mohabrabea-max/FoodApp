@@ -22,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -48,7 +47,6 @@ import com.example.applicationhome.data.local.entity.RestaurantsEntity
 
 @Composable
 fun RestaurantsBoxHomeScreen(
-    loading : Boolean,
     item : RestaurantsEntity,
     isRestaurantInFavorite : Boolean,
     view : () -> Unit,
@@ -58,128 +56,119 @@ fun RestaurantsBoxHomeScreen(
 ){
     val interactionSource = remember { MutableInteractionSource() }
 
-    if (loading) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator() // دايرة التحميل الافتراضية في أندرويد
-        }
-    }else{
-        Row(
-            modifier = Modifier.
-            padding(10.dp).
-            shadow(elevation = 10.dp, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(30.dp)).
-            fillMaxWidth().
-            height(130.dp).
-            background(Color.White).
-            clickable(
-                interactionSource = interactionSource,
-                indication = null
-            ){
-                clickable()
-            },
-            verticalAlignment = Alignment.CenterVertically
+    Row(
+        modifier = Modifier.
+        padding(10.dp).
+        shadow(elevation = 10.dp, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(30.dp)).
+        fillMaxWidth().
+        height(130.dp).
+        background(Color.White).
+        clickable(
+            interactionSource = interactionSource,
+            indication = null
         ){
-            Box(
-                modifier = Modifier.
-                fillMaxHeight().
-                width(150.dp).
-                shadow(elevation = 10.dp, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(20.dp)).
-                clip(RoundedCornerShape(30.dp))
-            ){
-                Box(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray)){
-                    AsyncImage(
-                        modifier = Modifier.fillMaxSize(),
-                        model = ImageRequest.Builder(LocalContext.current).
-                        data(item.image2).
-                        crossfade(true).
-                        size(400, 400).
-                        precision(Precision.EXACT).
-                        build(),
-                        contentDescription = item.name,
-                        contentScale = ContentScale.Crop
+            clickable()
+        },
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        Box(
+            modifier = Modifier.
+            fillMaxHeight().
+            width(150.dp).
+            shadow(elevation = 10.dp, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(20.dp)).
+            clip(RoundedCornerShape(30.dp))
+        ){
+            Box(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray)){
+                AsyncImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = ImageRequest.Builder(LocalContext.current).
+                    data(item.image2).
+                    crossfade(true).
+                    size(400, 400).
+                    precision(Precision.EXACT).
+                    build(),
+                    contentDescription = item.name,
+                    contentScale = ContentScale.Crop
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth().
+                    background(Color.Black.copy(alpha = 0f)).
+                    padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                ){
+                    Favorite(
+                        isRestaurantInFavorite,
+                        { addRestaurantsFavorite() },
+                        { removeRestaurantsFavorite() },
+                        modifier = Modifier.clip(CircleShape).size(35.dp)
+                            .background(Color.Black.copy(alpha = 0.2f)),
+                        color = Color.White,
+                        icon1 = Icons.Default.Bookmark,
+                        icon2 = Icons.Default.BookmarkBorder
                     )
-                    Row(
-                        modifier = Modifier.fillMaxWidth().
-                        background(Color.Black.copy(alpha = 0f)).
-                        padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.End
+                }
+            }
+            Divider(color = Color.LightGray.copy(alpha = 0.5f))
+            Box(
+                modifier = Modifier.fillMaxWidth().
+                height(50.dp).
+                background(Color.Black.copy(alpha = 0.5f)).
+                align(Alignment.BottomCenter)
+            )
+            Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
+                Spacer(modifier = Modifier.height(53.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start
+                ){
+                    Spacer(modifier = Modifier.width(20.dp))
+                    Box(
+                        modifier = Modifier.size(55.dp).
+                        clip(CircleShape).
+                        background(Color.White).
+                        clickable { view() }.
+                        shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(40.dp)).
+                        border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(40.dp))
                     ){
-                        Favorite(
-                            isRestaurantInFavorite,
-                            { addRestaurantsFavorite() },
-                            { removeRestaurantsFavorite() },
-                            modifier = Modifier.clip(CircleShape).size(35.dp)
-                                .background(Color.Black.copy(alpha = 0.2f)),
-                            color = Color.White,
-                            icon1 = Icons.Default.Bookmark,
-                            icon2 = Icons.Default.BookmarkBorder
+                        AsyncImage(
+                            modifier = Modifier.fillMaxSize(),
+                            model = ImageRequest.Builder(LocalContext.current).
+                            data(item.image).
+                            crossfade(true).
+                            size(400, 400).
+                            precision(Precision.EXACT).
+                            build(),
+                            contentDescription = item.name,
+                            contentScale = ContentScale.Crop
                         )
                     }
                 }
-                Divider(color = Color.LightGray.copy(alpha = 0.5f))
-                Box(
-                    modifier = Modifier.fillMaxWidth().
-                    height(50.dp).
-                    background(Color.Black.copy(alpha = 0.5f)).
-                    align(Alignment.BottomCenter)
-                )
-                Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
-                    Spacer(modifier = Modifier.height(53.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Start
-                    ){
-                        Spacer(modifier = Modifier.width(20.dp))
-                        Box(
-                            modifier = Modifier.size(55.dp).
-                            clip(CircleShape).
-                            background(Color.White).
-                            clickable { view() }.
-                            shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(40.dp)).
-                            border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(40.dp))
-                        ){
-                            AsyncImage(
-                                modifier = Modifier.fillMaxSize(),
-                                model = ImageRequest.Builder(LocalContext.current).
-                                data(item.image).
-                                crossfade(true).
-                                size(400, 400).
-                                precision(Precision.EXACT).
-                                build(),
-                                contentDescription = item.name,
-                                contentScale = ContentScale.Crop
-                            )
-                        }
-                    }
-                }
             }
-            Column(
-                modifier = Modifier.padding(horizontal = 10.dp, vertical = 20.dp).fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceEvenly,
-                horizontalAlignment = Alignment.Start
+        }
+        Column(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 20.dp).fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.Start
+        ){
+            Text(
+                text = item.name,
+                fontSize = 18.sp,
+                color = Color.BrownForFont,
+                fontWeight = FontWeight.Bold
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ){
-                Text(
-                    text = item.name,
-                    fontSize = 18.sp,
-                    color = Color.BrownForFont,
-                    fontWeight = FontWeight.Bold
-                )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ){
-                    Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFD700) , modifier = Modifier.size(17.dp))
-                    Text(text = item.review.toString(), color = Color.Black, fontSize = 15.sp, modifier = Modifier)
-                }
-                Text(
-                    text = item.typ.joinToString(separator = " - "),
-                    fontSize = 13.sp,
-                    color = Color.Gray
-                )
+                Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFD700) , modifier = Modifier.size(17.dp))
+                Text(text = item.review.toString(), color = Color.Black, fontSize = 15.sp, modifier = Modifier)
             }
+            Text(
+                text = item.typ.joinToString(separator = " - "),
+                fontSize = 13.sp,
+                color = Color.Gray
+            )
         }
     }
 }

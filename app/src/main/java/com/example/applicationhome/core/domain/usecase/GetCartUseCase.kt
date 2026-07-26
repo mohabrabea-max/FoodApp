@@ -13,6 +13,8 @@ class CartUseCase @Inject constructor(
     private val cartRepository: CartRepository
 ){
     suspend fun plus(userid : String, food: CartItemsClass, size : String): Pair<String, CartItemsClass>?{
+        if(userid.isEmpty()) return Pair("User Id Is Empty", CartItemsClass())
+
         val cartItems = cartRepository.cartItems.value
         val mealKey = "${food.mealId}_${size}"
         val currentItem = cartItems.find { it?.mealKey == mealKey }
@@ -45,6 +47,8 @@ class CartUseCase @Inject constructor(
     }
 
     suspend fun updateCount(userid : String, food : CartItemsClass, size : String, newCount : Int): Pair<String, CartItemsClass>? {
+        if(userid.isEmpty()) return Pair("User Id Is Empty", CartItemsClass())
+
         val cartItems = cartRepository.cartItems.value
         val mealKey = "${food.mealId}_${size}"
         val cartItem = cartItems.find { it?.mealKey == mealKey }

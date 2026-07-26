@@ -1,6 +1,5 @@
 package com.example.applicationhome.core.ui.components.forHomeScreenOrMenu
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,7 +24,6 @@ fun MealBoxIcon(
     Box(
         modifier = modifier.padding(5.dp).
         shadow(elevation = 5.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
-        animateContentSize().
         size(35.dp).
         background(Color.White),
         contentAlignment = Alignment.Center

@@ -7,9 +7,9 @@ import com.example.applicationhome.core.domain.repository.HomeScreenRepository
 import com.example.applicationhome.core.domain.repository.ItemScreenRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
-import com.example.applicationhome.data.data.model.Categories
-import com.example.applicationhome.data.data.model.Offers
+import com.example.applicationhome.data.local.entity.CategoriesEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
+import com.example.applicationhome.data.local.entity.OffersEntity
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,7 +48,6 @@ class HomeScreenViewModel @Inject constructor(
                 initialValue = emptyList()
             )
 
-    val restaurantsMenuIsLoading : StateFlow<Boolean> = homeScreenRepository.restaurantsMenuIsLoading
 
     val filterRestaurants = combine(
         _restaurantsMenu,
@@ -68,16 +67,12 @@ class HomeScreenViewModel @Inject constructor(
     )
 
 
+    val categories : StateFlow<List<CategoriesEntity>> =
+        homeScreenRepository.categoriesFromDatabase
 
+    val offers : StateFlow<List<OffersEntity>> =
+        homeScreenRepository.offersFromDatabase
 
-    private val _categories = MutableStateFlow<List<Categories>>(emptyList())
-    val categories : StateFlow<List<Categories>> = _categories
-    val categoriesIsLoading : StateFlow<Boolean> = homeScreenRepository.categoriesIsLoading
-
-
-    private val _offers = MutableStateFlow<List<Offers>>(emptyList())
-    val offers : StateFlow<List<Offers>> = _offers
-    val offersIsLoading : StateFlow<Boolean> = homeScreenRepository.offersIsLoading
 
     val isNetworkAvailable = MutableStateFlow(true)
 
@@ -86,31 +81,11 @@ class HomeScreenViewModel @Inject constructor(
         viewModelScope.launch {
             networkObserver.isNetworkAvailable.collect { available ->
                 isNetworkAvailable.value = available
-                if(available){
-                    loadDataFromApi()
-                }
             }
         }
     }
 
-    fun loadDataFromApi() {
-        viewModelScope.launch {
-            _categories.value = emptyList()
-            _categories.value += homeScreenRepository.getCategorieslistFromApi()
-        }
-        viewModelScope.launch {
-            _offers.value = emptyList()
-            _offers.value += homeScreenRepository.getOffersFromApi()
-        }
-        viewModelScope.launch {
-            homeScreenRepository.restaurantCount()
-        }
-        viewModelScope.launch {
-
-        }
-    }
-
-    fun select(item : Categories){
+    fun select(item : CategoriesEntity){
         selected.value = item.id
         typ.value = item.type
     }

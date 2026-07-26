@@ -113,10 +113,11 @@ class FavoriteViewModel @Inject constructor(
 
 //       *** ---------------------------- \\***  Cart  ***// ---------------------------- ***
 
-    val errorInCart = MutableStateFlow(false)
+    var errorInCart = MutableStateFlow(Pair(false,""))
 
 
     val cartItems = cartRepository.cartItems
+    val cartInformation = cartRepository.cartInformation
 
 
     val totalPrice = cartRepository.totalPrice
@@ -133,9 +134,13 @@ class FavoriteViewModel @Inject constructor(
             val userId = userRepository.userData.value.id
             val state = cartUseCase.plus(userId, food, size)
             if(state != null){
-                alertDialogTrue()
-                newFoodInCartSize.value = state.first
-                newFoodInCart.value = state.second
+                if(state.first == "User Id Is Empty"){
+                    alertDialogTrue(Pair(true, "User Id Is Empty"))
+                }else{
+                    alertDialogTrue(Pair(true, "Error In Restaurant"))
+                    newFoodInCartSize.value = state.first
+                    newFoodInCart.value = state.second
+                }
             }
         }
     }
@@ -144,6 +149,22 @@ class FavoriteViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val userId = userRepository.userData.value.id
             cartUseCase.minus(userId, food, size)
+        }
+    }
+
+    fun clearAndStartNewCart(count : Int) {
+        viewModelScope.launch {
+            val newFood = newFoodInCart.value
+            val newSize = newFoodInCartSize.value
+            val userId = userRepository.userData.value.id
+            val finally = cartUseCase.clearAndStartNewCart(userId, newFoodInCart.value, newFoodInCartSize.value)
+
+            if(finally && newFood != null && newSize != null){
+                cartUseCase.updateCount(userId, newFood, newSize, count)
+                deletenewCount()
+                newFoodInCart.value = null
+                newFoodInCartSize.value = null
+            }
         }
     }
 
@@ -158,8 +179,12 @@ class FavoriteViewModel @Inject constructor(
         newCount.value = 0
     }
 
-    fun alertDialogTrue(){
-        errorInCart.value = true
+    private fun alertDialogTrue(error : Pair<Boolean, String>){
+        errorInCart.value = error
+    }
+
+    fun alertDialogFalse(){
+        errorInCart.value = Pair(false,"")
     }
 
 

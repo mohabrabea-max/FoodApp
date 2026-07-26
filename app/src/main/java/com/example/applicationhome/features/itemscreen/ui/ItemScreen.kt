@@ -39,7 +39,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.core.ui.components.forCart.AlertDialogMessage
-import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.SnaksBoxForItemScreen
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showAddToCartSnackbar
 import com.example.applicationhome.core.ui.theme.BrownForFont
 import com.example.applicationhome.core.ui.theme.DarkOrange
@@ -255,26 +254,32 @@ fun ItemScreen(
                         item.restaurantId
                     )
 
-                    itemScreenViewModel.updateCount(meal, size, newCount)
-                    if (item.restaurantId == cartInformation?.restaurantId || cartInformation == null) {
-                        itemScreenViewModel.deletenewCount()
-                        scope.showAddToCartSnackbar(
-                            snackbarHostState,
-                            {
-                                navigationController.navigate(Screens.Cart.screen) {
-                                    launchSingleTop = true
-                                }
+                    itemScreenViewModel.updateCount(
+                        meal,
+                        size,
+                        newCount,
+                        cartError = {
+                            if ((item.restaurantId == cartInformation?.restaurantId || cartInformation == null)){
+                                itemScreenViewModel.deletenewCount()
+                                scope.showAddToCartSnackbar(
+                                    snackbarHostState,
+                                    {
+                                        navigationController.navigate(Screens.Cart.screen) {
+                                            launchSingleTop = true
+                                        }
+                                    }
+                                )
                             }
-
-                        )
-                    }
+                        }
+                    )
                 }
             )
         }
 
-        if(errorInCart){
+        if(errorInCart.first && errorInCart.second.isEmpty()){
             AlertDialogMessage(
-                cartInformation?.restaurantName ?: "",
+                "Start a new cart?",
+                "A new order will clear your cart with '${cartInformation?.restaurantName ?: ""}'",
                 "Start",
                 {
                     itemScreenViewModel.alertDialogFalse()
@@ -289,6 +294,18 @@ fun ItemScreen(
                         }
 
                     )
+                },
+                "Cancel",
+                { itemScreenViewModel.alertDialogFalse() }
+            )
+        }else if(errorInCart.first){
+            AlertDialogMessage(
+                "Sign in required!",
+                "Please sign in or create an account to add items to your cart and proceed with your order.",
+                "Sign in",
+                {
+                    navigationController.navigate(Screens.LoginScreen.screen)
+                    itemScreenViewModel.alertDialogFalse()
                 },
                 "Cancel",
                 { itemScreenViewModel.alertDialogFalse() }

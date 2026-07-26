@@ -69,7 +69,8 @@ data class Categories(
     val name : String = "",
     val type : String = "ALL",
     val image : String = "",
-    val icon : String = ""
+    val icon : String = "",
+    val updatedAt : Long = 0L
 )
 
 data class Offers(

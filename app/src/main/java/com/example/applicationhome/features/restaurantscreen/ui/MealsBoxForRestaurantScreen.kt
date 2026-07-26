@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,109 +32,95 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.local.entity.MealsEntity
 
 @Composable
 fun MealsBoxForRestaurantScreen(
-    foodMenuIsLoading : Boolean,
-    item: MealsEntity,
+    price : Double,
+    details : List<String>?,
+    name : String,
+    image : String,
+    aspectRatio : Float,
     cardNavigationClickable : () -> Unit = {},
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
     val interactionSource = remember { MutableInteractionSource() }
 
-    val sizeOptions = item .sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }
-    val price = sizeOptions?.price ?: 0.0
-    val details = sizeOptions?.snack?.values?.map { it.size + " " + it.name }
-
-    if (foodMenuIsLoading) {
-
-        Box(
-            modifier = Modifier.
-            padding(7.dp).
-            shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
-            background(Color.White).
-            aspectRatio(2.2f),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator() // دايرة التحميل الافتراضية في أندرويد
-        }
-
-    }else{
-
-        Box(
-            modifier = Modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
-            background(Color.White).
-            aspectRatio(2.2f).
-            clickable(
+    Box(
+        modifier = Modifier
+            .padding(7.dp)
+            .shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp))
+            .background(Color.White)
+            .aspectRatio(aspectRatio)
+            .clickable(
                 interactionSource = interactionSource,
                 indication = null
             ){
                 cardNavigationClickable()
-            }.
-            padding(vertical = 15.dp, horizontal = 10.dp)
-        ){
-            Row(modifier = Modifier.fillMaxSize().background(Color.White)){
+            }
+            .padding(vertical = 15.dp, horizontal = 10.dp)
+    ){
+        Row(modifier = Modifier.fillMaxSize().background(Color.White)){
+            Column(
+                modifier = Modifier.
+                padding(7.dp).
+                fillMaxHeight().
+                weight(4f),
+                verticalArrangement = Arrangement.SpaceBetween
+            ){
                 Column(
-                    modifier = Modifier.
-                    padding(7.dp).
-                    fillMaxHeight().
-                    weight(4f),
-                    verticalArrangement = Arrangement.SpaceBetween
+                    horizontalAlignment = Alignment.Start
                 ){
-                    Column(
-                        horizontalAlignment = Alignment.Start
-                    ){
-                        Text(
-                            text = item.name,
-                            fontSize = 15.sp,
-                            color = Color.Black,
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Text(
-                            text = details?.joinToString(separator = " + ") ?: "",
-                            fontSize = 13.sp,
-                            color = Color.Gray
-                        )
-                    }
                     Text(
-                        text = "$price E.G",
-                        fontSize = 16.sp,
+                        text = name,
+                        fontSize = 15.sp,
                         color = Color.Black,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold
                     )
+                    if(details != null){
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Text(
+                            text = details.joinToString(separator = " + "),
+                            fontSize = 13.sp,
+                            color = Color.Gray
+                        )
+                    }
                 }
-                Box(
+                Text(
+                    text = "$price E.G",
+                    fontSize = 16.sp,
+                    color = Color.Black,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Box(
+                modifier = Modifier.
+                fillMaxHeight().
+                weight(2.5f),
+                contentAlignment = Alignment.Center
+            ){
+                AsyncImage(
                     modifier = Modifier.
-                    fillMaxHeight().
-                    weight(2.5f),
-                    contentAlignment = Alignment.Center
-                ){
-                    AsyncImage(
-                        modifier = Modifier.
-                        padding(15.dp).
-                        fillMaxSize(0.9f).
-                        clip(RoundedCornerShape(10.dp)).
-                        align(Alignment.CenterEnd),
-                        model = ImageRequest.Builder(LocalContext.current).
-                        data(item.image).
-                        crossfade(true).
-                        size(400, 400).
-                        precision(Precision.EXACT).
-                        build(),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                    )
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.SpaceBetween,
-                        content = actions
-                    )
-                }
+                    padding(15.dp).
+                    fillMaxSize(0.9f).
+                    clip(RoundedCornerShape(10.dp)).
+                    align(Alignment.CenterEnd),
+                    model = ImageRequest.Builder(LocalContext.current).
+                    data(image).
+                    crossfade(true).
+                    size(400, 400).
+                    precision(Precision.EXACT).
+                    build(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                )
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    content = actions
+                )
             }
         }
     }

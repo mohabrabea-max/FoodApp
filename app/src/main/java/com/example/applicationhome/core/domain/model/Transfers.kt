@@ -3,6 +3,7 @@ package com.example.applicationhome.core.domain.model
 import com.example.applicationhome.data.data.model.FoodItem
 import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.data.data.model.Snack
+import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.MealsEntity
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.local.entity.SnacksEntity
@@ -29,6 +30,22 @@ fun Snack.snackToSnacksEntity(): SnacksEntity =
         this.priceANDsize,
         this.restaurantId,
         this.review
+    )
+
+
+fun SnacksEntity.snacksEntityToCartItemsClass(userId : String, quantity : Int): CartItemsClass =
+    CartItemsClass(
+        userId,
+        "${this.id}_${this.priceANDsize.keys.last()}",
+        this.id,
+        this.name,
+        "Snack",
+        this.priceANDsize.keys.last(),
+        quantity,
+        this.priceANDsize.values.last(),
+        this.priceANDsize.values.last() * quantity,
+        this.image,
+        this.restaurantId
     )
 
 

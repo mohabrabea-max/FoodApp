@@ -16,15 +16,14 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.unit.dp
-import com.example.applicationhome.data.data.model.Categories
+import com.example.applicationhome.data.local.entity.CategoriesEntity
 
 
 @Composable
 fun CategoriesBar(
-    categories: List<Categories>,
-    categoriesIsLoading : Boolean,
+    categories: List<CategoriesEntity>,
     selected : Int,
-    select : (Categories) -> Unit,
+    select : (CategoriesEntity) -> Unit,
     unSelect : () -> Unit,
     drawBehind : DrawScope.() -> Unit = {}
 ){
@@ -44,7 +43,6 @@ fun CategoriesBar(
             items(categories.toList()) { category ->
                 CategoriesBox(
                     category,
-                    categoriesIsLoading,
                     selected,
                     { select(category) },
                     { unSelect() }

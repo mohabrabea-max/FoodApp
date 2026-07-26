@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.CATEGORIES_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.FAVORITE_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.MEALS_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.RESTAURANTS_LAST_SYNC
@@ -30,6 +31,8 @@ class DataStoreManager @Inject constructor(
         val MEALS_LAST_SYNC = longPreferencesKey("meals_last_sync")
         val SNACKS_LAST_SYNC = longPreferencesKey("snacks_last_sync")
         val RESTAURANTS_LAST_SYNC = longPreferencesKey("restaurants_last_sync")
+        val CATEGORIES_LAST_SYNC = longPreferencesKey("categories_last_sync")
+        val OFFERS_LAST_SYNC = longPreferencesKey("offers_last_sync")
         val FAVORITE_LAST_SYNC = longPreferencesKey("favorite_last_sync")
     }
 
@@ -47,6 +50,16 @@ class DataStoreManager @Inject constructor(
     val restaurantsLastSyncTimeFlow : Flow<Long?> = getSyncTime(RESTAURANTS_LAST_SYNC)
     suspend fun updateRestaurantsSyncTime(timestamp: Long) {
         saveLastSyncTime(RESTAURANTS_LAST_SYNC, timestamp)
+    }
+
+    val categoriesLastSyncTimeFlow : Flow<Long?> = getSyncTime(CATEGORIES_LAST_SYNC)
+    suspend fun updateCategoriesSyncTime(timestamp: Long){
+        saveLastSyncTime(CATEGORIES_LAST_SYNC, timestamp)
+    }
+
+    val offersLastSyncTimeFlow : Flow<Long?> = getSyncTime(FAVORITE_LAST_SYNC)
+    suspend fun updateOffersSyncTime(timestamp: Long){
+        saveLastSyncTime(FAVORITE_LAST_SYNC, timestamp)
     }
 
     val favoriteLastSyncTimeFlow : Flow<Long?> = getSyncTime(FAVORITE_LAST_SYNC)

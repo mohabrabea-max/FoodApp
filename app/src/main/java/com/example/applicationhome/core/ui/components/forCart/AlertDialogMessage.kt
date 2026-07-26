@@ -32,7 +32,8 @@ import com.example.applicationhome.core.ui.theme.VeryLightGray
 //@Preview(showBackground = true, widthDp = 400, heightDp = 600)
 @Composable
 fun AlertDialogMessage(
-    resName : String,
+    title : String,
+    content : String,
     confirmButtonText : String,
     confirmButton : () -> Unit,
     dismissButtonText : String,
@@ -57,12 +58,12 @@ fun AlertDialogMessage(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "Start a new cart?",
+                    text = title,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
 
-                Text(text = "A new order will clear your cart with '${resName}'")
+                Text(text = content)
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),

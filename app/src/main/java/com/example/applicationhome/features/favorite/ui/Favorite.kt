@@ -56,6 +56,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
+import com.example.applicationhome.core.domain.model.snacksEntityToCartItemsClass
+import com.example.applicationhome.core.ui.components.forCart.AlertDialogMessage
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.AddBox
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.MealBoxIcon
@@ -65,7 +67,6 @@ import com.example.applicationhome.core.ui.theme.BrownForFont
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.Screens
-import com.example.applicationhome.data.local.entity.CartItemsClass
 import kotlinx.coroutines.CoroutineScope
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity")
@@ -99,6 +100,10 @@ fun Favorite(
     val selectedCategorieInFavoriteScreen by favoriteViewModel.selectedCategorieInFavoriteScreen.collectAsStateWithLifecycle()
 
     val cartItems by favoriteViewModel.cartItems.collectAsStateWithLifecycle()
+
+    val errorInCart by favoriteViewModel.errorInCart.collectAsStateWithLifecycle()
+    val cartInformation by favoriteViewModel.cartInformation.collectAsStateWithLifecycle()
+    val restaurantName = cartInformation?.restaurantName
 
     val favoriteMeals by favoriteViewModel.favoriteMeals.collectAsStateWithLifecycle()
     val favoriteSnacks by favoriteViewModel.favoriteSnacks.collectAsStateWithLifecycle()
@@ -181,7 +186,6 @@ fun Favorite(
                             val price = item.snack.priceANDsize.values.last()
 
                             SnaksBox(
-                                false,
                                 modifier = Modifier.size(200.dp),
                                 item.snack.name,
                                 item.snack.image,
@@ -213,51 +217,24 @@ fun Favorite(
                                         icon2 = Icons.Default.FavoriteBorder
                                     )
                                     AddBox(
-                                        Color.VeryLightGray,
                                         item.snack.id,
                                         {
-                                            val quantity =
-                                                cartItems.find { it?.mealKey == "${item.snack.id}_${size}" }?.quantity
-                                                    ?: 0
-                                            val snack = CartItemsClass(
-                                                userData.id,
-                                                "${item.snack.id}_${size}",
-                                                item.snack.id,
-                                                item.snack.name,
-                                                "Snack",
-                                                size,
-                                                quantity,
-                                                price,
-                                                price * quantity,
-                                                item.snack.image,
-                                                item.snack.restaurantId
-                                            )
+                                            val quantity = cartItems.find { it?.mealKey == "${item.snack.id}_${size}" }?.quantity ?: 0
+
+                                            val snack = item.snack.snacksEntityToCartItemsClass(userData.id, quantity)
+
                                             favoriteViewModel.plus(snack, size)
                                         },
                                         {
-                                            val quantity =
-                                                cartItems.find { it?.mealKey == "${item.snack.id}_${size}" }?.quantity
-                                                    ?: 0
-                                            val snack = CartItemsClass(
-                                                userData.id,
-                                                "${item.snack.id}_${size}",
-                                                item.snack.id,
-                                                item.snack.name,
-                                                "Snack",
-                                                size,
-                                                quantity,
-                                                price,
-                                                price * quantity,
-                                                item.snack.image,
-                                                item.snack.restaurantId
-                                            )
+                                            val quantity = cartItems.find { it?.mealKey == "${item.snack.id}_${size}" }?.quantity ?: 0
+
+                                            val snack = item.snack.snacksEntityToCartItemsClass(userData.id, quantity)
+
                                             favoriteViewModel.minus(snack, size)
                                         },
-                                        { favoriteViewModel.delete(item.snack.id, size) },
                                         { activeId = item.snack.id },
                                         activeId,
-                                        cartItems.find { it?.mealKey == "${item.snack.id}_${size}" }?.quantity
-                                            ?: 0
+                                        cartItems.find { it?.mealKey == "${item.snack.id}_${size}" }?.quantity ?: 0
                                     )
                                 }
                             )
@@ -331,6 +308,35 @@ fun Favorite(
                 }
             )
         }
+
+
+        if(errorInCart.first && errorInCart.second.isEmpty()){
+            AlertDialogMessage(
+                "Start a new cart?",
+                "A new order will clear your cart with '${restaurantName ?: ""}'",
+                "Start",
+                {
+                    favoriteViewModel.clearAndStartNewCart(1)
+                    favoriteViewModel.alertDialogFalse()
+                },
+                "Cancel",
+                { favoriteViewModel.alertDialogFalse() }
+            )
+        }else if(errorInCart.first){
+            AlertDialogMessage(
+                "Sign in required!",
+                "Please sign in or create an account to add items to your cart and proceed with your order.",
+                "Sign in",
+                {
+                    navigationController.navigate(Screens.LoginScreen.screen)
+                    favoriteViewModel.alertDialogFalse()
+                },
+                "Cancel",
+                { favoriteViewModel.alertDialogFalse() }
+            )
+        }
+
+
         if(viewImageState){
             RestaurantImageView(
                 imageToView

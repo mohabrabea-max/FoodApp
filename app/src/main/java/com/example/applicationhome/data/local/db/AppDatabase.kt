@@ -10,10 +10,12 @@ import com.example.applicationhome.data.local.dao.OrdersDao
 import com.example.applicationhome.data.local.dao.UsersDao
 import com.example.applicationhome.data.local.entity.CartClass
 import com.example.applicationhome.data.local.entity.CartItemsClass
+import com.example.applicationhome.data.local.entity.CategoriesEntity
 import com.example.applicationhome.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
 import com.example.applicationhome.data.local.entity.MealsEntity
+import com.example.applicationhome.data.local.entity.OffersEntity
 import com.example.applicationhome.data.local.entity.OrdersDatabaseClass
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.local.entity.SearchFtsEntity
@@ -34,9 +36,11 @@ import com.example.applicationhome.data.local.entity.UserClass
         SearchHistory::class,
         FavoriteMealEntity::class,
         FavoriteSnackEntity::class,
-        FavoriteRestaurantEntity::class
+        FavoriteRestaurantEntity::class,
+        CategoriesEntity::class,
+        OffersEntity::class
     ],
-    version = 49,
+    version = 51,
     exportSchema = false
 )
 
