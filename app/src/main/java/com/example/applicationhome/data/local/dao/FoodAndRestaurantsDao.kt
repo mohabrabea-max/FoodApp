@@ -5,11 +5,16 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.example.applicationhome.data.local.entity.CategoriesEntity
+import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.MealsEntity
 import com.example.applicationhome.data.local.entity.OffersEntity
+import com.example.applicationhome.data.local.entity.RestaurantCategoryCrossRef
+import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.local.entity.SearchHistory
+import com.example.applicationhome.data.local.entity.SnackWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.SnacksEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -28,6 +33,9 @@ interface FoodAndRestaurantsDao {
     suspend fun syncRestaurantsToDatabase(restaurants : List<RestaurantsEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun syncRestaurantCategoryCrossRef(categories : List<RestaurantCategoryCrossRef>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun syncCategoriesToDatabase(categories : List<CategoriesEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -36,20 +44,31 @@ interface FoodAndRestaurantsDao {
 
     //----------------------------------------------------------------\\ Get Data //----------------------------------------------------------------
 
+    @Transaction
     @Query("SELECT * FROM meals_entity WHERE restaurantId = :restaurantId")
-    fun getMealsFromDatabase(restaurantId : Int): Flow<List<MealsEntity>>
+    fun getMealsFromDatabase(restaurantId : Int): Flow<List<MealWithFavoriteStatus>>
 
+    @Transaction
     @Query("SELECT * FROM snacks_entity WHERE restaurantId = :restaurantId")
-    fun getSnacksFromDatabase(restaurantId : Int): Flow<List<SnacksEntity>>
+    fun getSnacksFromDatabase(restaurantId : Int): Flow<List<SnackWithFavoriteStatus>>
 
-    @Query("SELECT * FROM restaurants_entity")
-    fun getAllRestaurantsFromDatabase(): Flow<List<RestaurantsEntity>>
+    @Transaction
+    @Query("""
+            SELECT DISTINCT restaurants_entity.* FROM restaurants_entity
+            LEFT JOIN restaurant_category_cross_ref ON restaurants_entity.id =
+            restaurant_category_cross_ref.restaurantId
+            LEFT JOIN categories_entity ON categories_entity.id = restaurant_category_cross_ref.categoryId
+            WHERE :type = 'All' OR categories_entity.type =:type
+            """)
+    fun getRestaurantsFromDatabaseByCategories(type: String): Flow<List<RestaurantWithFavoriteStatus>>
 
+    @Transaction
     @Query("SELECT * FROM restaurants_entity WHERE id IN (:resIds)")
-    fun getRestaurantsFromDatabaseByIds(resIds : List<Int>): Flow<List<RestaurantsEntity>>
+    fun getRestaurantsFromDatabaseByIds(resIds : List<Int>): Flow<List<RestaurantWithFavoriteStatus>>
 
+    @Transaction
     @Query("SELECT * FROM restaurants_entity WHERE id = :restaurantId")
-    suspend fun getOneRestaurantFromDatabase(restaurantId : Int): RestaurantsEntity
+    suspend fun getOneRestaurantFromDatabase(restaurantId : Int): RestaurantWithFavoriteStatus
 
     @Query("SELECT * FROM categories_entity")
     fun getAllCategoriesFromDatabase(): Flow<List<CategoriesEntity>>
@@ -70,15 +89,17 @@ interface FoodAndRestaurantsDao {
             """)
     fun getSearchSuggestions(searchText: String): Flow<List<String>>
 
+    @Transaction
     @Query("""
         SELECT restaurants_entity.* FROM restaurants_entity 
         JOIN search_fts ON restaurants_entity.id = search_fts.rowid 
         WHERE search_fts MATCH :searchText || '*'
     """)
-    fun getRestaurantSearchResults(searchText: String): PagingSource<Int, RestaurantsEntity>
+    fun getRestaurantSearchResults(searchText: String): PagingSource<Int, RestaurantWithFavoriteStatus>
 
+    @Transaction
     @Query("SELECT * FROM meals_entity WHERE id IN (:mealIds)")
-    suspend fun getTopFiveMealsToView(mealIds: List<Int>): List<MealsEntity>
+    suspend fun getTopFiveMealsToView(mealIds: List<Int>): List<MealWithFavoriteStatus>
 
 
     //----------------------------------------------------------------\\ Search History //----------------------------------------------------------------

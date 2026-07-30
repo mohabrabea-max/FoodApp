@@ -4,8 +4,8 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.applicationhome.data.local.dao.FoodAndRestaurantsDao
-import com.example.applicationhome.data.local.entity.MealsEntity
-import com.example.applicationhome.data.local.entity.RestaurantsEntity
+import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
+import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.SearchHistory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -28,10 +28,10 @@ class SearchRepository @Inject constructor(
     }
 
 
-    fun getRestaurantSearchResults(searchText: String): Flow<PagingData<RestaurantsEntity>>{
+    fun getRestaurantSearchResults(searchText: String): Flow<PagingData<RestaurantWithFavoriteStatus>>{
         return Pager(
             config = PagingConfig(
-                pageSize = 20,         // حجم الدفعة (كل مرة يجيب 20 مطعم)
+                pageSize = 10,         // حجم الدفعة (كل مرة يجيب 20 مطعم)
                 prefetchDistance = 5,  // يبدأ يحمل الصفحة الجاية لما يتبقي 5 كروت بس في السكرول
                 enablePlaceholders = false
             ),
@@ -39,7 +39,7 @@ class SearchRepository @Inject constructor(
         ).flow
     }
 
-    suspend fun getTopFiveMealsToView(mealIds: List<Int>): List<MealsEntity> =
+    suspend fun getTopFiveMealsToView(mealIds: List<Int>): List<MealWithFavoriteStatus> =
         foodAndRestaurantsDao.getTopFiveMealsToView(mealIds)
 
     fun getSearchHistory(userid : String): Flow<List<SearchHistory>> =

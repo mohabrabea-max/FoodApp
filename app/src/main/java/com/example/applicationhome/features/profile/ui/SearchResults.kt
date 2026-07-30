@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.local.entity.MealsEntity
+import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.RestaurantWithFeaturedMeals
 import com.example.applicationhome.features.favorite.ui.MealsBoxForFavoriteScreen
 
@@ -44,7 +44,7 @@ import com.example.applicationhome.features.favorite.ui.MealsBoxForFavoriteScree
 @Composable
 fun SearchResults(
     item : RestaurantWithFeaturedMeals,
-    mealClickable : (MealsEntity) -> Unit = {},
+    mealClickable : (MealWithFavoriteStatus) -> Unit = {},
     restaurantClickable : () -> Unit = {}
 ){
     val interactionSource = remember { MutableInteractionSource() }
@@ -66,7 +66,7 @@ fun SearchResults(
         ){
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current).
-                data(item.restaurant.image).
+                data(item.restaurant.restaurant.image).
                 crossfade(true).
                 precision(Precision.EXACT).
                 build(),
@@ -81,7 +81,7 @@ fun SearchResults(
                 modifier = Modifier.padding(start = 13.dp)
             ){
                 Text(
-                    text = item.restaurant.name,
+                    text = item.restaurant.restaurant.name,
                     fontSize = 18.sp,
                     color = Color.Black,
                     style = MaterialTheme.typography.labelLarge,
@@ -102,7 +102,7 @@ fun SearchResults(
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
-                        text = "${item.restaurant.review}",
+                        text = "${item.restaurant.restaurant.review}",
                         color = Color.Black,
                         fontSize = 14.sp,
                         style = MaterialTheme.typography.labelLarge,
@@ -129,9 +129,9 @@ fun SearchResults(
             items(item.topMeals){ item ->
                 MealsBoxForFavoriteScreen(
                     false,
-                    item.name,
-                    item.image,
-                    item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") },
+                    item.meal.name,
+                    item.meal.image,
+                    item.meal.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") },
                     { mealClickable(item) }
                 )
             }

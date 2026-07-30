@@ -31,7 +31,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.core.ui.components.bars.RestaurantScreenTopBar
@@ -48,6 +47,7 @@ import com.example.applicationhome.data.local.entity.RestaurantsEntity
 fun RestaurantTopBar(
     searchSize : Float,
     item : RestaurantsEntity,
+    isRestaurantInFavorite : Boolean,
     scrollState : LazyListState,
     navigationController : NavHostController,
     restaurantViewModel: RestaurantViewModel,
@@ -62,9 +62,6 @@ fun RestaurantTopBar(
             }
         }
     }
-
-    val favoriteRestaurantsIds by restaurantViewModel.favoriteRestaurantsIds.collectAsStateWithLifecycle()
-    val isRestaurantInFavorite = favoriteRestaurantsIds.contains(item.id)
 
 
     Column{

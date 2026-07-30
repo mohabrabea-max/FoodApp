@@ -15,9 +15,9 @@ import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
-import com.example.applicationhome.data.local.entity.MealsEntity
+import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.OffersEntity
-import com.example.applicationhome.data.local.entity.SnacksEntity
+import com.example.applicationhome.data.local.entity.SnackWithFavoriteStatus
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -55,7 +55,7 @@ class RestaurantViewModel @Inject constructor(
     val typeInRestaurantScreen = itemScreenRepository.typeInRestaurantScreen
 
 
-    private val _foodMenuList : StateFlow<List<MealsEntity>> =
+    private val _foodMenuList : StateFlow<List<MealWithFavoriteStatus>> =
         resid.flatMapLatest { item ->
             restaurantScreenRepository.getMealsFromDatabase(item)
         }.stateIn(
@@ -65,14 +65,14 @@ class RestaurantViewModel @Inject constructor(
         )
 
 
-    val foodMenuList : StateFlow<List<MealsEntity>> = combine(
+    val foodMenuList : StateFlow<List<MealWithFavoriteStatus>> = combine(
         _foodMenuList,
         resid,
         typeInRestaurantScreen
     ) { menuList, resId, type ->
         menuList.filter {
-            it.restaurantId == resId
-                    && it.category == type
+            it.meal.restaurantId == resId
+                    && it.meal.category == type
         }
     }.stateIn(
         scope = viewModelScope,
@@ -80,7 +80,7 @@ class RestaurantViewModel @Inject constructor(
         initialValue = emptyList()
     )
 
-    private val _snackMenuList : StateFlow<List<SnacksEntity>> =
+    private val _snackMenuList : StateFlow<List<SnackWithFavoriteStatus>> =
         resid.flatMapLatest { item ->
             restaurantScreenRepository.getSnacksFromDatabase(item)
         }.stateIn(
@@ -89,11 +89,11 @@ class RestaurantViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    val snackMenuList : StateFlow<List<SnacksEntity>> = combine(
+    val snackMenuList : StateFlow<List<SnackWithFavoriteStatus>> = combine(
         _snackMenuList,
         resid
     ) { menuMap, resId ->
-        menuMap.filter { it.restaurantId == resId }
+        menuMap.filter { it.snack.restaurantId == resId }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -213,14 +213,6 @@ class RestaurantViewModel @Inject constructor(
 
     //       *** ---------------------------- \\***  Favorite  ***// ---------------------------- ***
 
-
-    val favoriteMealsIds = favoriteRepository.favoriteMealsIds
-
-    val favoriteSnacksIds = favoriteRepository.favoriteSnacksIds
-
-    val favoriteRestaurantsIds = favoriteRepository.favoriteRestaurantsIds
-
-
     fun addMealFavorite(food : FavoriteMealEntity){
         viewModelScope.launch {
             getFavoriteUseCase.addMealFavorite(food)
@@ -260,10 +252,10 @@ class RestaurantViewModel @Inject constructor(
     val selectedRestaurant = itemScreenRepository.selectedRestaurant
 
 
-    fun selectMeal(item: MealsEntity, size : String) {
+    fun selectMeal(item: MealWithFavoriteStatus, size : String) {
         itemScreenRepository.selectMeal(item, size)
     }
-    fun selectSnack(item: SnacksEntity, size : String){
+    fun selectSnack(item: SnackWithFavoriteStatus, size : String){
         itemScreenRepository.selectSnack(item, size)
     }
 }

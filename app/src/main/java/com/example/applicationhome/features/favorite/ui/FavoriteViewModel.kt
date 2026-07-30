@@ -12,8 +12,8 @@ import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
-import com.example.applicationhome.data.local.entity.MealsEntity
-import com.example.applicationhome.data.local.entity.SnacksEntity
+import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
+import com.example.applicationhome.data.local.entity.SnackWithFavoriteStatus
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -52,14 +52,6 @@ class FavoriteViewModel @Inject constructor(
     val favoriteSnacksCount = favoriteRepository.favoriteSnacksCount
 
     val favoriteRestaurantsCount = favoriteRepository.favoriteRestaurantsCount
-
-
-    val favoriteMealsIds = favoriteRepository.favoriteMealsIds
-
-    val favoriteSnacksIds = favoriteRepository.favoriteSnacksIds
-
-    val favoriteRestaurantsIds = favoriteRepository.favoriteRestaurantsIds
-
 
     val isNetworkAvailable = MutableStateFlow(false)
 
@@ -204,7 +196,7 @@ class FavoriteViewModel @Inject constructor(
             itemScreenRepository.selectRestaurant(restaurant)
 
             selectedTypeIndex.value = index
-            typeInRestaurantScreen.value = restaurant.typ.toList().first()
+            typeInRestaurantScreen.value = restaurant.restaurant.typ.toList().first()
 
             itemScreenRepository.selectedTypeInRestaurant(selectedTypeIndex.value, typeInRestaurantScreen.value)
 
@@ -212,11 +204,11 @@ class FavoriteViewModel @Inject constructor(
         }
     }
 
-    fun selectItem(item: MealsEntity, size : String) {
+    fun selectItem(item: MealWithFavoriteStatus, size : String) {
         itemScreenRepository.selectMeal(item, size)
     }
 
-    fun selectSnack(item: SnacksEntity, size : String){
+    fun selectSnack(item: SnackWithFavoriteStatus, size : String){
         itemScreenRepository.selectSnack(item, size)
     }
 }

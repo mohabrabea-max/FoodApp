@@ -5,6 +5,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Fts4
+import androidx.room.Junction
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.example.applicationhome.data.data.model.MealSizeDetail
@@ -68,9 +69,18 @@ data class RestaurantsEntity(
     val topFiveMeals : String = ""
 )
 
+@Entity(
+    tableName = "restaurant_category_cross_ref",
+    primaryKeys = ["restaurantId", "categoryId"]
+)
+data class RestaurantCategoryCrossRef(
+    val restaurantId : Int = 0,
+    val categoryId : Int = 0
+)
+
 data class RestaurantWithFeaturedMeals(
-    val restaurant: RestaurantsEntity = RestaurantsEntity(),
-    val topMeals: List<MealsEntity> = emptyList()
+    val restaurant: RestaurantWithFavoriteStatus,
+    val topMeals: List<MealWithFavoriteStatus>
 )
 
 @Entity(tableName = "search_fts")
@@ -150,7 +160,7 @@ data class CartClass(
     tableName = "favorite_meals",
     primaryKeys = ["mealId", "userId"],
     foreignKeys = [
-        ForeignKey(
+        ForeignKey(  //                       الجزء دا لحماية الداتا بيز من اضافة حاجة مش موجودة في MealsEntity
             entity = MealsEntity::class,
             parentColumns = ["id"],
             childColumns = ["mealId"]
@@ -167,13 +177,13 @@ data class FavoriteMealEntity(
 
 data class MealWithFavoriteStatus(
     @Embedded val meal : MealsEntity,
-    @Relation(
+    @Relation(  //                      الجزء دا لربط جدول MealsEntity بجدول FavoriteMealEntity و عرضهم كداتا كلاس MealWithFavoriteStatus
         parentColumn = "id",
         entityColumn = "mealId"
     )
     val favoriteInfo : FavoriteMealEntity?
 ){
-    val isFavorite : Boolean get() = favoriteInfo != null
+    val isFavorite : Boolean get() = favoriteInfo != null && !favoriteInfo.isDeletedOffline
 }
 
 
@@ -206,7 +216,7 @@ data class SnackWithFavoriteStatus(
     )
     val favoriteInfo : FavoriteSnackEntity?
 ){
-    val isFavorite : Boolean get() = favoriteInfo != null
+    val isFavorite : Boolean get() = favoriteInfo != null && !favoriteInfo.isDeletedOffline
 }
 
 
@@ -236,10 +246,22 @@ data class RestaurantWithFavoriteStatus(
         parentColumn = "id",
         entityColumn = "resId"
     )
-    val favoriteInfo : FavoriteRestaurantEntity?
+    val favoriteInfo : FavoriteRestaurantEntity?,
+
+    @Relation(
+        parentColumn = "id",               // id المطعم في جدول المطاعم
+        entityColumn = "id",               // id التصنيف في جدول التصنيفات
+        associateBy = Junction(
+            value = RestaurantCategoryCrossRef::class,
+            parentColumn = "restaurantId",    // عمود المطعم جوه جدول الكوبري
+            entityColumn = "categoryId"       // عمود التصنيف جوه جدول الكوبري
+        )
+    )
+    val categories : List<CategoriesEntity>
 ){
-    val isFavorite : Boolean get() = favoriteInfo != null
+    val isFavorite : Boolean get() = favoriteInfo != null && !favoriteInfo.isDeletedOffline
 }
+
 
 
 @Entity(

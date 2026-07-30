@@ -109,10 +109,6 @@ fun Favorite(
     val favoriteSnacks by favoriteViewModel.favoriteSnacks.collectAsStateWithLifecycle()
     val favoriteRestaurants by favoriteViewModel.favoriteRestaurantsFromDatabase.collectAsStateWithLifecycle()
 
-    val favoriteMealsIds by favoriteViewModel.favoriteMealsIds.collectAsStateWithLifecycle()
-    val favoriteSnacksIds by favoriteViewModel.favoriteSnacksIds.collectAsStateWithLifecycle()
-    val favoriteRestaurantsIds by favoriteViewModel.favoriteRestaurantsIds.collectAsStateWithLifecycle()
-
     val favoriteFoodCount by favoriteViewModel.favoriteFoodCount.collectAsStateWithLifecycle()
     val favoriteRestaurantsCount by favoriteViewModel.favoriteRestaurantsCount.collectAsStateWithLifecycle()
     val favoriteSnacksCount by favoriteViewModel.favoriteSnacksCount.collectAsStateWithLifecycle()
@@ -146,7 +142,7 @@ fun Favorite(
                     item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(146.dp))}
                     if(selectedCategorieInFavoriteScreen == 2 && favoriteRestaurants.isNotEmpty()) {
                         items(favoriteRestaurants) { item ->
-                            val isRestaurantInFavorite = favoriteRestaurantsIds.contains(item.restaurant.id)
+                            val isRestaurantInFavorite = item.isFavorite
 
                             RestaurantsBox(
                                 false,
@@ -180,7 +176,7 @@ fun Favorite(
                     if(selectedCategorieInFavoriteScreen == 1) {
                         item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
                         items(favoriteSnacks) { item ->
-                            val isSnackInFavorite = favoriteSnacksIds.contains(item.snack.id)
+                            val isSnackInFavorite = item.isFavorite
 
                             val size = item.snack.priceANDsize.keys.last()
                             val price = item.snack.priceANDsize.values.last()
@@ -192,7 +188,7 @@ fun Favorite(
                                 item.snack.priceANDsize[size],
                                 {
                                     if (networkState) {
-                                        favoriteViewModel.selectSnack(item.snack, size)
+                                        favoriteViewModel.selectSnack(item, size)
                                         favoriteViewModel.deletenewCount()
                                     } else {
                                         navigationController.navigate(Screens.NoInternetScreen.screen)
@@ -243,7 +239,7 @@ fun Favorite(
                     if(selectedCategorieInFavoriteScreen == 0) {
                         item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
                         items(favoriteMeals) { item ->
-                            val isMealInFavorite = favoriteMealsIds.contains(item.meal.id)
+                            val isMealInFavorite = item.isFavorite
 
                             val size = item.meal.sizeOptions.last().size
 
@@ -254,7 +250,7 @@ fun Favorite(
                                 item.meal.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") },
                                 {
                                     if (networkState) {
-                                        favoriteViewModel.selectItem(item.meal, size)
+                                        favoriteViewModel.selectItem(item, size)
                                         navigationController.navigate(Screens.ItemScreen.screen)
                                         favoriteViewModel.deletenewCount()
                                     }else{

@@ -230,7 +230,7 @@ fun Search(
             }else if(search.text.isNotEmpty() && searchClickable){
                 items(
                     count = searchResults.itemCount,
-                    key = searchResults.itemKey { it.restaurant.id }
+                    key = searchResults.itemKey { it.restaurant.restaurant.id }
                 ){ index ->
                     val item = searchResults[index]
 
@@ -243,7 +243,7 @@ fun Search(
                                 }
                             },
                             restaurantClickable = {
-                                searchViewModel.selectRestaurant(item.restaurant, 0, item.restaurant.typ.toList().first()){
+                                searchViewModel.selectRestaurant(item.restaurant, 0, item.restaurant.restaurant.typ.toList().first()){
                                     navigationController.navigate(Screens.RestaurantScreen.screen)
                                 }
                             }

@@ -29,7 +29,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.AssignmentReturn
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.ShoppingCartCheckout
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
@@ -60,7 +59,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -257,23 +255,6 @@ fun DashboardScreen(
                                 onClick = {
                                     isMenuExpanded = false
                                     navigationController.navigate(Screens.Profile.screen)
-                                }
-                            )
-
-                            DropdownMenuItem(
-                                text = { Text("Settings") },
-                                leadingIcon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
-                                onClick = {
-                                    isMenuExpanded = false
-                                    dashboardNavController.navigate(Screens.Settings.screen){
-                                        popUpTo(dashboardNavController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
-
-                                        launchSingleTop = true
-
-                                        restoreState = true
-                                    }
                                 }
                             )
                         }

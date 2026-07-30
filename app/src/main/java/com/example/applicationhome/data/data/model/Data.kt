@@ -4,43 +4,32 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.google.gson.annotations.SerializedName
 
+data class FoodItem(
+    val id : Int = 0,
+    val category : String = "ALL",
+    val name : String = "",
+    val details : String = "",
+    val image : String = "",
+    @SerializedName("sizes")
+    val sizeOptions : List<MealSizeDetail> = listOf(),
+    var restaurantId : Int = 0,
+    @SerializedName("rating")
+    val review : Double = 0.0,
+    val updatedAt : Long = 0L
+)
 
-sealed interface Food{
-    val id: Int
-    val name : String
-    val details : String
-    val image : String
-    var restaurantId : Int
-    val review : Double
-    val updatedAt : Long
-}
-
-    data class FoodItem(
-        override val id : Int = 0,
-        val category : String = "ALL",
-        override val name : String = "",
-        override val details : String = "",
-        override val image : String = "",
-        @SerializedName("sizes")
-        val sizeOptions : List<MealSizeDetail> = listOf(),
-        override var restaurantId : Int = 0,
-        @SerializedName("rating")
-        override val review : Double = 0.0,
-        override val updatedAt : Long = 0L
-    ): Food
-
-    data class Snack(
-        override val id : Int = 0,
-        override val name : String = "",
-        override val details : String = "",
-        override val image : String = "",
-        @SerializedName("prices")
-        val priceANDsize : Map<String, Double> = emptyMap(),
-        override var restaurantId : Int = 0,
-        @SerializedName("rating")
-        override val review : Double = 0.0,
-        override val updatedAt : Long = 0L
-    ): Food
+data class Snack(
+    val id : Int = 0,
+    val name : String = "",
+    val details : String = "",
+    val image : String = "",
+    @SerializedName("prices")
+    val priceANDsize : Map<String, Double> = emptyMap(),
+    var restaurantId : Int = 0,
+    @SerializedName("rating")
+    val review : Double = 0.0,
+    val updatedAt : Long = 0L
+)
 
 data class Drink(
     val id : Int,
@@ -86,6 +75,7 @@ data class Restaurants(
     val id : Int = 0,
     @SerializedName("types")
     val typ : List<String> = listOf(),
+    val categories : Map<Int, String> = emptyMap(),
     val name : String = "",
     @SerializedName("logo")
     val image : String = "",

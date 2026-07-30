@@ -76,8 +76,6 @@ fun HomeScreen(
     val restaurants by homeScreenViewModel.filterRestaurants.collectAsStateWithLifecycle()
     val offers by homeScreenViewModel.offers.collectAsStateWithLifecycle()
 
-    val favoriteRestaurantsIds by homeScreenViewModel.favoriteRestaurantsIds.collectAsStateWithLifecycle()
-
     val pagerState = rememberPagerState(pageCount = {offers.size})
 
     var viewImageState by remember { mutableStateOf(false) }
@@ -215,30 +213,30 @@ fun HomeScreen(
                     }
 
                     items(restaurants){ item ->
-                        val isRestaurantInFavorite = favoriteRestaurantsIds.contains(item.id)
+                        val isRestaurantInFavorite = item.isFavorite
 
                         RestaurantsBoxHomeScreen(
-                            item,
+                            item.restaurant,
                             isRestaurantInFavorite,
                             {
-                                imageToView = item.image
+                                imageToView = item.restaurant.image
                                 viewImageState = true
                             },
                             {
-                                homeScreenViewModel.selectRestaurant(item){
+                                homeScreenViewModel.selectRestaurant(item.restaurant){
                                     navigationController.navigate(Screens.RestaurantScreen.screen)
                                 }
                             },
                             {
                                 val favoriteRestaurantDatabase = FavoriteRestaurantEntity(
-                                    item.id,
+                                    item.restaurant.id,
                                     userData.id,
                                     false,
                                     false
                                 )
                                 homeScreenViewModel.addRestaurantsFavorite(favoriteRestaurantDatabase)
                             },
-                            { homeScreenViewModel.removeRestaurantsFavorite(item.id) }
+                            { homeScreenViewModel.removeRestaurantsFavorite(item.restaurant.id) }
                         )
                     }
 

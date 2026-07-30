@@ -1,8 +1,8 @@
 package com.example.applicationhome
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -83,10 +83,37 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
             navController = navigationController,
             startDestination = Screens.DashboardScreen.screen,
             modifier = Modifier.fillMaxSize(),
-            enterTransition = { EnterTransition.None },
-            exitTransition = { ExitTransition.None },
-            popEnterTransition = { EnterTransition.None },
-            popExitTransition = { ExitTransition.None }
+
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(300)
+                )
+            },
+
+            // 2. خروج الشاشة الحالية لما تفتح شاشة جديدة فوقها (بتتحرك للشمال)
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(300)
+                )
+            },
+
+            // 3. عودة الشاشة السابقة لما تدوس Back (بتيجي من الشمال لليمن)
+            popEnterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(300)
+                )
+            },
+
+            // 4. خروج الشاشة الحالية عند الضغط على Back (بتسحب لليمين وتختفي)
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(300)
+                )
+            }
         ){
             composable(Screens.DashboardScreen.screen){
                 val userImageViewModel: UserImageViewModel = viewModel()

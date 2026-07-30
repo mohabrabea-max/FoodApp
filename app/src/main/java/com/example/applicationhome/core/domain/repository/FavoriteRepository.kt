@@ -16,7 +16,6 @@ import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
 import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
-import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.local.entity.SnackWithFavoriteStatus
 import com.example.applicationhome.data.remote.FoodAppAPIs
 import com.example.applicationhome.domain.ApplicationScope
@@ -62,14 +61,6 @@ class FavoriteRepository @Inject constructor(
             initialValue = emptyList()
         )
 
-    val favoriteMealsIds = favoriteMeals.map { list ->
-        list.map { it.meal.id }.toSet()
-    }.stateIn(
-        scope = externalScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptySet()
-    )
-
 
     val favoriteSnacks : StateFlow<List<SnackWithFavoriteStatus>> =
         userRepository.userData.flatMapLatest { user ->
@@ -81,14 +72,6 @@ class FavoriteRepository @Inject constructor(
             initialValue = emptyList()
         )
 
-    val favoriteSnacksIds = favoriteSnacks.map { list ->
-        list.map { it.snack.id }.toSet()
-    }.stateIn(
-        scope = externalScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptySet()
-    )
-
 
     val favoriteRestaurantsFromDatabase : StateFlow<List<RestaurantWithFavoriteStatus>> =
         userRepository.userData.flatMapLatest { user ->
@@ -99,14 +82,6 @@ class FavoriteRepository @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
-
-    val favoriteRestaurantsIds = favoriteRestaurantsFromDatabase.map { list ->
-        list.map { it.restaurant.id }.toSet()
-    }.stateIn(
-        scope = externalScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptySet()
-    )
 
 
 // *** ---------------------- \\***  Favorite Count  ***// ---------------------- ***
@@ -300,6 +275,6 @@ class FavoriteRepository @Inject constructor(
     }
 
 
-    suspend fun getRestaurantToView(resId : Int): RestaurantsEntity =
+    suspend fun getRestaurantToView(resId : Int): RestaurantWithFavoriteStatus =
         foodAndRestaurantsDao.getOneRestaurantFromDatabase(resId)
 }

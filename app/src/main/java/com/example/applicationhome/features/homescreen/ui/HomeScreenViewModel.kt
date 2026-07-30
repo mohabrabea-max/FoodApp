@@ -10,17 +10,20 @@ import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
 import com.example.applicationhome.data.local.entity.CategoriesEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.OffersEntity
+import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val itemScreenRepository : ItemScreenRepository,
@@ -39,32 +42,14 @@ class HomeScreenViewModel @Inject constructor(
 
     private val typ = MutableStateFlow("All")
 
-
-    private val _restaurantsMenu : StateFlow<List<RestaurantsEntity>> =
-        homeScreenRepository.getRestaurantsFromDatabase()
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = emptyList()
-            )
-
-
-    val filterRestaurants = combine(
-        _restaurantsMenu,
-        typ
-    ) { restaurants, type ->
-        val restaurantsList = restaurants.toList()
-
-        if (type == "All") {
-            restaurantsList
-        } else {
-            restaurantsList.filter { it.typ.contains(type) }
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+    val filterRestaurants : StateFlow<List<RestaurantWithFavoriteStatus>> =
+        typ.flatMapLatest { type ->
+            homeScreenRepository.getRestaurantsFromDatabase(type)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
 
     val categories : StateFlow<List<CategoriesEntity>> =
@@ -119,8 +104,6 @@ class HomeScreenViewModel @Inject constructor(
 
 
 //       *** ---------------------------- \\***  Favorite  ***// ---------------------------- ***
-
-    val favoriteRestaurantsIds = favoriteRepository.favoriteRestaurantsIds
 
     fun addRestaurantsFavorite(restaurants: FavoriteRestaurantEntity){
         viewModelScope.launch {

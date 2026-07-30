@@ -3,7 +3,7 @@ package com.example.applicationhome.core.domain.repository
 import com.example.applicationhome.data.local.dao.FoodAndRestaurantsDao
 import com.example.applicationhome.data.local.entity.CategoriesEntity
 import com.example.applicationhome.data.local.entity.OffersEntity
-import com.example.applicationhome.data.local.entity.RestaurantsEntity
+import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.domain.ApplicationScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -36,8 +36,8 @@ class HomeScreenRepository @Inject constructor(
 
 
 
-    fun getRestaurantsFromDatabase(): Flow<List<RestaurantsEntity>> =
-        foodAndRestaurantsDao.getAllRestaurantsFromDatabase()
+    fun getRestaurantsFromDatabase(type: String): Flow<List<RestaurantWithFavoriteStatus>> =
+        foodAndRestaurantsDao.getRestaurantsFromDatabaseByCategories(type)
 
     private fun getAllCategoriesFromDatabase() : Flow<List<CategoriesEntity>> =
         foodAndRestaurantsDao.getAllCategoriesFromDatabase()

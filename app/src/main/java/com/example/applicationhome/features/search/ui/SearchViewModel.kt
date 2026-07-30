@@ -15,9 +15,9 @@ import com.example.applicationhome.core.domain.repository.ItemScreenRepository
 import com.example.applicationhome.core.domain.repository.SearchRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.data.local.entity.CategoriesEntity
-import com.example.applicationhome.data.local.entity.MealsEntity
+import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
+import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.RestaurantWithFeaturedMeals
-import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.local.entity.SearchHistory
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -108,7 +108,7 @@ class SearchViewModel @Inject constructor(
             searchRepository.getRestaurantSearchResults(searchText.text)
         }.map { pagingData ->
             pagingData.map { restaurant ->
-                val mealIds = restaurant.topFiveMeals
+                val mealIds = restaurant.restaurant.topFiveMeals
                     .split(",")
                     .mapNotNull { it.trim().toIntOrNull() }
                 val topFiveMeals = if (mealIds.isNotEmpty()){
@@ -199,19 +199,19 @@ class SearchViewModel @Inject constructor(
 
     //       *** ---------------------------- \\***  Item Screen  ***// ---------------------------- ***
 
-    fun selectMeal(item: MealsEntity, navigation : () -> Unit) {
-        val size = item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces", ignoreCase = true) }?.size ?: ""
+    fun selectMeal(item: MealWithFavoriteStatus, navigation : () -> Unit) {
+        val size = item.meal.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces", ignoreCase = true) }?.size ?: ""
 
         itemScreenRepository.selectMeal(item, size)
 
         navigation()
     }
 
-    fun selectRestaurant(item : RestaurantsEntity, index : Int, type : String, navigation : () -> Unit){
+    fun selectRestaurant(item : RestaurantWithFavoriteStatus, index : Int, type : String, navigation : () -> Unit){
         itemScreenRepository.selectRestaurant(item)
 
         viewModelScope.launch {
-            val newData = favoriteRepository.getRestaurantToView(item.id)
+            val newData = favoriteRepository.getRestaurantToView(item.restaurant.id)
 
             itemScreenRepository.selectRestaurant(newData)
 

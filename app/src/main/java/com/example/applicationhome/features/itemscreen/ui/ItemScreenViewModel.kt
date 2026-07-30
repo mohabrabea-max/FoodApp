@@ -3,14 +3,13 @@ package com.example.applicationhome.features.itemscreen.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.core.domain.repository.CartRepository
-import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.ItemScreenRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
 import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.FavoriteMealEntity
-import com.example.applicationhome.data.local.entity.MealsEntity
+import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +18,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ItemScreenViewModel @Inject constructor(
-    private val favoriteRepository : FavoriteRepository,
     val cartRepository: CartRepository,
     private val userRepository: UserRepository,
     private val itemScreenRepository : ItemScreenRepository,
@@ -40,7 +38,7 @@ class ItemScreenViewModel @Inject constructor(
     val snackSize = itemScreenRepository.snackSize
 
 
-    fun selectItem(item: MealsEntity, size : String) {
+    fun selectItem(item: MealWithFavoriteStatus, size : String) {
         itemScreenRepository.selectMeal(item, size)
     }
 
@@ -123,9 +121,6 @@ class ItemScreenViewModel @Inject constructor(
 
 
     //       *** ---------------------------- \\***  Favorite  ***// ---------------------------- ***
-
-    val favoriteMealsIds = favoriteRepository.favoriteMealsIds
-
 
     fun addMealFavorite(food : FavoriteMealEntity){
         viewModelScope.launch {

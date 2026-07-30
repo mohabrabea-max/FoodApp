@@ -7,6 +7,7 @@ import com.example.applicationhome.data.datastore.DataStoreManager
 import com.example.applicationhome.data.local.dao.FoodAndRestaurantsDao
 import com.example.applicationhome.data.local.entity.CategoriesEntity
 import com.example.applicationhome.data.local.entity.OffersEntity
+import com.example.applicationhome.data.local.entity.RestaurantCategoryCrossRef
 import com.example.applicationhome.data.remote.FoodAppAPIs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -91,6 +92,16 @@ class SyncAllDataRepository @Inject constructor(
                     foodAndRestaurantsDao.syncRestaurantsToDatabase(restaurants.values.map { it.restaurantsToRestaurantsEntity() })
                     val newestTimestamp = restaurants.values.maxOfOrNull { it.updatedAt } ?: lastSyncTime
                     dataStoreManager.updateRestaurantsSyncTime(newestTimestamp)
+
+                    val categories : MutableList<RestaurantCategoryCrossRef> = mutableListOf()
+
+                    restaurants.values.forEach { item ->
+                        item.categories.keys.forEach {
+                            categories += RestaurantCategoryCrossRef(item.id, it)
+                        }
+                    }
+
+                    foodAndRestaurantsDao.syncRestaurantCategoryCrossRef(categories)
                 }catch (e: Exception){
 
                 }

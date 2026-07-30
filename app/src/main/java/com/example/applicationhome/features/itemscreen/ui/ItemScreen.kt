@@ -67,14 +67,12 @@ fun ItemScreen(
 
     val newCount by itemScreenViewModel.newCount.collectAsStateWithLifecycle()
 
-    val favoriteMealsIds by itemScreenViewModel.favoriteMealsIds.collectAsStateWithLifecycle()
-
     val scrollState = rememberLazyListState()
 
     val item by itemScreenViewModel.selectedMeal.collectAsStateWithLifecycle()
     val size by itemScreenViewModel.mealSize.collectAsStateWithLifecycle()
 
-    val price = item.sizeOptions.find { it.size == size }?.price ?: 0.0
+    val price = item?.meal?.sizeOptions?.find { it.size == size }?.price ?: 0.0
 
 
     Scaffold(
@@ -93,7 +91,7 @@ fun ItemScreen(
         topBar = {
             ItemScreenTopBar(
                 scrollState,
-                favoriteMealsIds.contains(item.id),
+                item?.isFavorite ?: false,
                 {
                     if (navigationController.previousBackStackEntry != null) {
                         navigationController.popBackStack()
@@ -111,15 +109,15 @@ fun ItemScreen(
                 {
                     val favoriteFoodDatabase =
                         FavoriteMealEntity(
-                            item.id,
+                            item?.meal?.id ?: 0,
                             userData.id,
-                            item.restaurantId,
+                            item?.meal?.restaurantId ?: 0,
                             false,
                             false
                         )
                     itemScreenViewModel.addMealFavorite(favoriteFoodDatabase)
                 },
-                { itemScreenViewModel.removeMealFavorite(item.id) }
+                { itemScreenViewModel.removeMealFavorite(item?.meal?.id ?: 0) }
             )
         }
     ){
@@ -134,7 +132,7 @@ fun ItemScreen(
                         Spacer(modifier = Modifier.height(50.dp))
                         ItemScreenImage(
                             scrollState,
-                            item.image
+                            item?.meal?.image ?: ""
                         )
                     }
                 }
@@ -148,7 +146,7 @@ fun ItemScreen(
                         padding(15.dp)
                     ){
                         Text(
-                            text = item.name,
+                            text = item?.meal?.name ?: "",
                             fontSize = 20.sp,
                             style = MaterialTheme.typography.labelLarge,
                             color = Color.BrownForFont,
@@ -158,7 +156,7 @@ fun ItemScreen(
                         Spacer(modifier = Modifier.height(10.dp))
 
                         Text(
-                            text = item.details,
+                            text = item?.meal?.details ?: "",
                             color = Color.MediumBrownForTitle
                         )
 
@@ -195,7 +193,7 @@ fun ItemScreen(
                             LazyRow {
                                 item{Spacer(modifier = Modifier.width(7.dp))}
                                     item{
-                                        val selectedDetail = item.sizeOptions.find { it.size == size }
+                                        val selectedDetail = item?.meal?.sizeOptions?.find { it.size == size }
                                         selectedDetail?.snack?.forEach { (snakeId, value) ->
                                             SnaksBoxForItemScreen(
                                                 modifier = Modifier.size(170.dp),
@@ -216,23 +214,23 @@ fun ItemScreen(
                         padding(10.dp)
                     ){
                         ItemSize(
-                            item.sizeOptions,
+                            item?.meal?.sizeOptions ?: emptyList(),
                             size
                         ) { selectedSize ->
-                            itemScreenViewModel.selectItem(item, selectedSize)
+                            if(item != null) itemScreenViewModel.selectItem(item!!, selectedSize)
                         }
                     }
                     Spacer(modifier = Modifier.height(10.dp))
 
                     RatingsAndReviews(
-                        item.review
+                        item?.meal?.review ?: 0.0
                     )
                 }
                 item{Spacer(modifier = Modifier.height(150.dp))}
             }
         }
         Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom){
-            val price = item.sizeOptions.find { it.size == size }?.price ?: 0.0
+            val price = item?.meal?.sizeOptions?.find { it.size == size }?.price ?: 0.0
             val totalPrice = newCount * price
             BottomBarForItemScreen(
                 price,
@@ -242,16 +240,16 @@ fun ItemScreen(
                 {
                     val meal = CartItemsClass(
                         userData.id,
-                        "${item.id}_${size}",
-                        item.id,
-                        item.name,
-                        item.category,
+                        "${item?.meal?.id}_${size}",
+                        item?.meal?.id ?: 0,
+                        item?.meal?.name ?: "",
+                        item?.meal?.category ?: "",
                         size,
                         newCount,
                         price,
                         totalPrice,
-                        item.image,
-                        item.restaurantId
+                        item?.meal?.image ?: "",
+                        item?.meal?.restaurantId ?: 0
                     )
 
                     itemScreenViewModel.updateCount(
@@ -259,7 +257,7 @@ fun ItemScreen(
                         size,
                         newCount,
                         cartError = {
-                            if ((item.restaurantId == cartInformation?.restaurantId || cartInformation == null)){
+                            if ((item?.meal?.restaurantId == cartInformation?.restaurantId || cartInformation == null)){
                                 itemScreenViewModel.deletenewCount()
                                 scope.showAddToCartSnackbar(
                                     snackbarHostState,
