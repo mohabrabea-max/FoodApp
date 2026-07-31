@@ -11,7 +11,6 @@ import com.example.applicationhome.data.local.entity.CategoriesEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.OffersEntity
 import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
-import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -83,16 +82,16 @@ class HomeScreenViewModel @Inject constructor(
 
     //       *** ---------------------------- \\***  Item Screen  ***// ---------------------------- ***
 
-    fun selectRestaurant(item : RestaurantsEntity, navigation : () -> Unit){
+    fun selectRestaurant(item : RestaurantWithFavoriteStatus, navigation : () -> Unit){
         viewModelScope.launch {
             try {
-                val newData = favoriteRepository.getRestaurantToView(item.id)
+                val newData = favoriteRepository.getRestaurantToView(item.restaurant.id)
                 itemScreenRepository.selectRestaurant(newData)
             }catch (e : Exception){
                 null
             }
 
-            selectedtype(0, item.typ.toList().first())
+            selectedtype(0, item.categories.first().type)
 
             navigation()
         }

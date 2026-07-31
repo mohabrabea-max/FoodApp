@@ -196,7 +196,7 @@ class FavoriteViewModel @Inject constructor(
             itemScreenRepository.selectRestaurant(restaurant)
 
             selectedTypeIndex.value = index
-            typeInRestaurantScreen.value = restaurant.restaurant.typ.toList().first()
+            typeInRestaurantScreen.value = restaurant.categories.first().type
 
             itemScreenRepository.selectedTypeInRestaurant(selectedTypeIndex.value, typeInRestaurantScreen.value)
 

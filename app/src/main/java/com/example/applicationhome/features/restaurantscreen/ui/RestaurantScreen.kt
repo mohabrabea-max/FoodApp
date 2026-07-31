@@ -80,7 +80,7 @@ fun RestaurantScreen(
 
 
     LaunchedEffect(key1 = resid) {
-        restaurantViewModel.selectedtype(0, selectedRestaurant?.restaurant?.typ?.first() ?: "")
+        restaurantViewModel.selectedtype(0, selectedRestaurant?.categories?.first()?.type ?: "")
     }
 
     val scrollState = rememberLazyListState()
@@ -158,7 +158,7 @@ fun RestaurantScreen(
                 ){
                     item{
                         RestaurantHeader(
-                            item!!.restaurant
+                            item!!
                         ) {
                             imageToView = item!!.restaurant.image
                             viewImageState = true

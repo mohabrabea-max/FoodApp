@@ -34,16 +34,16 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.data.local.entity.RestaurantsEntity
+import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
 
 @Composable
 fun RestaurantHeader(
-    item : RestaurantsEntity?,
+    item : RestaurantWithFavoriteStatus?,
     view: () -> Unit
 ){
-    val background = item?.image2 ?:""
-    val type = item?.typ?.toList()
-    val logo = item?.image ?: ""
+    val background = item?.restaurant?.image2 ?:""
+    val type = item?.categories?.map { it.name }?.toList()
+    val logo = item?.restaurant?.image ?: ""
 
     Box(
         modifier = Modifier.fillMaxWidth().height(270.dp),
@@ -92,7 +92,7 @@ fun RestaurantHeader(
                         modifier = Modifier.padding(start = 13.dp)
                     ){
                         Text(
-                            text = item?.name ?: "",
+                            text = item?.restaurant?.name ?: "",
                             fontSize = 18.sp,
                             color = Color.Black,
                             style = MaterialTheme.typography.labelLarge,
@@ -120,7 +120,7 @@ fun RestaurantHeader(
                                 modifier = Modifier.size(18.dp)
                             )
                             Text(
-                                text = "${item?.review ?: 0.0}",
+                                text = "${item?.restaurant?.review ?: 0.0}",
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 style = MaterialTheme.typography.labelLarge,

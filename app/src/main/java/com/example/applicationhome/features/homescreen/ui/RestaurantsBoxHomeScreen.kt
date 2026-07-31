@@ -43,11 +43,11 @@ import coil.size.Precision
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
 import com.example.applicationhome.core.ui.theme.BrownForFont
 import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.data.local.entity.RestaurantsEntity
+import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
 
 @Composable
 fun RestaurantsBoxHomeScreen(
-    item : RestaurantsEntity,
+    item : RestaurantWithFavoriteStatus,
     isRestaurantInFavorite : Boolean,
     view : () -> Unit,
     clickable : () -> Unit,
@@ -82,12 +82,12 @@ fun RestaurantsBoxHomeScreen(
                 AsyncImage(
                     modifier = Modifier.fillMaxSize(),
                     model = ImageRequest.Builder(LocalContext.current).
-                    data(item.image2).
+                    data(item.restaurant.image2).
                     crossfade(true).
                     size(400, 400).
                     precision(Precision.EXACT).
                     build(),
-                    contentDescription = item.name,
+                    contentDescription = item.restaurant.name,
                     contentScale = ContentScale.Crop
                 )
                 Row(
@@ -134,12 +134,12 @@ fun RestaurantsBoxHomeScreen(
                         AsyncImage(
                             modifier = Modifier.fillMaxSize(),
                             model = ImageRequest.Builder(LocalContext.current).
-                            data(item.image).
+                            data(item.restaurant.image).
                             crossfade(true).
                             size(400, 400).
                             precision(Precision.EXACT).
                             build(),
-                            contentDescription = item.name,
+                            contentDescription = item.restaurant.name,
                             contentScale = ContentScale.Crop
                         )
                     }
@@ -152,7 +152,7 @@ fun RestaurantsBoxHomeScreen(
             horizontalAlignment = Alignment.Start
         ){
             Text(
-                text = item.name,
+                text = item.restaurant.name,
                 fontSize = 18.sp,
                 color = Color.BrownForFont,
                 fontWeight = FontWeight.Bold
@@ -162,10 +162,10 @@ fun RestaurantsBoxHomeScreen(
                 horizontalArrangement = Arrangement.Center
             ){
                 Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFD700) , modifier = Modifier.size(17.dp))
-                Text(text = item.review.toString(), color = Color.Black, fontSize = 15.sp, modifier = Modifier)
+                Text(text = item.restaurant.review.toString(), color = Color.Black, fontSize = 15.sp, modifier = Modifier)
             }
             Text(
-                text = item.typ.joinToString(separator = " - "),
+                text = item.categories.joinToString(separator = " - ") { it.name },
                 fontSize = 13.sp,
                 color = Color.Gray
             )

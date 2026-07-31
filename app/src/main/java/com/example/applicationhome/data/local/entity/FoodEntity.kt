@@ -5,6 +5,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Fts4
+import androidx.room.Index
 import androidx.room.Junction
 import androidx.room.PrimaryKey
 import androidx.room.Relation
@@ -33,7 +34,20 @@ data class OffersEntity(
 )
 
 
-@Entity(tableName = "meals_entity")
+@Entity(
+    tableName = "meals_entity",
+    indices = [
+        Index(value = ["restaurantId"])
+    ],
+    foreignKeys = [
+        ForeignKey(
+            entity = RestaurantsEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["restaurantId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 data class MealsEntity(
     @PrimaryKey val id : Int = 0,
     val category : String = "ALL",
@@ -45,7 +59,20 @@ data class MealsEntity(
     val review : Double = 0.0
 )
 
-@Entity(tableName = "snacks_entity")
+@Entity(
+    tableName = "snacks_entity",
+    indices = [
+        Index(value = ["restaurantId"])
+    ],
+    foreignKeys = [
+        ForeignKey(
+            entity = RestaurantsEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["restaurantId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 data class SnacksEntity(
     @PrimaryKey val id : Int = 0,
     val name : String = "",
@@ -163,7 +190,8 @@ data class CartClass(
         ForeignKey(  //                       الجزء دا لحماية الداتا بيز من اضافة حاجة مش موجودة في MealsEntity
             entity = MealsEntity::class,
             parentColumns = ["id"],
-            childColumns = ["mealId"]
+            childColumns = ["mealId"],
+            onDelete = ForeignKey.CASCADE
         )
     ]
 )
@@ -196,7 +224,8 @@ data class MealWithFavoriteStatus(
         ForeignKey(
             entity = SnacksEntity::class,
             parentColumns = ["id"],
-            childColumns = ["snackId"]
+            childColumns = ["snackId"],
+            onDelete = ForeignKey.CASCADE
         )
     ]
 )
@@ -229,7 +258,8 @@ data class SnackWithFavoriteStatus(
         ForeignKey(
             entity = RestaurantsEntity::class,
             parentColumns = ["id"],
-            childColumns = ["resId"]
+            childColumns = ["resId"],
+            onDelete = ForeignKey.CASCADE
         )
     ]
 )
@@ -257,7 +287,7 @@ data class RestaurantWithFavoriteStatus(
             entityColumn = "categoryId"       // عمود التصنيف جوه جدول الكوبري
         )
     )
-    val categories : List<CategoriesEntity>
+    val categories : List<CategoriesEntity> // هنا مش محتاجين نكتب emptyList() لأن Room تلقائيا لو ملقتش حاجة في categories هترجع emptyList() لوحدها
 ){
     val isFavorite : Boolean get() = favoriteInfo != null && !favoriteInfo.isDeletedOffline
 }

@@ -2,10 +2,9 @@ package com.example.applicationhome.data.local.dao
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Upsert
 import com.example.applicationhome.data.local.entity.CategoriesEntity
 import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.MealsEntity
@@ -23,22 +22,22 @@ interface FoodAndRestaurantsDao {
 
     //----------------------------------------------------------------\\ Sync Data //----------------------------------------------------------------
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun syncMealsToDatabase(meals : List<MealsEntity>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun syncSnacksToDatabase(snacks : List<SnacksEntity>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun syncRestaurantsToDatabase(restaurants : List<RestaurantsEntity>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun syncRestaurantCategoryCrossRef(categories : List<RestaurantCategoryCrossRef>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun syncCategoriesToDatabase(categories : List<CategoriesEntity>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun syncOffersToDatabase(offers : List<OffersEntity>)
 
 
@@ -55,8 +54,7 @@ interface FoodAndRestaurantsDao {
     @Transaction
     @Query("""
             SELECT DISTINCT restaurants_entity.* FROM restaurants_entity
-            LEFT JOIN restaurant_category_cross_ref ON restaurants_entity.id =
-            restaurant_category_cross_ref.restaurantId
+            LEFT JOIN restaurant_category_cross_ref ON restaurants_entity.id = restaurant_category_cross_ref.restaurantId
             LEFT JOIN categories_entity ON categories_entity.id = restaurant_category_cross_ref.categoryId
             WHERE :type = 'All' OR categories_entity.type =:type
             """)
@@ -107,7 +105,7 @@ interface FoodAndRestaurantsDao {
     @Query("SELECT * FROM search_history WHERE userId = :userid")
     fun getSearchHistory(userid : String): Flow<List<SearchHistory>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun addSearchTextToHistory(searchHistory : SearchHistory)
 
     @Query("UPDATE OR REPLACE search_history SET userId = :userId WHERE userId = ''")

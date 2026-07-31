@@ -216,14 +216,14 @@ fun HomeScreen(
                         val isRestaurantInFavorite = item.isFavorite
 
                         RestaurantsBoxHomeScreen(
-                            item.restaurant,
+                            item,
                             isRestaurantInFavorite,
                             {
                                 imageToView = item.restaurant.image
                                 viewImageState = true
                             },
                             {
-                                homeScreenViewModel.selectRestaurant(item.restaurant){
+                                homeScreenViewModel.selectRestaurant(item){
                                     navigationController.navigate(Screens.RestaurantScreen.screen)
                                 }
                             },

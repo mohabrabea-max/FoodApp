@@ -243,7 +243,7 @@ fun Search(
                                 }
                             },
                             restaurantClickable = {
-                                searchViewModel.selectRestaurant(item.restaurant, 0, item.restaurant.restaurant.typ.toList().first()){
+                                searchViewModel.selectRestaurant(item.restaurant, 0, item.restaurant.categories.first().name){
                                     navigationController.navigate(Screens.RestaurantScreen.screen)
                                 }
                             }
