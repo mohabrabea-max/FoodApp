@@ -44,12 +44,12 @@ interface FoodAndRestaurantsDao {
     //----------------------------------------------------------------\\ Get Data //----------------------------------------------------------------
 
     @Transaction
-    @Query("SELECT * FROM meals_entity WHERE restaurantId = :restaurantId")
-    fun getMealsFromDatabase(restaurantId : Int): Flow<List<MealWithFavoriteStatus>>
+    @Query("SELECT * FROM meals_entity WHERE restaurantId = :restaurantId AND category =:type")
+    fun getMealsFromDatabase(restaurantId : Int, type : String): PagingSource<Int, MealWithFavoriteStatus>
 
     @Transaction
     @Query("SELECT * FROM snacks_entity WHERE restaurantId = :restaurantId")
-    fun getSnacksFromDatabase(restaurantId : Int): Flow<List<SnackWithFavoriteStatus>>
+    fun getSnacksFromDatabase(restaurantId : Int): PagingSource<Int, SnackWithFavoriteStatus>
 
     @Transaction
     @Query("""
@@ -58,11 +58,11 @@ interface FoodAndRestaurantsDao {
             LEFT JOIN categories_entity ON categories_entity.id = restaurant_category_cross_ref.categoryId
             WHERE :type = 'All' OR categories_entity.type =:type
             """)
-    fun getRestaurantsFromDatabaseByCategories(type: String): Flow<List<RestaurantWithFavoriteStatus>>
+    fun getRestaurantsFromDatabaseByCategories(type: String): PagingSource<Int, RestaurantWithFavoriteStatus>
 
     @Transaction
     @Query("SELECT * FROM restaurants_entity WHERE id IN (:resIds)")
-    fun getRestaurantsFromDatabaseByIds(resIds : List<Int>): Flow<List<RestaurantWithFavoriteStatus>>
+    fun getRestaurantsFromDatabaseByIds(resIds : List<Int>): PagingSource<Int, RestaurantWithFavoriteStatus>
 
     @Transaction
     @Query("SELECT * FROM restaurants_entity WHERE id = :restaurantId")
@@ -82,7 +82,7 @@ interface FoodAndRestaurantsDao {
 
     @Query("""
             SELECT r.searchKeywords FROM restaurants_entity r
-            JOIN search_fts fts ON r.id = fts.rowid
+            INNER JOIN search_fts fts ON r.id = fts.rowid
             WHERE search_fts MATCH :searchText LIMIT 10
             """)
     fun getSearchSuggestions(searchText: String): Flow<List<String>>
@@ -90,7 +90,7 @@ interface FoodAndRestaurantsDao {
     @Transaction
     @Query("""
         SELECT restaurants_entity.* FROM restaurants_entity 
-        JOIN search_fts ON restaurants_entity.id = search_fts.rowid 
+        INNER JOIN search_fts ON restaurants_entity.id = search_fts.rowid 
         WHERE search_fts MATCH :searchText || '*'
     """)
     fun getRestaurantSearchResults(searchText: String): PagingSource<Int, RestaurantWithFavoriteStatus>

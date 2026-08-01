@@ -2,9 +2,9 @@ package com.example.applicationhome.features.restaurantscreen.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.applicationhome.core.domain.repository.CartRepository
-import com.example.applicationhome.core.domain.repository.FavoriteRepository
-import com.example.applicationhome.core.domain.repository.HomeScreenRepository
 import com.example.applicationhome.core.domain.repository.ItemScreenRepository
 import com.example.applicationhome.core.domain.repository.RestaurantScreenRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
@@ -21,6 +21,7 @@ import com.example.applicationhome.data.local.entity.SnackWithFavoriteStatus
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -34,10 +35,8 @@ import javax.inject.Inject
 @HiltViewModel
 class RestaurantViewModel @Inject constructor(
     private val networkObserver: NetworkObserver,
-    homeScreenRepository: HomeScreenRepository,
     cartRepository: CartRepository,
     private val restaurantScreenRepository : RestaurantScreenRepository,
-    private val favoriteRepository: FavoriteRepository,
     private val userRepository: UserRepository,
     private val itemScreenRepository : ItemScreenRepository,
     private val cartUseCase : CartUseCase,
@@ -54,51 +53,19 @@ class RestaurantViewModel @Inject constructor(
     val selectedTypeIndex = itemScreenRepository.selectedTypeIndex
     val typeInRestaurantScreen = itemScreenRepository.typeInRestaurantScreen
 
-
-    private val _foodMenuList : StateFlow<List<MealWithFavoriteStatus>> =
-        resid.flatMapLatest { item ->
-            restaurantScreenRepository.getMealsFromDatabase(item)
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
-
-
-    val foodMenuList : StateFlow<List<MealWithFavoriteStatus>> = combine(
-        _foodMenuList,
+    val foodMenuList : Flow<PagingData<MealWithFavoriteStatus>> = combine(
         resid,
         typeInRestaurantScreen
-    ) { menuList, resId, type ->
-        menuList.filter {
-            it.meal.restaurantId == resId
-                    && it.meal.category == type
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+    ) { resId, type ->
+        Pair(resId, type)
+    }.flatMapLatest { (resId, type) ->
+        restaurantScreenRepository.getMealsFromDatabase(resId, type)
+    }.cachedIn(viewModelScope)
 
-    private val _snackMenuList : StateFlow<List<SnackWithFavoriteStatus>> =
-        resid.flatMapLatest { item ->
-            restaurantScreenRepository.getSnacksFromDatabase(item)
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
-
-    val snackMenuList : StateFlow<List<SnackWithFavoriteStatus>> = combine(
-        _snackMenuList,
-        resid
-    ) { menuMap, resId ->
-        menuMap.filter { it.snack.restaurantId == resId }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+    val snackMenuList : Flow<PagingData<SnackWithFavoriteStatus>> =
+        resid.flatMapLatest { resId ->
+            restaurantScreenRepository.getSnacksFromDatabase(resId)
+        }.cachedIn(viewModelScope)
 
     private val _drinkMenuMap = MutableStateFlow<Map<String, Drink>>(emptyMap())
 
@@ -128,6 +95,7 @@ class RestaurantViewModel @Inject constructor(
 
 
     init {
+        println(selectedTypeIndex.value)
         viewModelScope.launch {
             networkObserver.isNetworkAvailable.collect { available ->
                 isNetworkAvailable.value = available

@@ -234,7 +234,7 @@ fun Search(
                 ){ index ->
                     val item = searchResults[index]
 
-                    if(item != null){
+                    item?.let{
                         SearchResults(
                             item,
                             mealClickable = { item ->

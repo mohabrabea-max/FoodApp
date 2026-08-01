@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,6 +47,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
@@ -73,7 +74,7 @@ fun HomeScreen(
     val categorySelected by homeScreenViewModel.selected.collectAsStateWithLifecycle()
 
     val userData by homeScreenViewModel.userData.collectAsStateWithLifecycle()
-    val restaurants by homeScreenViewModel.filterRestaurants.collectAsStateWithLifecycle()
+    val restaurants = homeScreenViewModel.filterRestaurants.collectAsLazyPagingItems()
     val offers by homeScreenViewModel.offers.collectAsStateWithLifecycle()
 
     val pagerState = rememberPagerState(pageCount = {offers.size})
@@ -212,32 +213,39 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(20.dp))
                     }
 
-                    items(restaurants){ item ->
-                        val isRestaurantInFavorite = item.isFavorite
+                    items(
+                        count = restaurants.itemCount,
+                        key = restaurants.itemKey { it.restaurant.id }
+                    ){ index ->
+                        val item = restaurants[index]
 
-                        RestaurantsBoxHomeScreen(
-                            item,
-                            isRestaurantInFavorite,
-                            {
-                                imageToView = item.restaurant.image
-                                viewImageState = true
-                            },
-                            {
-                                homeScreenViewModel.selectRestaurant(item){
-                                    navigationController.navigate(Screens.RestaurantScreen.screen)
-                                }
-                            },
-                            {
-                                val favoriteRestaurantDatabase = FavoriteRestaurantEntity(
-                                    item.restaurant.id,
-                                    userData.id,
-                                    false,
-                                    false
-                                )
-                                homeScreenViewModel.addRestaurantsFavorite(favoriteRestaurantDatabase)
-                            },
-                            { homeScreenViewModel.removeRestaurantsFavorite(item.restaurant.id) }
-                        )
+                        item?.let {
+                            val isRestaurantInFavorite = item.isFavorite
+
+                            RestaurantsBoxHomeScreen(
+                                item,
+                                isRestaurantInFavorite,
+                                {
+                                    imageToView = item.restaurant.image
+                                    viewImageState = true
+                                },
+                                {
+                                    homeScreenViewModel.selectRestaurant(item){
+                                        navigationController.navigate(Screens.RestaurantScreen.screen)
+                                    }
+                                },
+                                {
+                                    val favoriteRestaurantDatabase = FavoriteRestaurantEntity(
+                                        item.restaurant.id,
+                                        userData.id,
+                                        false,
+                                        false
+                                    )
+                                    homeScreenViewModel.addRestaurantsFavorite(favoriteRestaurantDatabase)
+                                },
+                                { homeScreenViewModel.removeRestaurantsFavorite(item.restaurant.id) }
+                            )
+                        }
                     }
 
                     item{ Spacer(modifier = Modifier.height(16.dp)) }

@@ -1,5 +1,8 @@
 package com.example.applicationhome.core.domain.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.example.applicationhome.data.local.dao.FoodAndRestaurantsDao
 import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.OffersEntity
@@ -12,11 +15,29 @@ import javax.inject.Singleton
 class RestaurantScreenRepository @Inject constructor(
     private val foodAndRestaurantsDao : FoodAndRestaurantsDao
 ) {
-    fun getMealsFromDatabase(resId : Int): Flow<List<MealWithFavoriteStatus>> =
-        foodAndRestaurantsDao.getMealsFromDatabase(resId)
+    fun getMealsFromDatabase(resId : Int, type : String): Flow<PagingData<MealWithFavoriteStatus>> =
+        Pager(
+            config = PagingConfig(
+                pageSize = 10,
+                prefetchDistance = 3,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                foodAndRestaurantsDao.getMealsFromDatabase(resId, type)
+            }
+        ).flow
 
-    fun getSnacksFromDatabase(resId : Int): Flow<List<SnackWithFavoriteStatus>> =
-        foodAndRestaurantsDao.getSnacksFromDatabase(resId)
+    fun getSnacksFromDatabase(resId : Int): Flow<PagingData<SnackWithFavoriteStatus>> =
+        Pager(
+            config = PagingConfig(
+                pageSize = 10,
+                prefetchDistance = 3,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                foodAndRestaurantsDao.getSnacksFromDatabase(resId)
+            }
+        ).flow
 
     fun getRestaurantOffersFromDatabase(resId : Int): Flow<List<OffersEntity>> =
         foodAndRestaurantsDao.getRestaurantOffersFromDatabase(resId)

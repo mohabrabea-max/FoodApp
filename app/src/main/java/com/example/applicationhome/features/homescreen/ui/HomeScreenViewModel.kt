@@ -2,6 +2,8 @@ package com.example.applicationhome.features.homescreen.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.HomeScreenRepository
 import com.example.applicationhome.core.domain.repository.ItemScreenRepository
@@ -14,6 +16,7 @@ import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatu
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -41,21 +44,22 @@ class HomeScreenViewModel @Inject constructor(
 
     private val typ = MutableStateFlow("All")
 
-    val filterRestaurants : StateFlow<List<RestaurantWithFavoriteStatus>> =
+    val filterRestaurants : Flow<PagingData<RestaurantWithFavoriteStatus>> =
         typ.flatMapLatest { type ->
             homeScreenRepository.getRestaurantsFromDatabase(type)
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+        }.cachedIn(viewModelScope)
 
 
     val categories : StateFlow<List<CategoriesEntity>> =
         homeScreenRepository.categoriesFromDatabase
 
     val offers : StateFlow<List<OffersEntity>> =
-        homeScreenRepository.offersFromDatabase
+        homeScreenRepository.getAllOffersFromDatabase()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList()
+            )
 
 
     val isNetworkAvailable = MutableStateFlow(true)
@@ -91,7 +95,7 @@ class HomeScreenViewModel @Inject constructor(
                 null
             }
 
-            selectedtype(0, item.categories.first().type)
+            selectedtype(0, item.restaurant.typ.first())
 
             navigation()
         }
