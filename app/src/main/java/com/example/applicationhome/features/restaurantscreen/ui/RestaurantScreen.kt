@@ -26,7 +26,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +43,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -54,12 +54,15 @@ import com.example.applicationhome.core.domain.model.snacksEntityToCartItemsClas
 import com.example.applicationhome.core.ui.components.forCart.AlertDialogMessage
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.AddBox
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
+import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.ItemsFullBottomSheet
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.MealBoxIcon
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.RestaurantButton
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.core.ui.theme.screens.NoInternetScreen
+import com.example.applicationhome.data.data.model.BottomSheetActions
+import com.example.applicationhome.data.data.model.BottomSheetItem
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
@@ -75,15 +78,6 @@ fun RestaurantScreen(
     val scope = rememberCoroutineScope()
 
     var activeId by remember { mutableStateOf(0) }
-
-    val resid by restaurantViewModel.resid.collectAsStateWithLifecycle()
-
-    val selectedRestaurant by restaurantViewModel.selectedRestaurant.collectAsStateWithLifecycle()
-
-
-    LaunchedEffect(key1 = resid) {
-        restaurantViewModel.selectedtype(0, selectedRestaurant?.categories?.first()?.type ?: "")
-    }
 
     val scrollState = rememberLazyListState()
 
@@ -115,10 +109,12 @@ fun RestaurantScreen(
     val menu = restaurantViewModel.foodMenuList.collectAsLazyPagingItems()
     val snacks = restaurantViewModel.snackMenuList.collectAsLazyPagingItems()
     val offers by restaurantViewModel.restaurantOffersMenuList.collectAsStateWithLifecycle()
-    val item by restaurantViewModel.selectedRestaurant.collectAsStateWithLifecycle()
+    val uiState by restaurantViewModel.uiState.collectAsStateWithLifecycle()
 
     val totalNumber by restaurantViewModel.totalNumber.collectAsStateWithLifecycle()
     val totalPrice by restaurantViewModel.totalPrice.collectAsStateWithLifecycle()
+
+    val newCount by restaurantViewModel.newCount.collectAsStateWithLifecycle()
 
     val cartItems by restaurantViewModel.cartItems.collectAsStateWithLifecycle()
     val cartInformation by restaurantViewModel.cartInformation.collectAsStateWithLifecycle()
@@ -128,7 +124,47 @@ fun RestaurantScreen(
     val typeInRestaurantScreen by restaurantViewModel.typeInRestaurantScreen.collectAsStateWithLifecycle()
     val selectedTypeIndex by restaurantViewModel.selectedTypeIndex.collectAsStateWithLifecycle()
 
-    if(item != null){
+    val mealSize by restaurantViewModel.mealSize.collectAsStateWithLifecycle()
+
+    val bottomSheetActions =
+        BottomSheetActions(
+            navigation = { screenItem ->
+                if(screenItem == Screens.Search){
+                    navigationController.navigate(screenItem.screen) {
+                        popUpTo(navigationController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }else{
+                    navigationController.navigate(screenItem.screen) {
+                        launchSingleTop = true
+                    }
+                }
+            },
+            addFavorite = {
+                restaurantViewModel.addItemInBottomSheetToFavorite()
+            },
+            removeFavorite = {
+                restaurantViewModel.removeItemInBottomSheetToFavorite()
+            },
+            selectSize = {
+                restaurantViewModel.selectSize(it)
+            },
+            updateCount = { food , size , newCount ->
+                restaurantViewModel.updateCount(food, size, newCount)
+            },
+            clearAndStartNewCart = { restaurantViewModel.clearAndStartNewCart(it) },
+            minusnewCount = { restaurantViewModel.minusnewCount() },
+            plusnewCount = { restaurantViewModel.plusnewCount() },
+            deletenewCount = { restaurantViewModel.deletenewCount() },
+            alertDialogFalse = { restaurantViewModel.alertDialogFalse() },
+            closeBottomSheet = { restaurantViewModel.closeBottomSheet() }
+        )
+
+
+    if(networkState){
         Scaffold(
             modifier = Modifier.navigationBarsPadding().fillMaxSize(),
             snackbarHost = {
@@ -144,8 +180,8 @@ fun RestaurantScreen(
             topBar = {
                 RestaurantTopBar(
                     searchSize,
-                    item!!.restaurant,
-                    item!!.isFavorite,
+                    uiState.restaurantData.restaurant,
+                    uiState.restaurantData.isFavorite,
                     scrollState,
                     navigationController,
                     restaurantViewModel,
@@ -160,9 +196,9 @@ fun RestaurantScreen(
                 ){
                     item{
                         RestaurantHeader(
-                            item!!
+                            uiState.restaurantData
                         ) {
-                            imageToView = item!!.restaurant.image
+                            imageToView = uiState.restaurantData.restaurant.image
                             viewImageState = true
                         }
                     }
@@ -211,7 +247,7 @@ fun RestaurantScreen(
                             )
                         ){
                             CategoriesBarForRestaurantsScreen(
-                                item!!.restaurant.typ,
+                                uiState.restaurantData.restaurant.typ,
                                 selectedTypeIndex
                             ) { index, size ->
                                 restaurantViewModel.selectedtype(index, size)
@@ -242,7 +278,7 @@ fun RestaurantScreen(
                                     item.snack.image,
                                     2.5f,
                                     {
-                                        restaurantViewModel.selectSnack(item, size)
+                                        restaurantViewModel.selectSnack(BottomSheetItem.SnackItem(item), size)
 
                                     },
                                     {
@@ -315,7 +351,6 @@ fun RestaurantScreen(
                                     2.2f,
                                     {
                                         restaurantViewModel.selectMeal(item, size)
-                                        navigationController.navigate(Screens.ItemScreen.screen)
                                     },
                                     {
                                         Favorite(
@@ -367,7 +402,6 @@ fun RestaurantScreen(
                                     2.2f,
                                     {
                                         restaurantViewModel.selectMeal(item, size)
-                                        navigationController.navigate(Screens.ItemScreen.screen)
                                     },
                                     {
                                         Favorite(
@@ -401,7 +435,7 @@ fun RestaurantScreen(
                     item{Spacer(modifier = Modifier.height(100.dp))}
                 }
 
-                if(restaurantId == resid && cartItems.isNotEmpty()){
+                if(restaurantId == uiState.restaurantData.restaurant.id && cartItems.isNotEmpty()){
                     Column(modifier = Modifier.align(Alignment.BottomCenter)){
                         Box(contentAlignment = Alignment.Center){
                             RestaurantButton(
@@ -413,19 +447,19 @@ fun RestaurantScreen(
                     }
                 }
 
-                if(errorInCart.first && errorInCart.second.isEmpty()){
+                if(errorInCart.first && errorInCart.second == "Error In Restaurant"){
                     AlertDialogMessage(
                         "Start a new cart?",
                         "A new order will clear your cart with '${restaurantName ?: ""}'",
                         "Start",
                         {
-                            restaurantViewModel.clearAndStartNewCart(1)
+                            restaurantViewModel.clearAndStartNewCart(newCount)
                             restaurantViewModel.alertDialogFalse()
                         },
                         "Cancel",
                         { restaurantViewModel.alertDialogFalse() }
                     )
-                }else if(errorInCart.first){
+                }else if(errorInCart.first && errorInCart.second == "User Id Is Empty"){
                     AlertDialogMessage(
                         "Sign in required!",
                         "Please sign in or create an account to add items to your cart and proceed with your order.",
@@ -447,6 +481,16 @@ fun RestaurantScreen(
                         viewImageState = false
                     }
                 }
+            }
+
+            uiState.bottomSheetItem?.let { item ->
+                ItemsFullBottomSheet(
+                    item,
+                    mealSize,
+                    bottomSheetActions,
+                    userData,
+                    newCount
+                )
             }
         }
     }else{

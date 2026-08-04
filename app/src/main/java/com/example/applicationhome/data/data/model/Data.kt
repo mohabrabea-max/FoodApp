@@ -2,6 +2,10 @@ package com.example.applicationhome.data.data.model
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.applicationhome.data.local.entity.CartItemsClass
+import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
+import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
+import com.example.applicationhome.data.local.entity.SnackWithFavoriteStatus
 import com.google.gson.annotations.SerializedName
 
 data class FoodItem(
@@ -205,4 +209,88 @@ data class OrdersClass(
     val restaurantName : String = "",
     val restaurantImage : String = "",
     val restaurantId : Int = 0
+)
+
+
+sealed interface BottomSheetItem {
+    val id : Int
+    val name : String
+    val details : String
+    val image : String
+    val sizes : Map<String, Double>
+    val restaurantId : Int
+    val review : Double
+    val isFavorite : Boolean
+
+    data class MealItem(val meal : MealWithFavoriteStatus?) : BottomSheetItem{
+        override val id: Int
+            get() = meal?.meal?.id ?: 0
+
+        override val name: String
+            get() = meal?.meal?.name ?: ""
+
+        override val details: String
+            get() = meal?.meal?.details ?: ""
+
+        override val image: String
+            get() = meal?.meal?.image ?: ""
+
+        override val sizes: Map<String, Double>
+            get() = meal?.meal?.sizeOptions?.associate { it.size to it.price } ?: emptyMap()
+
+        override val restaurantId: Int
+            get() = meal?.meal?.restaurantId ?: 0
+
+        override val review: Double
+            get() = meal?.meal?.review ?: 0.0
+
+        override val isFavorite: Boolean
+            get() = meal?.isFavorite ?: false
+    }
+
+    data class SnackItem(val snack : SnackWithFavoriteStatus?) : BottomSheetItem{
+        override val id: Int
+            get() = snack?.snack?.id ?: 0
+
+        override val name: String
+            get() = snack?.snack?.name ?: ""
+
+        override val details: String
+            get() = snack?.snack?.details ?: ""
+
+        override val image: String
+            get() = snack?.snack?.image ?: ""
+
+        override val sizes: Map<String, Double>
+            get() = snack?.snack?.priceANDsize ?: emptyMap()
+
+        override val restaurantId: Int
+            get() = snack?.snack?.restaurantId ?: 0
+
+        override val review: Double
+            get() = snack?.snack?.review ?: 0.0
+
+        override val isFavorite: Boolean
+            get() = snack?.isFavorite ?: false
+    }
+}
+
+data class RestaurantUiState(
+    val restaurantData : RestaurantWithFavoriteStatus = RestaurantWithFavoriteStatus(),
+    val bottomSheetItem : BottomSheetItem? = null
+
+)
+
+data class BottomSheetActions(
+    val navigation : (Screens) -> Unit,
+    val addFavorite : () -> Unit,
+    val removeFavorite : () -> Unit,
+    val selectSize : (String) -> Unit,
+    val updateCount : (food : CartItemsClass, size : String, newCount : Int) -> Unit,
+    val clearAndStartNewCart : (Int) -> Unit,
+    val minusnewCount : () -> Unit,
+    val plusnewCount : () -> Unit,
+    val deletenewCount : () -> Unit,
+    val alertDialogFalse : () -> Unit,
+    val closeBottomSheet : () -> Unit
 )

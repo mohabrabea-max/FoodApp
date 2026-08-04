@@ -25,11 +25,10 @@ import androidx.compose.ui.unit.dp
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.core.ui.theme.Orange
-import com.example.applicationhome.data.data.model.MealSizeDetail
 
 @Composable
 fun ItemSize(
-    mealSizeDetail : List<MealSizeDetail>,
+    mealSizeDetail : List<String>,
     size : String,
     selectMeal : (String) -> Unit
 ){
@@ -45,22 +44,22 @@ fun ItemSize(
         contentAlignment = Alignment.Center
     ){
         Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-            mealSizeDetail.forEach{ (size2) ->
+            mealSizeDetail.forEach{ item ->
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
                         .clickable{
-                            selectMeal(size2)
+                            selectMeal(item)
                         },
                     contentAlignment = Alignment.Center
                 ){
-                    val isSelected = (size == size2)
+                    val isSelected = (size == item)
                     val color = if(isSelected) Color.Orange else Color.White
                     val fontColor = if(isSelected) Color.Black else Color.DarkOrange
 
                     Box(modifier = Modifier.fillMaxSize().background(color), contentAlignment = Alignment.Center){
-                        Text(text = size2, color = fontColor)
+                        Text(text = item, color = fontColor)
                     }
                 }
                 VerticalDivider(color = Color.MediumBrownForTitle, modifier = Modifier.height(30.dp))

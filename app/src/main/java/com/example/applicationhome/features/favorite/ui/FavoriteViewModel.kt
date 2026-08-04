@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.ItemScreenRepository
+import com.example.applicationhome.core.domain.repository.RestaurantScreenRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
 import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
@@ -12,8 +13,6 @@ import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
-import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
-import com.example.applicationhome.data.local.entity.SnackWithFavoriteStatus
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +28,7 @@ class FavoriteViewModel @Inject constructor(
     private val userRepository : UserRepository,
     private val favoriteRepository : FavoriteRepository,
     private val itemScreenRepository : ItemScreenRepository,
+    private val restaurantScreenRepository : RestaurantScreenRepository,
     private val cartUseCase : CartUseCase,
     private val getFavoriteUseCase : GetFavoriteUseCase,
     private val networkObserver : NetworkObserver
@@ -177,38 +177,5 @@ class FavoriteViewModel @Inject constructor(
 
     fun alertDialogFalse(){
         errorInCart.value = Pair(false,"")
-    }
-
-
-    //       *** ---------------------------- \\***  Item Screen  ***// ---------------------------- ***
-
-    val typeInRestaurantScreen = MutableStateFlow("")
-    val selectedTypeIndex = MutableStateFlow(0)
-
-    fun selectedTypeInFavoriteScreen(
-        index : Int,
-        restaurantId : Int,
-        navigation : () -> Unit
-        ){
-        viewModelScope.launch {
-            val restaurant = favoriteRepository.getRestaurantToView(restaurantId)
-
-            itemScreenRepository.selectRestaurant(restaurant)
-
-            selectedTypeIndex.value = index
-            typeInRestaurantScreen.value = restaurant.categories.first().type
-
-            itemScreenRepository.selectedTypeInRestaurant(selectedTypeIndex.value, typeInRestaurantScreen.value)
-
-            navigation()
-        }
-    }
-
-    fun selectItem(item: MealWithFavoriteStatus, size : String) {
-        itemScreenRepository.selectMeal(item, size)
-    }
-
-    fun selectSnack(item: SnackWithFavoriteStatus, size : String){
-        itemScreenRepository.selectSnack(item, size)
     }
 }

@@ -154,12 +154,7 @@ fun Favorite(
                                 },
                                 {
                                     if (networkState) {
-                                        favoriteViewModel.selectedTypeInFavoriteScreen(
-                                            0,
-                                            item.restaurant.id
-                                        ) {
-                                            navigationController.navigate(Screens.RestaurantScreen.screen)
-                                        }
+                                        navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.restaurant.id))
                                     }else{
                                         navigationController.navigate(Screens.NoInternetScreen.screen)
                                     }
@@ -188,7 +183,7 @@ fun Favorite(
                                 item.snack.priceANDsize[size],
                                 {
                                     if (networkState) {
-                                        favoriteViewModel.selectSnack(item, size)
+                                        navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.snack.restaurantId, mealId = item.snack.id))
                                         favoriteViewModel.deletenewCount()
                                     } else {
                                         navigationController.navigate(Screens.NoInternetScreen.screen)
@@ -250,8 +245,7 @@ fun Favorite(
                                 item.meal.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") },
                                 {
                                     if (networkState) {
-                                        favoriteViewModel.selectItem(item, size)
-                                        navigationController.navigate(Screens.ItemScreen.screen)
+                                        navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.meal.restaurantId, mealId = item.meal.id))
                                         favoriteViewModel.deletenewCount()
                                     }else{
                                         navigationController.navigate(Screens.NoInternetScreen.screen)
@@ -306,7 +300,7 @@ fun Favorite(
         }
 
 
-        if(errorInCart.first && errorInCart.second.isEmpty()){
+        if(errorInCart.first && errorInCart.second == "Error In Restaurant"){
             AlertDialogMessage(
                 "Start a new cart?",
                 "A new order will clear your cart with '${restaurantName ?: ""}'",
@@ -318,7 +312,7 @@ fun Favorite(
                 "Cancel",
                 { favoriteViewModel.alertDialogFalse() }
             )
-        }else if(errorInCart.first){
+        }else if(errorInCart.first && errorInCart.second == "User Id Is Empty"){
             AlertDialogMessage(
                 "Sign in required!",
                 "Please sign in or create an account to add items to your cart and proceed with your order.",

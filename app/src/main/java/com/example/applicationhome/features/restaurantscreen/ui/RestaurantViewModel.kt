@@ -1,16 +1,18 @@
 package com.example.applicationhome.features.restaurantscreen.ui
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.applicationhome.core.domain.repository.CartRepository
-import com.example.applicationhome.core.domain.repository.ItemScreenRepository
 import com.example.applicationhome.core.domain.repository.RestaurantScreenRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
 import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
+import com.example.applicationhome.data.data.model.BottomSheetItem
 import com.example.applicationhome.data.data.model.Drink
+import com.example.applicationhome.data.data.model.RestaurantUiState
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
@@ -20,25 +22,28 @@ import com.example.applicationhome.data.local.entity.OffersEntity
 import com.example.applicationhome.data.local.entity.SnackWithFavoriteStatus
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class RestaurantViewModel @Inject constructor(
-    private val networkObserver: NetworkObserver,
-    cartRepository: CartRepository,
+    savedStateHandle : SavedStateHandle,
+    private val networkObserver : NetworkObserver,
+    cartRepository : CartRepository,
     private val restaurantScreenRepository : RestaurantScreenRepository,
-    private val userRepository: UserRepository,
-    private val itemScreenRepository : ItemScreenRepository,
+    private val userRepository : UserRepository,
     private val cartUseCase : CartUseCase,
     private val getFavoriteUseCase : GetFavoriteUseCase
 ): ViewModel(){
@@ -48,13 +53,18 @@ class RestaurantViewModel @Inject constructor(
 
 //    *** ---------------------------- \\***  Restaurant Items  ***// ---------------------------- ***
 
-    val resid = itemScreenRepository.resId
+    private val _resId = MutableStateFlow(0)
 
-    val selectedTypeIndex = itemScreenRepository.selectedTypeIndex
-    val typeInRestaurantScreen = itemScreenRepository.typeInRestaurantScreen
+    private val _selectedTypeIndex = MutableStateFlow(0)
+    val selectedTypeIndex : StateFlow<Int> = _selectedTypeIndex.asStateFlow()
+    private val _typeInRestaurantScreen = MutableStateFlow("")
+    val typeInRestaurantScreen : StateFlow<String> = _typeInRestaurantScreen.asStateFlow()
+
+    private val _mealSize = MutableStateFlow("")
+    val mealSize : StateFlow<String> = _mealSize.asStateFlow()
 
     val foodMenuList : Flow<PagingData<MealWithFavoriteStatus>> = combine(
-        resid,
+        _resId,
         typeInRestaurantScreen
     ) { resId, type ->
         Pair(resId, type)
@@ -63,7 +73,7 @@ class RestaurantViewModel @Inject constructor(
     }.cachedIn(viewModelScope)
 
     val snackMenuList : Flow<PagingData<SnackWithFavoriteStatus>> =
-        resid.flatMapLatest { resId ->
+        _resId.flatMapLatest { resId ->
             restaurantScreenRepository.getSnacksFromDatabase(resId)
         }.cachedIn(viewModelScope)
 
@@ -71,7 +81,7 @@ class RestaurantViewModel @Inject constructor(
 
     val drinkMenuList = combine(
         _drinkMenuMap,
-        resid
+        _resId
     ) { menuMap, resId ->
         menuMap.filter { it.value.restaurantId == resId }.values
     }.stateIn(
@@ -82,7 +92,7 @@ class RestaurantViewModel @Inject constructor(
 
 
     val restaurantOffersMenuList : StateFlow<List<OffersEntity>> =
-        resid.flatMapLatest{ id ->
+        _resId.flatMapLatest{ id ->
             restaurantScreenRepository.getRestaurantOffersFromDatabase(id)
         }.stateIn(
             scope = viewModelScope,
@@ -93,9 +103,17 @@ class RestaurantViewModel @Inject constructor(
 
     val isNetworkAvailable = MutableStateFlow(false)
 
+    private val _uiState = MutableStateFlow(RestaurantUiState())
+    val uiState = _uiState.asStateFlow()
+
 
     init {
-        println(selectedTypeIndex.value)
+        _resId.value = checkNotNull(savedStateHandle["restaurantId"])
+        val mealIdString : String? = savedStateHandle["mealId"]
+        val mealId : Int? = mealIdString?.toIntOrNull()
+
+        loadRestaurantDetails(_resId.value, mealId)
+
         viewModelScope.launch {
             networkObserver.isNetworkAvailable.collect { available ->
                 isNetworkAvailable.value = available
@@ -104,8 +122,64 @@ class RestaurantViewModel @Inject constructor(
     }
 
 
+    private fun loadRestaurantDetails(restaurantId : Int, mealId : Int?){
+        viewModelScope.launch {
+            val restaurant = restaurantScreenRepository.getRestaurantByIdFromDatabase(restaurantId)
+
+            val food = mealId?.let {
+                restaurantScreenRepository.getMealByIdFromDatabase(it)
+            }
+
+            _uiState.update {
+                it.copy(
+                    restaurantData = restaurant,
+                    bottomSheetItem = food?.let { meal -> BottomSheetItem.MealItem(meal) }
+                )
+            }
+
+            restaurant.restaurant.typ.firstOrNull()?.let { firstType ->
+                selectedtype(0, firstType)
+            }
+        }
+    }
+
     fun selectedtype(index : Int, type : String){
-        itemScreenRepository.selectedTypeInRestaurant(index, type)
+        _selectedTypeIndex.value = index
+        _typeInRestaurantScreen.value = type
+    }
+
+    fun selectMeal(item : MealWithFavoriteStatus, size : String){
+        _uiState.update {
+            it.copy(
+                bottomSheetItem = BottomSheetItem.MealItem(item)
+            )
+        }
+        _mealSize.value = size
+    }
+
+    fun selectSnack(snack : BottomSheetItem.SnackItem, size : String){
+        _uiState.update {
+            it.copy(
+                bottomSheetItem = snack
+            )
+        }
+        _mealSize.value = size
+    }
+
+    fun selectSize(size : String){
+        _mealSize.value = size
+    }
+
+    fun closeBottomSheet(){
+        _uiState.update {
+            it.copy(
+                bottomSheetItem = null
+            )
+        }
+
+        _mealSize.value = ""
+
+        deletenewCount()
     }
 
 
@@ -124,6 +198,8 @@ class RestaurantViewModel @Inject constructor(
     val newFoodInCart = MutableStateFlow<CartItemsClass?>(null)
     val newFoodInCartSize = MutableStateFlow<String?>(null)
 
+    val newCount = MutableStateFlow(0)
+
 
     fun plus(food: CartItemsClass, size : String){
         viewModelScope.launch {
@@ -137,6 +213,25 @@ class RestaurantViewModel @Inject constructor(
                     newFoodInCartSize.value = state.first
                     newFoodInCart.value = state.second
                 }
+            }
+        }
+    }
+
+    fun updateCount(food : CartItemsClass, size : String, newCount : Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val userId = userRepository.userData.value.id
+            val state = cartUseCase.updateCount(userId, food, size, newCount)
+            if(state != null){
+                if(state.first == "User Id Is Empty"){
+                    alertDialogTrue(Pair(true, "User Id Is Empty"))
+                }else{
+                    alertDialogTrue(Pair(true, "Error In Restaurant"))
+                    newFoodInCartSize.value = state.first
+                    newFoodInCart.value = state.second
+                }
+            }else{
+                closeBottomSheet()
+                deletenewCount()
             }
         }
     }
@@ -157,6 +252,8 @@ class RestaurantViewModel @Inject constructor(
 
             if(finally && newFood != null && newSize != null){
                 cartUseCase.updateCount(userId, newFood, newSize, count)
+                closeBottomSheet()
+                deletenewCount()
                 newFoodInCart.value = null
                 newFoodInCartSize.value = null
             }
@@ -178,8 +275,67 @@ class RestaurantViewModel @Inject constructor(
         errorInCart.value = Pair(false,"")
     }
 
+    fun plusnewCount(){
+        newCount.value += 1
+    }
+
+    fun minusnewCount(){
+        newCount.value -= 1
+    }
+
+    fun deletenewCount(){
+        newCount.value = 0
+    }
+
 
     //       *** ---------------------------- \\***  Favorite  ***// ---------------------------- ***
+
+    fun addItemInBottomSheetToFavorite(){
+        viewModelScope.launch {
+            when(_uiState.value.bottomSheetItem){
+                is BottomSheetItem.MealItem -> {
+                    val favoriteMealEntity = FavoriteMealEntity(
+                        _uiState.value.bottomSheetItem?.id ?: 0,
+                        userData.value.id,
+                        _uiState.value.bottomSheetItem?.restaurantId ?: 0,
+                        false,
+                        false
+                    )
+                    addMealFavorite(favoriteMealEntity)
+                }
+
+                is BottomSheetItem.SnackItem -> {
+                    val favoriteSnackEntity = FavoriteSnackEntity(
+                        _uiState.value.bottomSheetItem?.id ?: 0,
+                        userData.value.id,
+                        _uiState.value.bottomSheetItem?.restaurantId ?: 0,
+                        false,
+                        false
+                    )
+                    addSnackFavorite(favoriteSnackEntity)
+                }
+
+                else -> {}
+            }
+        }
+    }
+
+    fun removeItemInBottomSheetToFavorite(){
+        viewModelScope.launch {
+            when(_uiState.value.bottomSheetItem){
+                is BottomSheetItem.MealItem -> {
+                    removeMealFavorite(_uiState.value.bottomSheetItem?.id ?: 0)
+                }
+
+                is BottomSheetItem.SnackItem -> {
+                    removeSnackFavorite(_uiState.value.bottomSheetItem?.id ?: 0)
+                }
+
+                else -> {}
+            }
+        }
+    }
+
 
     fun addMealFavorite(food : FavoriteMealEntity){
         viewModelScope.launch {
@@ -212,18 +368,5 @@ class RestaurantViewModel @Inject constructor(
         viewModelScope.launch {
             getFavoriteUseCase.removeRestaurantsFavorite(resId)
         }
-    }
-
-
-    //       *** ---------------------------- \\***  Item Screen  ***// ---------------------------- ***
-
-    val selectedRestaurant = itemScreenRepository.selectedRestaurant
-
-
-    fun selectMeal(item: MealWithFavoriteStatus, size : String) {
-        itemScreenRepository.selectMeal(item, size)
-    }
-    fun selectSnack(item: SnackWithFavoriteStatus, size : String){
-        itemScreenRepository.selectSnack(item, size)
     }
 }

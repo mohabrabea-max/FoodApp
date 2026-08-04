@@ -31,10 +31,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showNetworkSnackBar
 import com.example.applicationhome.core.ui.theme.model.FinalScreenViewModel
 import com.example.applicationhome.core.ui.theme.model.UserImageViewModel
@@ -45,8 +47,6 @@ import com.example.applicationhome.features.cart.ui.Cart
 import com.example.applicationhome.features.cart.ui.CartViewModel
 import com.example.applicationhome.features.confirmorder.ui.ConfirmOrderScreen
 import com.example.applicationhome.features.confirmorder.ui.ConfirmOrderScreenViewModel
-import com.example.applicationhome.features.itemscreen.ui.ItemScreen
-import com.example.applicationhome.features.itemscreen.ui.ItemScreenViewModel
 import com.example.applicationhome.features.login.ui.LoginScreen
 import com.example.applicationhome.features.login.ui.LoginViewModel
 import com.example.applicationhome.features.orders.ui.OrderScreenViewModel
@@ -139,7 +139,19 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
                 )
             }
 
-            composable(Screens.RestaurantScreen.screen){
+            composable(
+                route = Screens.RestaurantScreen.screen,
+                arguments = listOf(
+                    navArgument("restaurantId"){
+                        type = NavType.IntType
+                    },
+                    navArgument("mealId"){
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    }
+                )
+            ){
                 val restaurantViewModel: RestaurantViewModel = hiltViewModel()
                 RestaurantScreen(
                     navigationController,
@@ -147,13 +159,13 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
                 )
             }
 
-            composable(Screens.ItemScreen.screen){
-                val itemScreenViewModel: ItemScreenViewModel = hiltViewModel()
-                ItemScreen(
-                    navigationController,
-                    itemScreenViewModel
-                )
-            }
+//            composable(Screens.ItemScreen.screen){
+//                val itemScreenViewModel: ItemScreenViewModel = hiltViewModel()
+//                ItemScreen(
+//                    navigationController,
+//                    itemScreenViewModel
+//                )
+//            }
 
             composable(Screens.Notifications.screen){
                 Notifications()

@@ -220,19 +220,17 @@ fun HomeScreen(
                         val item = restaurants[index]
 
                         item?.let {
-                            val isRestaurantInFavorite = item.isFavorite
-
                             RestaurantsBoxHomeScreen(
                                 item,
-                                isRestaurantInFavorite,
+                                item.isFavorite,
                                 {
                                     imageToView = item.restaurant.image
                                     viewImageState = true
                                 },
                                 {
-                                    homeScreenViewModel.selectRestaurant(item){
-                                        navigationController.navigate(Screens.RestaurantScreen.screen)
-                                    }
+                                    navigationController.navigate(
+                                        Screens.RestaurantScreen.createRoute(restaurantId = item.restaurant.id)
+                                    )
                                 },
                                 {
                                     val favoriteRestaurantDatabase = FavoriteRestaurantEntity(

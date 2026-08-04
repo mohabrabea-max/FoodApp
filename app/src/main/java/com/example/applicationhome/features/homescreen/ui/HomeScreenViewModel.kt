@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.HomeScreenRepository
 import com.example.applicationhome.core.domain.repository.ItemScreenRepository
+import com.example.applicationhome.core.domain.repository.RestaurantScreenRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
 import com.example.applicationhome.data.local.entity.CategoriesEntity
@@ -29,8 +29,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val itemScreenRepository : ItemScreenRepository,
-    private val favoriteRepository : FavoriteRepository,
     private val homeScreenRepository : HomeScreenRepository,
+    private val restaurantScreenRepository : RestaurantScreenRepository,
     userRepository: UserRepository,
     private val getFavoriteUseCase : GetFavoriteUseCase,
     private val networkObserver : NetworkObserver
@@ -81,28 +81,6 @@ class HomeScreenViewModel @Inject constructor(
     fun unSelected(){
         selected.value = 0
         typ.value = "All"
-    }
-
-
-    //       *** ---------------------------- \\***  Item Screen  ***// ---------------------------- ***
-
-    fun selectRestaurant(item : RestaurantWithFavoriteStatus, navigation : () -> Unit){
-        viewModelScope.launch {
-            try {
-                val newData = favoriteRepository.getRestaurantToView(item.restaurant.id)
-                itemScreenRepository.selectRestaurant(newData)
-            }catch (e : Exception){
-                null
-            }
-
-            selectedtype(0, item.restaurant.typ.first())
-
-            navigation()
-        }
-    }
-
-    private fun selectedtype(index : Int, type : String){
-        itemScreenRepository.selectedTypeInRestaurant(index, type)
     }
 
 

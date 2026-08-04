@@ -9,14 +9,12 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.example.applicationhome.core.domain.repository.CartRepository
-import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.HomeScreenRepository
 import com.example.applicationhome.core.domain.repository.ItemScreenRepository
+import com.example.applicationhome.core.domain.repository.RestaurantScreenRepository
 import com.example.applicationhome.core.domain.repository.SearchRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.data.local.entity.CategoriesEntity
-import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
-import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.RestaurantWithFeaturedMeals
 import com.example.applicationhome.data.local.entity.SearchHistory
 import com.example.applicationhome.data.remote.NetworkObserver
@@ -41,12 +39,12 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val cartRepository : CartRepository,
+    cartRepository : CartRepository,
     private val searchRepository : SearchRepository,
     private val itemScreenRepository : ItemScreenRepository,
-    private val favoriteRepository : FavoriteRepository,
-    private val homeScreenRepository : HomeScreenRepository,
-    private val userRepository: UserRepository,
+    homeScreenRepository : HomeScreenRepository,
+    private val restaurantScreenRepository : RestaurantScreenRepository,
+    userRepository: UserRepository,
     private val networkObserver : NetworkObserver
 ): ViewModel() {
 
@@ -194,34 +192,5 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             searchRepository.deleteFromSearchHistory(searchTitle)
         }
-    }
-
-
-    //       *** ---------------------------- \\***  Item Screen  ***// ---------------------------- ***
-
-    fun selectMeal(item: MealWithFavoriteStatus, navigation : () -> Unit) {
-        val size = item.meal.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces", ignoreCase = true) }?.size ?: ""
-
-        itemScreenRepository.selectMeal(item, size)
-
-        navigation()
-    }
-
-    fun selectRestaurant(item : RestaurantWithFavoriteStatus, index : Int, type : String, navigation : () -> Unit){
-        itemScreenRepository.selectRestaurant(item)
-
-        viewModelScope.launch {
-            val newData = favoriteRepository.getRestaurantToView(item.restaurant.id)
-
-            itemScreenRepository.selectRestaurant(newData)
-
-            selectedtype(index, type)
-
-            navigation()
-        }
-    }
-
-    private fun selectedtype(index : Int, type : String){
-        itemScreenRepository.selectedTypeInRestaurant(index, type)
     }
 }

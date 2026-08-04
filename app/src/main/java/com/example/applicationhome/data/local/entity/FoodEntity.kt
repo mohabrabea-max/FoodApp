@@ -55,7 +55,7 @@ data class MealsEntity(
     val details : String = "",
     val image : String = "",
     val sizeOptions : List<MealSizeDetail> = listOf(),
-    var restaurantId : Int = 0,
+    val restaurantId : Int = 0,
     val review : Double = 0.0
 )
 
@@ -79,7 +79,7 @@ data class SnacksEntity(
     val details : String = "",
     val image : String = "",
     val priceANDsize : Map<String, Double> = emptyMap(),
-    var restaurantId : Int = 0,
+    val restaurantId : Int = 0,
     val review : Double = 0.0
 )
 
@@ -271,12 +271,12 @@ data class FavoriteRestaurantEntity(
 )
 
 data class RestaurantWithFavoriteStatus(
-    @Embedded val restaurant : RestaurantsEntity,
+    @Embedded val restaurant : RestaurantsEntity = RestaurantsEntity(),
     @Relation(
         parentColumn = "id",
         entityColumn = "resId"
     )
-    val favoriteInfo : FavoriteRestaurantEntity?,
+    val favoriteInfo : FavoriteRestaurantEntity? = null,
 
     @Relation(
         parentColumn = "id",               // id المطعم في جدول المطاعم
@@ -287,7 +287,7 @@ data class RestaurantWithFavoriteStatus(
             entityColumn = "categoryId"       // عمود التصنيف جوه جدول الكوبري
         )
     )
-    val categories : List<CategoriesEntity> // هنا مش محتاجين نكتب emptyList() لأن Room تلقائيا لو ملقتش حاجة في categories هترجع emptyList() لوحدها
+    val categories : List<CategoriesEntity> = emptyList() // هنا مش محتاجين نكتب emptyList() لأن Room تلقائيا لو ملقتش حاجة في categories هترجع emptyList() لوحدها
 ){
     val isFavorite : Boolean get() = favoriteInfo != null && !favoriteInfo.isDeletedOffline
 }

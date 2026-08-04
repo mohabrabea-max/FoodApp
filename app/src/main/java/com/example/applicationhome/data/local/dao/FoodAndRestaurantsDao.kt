@@ -48,6 +48,10 @@ interface FoodAndRestaurantsDao {
     fun getMealsFromDatabase(restaurantId : Int, type : String): PagingSource<Int, MealWithFavoriteStatus>
 
     @Transaction
+    @Query("SELECT * FROM meals_entity WHERE id = :mealId")
+    fun getOneMealFromDatabase(mealId : Int) : MealWithFavoriteStatus
+
+    @Transaction
     @Query("SELECT * FROM snacks_entity WHERE restaurantId = :restaurantId")
     fun getSnacksFromDatabase(restaurantId : Int): PagingSource<Int, SnackWithFavoriteStatus>
 

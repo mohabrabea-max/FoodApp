@@ -238,14 +238,10 @@ fun Search(
                         SearchResults(
                             item,
                             mealClickable = { item ->
-                                searchViewModel.selectMeal(item){
-                                    navigationController.navigate(Screens.ItemScreen.screen)
-                                }
+                                navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.meal.restaurantId, mealId = item.meal.id))
                             },
                             restaurantClickable = {
-                                searchViewModel.selectRestaurant(item.restaurant, 0, item.restaurant.categories.first().name){
-                                    navigationController.navigate(Screens.RestaurantScreen.screen)
-                                }
+                                navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.restaurant.restaurant.id))
                             }
                         )
                     }

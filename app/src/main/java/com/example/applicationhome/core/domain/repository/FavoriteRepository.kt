@@ -273,8 +273,4 @@ class FavoriteRepository @Inject constructor(
             launch { favoriteDao.addGuestRestaurantsFavoriteToUser(userId) }
         }
     }
-
-
-    suspend fun getRestaurantToView(resId : Int): RestaurantWithFavoriteStatus =
-        foodAndRestaurantsDao.getOneRestaurantFromDatabase(resId)
 }
