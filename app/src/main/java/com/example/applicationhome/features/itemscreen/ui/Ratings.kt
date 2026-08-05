@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -25,8 +26,8 @@ import com.example.applicationhome.core.ui.theme.DarkOrange
 
 @Composable
 fun Ratings(){
-    Column(                             // البوكس بتاع التقييمات
-        modifier = Modifier.fillMaxWidth(),
+    Column(
+        modifier = Modifier.padding(start = 10.dp).fillMaxWidth(),
         horizontalAlignment = Alignment.Start
     ){
         Spacer(modifier = Modifier.height(10.dp))

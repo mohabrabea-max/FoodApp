@@ -3,8 +3,8 @@ package com.example.applicationhome.features.itemscreen.ui
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -132,14 +130,15 @@ fun ItemsFullBottomSheet(
                             style = MaterialTheme.typography.labelLarge,
                             color = Color.BrownForFont,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(start = 15.dp, bottom = 15.dp)
+                            modifier = Modifier.padding(start = 5.dp, bottom = 15.dp)
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(10.dp))
-
                     when(bottomSheetItem){
                         is BottomSheetItem.MealItem -> {
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
                             Column(
                                 modifier = Modifier.
                                 shadow(elevation = 10.dp, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(20.dp)).
@@ -147,6 +146,7 @@ fun ItemsFullBottomSheet(
                                 background(Color.White)
                             ){
                                 Spacer(modifier = Modifier.height(15.dp))
+
                                 Text(
                                     text = "Meal snacks",
                                     fontSize = 16.sp,
@@ -155,42 +155,61 @@ fun ItemsFullBottomSheet(
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier.padding(start = 15.dp)
                                 )
-                                Spacer(modifier = Modifier.height(5.dp))
-                                LazyRow {
-                                    item{Spacer(modifier = Modifier.width(7.dp))}
-                                    item{
-                                        val selectedDetail = bottomSheetItem.meal?.meal?.sizeOptions?.find { it.size == size }
-                                        selectedDetail?.snack?.forEach { (snakeId, value) ->
-                                            SnaksBoxForItemScreen(
-                                                modifier = Modifier.size(170.dp),
-                                                value
-                                            )
-                                        }
+
+                                FlowRow(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 15.dp, vertical = 10.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                                ){
+                                    val selectedDetail = bottomSheetItem.meal?.meal?.sizeOptions?.find { it.size == size }
+                                    selectedDetail?.snack?.forEach { (snakeId, value) ->
+                                        SnaksBoxForItemScreen(
+                                            modifier = Modifier.size(160.dp),
+                                            value
+                                        )
                                     }
-                                    item{Spacer(modifier = Modifier.width(7.dp))}
                                 }
                             }
                         }
+
                         is BottomSheetItem.SnackItem -> {}
                     }
 
+                    if(bottomSheetItem.sizes.size > 1){
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
-                    Box(
-                        modifier = Modifier.
-                        shadow(elevation = 10.dp, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(20.dp)).
-                        fillMaxWidth().
-                        background(Color.White).
-                        padding(10.dp)
-                    ){
-                        if(size != null) ItemSize(
-                            bottomSheetItem.sizes.keys.toList(),
-                            size
-                        ) { selectedSize ->
-                            actions.selectSize(selectedSize)
+                        Column(
+                            modifier = Modifier.
+                            shadow(elevation = 10.dp, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(20.dp)).
+                            fillMaxWidth().
+                            background(Color.White).
+                            padding(10.dp)
+                        ){
+                            Spacer(modifier = Modifier.height(5.dp))
+
+                            Text(
+                                text = "Sizes",
+                                fontSize = 16.sp,
+                                color = Color.Black,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(start = 5.dp)
+                            )
+
+                            Spacer(modifier = Modifier.height(5.dp))
+
+                            ItemSize(
+                                bottomSheetItem.sizes.keys.toList(),
+                                size
+                            ) { selectedSize ->
+                                actions.selectSize(selectedSize)
+                            }
                         }
                     }
+
                     Spacer(modifier = Modifier.height(10.dp))
 
                     RatingsAndReviews(
