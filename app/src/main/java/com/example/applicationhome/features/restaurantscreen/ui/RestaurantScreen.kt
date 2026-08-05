@@ -54,7 +54,7 @@ import com.example.applicationhome.core.domain.model.snacksEntityToCartItemsClas
 import com.example.applicationhome.core.ui.components.forCart.AlertDialogMessage
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.AddBox
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
-import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.ItemsFullBottomSheet
+import com.example.applicationhome.features.itemscreen.ui.ItemsFullBottomSheet
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.MealBoxIcon
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.RestaurantButton
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.RestaurantImageView
@@ -62,7 +62,6 @@ import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.core.ui.theme.screens.NoInternetScreen
 import com.example.applicationhome.data.data.model.BottomSheetActions
-import com.example.applicationhome.data.data.model.BottomSheetItem
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
@@ -278,7 +277,7 @@ fun RestaurantScreen(
                                     item.snack.image,
                                     2.5f,
                                     {
-                                        restaurantViewModel.selectSnack(BottomSheetItem.SnackItem(item), size)
+                                        restaurantViewModel.selectSnack(item.snack.id, size)
 
                                     },
                                     {
@@ -350,7 +349,7 @@ fun RestaurantScreen(
                                     item.meal.image,
                                     2.2f,
                                     {
-                                        restaurantViewModel.selectMeal(item, size)
+                                        restaurantViewModel.selectMeal(item.meal.id, size)
                                     },
                                     {
                                         Favorite(
@@ -401,7 +400,7 @@ fun RestaurantScreen(
                                     item.meal.image,
                                     2.2f,
                                     {
-                                        restaurantViewModel.selectMeal(item, size)
+                                        restaurantViewModel.selectMeal(item.meal.id, size)
                                     },
                                     {
                                         Favorite(
@@ -435,7 +434,7 @@ fun RestaurantScreen(
                     item{Spacer(modifier = Modifier.height(100.dp))}
                 }
 
-                if(restaurantId == uiState.restaurantData.restaurant.id && cartItems.isNotEmpty()){
+                if(restaurantId == uiState.restaurantData!!.restaurant.id && cartItems.isNotEmpty()){
                     Column(modifier = Modifier.align(Alignment.BottomCenter)){
                         Box(contentAlignment = Alignment.Center){
                             RestaurantButton(

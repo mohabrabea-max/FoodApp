@@ -7,14 +7,15 @@ sealed class Screens (val screen : String){
     data object Settings : Screens("settings")
     data object Notifications : Screens("notifications")
     data object Search : Screens("search")
-    data object RestaurantScreen : Screens("restaurantscreen/{restaurantId}?mealId={mealId}") {
-        fun createRoute(restaurantId: Int, mealId: Int? = null): String {
-            return if(mealId != null){
-                "restaurantscreen/$restaurantId?mealId=$mealId"
-            }else{
-                "restaurantscreen/$restaurantId"
-            }
-        }
+    data object RestaurantScreen : Screens("restaurantscreen/{restaurantId}?mealId={mealId}&snackId={snackId}") {
+        fun createRoute(restaurantId: Int): String =
+            "restaurantscreen/$restaurantId"
+
+        fun createRouteWithMeal(restaurantId: Int, mealId: Int): String =
+            "restaurantscreen/$restaurantId?mealId=$mealId"
+
+        fun createRouteWithSnack(restaurantId: Int, snackId: Int): String =
+            "restaurantscreen/$restaurantId?snackId=$snackId"
     }
     data object Cart : Screens("cart")
     data object Favorite : Screens("favorite")

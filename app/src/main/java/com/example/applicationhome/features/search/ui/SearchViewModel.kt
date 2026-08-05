@@ -10,8 +10,6 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.HomeScreenRepository
-import com.example.applicationhome.core.domain.repository.ItemScreenRepository
-import com.example.applicationhome.core.domain.repository.RestaurantScreenRepository
 import com.example.applicationhome.core.domain.repository.SearchRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.data.local.entity.CategoriesEntity
@@ -41,9 +39,7 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     cartRepository : CartRepository,
     private val searchRepository : SearchRepository,
-    private val itemScreenRepository : ItemScreenRepository,
     homeScreenRepository : HomeScreenRepository,
-    private val restaurantScreenRepository : RestaurantScreenRepository,
     userRepository: UserRepository,
     private val networkObserver : NetworkObserver
 ): ViewModel() {

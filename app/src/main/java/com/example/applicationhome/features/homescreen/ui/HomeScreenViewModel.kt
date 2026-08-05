@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.applicationhome.core.domain.repository.HomeScreenRepository
-import com.example.applicationhome.core.domain.repository.ItemScreenRepository
-import com.example.applicationhome.core.domain.repository.RestaurantScreenRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
 import com.example.applicationhome.data.local.entity.CategoriesEntity
@@ -28,9 +26,7 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val itemScreenRepository : ItemScreenRepository,
     private val homeScreenRepository : HomeScreenRepository,
-    private val restaurantScreenRepository : RestaurantScreenRepository,
     userRepository: UserRepository,
     private val getFavoriteUseCase : GetFavoriteUseCase,
     private val networkObserver : NetworkObserver

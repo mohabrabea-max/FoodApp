@@ -30,7 +30,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -106,13 +110,43 @@ class RestaurantViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(RestaurantUiState())
     val uiState = _uiState.asStateFlow()
 
+    private val _mealId = MutableStateFlow<Int?>(null)
+    private val _snackId = MutableStateFlow<Int?>(null)
+
 
     init {
         _resId.value = checkNotNull(savedStateHandle["restaurantId"])
         val mealIdString : String? = savedStateHandle["mealId"]
         val mealId : Int? = mealIdString?.toIntOrNull()
 
-        loadRestaurantDetails(_resId.value, mealId)
+        val snackIdString : String? = savedStateHandle["snackId"]
+        val snackId : Int? = snackIdString?.toIntOrNull()
+
+        loadRestaurantDetails(_resId.value, mealId, snackId)
+
+        viewModelScope.launch {
+            combine(_mealId, _snackId) { meal, snack ->
+                Pair(meal, snack)
+            }.flatMapLatest { (meal, snack) ->
+                when {
+                    meal != null -> {
+                        restaurantScreenRepository.getMealByIdFromDatabase(meal)
+                            .map {  BottomSheetItem.MealItem(it) }
+                    }
+                    snack != null -> {
+                        restaurantScreenRepository.getSnackByIdFromDatabase(snack)
+                            .map {  BottomSheetItem.SnackItem(it) }
+                    }
+                    else -> flowOf(null)
+                }
+            }.collect { item ->
+                _uiState.update {
+                    it.copy(
+                        bottomSheetItem = item
+                    )
+                }
+            }
+        }
 
         viewModelScope.launch {
             networkObserver.isNetworkAvailable.collect { available ->
@@ -122,23 +156,41 @@ class RestaurantViewModel @Inject constructor(
     }
 
 
-    private fun loadRestaurantDetails(restaurantId : Int, mealId : Int?){
+    private fun loadRestaurantDetails(restaurantId : Int, mealId : Int?, snackId : Int?){
         viewModelScope.launch {
-            val restaurant = restaurantScreenRepository.getRestaurantByIdFromDatabase(restaurantId)
+            val foodFlow : Flow<BottomSheetItem?> =
+                when{
+                    mealId != null -> {
+                        restaurantScreenRepository.getMealByIdFromDatabase(mealId)
+                            .map { BottomSheetItem.MealItem(it) }
+                    }
+                    snackId != null -> {
+                        restaurantScreenRepository.getSnackByIdFromDatabase(snackId)
+                            .map { BottomSheetItem.SnackItem(it) }
+                    }
+                    else -> flowOf(null)
+                }
 
-            val food = mealId?.let {
-                restaurantScreenRepository.getMealByIdFromDatabase(it)
+            val restaurantFlow = restaurantScreenRepository.getRestaurantByIdFromDatabase(restaurantId)
+                .filterNotNull()
+
+            launch {
+                restaurantFlow.first().restaurant.typ.firstOrNull()?.let { firstType ->
+                    selectedtype(0, firstType)
+                }
             }
 
-            _uiState.update {
-                it.copy(
-                    restaurantData = restaurant,
-                    bottomSheetItem = food?.let { meal -> BottomSheetItem.MealItem(meal) }
-                )
-            }
+            combine(foodFlow, restaurantFlow) { food, res ->
+                Pair(food, res)
+            }.collect { (meal, restaurant) ->
+                _uiState.update {
+                    it.copy(
+                        restaurantData = restaurant,
+                        bottomSheetItem = meal
+                    )
+                }
 
-            restaurant.restaurant.typ.firstOrNull()?.let { firstType ->
-                selectedtype(0, firstType)
+                selectSize(meal?.sizes?.keys?.last() ?: "")
             }
         }
     }
@@ -148,21 +200,13 @@ class RestaurantViewModel @Inject constructor(
         _typeInRestaurantScreen.value = type
     }
 
-    fun selectMeal(item : MealWithFavoriteStatus, size : String){
-        _uiState.update {
-            it.copy(
-                bottomSheetItem = BottomSheetItem.MealItem(item)
-            )
-        }
+    fun selectMeal(id : Int, size : String){
+        _mealId.value = id
         _mealSize.value = size
     }
 
-    fun selectSnack(snack : BottomSheetItem.SnackItem, size : String){
-        _uiState.update {
-            it.copy(
-                bottomSheetItem = snack
-            )
-        }
+    fun selectSnack(id : Int, size : String){
+        _snackId.value = id
         _mealSize.value = size
     }
 
@@ -171,6 +215,9 @@ class RestaurantViewModel @Inject constructor(
     }
 
     fun closeBottomSheet(){
+        _mealId.value = null
+        _snackId.value = null
+
         _uiState.update {
             it.copy(
                 bottomSheetItem = null

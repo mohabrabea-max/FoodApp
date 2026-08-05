@@ -16,11 +16,14 @@ import javax.inject.Singleton
 class RestaurantScreenRepository @Inject constructor(
     private val foodAndRestaurantsDao : FoodAndRestaurantsDao
 ) {
-    suspend fun getRestaurantByIdFromDatabase(resId : Int): RestaurantWithFavoriteStatus =
+    fun getRestaurantByIdFromDatabase(resId : Int): Flow<RestaurantWithFavoriteStatus?> =
         foodAndRestaurantsDao.getOneRestaurantFromDatabase(resId)
 
-    suspend fun getMealByIdFromDatabase(mealId : Int): MealWithFavoriteStatus =
+    fun getMealByIdFromDatabase(mealId : Int): Flow<MealWithFavoriteStatus?> =
         foodAndRestaurantsDao.getOneMealFromDatabase(mealId)
+
+    fun getSnackByIdFromDatabase(snackId : Int): Flow<SnackWithFavoriteStatus?> =
+        foodAndRestaurantsDao.getOneSnackFromDatabase(snackId)
 
     fun getMealsFromDatabase(resId : Int, type : String): Flow<PagingData<MealWithFavoriteStatus>> =
         Pager(

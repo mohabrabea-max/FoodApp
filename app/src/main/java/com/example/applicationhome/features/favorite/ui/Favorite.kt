@@ -183,7 +183,7 @@ fun Favorite(
                                 item.snack.priceANDsize[size],
                                 {
                                     if (networkState) {
-                                        navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.snack.restaurantId, mealId = item.snack.id))
+                                        navigationController.navigate(Screens.RestaurantScreen.createRouteWithSnack(restaurantId = item.snack.restaurantId, snackId = item.snack.id))
                                         favoriteViewModel.deletenewCount()
                                     } else {
                                         navigationController.navigate(Screens.NoInternetScreen.screen)
@@ -245,7 +245,7 @@ fun Favorite(
                                 item.meal.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") },
                                 {
                                     if (networkState) {
-                                        navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.meal.restaurantId, mealId = item.meal.id))
+                                        navigationController.navigate(Screens.RestaurantScreen.createRouteWithMeal(restaurantId = item.meal.restaurantId, mealId = item.meal.id))
                                         favoriteViewModel.deletenewCount()
                                     }else{
                                         navigationController.navigate(Screens.NoInternetScreen.screen)

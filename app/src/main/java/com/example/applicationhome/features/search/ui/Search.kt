@@ -238,7 +238,7 @@ fun Search(
                         SearchResults(
                             item,
                             mealClickable = { item ->
-                                navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.meal.restaurantId, mealId = item.meal.id))
+                                navigationController.navigate(Screens.RestaurantScreen.createRouteWithMeal(restaurantId = item.meal.restaurantId, mealId = item.meal.id))
                             },
                             restaurantClickable = {
                                 navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.restaurant.restaurant.id))

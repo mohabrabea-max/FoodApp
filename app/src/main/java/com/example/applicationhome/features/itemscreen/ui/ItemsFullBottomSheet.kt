@@ -1,4 +1,4 @@
-package com.example.applicationhome.core.ui.components.forHomeScreenOrMenu
+package com.example.applicationhome.features.itemscreen.ui
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -41,12 +41,6 @@ import com.example.applicationhome.data.data.model.BottomSheetItem
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.UserClass
-import com.example.applicationhome.features.itemscreen.ui.BottomBarForItemScreen
-import com.example.applicationhome.features.itemscreen.ui.ItemScreenImage
-import com.example.applicationhome.features.itemscreen.ui.ItemScreenTopBar
-import com.example.applicationhome.features.itemscreen.ui.ItemSize
-import com.example.applicationhome.features.itemscreen.ui.RatingsAndReviews
-import com.example.applicationhome.features.itemscreen.ui.SnaksBoxForItemScreen
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -108,7 +102,6 @@ fun ItemsFullBottomSheet(
                     }
                 }
                 item {
-                    //Spacer(modifier = Modifier.height(20.dp))
                     Column(
                         modifier = Modifier.
                         shadow(elevation = 10.dp, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(20.dp)).

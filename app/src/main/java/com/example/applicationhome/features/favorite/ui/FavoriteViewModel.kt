@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
-import com.example.applicationhome.core.domain.repository.ItemScreenRepository
-import com.example.applicationhome.core.domain.repository.RestaurantScreenRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
 import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
@@ -26,9 +24,7 @@ import javax.inject.Inject
 class FavoriteViewModel @Inject constructor(
     cartRepository : CartRepository,
     private val userRepository : UserRepository,
-    private val favoriteRepository : FavoriteRepository,
-    private val itemScreenRepository : ItemScreenRepository,
-    private val restaurantScreenRepository : RestaurantScreenRepository,
+    favoriteRepository : FavoriteRepository,
     private val cartUseCase : CartUseCase,
     private val getFavoriteUseCase : GetFavoriteUseCase,
     private val networkObserver : NetworkObserver
