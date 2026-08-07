@@ -43,7 +43,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -54,7 +53,6 @@ import com.example.applicationhome.core.domain.model.snacksEntityToCartItemsClas
 import com.example.applicationhome.core.ui.components.forCart.AlertDialogMessage
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.AddBox
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
-import com.example.applicationhome.features.itemscreen.ui.ItemsFullBottomSheet
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.MealBoxIcon
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.RestaurantButton
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.RestaurantImageView
@@ -65,6 +63,7 @@ import com.example.applicationhome.data.data.model.BottomSheetActions
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
+import com.example.applicationhome.features.itemscreen.ui.ItemsFullBottomSheet
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -130,9 +129,6 @@ fun RestaurantScreen(
             navigation = { screenItem ->
                 if(screenItem == Screens.Search){
                     navigationController.navigate(screenItem.screen) {
-                        popUpTo(navigationController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
                         launchSingleTop = true
                         restoreState = true
                     }

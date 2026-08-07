@@ -77,7 +77,7 @@ fun Search(
                 searchText = search,
                 backClick = {
                     if (navigationController.previousBackStackEntry != null) {
-                    navigationController.popBackStack()
+                        navigationController.popBackStack()
                     }
                     searchViewModel.searchFilter("")
                 },

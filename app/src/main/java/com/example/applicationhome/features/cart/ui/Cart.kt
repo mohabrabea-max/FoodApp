@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -173,14 +175,8 @@ fun Cart(
                             height(40.dp).
                             clip(CircleShape).
                             clickable{
-                                navigationController.navigate(Screens.HomeScreen.screen){
-                                    popUpTo(navigationController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-
-                                    launchSingleTop = true
-
-                                    restoreState = true
+                                if (navigationController.previousBackStackEntry != null) {
+                                    navigationController.popBackStack()
                                 }
                             }.
                             border(width = 1.dp, color = Color.BrownForFont, shape = RoundedCornerShape(40.dp)).
@@ -197,13 +193,19 @@ fun Cart(
                     }
                 }
             }
-            Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally){
+            Column(
+                modifier = Modifier
+                    .padding(bottom = 10.dp)
+                    .pointerInput(Unit) { detectTapGestures { } }
+                    .align(Alignment.BottomCenter),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
                 if(cartItems.isNotEmpty()){
                     MyButton(
                         loading,
                         Color.DarkOrange,
                         Color.White,
-                        20.dp,
+                        40.dp,
                         "Checkout",
                         { navigationController.navigate(Screens.ConfirmOrderScreen.screen) }
                     )

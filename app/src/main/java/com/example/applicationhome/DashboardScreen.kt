@@ -288,6 +288,7 @@ fun DashboardScreen(
                         drawerState,
                         coroutineScope,
                         navigationController,
+                        dashboardNavController,
                         favoriteViewModel,
                         favoriteListState
                     )

@@ -31,7 +31,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.core.ui.components.bars.RestaurantScreenTopBar
 import com.example.applicationhome.core.ui.components.designsystem.TopBarButtons
@@ -96,9 +95,6 @@ fun RestaurantTopBar(
                     ).width(if (searchSize > 1) 120.dp else 40.dp).height(40.dp)
                         .background(Color.White).clickable {
                         navigationController.navigate(Screens.Search.screen) {
-                            popUpTo(navigationController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
                             launchSingleTop = true
                             restoreState = true
                         }

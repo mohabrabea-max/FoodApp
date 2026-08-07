@@ -41,8 +41,10 @@ fun MyButton(loading : Boolean, backgroundcolor : Color, fontcolor : Color, hori
             interactionSource = interactionSource,
             indication = null
         ){
-            scope.launch {
-                action()
+            if(!loading){
+                scope.launch {
+                    action()
+                }
             }
        },
         contentAlignment = Alignment.Center

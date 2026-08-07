@@ -175,10 +175,17 @@ data class Governorate(
 data class FirebasePostResponse(val name : String)
 
 data class TextFieldClassFromConfirmOrderScreen(
-    val textState : TextFieldState,
-    val title: String
+    val textField : TextFieldState,
+    val title : String
 )
 
+data class MapUiState(
+    val latitude : Double = 30.0444,
+    val longitude : Double = 31.2357,
+    val locationName : String = "",
+    val locationFullName : String = "",
+    val isLoading : Boolean = false,
+)
 
 data class OrderItemsClass(
     val mealId : Int = 0,
@@ -194,7 +201,8 @@ data class UserInformationInOrderClass(
     val name : String = "",
     val phonenumber : String = "",
     val address : String = "",
-    val location : String = ""
+    val location : String = "",
+    val locationAddress : String = ""
 )
 
 data class OrdersClass(

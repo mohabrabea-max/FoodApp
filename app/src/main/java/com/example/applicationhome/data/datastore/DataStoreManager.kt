@@ -10,6 +10,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.CATEGORIES_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.FAVORITE_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.MEALS_LAST_SYNC
+import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.OFFERS_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.RESTAURANTS_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.SNACKS_LAST_SYNC
 import dagger.Module
@@ -57,9 +58,9 @@ class DataStoreManager @Inject constructor(
         saveLastSyncTime(CATEGORIES_LAST_SYNC, timestamp)
     }
 
-    val offersLastSyncTimeFlow : Flow<Long?> = getSyncTime(FAVORITE_LAST_SYNC)
+    val offersLastSyncTimeFlow : Flow<Long?> = getSyncTime(OFFERS_LAST_SYNC)
     suspend fun updateOffersSyncTime(timestamp: Long){
-        saveLastSyncTime(FAVORITE_LAST_SYNC, timestamp)
+        saveLastSyncTime(OFFERS_LAST_SYNC, timestamp)
     }
 
     val favoriteLastSyncTimeFlow : Flow<Long?> = getSyncTime(FAVORITE_LAST_SYNC)

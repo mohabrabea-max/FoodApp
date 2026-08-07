@@ -159,14 +159,6 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
                 )
             }
 
-//            composable(Screens.ItemScreen.screen){
-//                val itemScreenViewModel: ItemScreenViewModel = hiltViewModel()
-//                ItemScreen(
-//                    navigationController,
-//                    itemScreenViewModel
-//                )
-//            }
-
             composable(Screens.Notifications.screen){
                 Notifications()
             }

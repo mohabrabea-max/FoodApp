@@ -76,6 +76,7 @@ fun Favorite(
     drawerState : DrawerState,
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
+    dashboardScreenViewModel : NavHostController,
     favoriteViewModel : FavoriteViewModel,
     favoriteListState : LazyGridState
 ){
@@ -274,7 +275,7 @@ fun Favorite(
                     item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
                 }
             }else{
-                EmptyFavoriteScreen(navigationController)
+                EmptyFavoriteScreen(dashboardScreenViewModel)
             }
         }
         SnackbarHost(
@@ -370,7 +371,7 @@ fun EmptyFavoriteScreen(
             height(40.dp).
             clip(CircleShape).
             clickable{
-                navigationController.navigate(Screens.HomeScreen.screen){
+                navigationController.navigate(Screens.HomeScreen.screen) {
                     popUpTo(navigationController.graph.findStartDestination().id) {
                         saveState = true
                     }

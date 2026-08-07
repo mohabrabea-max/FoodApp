@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "com.example.applicationhome"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.applicationhome"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -107,6 +107,16 @@ dependencies {
     implementation("androidx.room:room-paging:2.7.0")
 
     implementation("commons-net:commons-net:3.9.0")
+
+    // مكتبة Google Maps الخاصة بـ Jetpack Compose
+    implementation("com.google.maps.android:maps-compose:6.12.0")
+
+    // مكتبة OpenStreetMap للأندرويد
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
+
+    //طلب إذن الموقع
+    implementation("com.google.accompanist:accompanist-permissions:0.37.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 }
 configurations.all {
     resolutionStrategy {

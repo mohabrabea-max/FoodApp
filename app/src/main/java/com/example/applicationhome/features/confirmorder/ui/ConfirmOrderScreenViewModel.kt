@@ -5,26 +5,36 @@ import androidx.compose.foundation.text.input.clearText
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.core.domain.repository.CartRepository
+import com.example.applicationhome.core.domain.repository.LocationRepository
 import com.example.applicationhome.core.domain.repository.OrderRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
+import com.example.applicationhome.data.data.model.MapUiState
 import com.example.applicationhome.data.data.model.OrderItemsClass
 import com.example.applicationhome.data.data.model.OrdersClass
+import com.example.applicationhome.data.data.model.ProfileEditResult
 import com.example.applicationhome.data.data.model.TextFieldClassFromConfirmOrderScreen
 import com.example.applicationhome.data.data.model.UserInformationInOrderClass
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ConfirmOrderScreenViewModel @Inject constructor(
+    private val fusedLocationClient : FusedLocationProviderClient,
     private val userRepository: UserRepository,
     private val cartRepository: CartRepository,
     private val orderRepository : OrderRepository,
+    private val locationRepository : LocationRepository,
     private val cartUseCase: CartUseCase,
 ) : ViewModel() {
 
@@ -37,11 +47,10 @@ class ConfirmOrderScreenViewModel @Inject constructor(
     val additionalDirectionsState = TextFieldState()
     val addressLabelState = TextFieldState()
 
-    val textFieldConfirmOrderScreenList1 = listOf(
+    val textFieldConfirmOrderScreenList = listOf(
         TextFieldClassFromConfirmOrderScreen(houseState, "House"),
         TextFieldClassFromConfirmOrderScreen(streetState, "Street"),
-    )
-    val textFieldConfirmOrderScreenList2 = listOf(
+        TextFieldClassFromConfirmOrderScreen(phoneNumberState, "Phone number"),
         TextFieldClassFromConfirmOrderScreen(
             additionalDirectionsState,
             "Additional directions (optional)"
@@ -49,8 +58,7 @@ class ConfirmOrderScreenViewModel @Inject constructor(
         TextFieldClassFromConfirmOrderScreen(addressLabelState, "Address label (optional)"),
     )
 
-
-    val confirmOrderPages = MutableStateFlow(1)
+    val confirmOrderPages = MutableStateFlow(0)
 
     val cartItems = cartRepository.cartItems
 
@@ -59,10 +67,19 @@ class ConfirmOrderScreenViewModel @Inject constructor(
     val totalPrice = cartRepository.totalPrice
 
     val loading : StateFlow<Boolean> = orderRepository.loading
+
     val bottonState = MutableStateFlow(false)
-    val phoneNumbertextFieldState = MutableStateFlow(false)
-    val address1 = "${houseState.text} - ${streetState.text}"
-    val address2 = " - ${additionalDirectionsState.text} - ${addressLabelState.text}"
+
+    val isButtonClicked = MutableStateFlow(false)
+
+    var address1 = ""
+    var address2 = ""
+
+    private val _confirmOrderError = MutableStateFlow<ProfileEditResult?>(null)
+    val confirmOrderError = _confirmOrderError.asStateFlow()
+
+    private val _locationState = MutableStateFlow(MapUiState())
+    val locationState = _locationState.asStateFlow()
 
 
     init {
@@ -71,22 +88,120 @@ class ConfirmOrderScreenViewModel @Inject constructor(
                 phoneNumberState.edit {
                     replace(0, length, user.phonenumber)
                 }
+
+                addressLabelState.edit {
+                    replace(
+                        0, length,
+                        if(user.city.isNotEmpty()) user.city + " - " + user.governorate
+                        else user.governorate
+                    )
+                }
             }
         }
     }
 
 
-    fun bottonstate(){
+    fun fetchCurrentLocation(){
+        _locationState.update { item ->
+            item.copy(isLoading = true)
+        }
+
+        try {
+            fusedLocationClient.getCurrentLocation(
+                Priority.PRIORITY_HIGH_ACCURACY,
+                CancellationTokenSource().token
+            ).addOnSuccessListener { location ->
+                if(location != null){
+                    _locationState.update { item ->
+                        item.copy(
+                            latitude = location.latitude,
+                            longitude = location.longitude,
+                            isLoading = false
+                        )
+                    }
+                }else{
+                    _locationState.update { item ->
+                        item.copy(isLoading = false)
+                    }
+                }
+            }.addOnFailureListener {
+                _locationState.update { item ->
+                    item.copy(isLoading = false)
+                }
+            }
+        } catch (e : SecurityException){
+            _locationState.update { item ->
+                item.copy(isLoading = false)
+            }
+        }
+    }
+
+    fun updateSelectedLocation(lat: Double, lng: Double){
+        viewModelScope.launch {
+            locationRepository.getAddressFromLocation(lat, lng){ areaName, fullAddress ->
+                _locationState.update { item ->
+                    item.copy(
+                        latitude = lat,
+                        longitude = lng,
+                        locationName = areaName,
+                        locationFullName = fullAddress
+                    )
+                }
+            }
+        }
+
+    }
+
+    fun bottonStateChange(){
         if(
-            houseState.text.isNotEmpty()
-            && streetState.text.isNotEmpty()
-            && phoneNumberState.text.isNotEmpty()
-            && phoneNumberState.text.length == 11
+            houseState.text.isNotEmpty() &&
+            streetState.text.isNotEmpty() &&
+            phoneNumberState.text.isNotEmpty()
         ){
             bottonState.value = true
-        } else {
+        }else{
             bottonState.value = false
         }
+    }
+
+    fun bottonstate(){
+        val validPrefixes = listOf("010", "011", "012", "015")
+
+        if(
+            (
+                phoneNumberState.text.length != 11
+                        || !validPrefixes.any { phoneNumberState.text.contains(it) }
+            )
+            && phoneNumberState.text.isNotEmpty()
+        ) {
+            isButtonClicked.value = false
+            _confirmOrderError.value = ProfileEditResult.PhoneNumberIncomplete
+            return
+        }
+
+        if(
+            houseState.text.isEmpty()
+            && streetState.text.isEmpty()
+        ){
+            isButtonClicked.value = false
+            _confirmOrderError.value = ProfileEditResult.DataIncomplete
+            return
+        }
+
+
+        isButtonClicked.value = true
+        _confirmOrderError.value = ProfileEditResult.Success
+
+        address1 = "${houseState.text} - ${streetState.text}"
+        address2 = "${
+            if(additionalDirectionsState.text.isNotEmpty()) " - " + additionalDirectionsState.text
+            else ""
+        } ${
+            if(addressLabelState.text.isNotEmpty()) " - " + addressLabelState.text
+            else ""
+        }"
+
+        nextPage()
     }
 
     fun cleanTextField(){
@@ -97,17 +212,6 @@ class ConfirmOrderScreenViewModel @Inject constructor(
         addressLabelState.clearText()
         housetextFieldState.value = false
         streettextFieldState.value = false
-        phoneNumbertextFieldState.value = false
-    }
-
-    fun phoneNumbertextFieldtrue(){
-        phoneNumbertextFieldState.value = true
-    }
-    fun housetextFieldStatetrue(){
-        housetextFieldState.value = true
-    }
-    fun streettextFieldtrue(){
-        streettextFieldState.value = true
     }
 
     fun uploadOrder(onSuccess: () -> Unit){
@@ -153,10 +257,11 @@ class ConfirmOrderScreenViewModel @Inject constructor(
                     UserInformationInOrderClass(
                         "$firstname $lastname",
                         phoneNumberState.text.toString(),
-                        if (additionalDirectionsState.text.isNotEmpty() && addressLabelState.text.isNotEmpty())
+                        if (additionalDirectionsState.text.isNotEmpty() || addressLabelState.text.isNotEmpty())
                             address1 + address2
                         else address1,
-                        "30.0444,31.2357"
+                        "(${_locationState.value.latitude} , ${_locationState.value.longitude})",
+                        _locationState.value.locationFullName
                     ),
                     orderItems,
                     orderInformation.restaurantName,
@@ -183,5 +288,9 @@ class ConfirmOrderScreenViewModel @Inject constructor(
 
     fun lastPage(){
         confirmOrderPages.value -= 1
+    }
+
+    fun changePageNumber(number : Int){
+        confirmOrderPages.value = number
     }
 }
