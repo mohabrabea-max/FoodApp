@@ -1,6 +1,10 @@
 package com.example.applicationhome.data.data.model
 
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Payment
+import androidx.compose.material.icons.filled.Payments
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
@@ -109,13 +113,6 @@ data class AccountTextFieldClass(
     val icon : ImageVector?
 )
 
-data class ProfileSelection(
-    val id : Int,
-    val title : String,
-    val lastCount : String,
-    val icon : ImageVector
-)
-
 data class Settings(
     val title : String,
     val icon : ImageVector
@@ -136,13 +133,6 @@ data class FavoriteClass(
     val updatedAt : Long = 0L
 )
 
-data class RestaurantsCount(
-    val meals : Int,
-    val snacks : Int,
-    val drinks : Int,
-    val offers : Int
-)
-
 data class UserClassFireBase(
     val firstname : String = "",
     val lastname : String = "",
@@ -155,11 +145,11 @@ data class UserClassFireBase(
     val address : String = ""
 )
 
-sealed class ProfileEditResult {
-    object Success : ProfileEditResult()
-    object DataIncomplete : ProfileEditResult()
-    object PhoneNumberIncomplete : ProfileEditResult()
-    object NetworkError : ProfileEditResult()
+sealed interface ProfileEditResult {
+    data object Success : ProfileEditResult
+    data object DataIncomplete : ProfileEditResult
+    data object PhoneNumberIncomplete : ProfileEditResult
+    data object NetworkError : ProfileEditResult
 }
 
 data class City(
@@ -185,6 +175,43 @@ data class MapUiState(
     val locationName : String = "",
     val locationFullName : String = "",
     val isLoading : Boolean = false,
+)
+
+enum class PaymentMethod(
+    val title : String,
+    val icon : ImageVector,
+    val integrationId : Int
+){
+    CARD(
+        title = "Bank card (Visa / Mastercard)",
+        icon = Icons.Default.Payment,
+        integrationId = 111111
+    ),
+
+    WALLET(
+        title = "E-wallet(Vodafone Cash)",
+        icon = Icons.Default.AccountBalanceWallet,
+        integrationId = 111111
+    ),
+
+    CASH(
+        title = "Cash on delivery",
+        icon = Icons.Default.Payments,
+        integrationId = 0
+    )
+
+}
+
+sealed interface PaymentState{
+    data object Idle : PaymentState
+    data object Loading : PaymentState
+    data object Success : PaymentState
+    data object Failed : PaymentState
+}
+
+data class CheckoutUiState(
+    val selectedPaymentMethod: PaymentMethod = PaymentMethod.CASH,
+    val isProcessing: Boolean = false
 )
 
 data class OrderItemsClass(
@@ -219,6 +246,16 @@ data class OrdersClass(
     val restaurantId : Int = 0
 )
 
+sealed interface ActionsStates{
+    data object Idle : ActionsStates
+    data object Loading : ActionsStates
+    data object Success : ActionsStates
+    data class Failed(val error : String) : ActionsStates
+}
+
+sealed interface UiEvent {
+    object ShowNetworkError : UiEvent
+}
 
 sealed interface BottomSheetItem {
     val id : Int

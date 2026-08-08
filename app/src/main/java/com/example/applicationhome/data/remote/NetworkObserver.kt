@@ -15,11 +15,17 @@ class NetworkObserver @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    private val _isNetworkAvailable = MutableStateFlow(false)
+    private val _isNetworkAvailable = MutableStateFlow(isCurrentlyConnected())
     val isNetworkAvailable : StateFlow<Boolean> = _isNetworkAvailable.asStateFlow()
 
     init{
         observeNetworkChanges()
+    }
+
+    fun isCurrentlyConnected(): Boolean {
+        val activeNetwork = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     private fun observeNetworkChanges(){

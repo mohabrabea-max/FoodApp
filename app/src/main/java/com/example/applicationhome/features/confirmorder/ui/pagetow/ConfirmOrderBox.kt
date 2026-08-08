@@ -1,6 +1,5 @@
-package com.example.applicationhome.features.confirmorder.ui
+package com.example.applicationhome.features.confirmorder.ui.pagetow
 
-import android.R.attr.name
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -68,7 +67,7 @@ fun ConfirmOrderBox(
                         verticalArrangement = Arrangement.Center
                     ){
                         Text(
-                            text = "${name}${sizeInTitle}",
+                            text = "${food.name}${sizeInTitle}",
                             fontSize = 18.sp,
                             color = Color.Black,
                             style = MaterialTheme.typography.labelLarge,

@@ -1,4 +1,4 @@
-package com.example.applicationhome.features.confirmorder.ui
+package com.example.applicationhome.features.confirmorder.ui.pageone
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -66,8 +66,10 @@ fun ConfirmOrderScreenTextField(
             value = item.textField.text.toString(),
 
             onValueChange = { newText ->
-                item.textField.edit { replace(0, length, newText) }
-                bottonStateChange()
+                if(newText.length <= 11 || item.title != "Phone number"){
+                    item.textField.edit { replace(0, length, newText) }
+                    bottonStateChange()
+                }
             },
 
             colors = OutlinedTextFieldDefaults.colors(

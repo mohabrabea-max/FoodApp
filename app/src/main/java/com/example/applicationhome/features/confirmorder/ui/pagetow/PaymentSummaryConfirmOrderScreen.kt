@@ -1,4 +1,4 @@
-package com.example.applicationhome.features.confirmorder.ui
+package com.example.applicationhome.features.confirmorder.ui.pagetow
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

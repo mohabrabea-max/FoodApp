@@ -1,4 +1,4 @@
-package com.example.applicationhome.features.confirmorder.ui
+package com.example.applicationhome.features.confirmorder.ui.pageone
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,9 +25,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.size.Precision
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.data.data.model.ProfileEditResult
 import com.example.applicationhome.data.data.model.TextFieldClassFromConfirmOrderScreen
@@ -38,6 +43,7 @@ fun PageOneConfirmOrder(
     isButtonClicked : Boolean,
     confirmOrderError : ProfileEditResult?,
     location : String,
+    locationImage : String,
     bottonStateChange : () -> Unit,
     openMaps : () -> Unit
 ){
@@ -45,7 +51,29 @@ fun PageOneConfirmOrder(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ){
-        item{Spacer(modifier = Modifier.height(100.dp))}
+        item{Spacer(modifier = Modifier.height(130.dp))}
+
+        item{
+            Box(
+                modifier = Modifier.padding(10.dp)
+                    .height(130.dp)
+                    .fillMaxWidth()
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .border(width = 1.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(15.dp))
+
+            ){
+                AsyncImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = ImageRequest.Builder(LocalContext.current).
+                    data(locationImage).
+                    crossfade(true).
+                    precision(Precision.EXACT).
+                    build(),
+                    contentDescription = locationImage,
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
 
         item{
             Row(
@@ -68,7 +96,7 @@ fun PageOneConfirmOrder(
                     Icon(
                         Icons.Default.LocationOn,
                         contentDescription = null,
-                        tint = Color.Gray,
+                        tint = Color.Black,
                         modifier = Modifier.padding(end = 7.dp)
                     )
 
@@ -80,9 +108,9 @@ fun PageOneConfirmOrder(
 
                         Text(
                             text = "Area",
-                            color = Color.Gray,
+                            color = Color.Black,
                             fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Medium
                         )
                         Text(
                             text = location,
@@ -111,7 +139,7 @@ fun PageOneConfirmOrder(
                 item,
                 isButtonClicked,
                 confirmOrderError ?: ProfileEditResult.NetworkError,
-            ){ bottonStateChange() }
+            ) { bottonStateChange() }
         }
 
         item{Spacer(modifier = Modifier.height(100.dp))}

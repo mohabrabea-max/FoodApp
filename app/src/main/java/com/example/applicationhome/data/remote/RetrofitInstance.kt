@@ -1,5 +1,6 @@
 package com.example.applicationhome.data.remote
 
+import com.example.applicationhome.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,7 +12,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object RetrofitInstance{
-    private const val BASE_URL = "https://food-app-9d163-default-rtdb.firebaseio.com/food_app/"
+    private const val BASE_URL = BuildConfig.REALTIME_DB_URL
 
     @Provides
     @Singleton

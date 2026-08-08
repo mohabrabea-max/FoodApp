@@ -1,9 +1,18 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
+}
+
+val localProperties = Properties().apply {
+    val localFile = rootProject.file("local.properties")
+    if (localFile.exists()) {
+        load(localFile.inputStream())
+    }
 }
 
 android {
@@ -18,6 +27,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val apiKey = localProperties.getProperty("GEOAPIFY_MAP_API_KEY") ?: ""
+        buildConfigField("String", "GEOAPIFY_MAP_API_KEY", "\"$apiKey\"")
+
+        val dbUrl = localProperties.getProperty("REALTIME_DB_URL") ?: ""
+        buildConfigField("String", "REALTIME_DB_URL", "\"$dbUrl\"")
     }
 
     buildTypes {
@@ -40,10 +55,7 @@ android {
     }
 
     buildFeatures {
-        compose = true
-    }
-
-    buildFeatures {
+        buildConfig = true
         compose = true
     }
 }

@@ -1,4 +1,4 @@
-package com.example.applicationhome.features.confirmorder.ui
+package com.example.applicationhome.features.confirmorder.ui.mappage
 
 import android.preference.PreferenceManager
 import androidx.compose.foundation.layout.Box
@@ -84,7 +84,7 @@ fun StreetMapComposable(
             factory =  {
                 mapView.apply {
                     // ضبط مستوى التكبير (Zoom) وموقع الكاميرا
-                    controller.setZoom(17.0)
+                    controller.setZoom(19.5)
                     controller.setCenter(GeoPoint(initialLatitude, initialLongitude))
 
                     addMapListener(object : MapListener{

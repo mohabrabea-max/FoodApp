@@ -1,29 +1,36 @@
 package com.example.applicationhome.features.confirmorder.ui
 
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.clearText
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.BuildConfig
 import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.LocationRepository
 import com.example.applicationhome.core.domain.repository.OrderRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
+import com.example.applicationhome.data.data.model.ActionsStates
+import com.example.applicationhome.data.data.model.CheckoutUiState
 import com.example.applicationhome.data.data.model.MapUiState
 import com.example.applicationhome.data.data.model.OrderItemsClass
 import com.example.applicationhome.data.data.model.OrdersClass
+import com.example.applicationhome.data.data.model.PaymentMethod
+import com.example.applicationhome.data.data.model.PaymentState
 import com.example.applicationhome.data.data.model.ProfileEditResult
 import com.example.applicationhome.data.data.model.TextFieldClassFromConfirmOrderScreen
+import com.example.applicationhome.data.data.model.UiEvent
 import com.example.applicationhome.data.data.model.UserInformationInOrderClass
+import com.example.applicationhome.data.remote.NetworkObserver
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -36,16 +43,17 @@ class ConfirmOrderScreenViewModel @Inject constructor(
     private val orderRepository : OrderRepository,
     private val locationRepository : LocationRepository,
     private val cartUseCase: CartUseCase,
+    private val networkObserver: NetworkObserver
 ) : ViewModel() {
 
-    val phoneNumberState = TextFieldState()
-    val houseState = TextFieldState()
-    val housetextFieldState = MutableStateFlow(false)
-    val streetState = TextFieldState()
-    val streettextFieldState = MutableStateFlow(false)
+    private val phoneNumberState = TextFieldState()
+    private val houseState = TextFieldState()
+    private val housetextFieldState = MutableStateFlow(false)
+    private val streetState = TextFieldState()
+    private val streettextFieldState = MutableStateFlow(false)
 
-    val additionalDirectionsState = TextFieldState()
-    val addressLabelState = TextFieldState()
+    private val additionalDirectionsState = TextFieldState()
+    private val addressLabelState = TextFieldState()
 
     val textFieldConfirmOrderScreenList = listOf(
         TextFieldClassFromConfirmOrderScreen(houseState, "House"),
@@ -66,14 +74,15 @@ class ConfirmOrderScreenViewModel @Inject constructor(
 
     val totalPrice = cartRepository.totalPrice
 
-    val loading : StateFlow<Boolean> = orderRepository.loading
-
     val bottonState = MutableStateFlow(false)
 
     val isButtonClicked = MutableStateFlow(false)
 
-    var address1 = ""
-    var address2 = ""
+    private var address1 = ""
+    private var address2 = ""
+
+    val streetAndHome = MutableStateFlow(Pair("", ""))
+    val phoneNumber = MutableStateFlow("")
 
     private val _confirmOrderError = MutableStateFlow<ProfileEditResult?>(null)
     val confirmOrderError = _confirmOrderError.asStateFlow()
@@ -81,8 +90,33 @@ class ConfirmOrderScreenViewModel @Inject constructor(
     private val _locationState = MutableStateFlow(MapUiState())
     val locationState = _locationState.asStateFlow()
 
+    private val _locationImage = MutableStateFlow("")
+    val locationImage = _locationImage.asStateFlow()
+
+    val confirmOrderState = orderRepository.confirmOrderState
+
+    val isNetworkAvailable = MutableStateFlow(true)
+
+    private val _uiEvent = Channel<UiEvent>(Channel.BUFFERED)
+    val uiEvent = _uiEvent.receiveAsFlow()
+
+    private val _payMethodState = MutableStateFlow(CheckoutUiState())
+    val payMethodState = _payMethodState.asStateFlow()
+
+    private val _paymentState = MutableStateFlow<PaymentState>(PaymentState.Idle)
+    val paymentState = _paymentState.asStateFlow()
+
 
     init {
+        viewModelScope.launch {
+            networkObserver.isNetworkAvailable.collect { available ->
+                isNetworkAvailable.value = available
+                if(!available && confirmOrderPages.value !in 1..<3){
+                    _uiEvent.send(UiEvent.ShowNetworkError)
+                }
+            }
+        }
+
         viewModelScope.launch(Dispatchers.IO){
             userData.collect { user ->
                 phoneNumberState.edit {
@@ -100,6 +134,20 @@ class ConfirmOrderScreenViewModel @Inject constructor(
         }
     }
 
+
+    // --------------------------------------------\\ Location //--------------------------------------------
+    fun retryNetwork(){
+        viewModelScope.launch {
+            val isConnected = networkObserver.isCurrentlyConnected()
+            isNetworkAvailable.value = isConnected
+
+            if(isConnected) {
+                fetchCurrentLocation()
+            }else{
+                _uiEvent.send(UiEvent.ShowNetworkError)
+            }
+        }
+    }
 
     fun fetchCurrentLocation(){
         _locationState.update { item ->
@@ -138,6 +186,9 @@ class ConfirmOrderScreenViewModel @Inject constructor(
 
     fun updateSelectedLocation(lat: Double, lng: Double){
         viewModelScope.launch {
+
+            updateStaticMapUrl(lat, lng)
+
             locationRepository.getAddressFromLocation(lat, lng){ areaName, fullAddress ->
                 _locationState.update { item ->
                     item.copy(
@@ -149,9 +200,31 @@ class ConfirmOrderScreenViewModel @Inject constructor(
                 }
             }
         }
-
     }
 
+    private fun updateStaticMapUrl(lat: Double, lon: Double) {
+        val zoom = 16
+        val width = 600
+        val height = 300
+        val apiKey = BuildConfig.GEOAPIFY_MAP_API_KEY
+
+        _locationImage.value = "https://maps.geoapify.com/v1/staticmap?" +
+                "style=osm-carto&" +
+                "width=$width&height=$height&" +
+                "center=lonlat:$lon,$lat&" +
+                "zoom=$zoom&" +
+                "marker=lonlat:$lon,$lat;color:%23ff0000;size:medium&" +
+                "apiKey=$apiKey"
+    }
+
+    // --------------------------------------------\\ Payment Methods //--------------------------------------------
+    fun onPaymentMethodSelected(method: PaymentMethod){
+        _payMethodState.update {
+            it.copy(selectedPaymentMethod = method)
+        }
+    }
+
+    // --------------------------------------------\\ Finish Confirm Order //--------------------------------------------
     fun bottonStateChange(){
         if(
             houseState.text.isNotEmpty() &&
@@ -201,20 +274,13 @@ class ConfirmOrderScreenViewModel @Inject constructor(
             else ""
         }"
 
+        streetAndHome.value = Pair(streetState.text.toString(), houseState.text.toString())
+        phoneNumber.value = phoneNumberState.text.toString()
+
         nextPage()
     }
 
-    fun cleanTextField(){
-        houseState.clearText()
-        streetState.clearText()
-        phoneNumberState.clearText()
-        additionalDirectionsState.clearText()
-        addressLabelState.clearText()
-        housetextFieldState.value = false
-        streettextFieldState.value = false
-    }
-
-    fun uploadOrder(onSuccess: () -> Unit){
+    fun uploadOrder(onSuccess : () -> Unit, onField : () -> Unit){
         viewModelScope.launch {
             val currentUser = userRepository.userData.first()
             val userId = currentUser.id
@@ -270,12 +336,23 @@ class ConfirmOrderScreenViewModel @Inject constructor(
                 )
                 orderRepository.uploadOrderRequest(order, userId)
             }
-            onSuccess()
-            cleanTextField()
+
+            when(confirmOrderState.value){
+                is ActionsStates.Success -> {
+                    clearAllCart()
+                    onSuccess()
+                }
+
+                is ActionsStates.Failed -> {
+                    onField()
+                }
+
+                else -> {}
+            }
         }
     }
 
-    fun clearAllCart(){
+    private fun clearAllCart(){
         viewModelScope.launch(Dispatchers.IO) {
             val userId = userRepository.userData.value.id
             cartUseCase.clearAllCart(userId)

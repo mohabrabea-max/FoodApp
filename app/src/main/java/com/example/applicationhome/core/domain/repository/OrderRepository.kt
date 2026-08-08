@@ -1,5 +1,6 @@
 package com.example.applicationhome.core.domain.repository
 
+import com.example.applicationhome.data.data.model.ActionsStates
 import com.example.applicationhome.data.data.model.OrdersClass
 import com.example.applicationhome.data.local.dao.OrdersDao
 import com.example.applicationhome.data.local.entity.OrdersDatabaseClass
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
@@ -29,6 +31,9 @@ class OrderRepository @Inject constructor(
 ) {
     private val _loading = MutableStateFlow(false)
     val loading : StateFlow<Boolean> = _loading
+
+    private val _confirmOrderState = MutableStateFlow<ActionsStates>(ActionsStates.Idle)
+    val confirmOrderState = _confirmOrderState.asStateFlow()
 
     val ordersHistory : StateFlow<List<OrdersDatabaseClass>> =
         userRepository.userData.flatMapLatest { user ->
@@ -49,7 +54,7 @@ class OrderRepository @Inject constructor(
     : Flow<List<OrdersDatabaseClass>> = ordersDao.getAllOrders(userId)
 
 
-    suspend fun uploadOrderRequest(orderClass : OrdersClass, userId: String): String {
+    suspend fun uploadOrderRequest(orderClass : OrdersClass, userId: String){
         val current = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val date = current.format(formatter)
@@ -58,25 +63,27 @@ class OrderRepository @Inject constructor(
 
         return try {
             _loading.value = true
+            _confirmOrderState.value = ActionsStates.Loading
             val response = api.putNewOrder(
                 userId,
                 orderId,
                 orderClass.copy(date = date)
             )
             if(response.isSuccessful){
-                "Success"
+                _confirmOrderState.value = ActionsStates.Success
             }else{
                 val errorCode = response.code()
 
-                when (errorCode) {
+                val errorMessage = when (errorCode) {
                     401 -> "Unauthorized error ($errorCode)"
                     404 -> "Not found ($errorCode)"
                     in 500..599 -> "Server down ($errorCode)"
                     else -> "HTTP Error: $errorCode"
                 }
+                _confirmOrderState.value = ActionsStates.Failed(errorMessage)
             }
         } catch (e : Exception){
-            "خطأ في الشبكة: ${e.message}"
+            _confirmOrderState.value = ActionsStates.Failed("Network error")
         } finally {
             _loading.value = false
         }
