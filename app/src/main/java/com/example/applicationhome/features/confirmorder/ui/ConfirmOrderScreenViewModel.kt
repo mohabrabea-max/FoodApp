@@ -9,13 +9,16 @@ import com.example.applicationhome.core.domain.repository.LocationRepository
 import com.example.applicationhome.core.domain.repository.OrderRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
+import com.example.applicationhome.core.domain.usecase.PaymentUseCase
 import com.example.applicationhome.data.data.model.ActionsStates
 import com.example.applicationhome.data.data.model.CheckoutUiState
 import com.example.applicationhome.data.data.model.MapUiState
 import com.example.applicationhome.data.data.model.OrderItemsClass
 import com.example.applicationhome.data.data.model.OrdersClass
+import com.example.applicationhome.data.data.model.PaymentApiState
 import com.example.applicationhome.data.data.model.PaymentMethod
 import com.example.applicationhome.data.data.model.PaymentState
+import com.example.applicationhome.data.data.model.PaymobBillingData
 import com.example.applicationhome.data.data.model.ProfileEditResult
 import com.example.applicationhome.data.data.model.TextFieldClassFromConfirmOrderScreen
 import com.example.applicationhome.data.data.model.UiEvent
@@ -43,6 +46,7 @@ class ConfirmOrderScreenViewModel @Inject constructor(
     private val orderRepository : OrderRepository,
     private val locationRepository : LocationRepository,
     private val cartUseCase: CartUseCase,
+    private val paymentUseCase : PaymentUseCase,
     private val networkObserver: NetworkObserver
 ) : ViewModel() {
 
@@ -99,12 +103,6 @@ class ConfirmOrderScreenViewModel @Inject constructor(
 
     private val _uiEvent = Channel<UiEvent>(Channel.BUFFERED)
     val uiEvent = _uiEvent.receiveAsFlow()
-
-    private val _payMethodState = MutableStateFlow(CheckoutUiState())
-    val payMethodState = _payMethodState.asStateFlow()
-
-    private val _paymentState = MutableStateFlow<PaymentState>(PaymentState.Idle)
-    val paymentState = _paymentState.asStateFlow()
 
 
     init {
@@ -218,10 +216,60 @@ class ConfirmOrderScreenViewModel @Inject constructor(
     }
 
     // --------------------------------------------\\ Payment Methods //--------------------------------------------
+    private val _payMethodState = MutableStateFlow(CheckoutUiState())
+    val payMethodState = _payMethodState.asStateFlow()
+
+    private val _paymentState = MutableStateFlow<PaymentState>(PaymentState.Idle)
+    val paymentState = _paymentState.asStateFlow()
+
+
     fun onPaymentMethodSelected(method: PaymentMethod){
         _payMethodState.update {
             it.copy(selectedPaymentMethod = method)
         }
+    }
+
+    fun openPaymentWebView(){
+        _paymentState.value = PaymentState.Loading
+    }
+
+    fun onPaymentStateChanged(paymentState : PaymentState){
+        _paymentState.value = paymentState
+    }
+
+    // --------------------------------------------\\ Payment Checkout //--------------------------------------------
+    private val _paymentApiState = MutableStateFlow<PaymentApiState>(PaymentApiState.Idle)
+    val paymentApiState = _paymentApiState.asStateFlow()
+
+
+    fun startPayment(){
+        viewModelScope.launch {
+            _paymentApiState.value = PaymentApiState.Loading
+
+            val billingData = PaymobBillingData(
+                firstName = userData.value.firstname,
+                lastName = userData.value.lastname,
+                email = userData.value.email,
+                phoneNumber = phoneNumber.value
+            )
+
+            val result = paymentUseCase(
+                orderPrice = totalPrice.value,
+                billingData = billingData,
+                integrationId = _payMethodState.value.selectedPaymentMethod.integrationId
+            )
+
+            result.onSuccess { token ->
+                _paymentApiState.value = PaymentApiState.Success(token)
+                confirmOrderPages.value = 5
+            }.onFailure { error ->
+                _paymentApiState.value = PaymentApiState.Error(error.message ?: "An error occurred during the payment process")
+            }
+        }
+    }
+
+    fun onPaymentApiStateChanged(paymentState : PaymentApiState){
+        _paymentApiState.value = paymentState
     }
 
     // --------------------------------------------\\ Finish Confirm Order //--------------------------------------------

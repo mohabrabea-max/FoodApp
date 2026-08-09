@@ -33,6 +33,20 @@ android {
 
         val dbUrl = localProperties.getProperty("REALTIME_DB_URL") ?: ""
         buildConfigField("String", "REALTIME_DB_URL", "\"$dbUrl\"")
+
+        val paymobApiKey = localProperties.getProperty("PAYMOB_API_KEY") ?: ""
+        buildConfigField("String", "PAYMOB_API_KEY", "\"$paymobApiKey\"")
+
+        val paymobCardIntegrationId = localProperties.getProperty("PAYMOB_CARD_INTEGRATION_ID") ?: ""
+        buildConfigField("String", "PAYMOB_CARD_INTEGRATION_ID", "\"$paymobCardIntegrationId\"")
+
+        val paymobWalletIntegrationId = localProperties.getProperty("PAYMOB_WALLET_INTEGRATION_ID") ?: ""
+        buildConfigField("String", "PAYMOB_WALLET_INTEGRATION_ID", "\"$paymobWalletIntegrationId\"")
+
+        val iFrame = localProperties.getProperty("PAYMOB_IFRAME_ID") ?: ""
+        buildConfigField("String", "PAYMOB_IFRAME_ID", "\"$iFrame\"")
+
+        buildConfigField("String", "PAYMOB_CALLBACK_URL", "\"https://accept.paymobsolutions.com/api/acceptance/post_pay\"")
     }
 
     buildTypes {

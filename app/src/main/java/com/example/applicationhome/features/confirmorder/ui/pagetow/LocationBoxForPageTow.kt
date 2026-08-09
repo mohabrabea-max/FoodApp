@@ -1,6 +1,5 @@
 package com.example.applicationhome.features.confirmorder.ui.pagetow
 
-import android.R.attr.phoneNumber
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -39,6 +38,7 @@ fun LocationBoxForPageTow(
     locationImage : String,
     city : String,
     streetAndHome : Pair<String, String>,
+    phoneNumber : String,
     changeLocation : () -> Unit
 ){
     val interactionSource = remember { MutableInteractionSource() }

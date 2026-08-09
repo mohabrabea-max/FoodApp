@@ -1,4 +1,4 @@
-package com.example.applicationhome.data.data.module
+package com.example.applicationhome.core.domain.module
 
 import android.content.Context
 import com.google.android.gms.location.FusedLocationProviderClient

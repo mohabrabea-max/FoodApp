@@ -1,10 +1,5 @@
 package com.example.applicationhome.data.data.model
 
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBalanceWallet
-import androidx.compose.material.icons.filled.Payment
-import androidx.compose.material.icons.filled.Payments
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
@@ -105,26 +100,10 @@ data class Options(
     val screen: String
 )
 
-data class AccountTextFieldClass(
-    val id : Int,
-    val title : String,
-    val emptyCount : String,
-    val textField : TextFieldState,
-    val icon : ImageVector?
-)
-
 data class Settings(
     val title : String,
     val icon : ImageVector
 )
-
-data class ProfileOptions(
-    val title : String,
-    var description : String?,
-    val icon: ImageVector,
-    val screen : Screens
-)
-
 
 data class FavoriteClass(
     val id : Int,
@@ -132,130 +111,6 @@ data class FavoriteClass(
     val restaurants : Int,
     val updatedAt : Long = 0L
 )
-
-data class UserClassFireBase(
-    val firstname : String = "",
-    val lastname : String = "",
-    val email : String = "",
-    val password : String = "",
-    val phonenumber : String = "",
-    val birthday : String = "",
-    val governorate : String = "",
-    val city : String = "",
-    val address : String = ""
-)
-
-sealed interface ProfileEditResult {
-    data object Success : ProfileEditResult
-    data object DataIncomplete : ProfileEditResult
-    data object PhoneNumberIncomplete : ProfileEditResult
-    data object NetworkError : ProfileEditResult
-}
-
-data class City(
-    val englishName: String,
-    val arabicName: String
-)
-
-data class Governorate(
-    val name: String,
-    val cities: List<City>
-)
-
-data class FirebasePostResponse(val name : String)
-
-data class TextFieldClassFromConfirmOrderScreen(
-    val textField : TextFieldState,
-    val title : String
-)
-
-data class MapUiState(
-    val latitude : Double = 30.0444,
-    val longitude : Double = 31.2357,
-    val locationName : String = "",
-    val locationFullName : String = "",
-    val isLoading : Boolean = false,
-)
-
-enum class PaymentMethod(
-    val title : String,
-    val icon : ImageVector,
-    val integrationId : Int
-){
-    CARD(
-        title = "Bank card (Visa / Mastercard)",
-        icon = Icons.Default.Payment,
-        integrationId = 111111
-    ),
-
-    WALLET(
-        title = "E-wallet(Vodafone Cash)",
-        icon = Icons.Default.AccountBalanceWallet,
-        integrationId = 111111
-    ),
-
-    CASH(
-        title = "Cash on delivery",
-        icon = Icons.Default.Payments,
-        integrationId = 0
-    )
-
-}
-
-sealed interface PaymentState{
-    data object Idle : PaymentState
-    data object Loading : PaymentState
-    data object Success : PaymentState
-    data object Failed : PaymentState
-}
-
-data class CheckoutUiState(
-    val selectedPaymentMethod: PaymentMethod = PaymentMethod.CASH,
-    val isProcessing: Boolean = false
-)
-
-data class OrderItemsClass(
-    val mealId : Int = 0,
-    val mealName : String = "",
-    val size : String = "",
-    val price : Double = 0.0,
-    val quantity : Int = 0,
-    val image : String = "",
-    val type : String = ""
-)
-
-data class UserInformationInOrderClass(
-    val name : String = "",
-    val phonenumber : String = "",
-    val address : String = "",
-    val location : String = "",
-    val locationAddress : String = ""
-)
-
-data class OrdersClass(
-    val date : String = "",
-    val state : String = "",
-    val subtotal : Double = 0.0,
-    val delivery : Double = 0.0,
-    val service : Double = 0.0,
-    val totalPrice : Double = 0.0,
-    val userInformation : UserInformationInOrderClass = UserInformationInOrderClass(),
-    val orderItems : List<OrderItemsClass> = emptyList(),
-    val restaurantName : String = "",
-    val restaurantImage : String = "",
-    val restaurantId : Int = 0
-)
-
-sealed interface ActionsStates{
-    data object Idle : ActionsStates
-    data object Loading : ActionsStates
-    data object Success : ActionsStates
-    data class Failed(val error : String) : ActionsStates
-}
-
-sealed interface UiEvent {
-    object ShowNetworkError : UiEvent
-}
 
 sealed interface BottomSheetItem {
     val id : Int

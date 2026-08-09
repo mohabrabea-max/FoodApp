@@ -25,4 +25,16 @@ fun CoroutineScope.bottomSnackBar(
     }
 }
 
+fun CoroutineScope.shortBottomSnackBar(
+    snackBarHostState : SnackbarHostState,
+    message : String
+){
+    this.launch {
+       snackBarHostState.showSnackbar(
+            message = message,
+            duration = SnackbarDuration.Short,
+       )
+    }
+}
+
 // "Item added to cart successfully!"
