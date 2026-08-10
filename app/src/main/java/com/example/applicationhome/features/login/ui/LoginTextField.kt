@@ -124,9 +124,9 @@ fun LoginTextField(
             decorator = { innerTextField ->
                 Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.CenterStart // 👈 هنا بنقوله وسطن النص رأسياً وخليك على الشمال
+                    contentAlignment = Alignment.CenterStart
                 ) {
-                    innerTextField() // 👈 ده النص الخام اللي بيتكتب
+                    innerTextField()
                 }
             }
         )

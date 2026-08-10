@@ -7,6 +7,8 @@ import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
 import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
+import com.example.applicationhome.data.data.model.AddToCartStates
+import com.example.applicationhome.data.data.model.ShowSnackBarEvent
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
@@ -15,7 +17,12 @@ import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,7 +34,7 @@ class FavoriteViewModel @Inject constructor(
     favoriteRepository : FavoriteRepository,
     private val cartUseCase : CartUseCase,
     private val getFavoriteUseCase : GetFavoriteUseCase,
-    private val networkObserver : NetworkObserver
+    networkObserver : NetworkObserver
 ) : ViewModel(){
 
     val userData = userRepository.userData
@@ -35,7 +42,8 @@ class FavoriteViewModel @Inject constructor(
 
 //        *** ---------------------------- \\***  Favorite  ***// ---------------------------- ***
 
-    val selectedCategorieInFavoriteScreen = MutableStateFlow(0)
+    private val _selectedCategorieInFavoriteScreen = MutableStateFlow(0)
+    val selectedCategorieInFavoriteScreen = _selectedCategorieInFavoriteScreen.asStateFlow()
 
     val favoriteMeals = favoriteRepository.favoriteMeals
 
@@ -49,15 +57,12 @@ class FavoriteViewModel @Inject constructor(
 
     val favoriteRestaurantsCount = favoriteRepository.favoriteRestaurantsCount
 
-    val isNetworkAvailable = MutableStateFlow(false)
-
-    init {
-        viewModelScope.launch {
-            networkObserver.isNetworkAvailable.collect { available ->
-                isNetworkAvailable.value = available
-            }
-        }
-    }
+    val isNetworkAvailable = networkObserver.isNetworkAvailable
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = true
+        )
 
 
     fun addMealFavorite(food : FavoriteMealEntity){
@@ -95,14 +100,17 @@ class FavoriteViewModel @Inject constructor(
 
 
     fun selectedFavoriteScreen(index: Int){
-        selectedCategorieInFavoriteScreen.value = index
+        _selectedCategorieInFavoriteScreen.value = index
     }
 
 
 //       *** ---------------------------- \\***  Cart  ***// ---------------------------- ***
 
-    var errorInCart = MutableStateFlow(Pair(false,""))
+    private val _errorInCart = MutableStateFlow<AddToCartStates>(AddToCartStates.Idle)
+    val errorInCart = _errorInCart.asStateFlow()
 
+    private val _snackBarChannel = Channel<ShowSnackBarEvent>(Channel.BUFFERED)
+    val snackBarChannel = _snackBarChannel.receiveAsFlow()
 
     val cartItems = cartRepository.cartItems
     val cartInformation = cartRepository.cartInformation
@@ -110,25 +118,45 @@ class FavoriteViewModel @Inject constructor(
 
     val totalPrice = cartRepository.totalPrice
 
-    val newCount = MutableStateFlow(0)
-
-    val newFoodInCart = MutableStateFlow<CartItemsClass?>(null)
-    val newFoodInCartSize = MutableStateFlow<String?>(null)
+    private val newFoodInCart = MutableStateFlow<CartItemsClass?>(null)
+    private val newFoodInCartSize = MutableStateFlow<String?>(null)
 
 
 
-    fun plus(food: CartItemsClass, size : String){
+    fun plus(food: CartItemsClass, size : String, cartNavigation : () -> Unit){
         viewModelScope.launch(Dispatchers.IO) {
             val userId = userRepository.userData.value.id
             val state = cartUseCase.plus(userId, food, size)
-            if(state != null){
-                if(state.first == "User Id Is Empty"){
-                    alertDialogTrue(Pair(true, "User Id Is Empty"))
-                }else{
-                    alertDialogTrue(Pair(true, "Error In Restaurant"))
-                    newFoodInCartSize.value = state.first
-                    newFoodInCart.value = state.second
+
+            when(state){
+                AddToCartStates.Success -> {
+                    sendAddedToCartChannel{ cartNavigation() }
                 }
+
+                is AddToCartStates.ErrorInCartRestaurant -> {
+                    alertDialogTrue(
+                        AddToCartStates.ErrorInCartRestaurant(
+                            title = "Start a new cart?",
+                            message = "A new order will clear your cart with '${cartInformation.value?.restaurantName}'",
+                            state.food,
+                            state.size
+                        )
+                    )
+
+                    newFoodInCartSize.value = state.size
+                    newFoodInCart.value = state.food
+                }
+
+                is AddToCartStates.ErrorInLoginState -> {
+                    alertDialogTrue(
+                        AddToCartStates.ErrorInLoginState(
+                            title = "Sign in required!",
+                            message = "Please sign in or create an account to add items to your cart and proceed with your order."
+                        )
+                    )
+                }
+
+                else -> {}
             }
         }
     }
@@ -140,7 +168,7 @@ class FavoriteViewModel @Inject constructor(
         }
     }
 
-    fun clearAndStartNewCart(count : Int) {
+    fun clearAndStartNewCart(count : Int, cartNavigation : () -> Unit) {
         viewModelScope.launch {
             val newFood = newFoodInCart.value
             val newSize = newFoodInCartSize.value
@@ -149,7 +177,9 @@ class FavoriteViewModel @Inject constructor(
 
             if(finally && newFood != null && newSize != null){
                 cartUseCase.updateCount(userId, newFood, newSize, count)
-                deletenewCount()
+
+                sendAddedToCartChannel{ cartNavigation() }
+
                 newFoodInCart.value = null
                 newFoodInCartSize.value = null
             }
@@ -163,15 +193,23 @@ class FavoriteViewModel @Inject constructor(
         }
     }
 
-    fun deletenewCount(){
-        newCount.value = 0
-    }
-
-    private fun alertDialogTrue(error : Pair<Boolean, String>){
-        errorInCart.value = error
+    private fun alertDialogTrue(error : AddToCartStates){
+        _errorInCart.value = error
     }
 
     fun alertDialogFalse(){
-        errorInCart.value = Pair(false,"")
+        _errorInCart.value = AddToCartStates.Idle
+    }
+
+    private fun sendAddedToCartChannel(cartNavigation : () -> Unit){
+        viewModelScope.launch {
+            _snackBarChannel.send(
+                ShowSnackBarEvent.AddedToCart(
+                    message = "Added to cart",
+                    actionLabel = "View",
+                    action = { cartNavigation() }
+                )
+            )
+        }
     }
 }

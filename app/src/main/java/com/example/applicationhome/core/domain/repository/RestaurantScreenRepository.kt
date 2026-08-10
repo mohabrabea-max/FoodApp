@@ -13,7 +13,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RestaurantScreenRepository @Inject constructor(
+class RestaurantRepository @Inject constructor(
     private val foodAndRestaurantsDao : FoodAndRestaurantsDao
 ) {
     fun getRestaurantByIdFromDatabase(resId : Int): Flow<RestaurantWithFavoriteStatus?> =

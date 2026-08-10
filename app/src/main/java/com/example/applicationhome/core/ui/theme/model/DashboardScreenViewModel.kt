@@ -17,7 +17,6 @@ class DashboardScreenViewModel @Inject constructor(
     private val cartRepository : CartRepository
 ) : ViewModel(){
     val state = MutableStateFlow(true)
-    val sheetState = MutableStateFlow(false)
 
     val isLogin = userRepository.isLogin
 
@@ -32,9 +31,9 @@ class DashboardScreenViewModel @Inject constructor(
         viewModelScope.launch {
             userData.collect { currentUser ->
                 if(currentUser.id.isNotEmpty()){
-                    userRepository.isLogin()
+                    userRepository.login()
                 }else{
-                    userRepository.isLogout()
+                    userRepository.logout()
                 }
             }
         }
@@ -42,17 +41,15 @@ class DashboardScreenViewModel @Inject constructor(
 
     fun stateTrue(){
         state.value = true
-        sheetState.value = true
     }
     fun stateFalse(){
         state.value = false
-        sheetState.value = false
     }
 
     fun logout(){
         viewModelScope.launch {
             userRepository.logOut(userData.value.email)
-            userRepository.isLogout()
+            userRepository.logout()
         }
     }
 }

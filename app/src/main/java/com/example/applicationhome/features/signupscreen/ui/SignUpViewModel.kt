@@ -11,7 +11,10 @@ import com.example.applicationhome.data.data.model.UserClassFireBase
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,8 +23,16 @@ class SignUpViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val favoriteRepository: FavoriteRepository,
     private val searchRepository: SearchRepository,
-    private val networkObserver: NetworkObserver
+    networkObserver: NetworkObserver
 ) : ViewModel() {
+    val isNetworkAvailable = networkObserver.isNetworkAvailable
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = true
+        )
+
+
     val loading : StateFlow<Boolean> = userRepository.loading
 
     val firstnamestate = TextFieldState()
@@ -32,12 +43,12 @@ class SignUpViewModel @Inject constructor(
     val phonenumberstate = TextFieldState()
     val addressstate = TextFieldState()
 
-    val bottonState = MutableStateFlow(false)
+    private val _bottonState = MutableStateFlow(false)
+    val bottonState = _bottonState.asStateFlow()
 
 
-    private val _signUpResult = MutableStateFlow<String>("")
-
-    var signupPages = MutableStateFlow(1)
+    private val _signupPages = MutableStateFlow(1)
+    val signupPages = _signupPages.asStateFlow()
 
     private val _isEmailChecked = MutableStateFlow(false)
     var isEmailChecked : StateFlow<Boolean> = _isEmailChecked
@@ -56,7 +67,7 @@ class SignUpViewModel @Inject constructor(
             )
 
             if (state == "The operation was successful Account created"){
-                signupPages.value = 1
+                _signupPages.value = 1
                 _isEmailChecked.value = false
             }
         }
@@ -85,9 +96,9 @@ class SignUpViewModel @Inject constructor(
             && passwordstate.text.length >= 8
             && passwordstate.text == confirmpasswordstate.text
         ){
-            bottonState.value = true
+            _bottonState.value = true
         } else {
-            bottonState.value = false
+            _bottonState.value = false
         }
     }
 
@@ -107,10 +118,10 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun nextPage(){
-        signupPages.value += 1
+        _signupPages.value += 1
     }
 
     fun lastPage(){
-        signupPages.value -= 1
+        _signupPages.value -= 1
     }
 }

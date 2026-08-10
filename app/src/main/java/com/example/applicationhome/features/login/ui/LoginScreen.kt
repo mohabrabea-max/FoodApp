@@ -30,7 +30,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,11 +62,7 @@ fun LoginScreen(
     val isLogin by loginViewModel.isLogin.collectAsStateWithLifecycle()
     val isNetworkAvailable by loginViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
 
-    DisposableEffect(Unit){
-        onDispose {
-            loginViewModel.clearFields()
-        }
-    }
+
     Scaffold(
         modifier = Modifier.navigationBarsPadding().fillMaxSize(),
         topBar = {
@@ -82,7 +77,6 @@ fun LoginScreen(
                             if (navigationController.previousBackStackEntry != null) {
                                 navigationController.popBackStack()
                             }
-                            loginViewModel.clearFields()
                         },
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
                     ) {

@@ -6,13 +6,15 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.applicationhome.core.domain.repository.CartRepository
-import com.example.applicationhome.core.domain.repository.RestaurantScreenRepository
+import com.example.applicationhome.core.domain.repository.RestaurantRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
 import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
+import com.example.applicationhome.data.data.model.AddToCartStates
 import com.example.applicationhome.data.data.model.BottomSheetItem
 import com.example.applicationhome.data.data.model.Drink
 import com.example.applicationhome.data.data.model.RestaurantUiState
+import com.example.applicationhome.data.data.model.ShowSnackBarEvent
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
@@ -24,6 +26,7 @@ import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -35,6 +38,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -44,9 +48,9 @@ import javax.inject.Inject
 @HiltViewModel
 class RestaurantViewModel @Inject constructor(
     savedStateHandle : SavedStateHandle,
-    private val networkObserver : NetworkObserver,
+    networkObserver : NetworkObserver,
     cartRepository : CartRepository,
-    private val restaurantScreenRepository : RestaurantScreenRepository,
+    private val restaurantRepository : RestaurantRepository,
     private val userRepository : UserRepository,
     private val cartUseCase : CartUseCase,
     private val getFavoriteUseCase : GetFavoriteUseCase
@@ -62,7 +66,7 @@ class RestaurantViewModel @Inject constructor(
     private val _selectedTypeIndex = MutableStateFlow(0)
     val selectedTypeIndex : StateFlow<Int> = _selectedTypeIndex.asStateFlow()
     private val _typeInRestaurantScreen = MutableStateFlow("")
-    val typeInRestaurantScreen : StateFlow<String> = _typeInRestaurantScreen.asStateFlow()
+    val typeInRestaurantScreen = _typeInRestaurantScreen.asStateFlow()
 
     private val _mealSize = MutableStateFlow("")
     val mealSize : StateFlow<String> = _mealSize.asStateFlow()
@@ -73,12 +77,12 @@ class RestaurantViewModel @Inject constructor(
     ) { resId, type ->
         Pair(resId, type)
     }.flatMapLatest { (resId, type) ->
-        restaurantScreenRepository.getMealsFromDatabase(resId, type)
+        restaurantRepository.getMealsFromDatabase(resId, type)
     }.cachedIn(viewModelScope)
 
     val snackMenuList : Flow<PagingData<SnackWithFavoriteStatus>> =
         _resId.flatMapLatest { resId ->
-            restaurantScreenRepository.getSnacksFromDatabase(resId)
+            restaurantRepository.getSnacksFromDatabase(resId)
         }.cachedIn(viewModelScope)
 
     private val _drinkMenuMap = MutableStateFlow<Map<String, Drink>>(emptyMap())
@@ -97,7 +101,7 @@ class RestaurantViewModel @Inject constructor(
 
     val restaurantOffersMenuList : StateFlow<List<OffersEntity>> =
         _resId.flatMapLatest{ id ->
-            restaurantScreenRepository.getRestaurantOffersFromDatabase(id)
+            restaurantRepository.getRestaurantOffersFromDatabase(id)
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -105,7 +109,12 @@ class RestaurantViewModel @Inject constructor(
         )
 
 
-    val isNetworkAvailable = MutableStateFlow(false)
+    val isNetworkAvailable =  networkObserver.isNetworkAvailable
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = true
+        )
 
     private val _uiState = MutableStateFlow(RestaurantUiState())
     val uiState = _uiState.asStateFlow()
@@ -130,11 +139,11 @@ class RestaurantViewModel @Inject constructor(
             }.flatMapLatest { (meal, snack) ->
                 when {
                     meal != null -> {
-                        restaurantScreenRepository.getMealByIdFromDatabase(meal)
+                        restaurantRepository.getMealByIdFromDatabase(meal)
                             .map {  BottomSheetItem.MealItem(it) }
                     }
                     snack != null -> {
-                        restaurantScreenRepository.getSnackByIdFromDatabase(snack)
+                        restaurantRepository.getSnackByIdFromDatabase(snack)
                             .map {  BottomSheetItem.SnackItem(it) }
                     }
                     else -> flowOf(null)
@@ -147,12 +156,6 @@ class RestaurantViewModel @Inject constructor(
                 }
             }
         }
-
-        viewModelScope.launch {
-            networkObserver.isNetworkAvailable.collect { available ->
-                isNetworkAvailable.value = available
-            }
-        }
     }
 
 
@@ -161,17 +164,17 @@ class RestaurantViewModel @Inject constructor(
             val foodFlow : Flow<BottomSheetItem?> =
                 when{
                     mealId != null -> {
-                        restaurantScreenRepository.getMealByIdFromDatabase(mealId)
+                        restaurantRepository.getMealByIdFromDatabase(mealId)
                             .map { BottomSheetItem.MealItem(it) }
                     }
                     snackId != null -> {
-                        restaurantScreenRepository.getSnackByIdFromDatabase(snackId)
+                        restaurantRepository.getSnackByIdFromDatabase(snackId)
                             .map { BottomSheetItem.SnackItem(it) }
                     }
                     else -> flowOf(null)
                 }
 
-            val restaurantFlow = restaurantScreenRepository.getRestaurantByIdFromDatabase(restaurantId)
+            val restaurantFlow = restaurantRepository.getRestaurantByIdFromDatabase(restaurantId)
                 .filterNotNull()
 
             launch {
@@ -232,7 +235,11 @@ class RestaurantViewModel @Inject constructor(
 
 //       *** ---------------------------- \\***  Cart  ***// ---------------------------- ***
 
-    var errorInCart = MutableStateFlow(Pair(false,""))
+    private val _errorInCart = MutableStateFlow<AddToCartStates>(AddToCartStates.Idle)
+    val errorInCart = _errorInCart.asStateFlow()
+
+    private val _snackBarChannel = Channel<ShowSnackBarEvent>(Channel.BUFFERED)
+    val snackBarChannel = _snackBarChannel.receiveAsFlow()
 
     val cartInformation = cartRepository.cartInformation
 
@@ -242,43 +249,87 @@ class RestaurantViewModel @Inject constructor(
 
     val totalPrice = cartRepository.totalPrice
 
-    val newFoodInCart = MutableStateFlow<CartItemsClass?>(null)
-    val newFoodInCartSize = MutableStateFlow<String?>(null)
+    private val newFoodInCart = MutableStateFlow<CartItemsClass?>(null)
+    private val newFoodInCartSize = MutableStateFlow<String?>(null)
 
-    val newCount = MutableStateFlow(0)
+    private val _newCount = MutableStateFlow(0)
+    val newCount = _newCount.asStateFlow()
 
 
-    fun plus(food: CartItemsClass, size : String){
+    fun plus(food: CartItemsClass, size : String, cartNavigation : () -> Unit){
         viewModelScope.launch {
             val userId = userRepository.userData.value.id
             val state = cartUseCase.plus(userId, food, size)
-            if(state != null){
-                if(state.first == "User Id Is Empty"){
-                    alertDialogTrue(Pair(true, "User Id Is Empty"))
-                }else{
-                    alertDialogTrue(Pair(true, "Error In Restaurant"))
-                    newFoodInCartSize.value = state.first
-                    newFoodInCart.value = state.second
+
+            when(state){
+                AddToCartStates.Success -> {
+                    sendAddedToCartChannel{ cartNavigation() }
                 }
+
+                is AddToCartStates.ErrorInCartRestaurant -> {
+                    alertDialogTrue(
+                        AddToCartStates.ErrorInCartRestaurant(
+                            title = "Start a new cart?",
+                            message = "A new order will clear your cart with '${cartInformation.value?.restaurantName}'",
+                            state.food,
+                            state.size
+                        )
+                    )
+
+                    newFoodInCartSize.value = state.size
+                    newFoodInCart.value = state.food
+                }
+
+                is AddToCartStates.ErrorInLoginState -> {
+                    alertDialogTrue(
+                        AddToCartStates.ErrorInLoginState(
+                            title = "Sign in required!",
+                            message = "Please sign in or create an account to add items to your cart and proceed with your order."
+                        )
+                    )
+                }
+
+                else -> {}
             }
         }
     }
 
-    fun updateCount(food : CartItemsClass, size : String, newCount : Int) {
+    fun updateCount(food : CartItemsClass, size : String, newCount : Int, cartNavigation : () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val userId = userRepository.userData.value.id
             val state = cartUseCase.updateCount(userId, food, size, newCount)
-            if(state != null){
-                if(state.first == "User Id Is Empty"){
-                    alertDialogTrue(Pair(true, "User Id Is Empty"))
-                }else{
-                    alertDialogTrue(Pair(true, "Error In Restaurant"))
-                    newFoodInCartSize.value = state.first
-                    newFoodInCart.value = state.second
+
+            when(state){
+                AddToCartStates.Success -> {
+                    sendAddedToCartChannel{ cartNavigation() }
+                    closeBottomSheet()
+                    deletenewCount()
                 }
-            }else{
-                closeBottomSheet()
-                deletenewCount()
+
+                is AddToCartStates.ErrorInCartRestaurant -> {
+                    alertDialogTrue(
+                        AddToCartStates.ErrorInCartRestaurant(
+                            title = "Start a new cart?",
+                            message = "A new order will clear your cart with '${cartInformation.value?.restaurantName}'",
+                            state.food,
+                            state.size
+                        )
+                    )
+
+                    newFoodInCartSize.value = state.size
+                    newFoodInCart.value = state.food
+                }
+
+                is AddToCartStates.ErrorInLoginState -> {
+                    alertDialogTrue(
+                        AddToCartStates.ErrorInLoginState(
+                            title = "Sign in required!",
+                            message = "Please sign in or create an account to add items to your cart and proceed with your order."
+                        )
+                    )
+                }
+
+                else -> {}
             }
         }
     }
@@ -290,7 +341,7 @@ class RestaurantViewModel @Inject constructor(
         }
     }
 
-    fun clearAndStartNewCart(count : Int) {
+    fun clearAndStartNewCart(count : Int, cartNavigation : () -> Unit) {
         viewModelScope.launch {
             val newFood = newFoodInCart.value
             val newSize = newFoodInCartSize.value
@@ -299,40 +350,84 @@ class RestaurantViewModel @Inject constructor(
 
             if(finally && newFood != null && newSize != null){
                 cartUseCase.updateCount(userId, newFood, newSize, count)
+
+                sendAddedToCartChannel{ cartNavigation() }
+
                 closeBottomSheet()
+
                 deletenewCount()
+
                 newFoodInCart.value = null
                 newFoodInCartSize.value = null
             }
         }
     }
 
-    fun delete(foodId: Int, size : String){
-        viewModelScope.launch {
-            val userId = userRepository.userData.value.id
-            cartUseCase.delete(userId, foodId, size)
-        }
-    }
-
-    private fun alertDialogTrue(error : Pair<Boolean, String>){
-        errorInCart.value = error
+    private fun alertDialogTrue(error : AddToCartStates){
+        _errorInCart.value = error
     }
 
     fun alertDialogFalse(){
-        errorInCart.value = Pair(false,"")
+        _errorInCart.value = AddToCartStates.Idle
     }
 
     fun plusnewCount(){
-        newCount.value += 1
+        _newCount.value += 1
     }
 
     fun minusnewCount(){
-        newCount.value -= 1
+        _newCount.value -= 1
     }
 
     fun deletenewCount(){
-        newCount.value = 0
+        _newCount.value = 0
     }
+
+    private fun sendAddedToCartChannel(cartNavigation : () -> Unit){
+        viewModelScope.launch {
+            _snackBarChannel.send(
+                ShowSnackBarEvent.AddedToCart(
+                    message = "Added to cart",
+                    actionLabel = "View",
+                    action = { cartNavigation() }
+                )
+            )
+        }
+    }
+//    private fun sendRemovedFromCartChannel(undo : () -> Unit){
+//        viewModelScope.launch {
+//            _snackBarChannel.send(
+//                ShowSnackBarEvent.RemoveFromCart(
+//                    message = "Removed from cart",
+//                    actionLabel = "Undo",
+//                    undo = { undo() }
+//                )
+//            )
+//        }
+//    }
+
+//    private fun sendAddedToFavoriteChannel(favoriteNavigation : () -> Unit){
+//        viewModelScope.launch {
+//            _snackBarChannel.send(
+//                ShowSnackBarEvent.AddedToFavorite(
+//                    message = "Added to favorite",
+//                    actionLabel = "View",
+//                    action = { favoriteNavigation() }
+//                )
+//            )
+//        }
+//    }
+//    private fun sendRemovedFromFavoriteChannel(undo : () -> Unit){
+//        viewModelScope.launch {
+//            _snackBarChannel.send(
+//                ShowSnackBarEvent.RemoveFromFavorite(
+//                    message = "Removed from favorite",
+//                    actionLabel = "Undo",
+//                    undo = { undo() }
+//                )
+//            )
+//        }
+//    }
 
 
     //       *** ---------------------------- \\***  Favorite  ***// ---------------------------- ***

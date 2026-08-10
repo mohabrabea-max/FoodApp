@@ -67,8 +67,6 @@ fun Cart(
         if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
     }
 
-    val loading by cartViewModel.loading.collectAsStateWithLifecycle()
-
     val cartItems by cartViewModel.cartItems.collectAsStateWithLifecycle()
 
     val totalPrice by cartViewModel.totalPrice.collectAsStateWithLifecycle()
@@ -202,13 +200,12 @@ fun Cart(
             ){
                 if(cartItems.isNotEmpty()){
                     MyButton(
-                        loading,
+                        false,
                         Color.DarkOrange,
                         Color.White,
                         40.dp,
-                        "Checkout",
-                        { navigationController.navigate(Screens.ConfirmOrderScreen.screen) }
-                    )
+                        "Checkout"
+                    ){ navigationController.navigate(Screens.ConfirmOrderScreen.screen) }
                 }
             }
         }

@@ -3,6 +3,7 @@ package com.example.applicationhome.core.ui.components.forHomeScreenOrMenu
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,17 +30,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.RedOrange
-import com.example.applicationhome.data.data.model.Screens
 
 @Composable
 fun RestaurantButton(
-    navigationController: NavHostController,
     totalNumber : Int,
-    totalPrice : Double
+    totalPrice : Double,
+    navigation : () -> Unit
 ){
+    val interactionSource = remember { MutableInteractionSource() }
+
     Box(
         modifier = Modifier.fillMaxWidth().
         height(100.dp).
@@ -56,8 +58,11 @@ fun RestaurantButton(
             height(55.dp).
             shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(50.dp)).
             background(Color.DarkOrange).
-            clickable{
-                navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
+            clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ){
+                navigation()
             }.
             padding(9.dp),
             verticalAlignment = Alignment.CenterVertically,

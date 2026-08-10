@@ -18,18 +18,13 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -38,6 +33,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showNetworkSnackBar
+import com.example.applicationhome.core.ui.theme.MatteBlack
 import com.example.applicationhome.core.ui.theme.model.FinalScreenViewModel
 import com.example.applicationhome.core.ui.theme.model.UserImageViewModel
 import com.example.applicationhome.core.ui.theme.screens.NoInternetScreen
@@ -60,20 +56,19 @@ import com.example.applicationhome.features.search.ui.Search
 import com.example.applicationhome.features.search.ui.SearchViewModel
 import com.example.applicationhome.features.signupscreen.ui.SignUpScreen
 import com.example.applicationhome.features.signupscreen.ui.SignUpViewModel
-import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
-    val networkState by finalScreenViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
+    val networkState = finalScreenViewModel.isNetworkAvailable
 
     val snackBarHostState = remember { SnackbarHostState() }
 
     val navigationController = rememberNavController()
 
-    val coroutineScope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier.fillMaxSize().
@@ -219,43 +214,28 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
             }
         }
 
-        var wasNetworkDisconnected by remember { mutableStateOf(false) }
-        LaunchedEffect(networkState){
-            delay(1000.milliseconds)
-            if(!networkState){
-                wasNetworkDisconnected = true
-                coroutineScope.showNetworkSnackBar(
-                    snackBarHostState,
-                    message = "No internet connection. Please try again.",
-                    actionLabel = "DISCONNECTED",
-                )
-            }else{
-                if(wasNetworkDisconnected){
-                    wasNetworkDisconnected = false
-                    coroutineScope.showNetworkSnackBar(
-                        snackBarHostState,
-                        message = "Connected! Refreshing menu...",
-                        actionLabel = "CONNECTED",
-                    )
+        LaunchedEffect(Unit){
+            networkState.drop(1).collect { isConnected ->
+                val message = if (isConnected) "Connected!" else "Disconnected!"
 
+                launch {
+                    snackBarHostState.showNetworkSnackBar(
+                        message = message
+                    )
                 }
             }
         }
+
         Box(modifier = Modifier.fillMaxSize()){
             SnackbarHost(
                 hostState = snackBarHostState,
                 modifier = Modifier
                     .align(alignment = Alignment.TopCenter)
-                    .padding(top = 60.dp)
-                    .width(300.dp)
+                    .padding(top = 50.dp)
+                    .width(150.dp)
             ){ data ->
-                val backgroundColor = if (data.visuals.actionLabel == "DISCONNECTED") {
-                    Color.Red
-                } else {
-                    Color.Green
-                }
                 Snackbar(
-                    containerColor = backgroundColor,
+                    containerColor = Color.MatteBlack,
                     contentColor = Color.White,
                     shape = RoundedCornerShape(15.dp),
                     content = {

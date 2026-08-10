@@ -3,38 +3,32 @@ package com.example.applicationhome.core.ui.components.forHomeScreenOrMenu
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
-fun CoroutineScope.bottomSnackBar(
-    snackBarHostState : SnackbarHostState,
-    onActionClicked : () -> Unit,
+suspend fun SnackbarHostState.bottomSnackBarWithAction(
     message : String,
-    actionLabel : String
-
+    actionLabel : String,
+    duration : SnackbarDuration = SnackbarDuration.Short,
+    onActionClicked : () -> Unit
 ){
-    this.launch {
-        val result = snackBarHostState.showSnackbar(
+    val result = this.showSnackbar(
             message = message,
             actionLabel = actionLabel,
-            duration = SnackbarDuration.Indefinite,
+            duration = duration,
         )
-        if (result == SnackbarResult.ActionPerformed) {
-            onActionClicked()
-        }
+
+    if (result == SnackbarResult.ActionPerformed) {
+        onActionClicked()
     }
 }
 
-fun CoroutineScope.shortBottomSnackBar(
-    snackBarHostState : SnackbarHostState,
-    message : String
+suspend fun SnackbarHostState.bottomSnackBar(
+    message : String,
+    duration : SnackbarDuration = SnackbarDuration.Short
 ){
-    this.launch {
-       snackBarHostState.showSnackbar(
-            message = message,
-            duration = SnackbarDuration.Short,
-       )
-    }
+   this.showSnackbar(
+        message = message,
+        duration = duration,
+   )
 }
 
 // "Item added to cart successfully!"

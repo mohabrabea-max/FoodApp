@@ -52,6 +52,7 @@ import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.LightOrange
@@ -70,6 +71,8 @@ fun HomeScreen(
     homeScreenViewModel : HomeScreenViewModel,
     scrollState : LazyListState
 ){
+    val isNetworkAvailable by homeScreenViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
+
     val categories by homeScreenViewModel.categories.collectAsStateWithLifecycle()
     val categorySelected by homeScreenViewModel.selected.collectAsStateWithLifecycle()
 
@@ -89,12 +92,21 @@ fun HomeScreen(
         modifier = Modifier.navigationBarsPadding().
         fillMaxSize(),
         topBar = {
-            HomeScreenTopBar(
-                scrollState,
-                drawerState,
-                coroutineScope,
-                navigationController
-            )
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                HomeScreenTopBar(
+                    scrollState,
+                    drawerState,
+                    coroutineScope,
+                    navigationController
+                )
+
+                if(!isNetworkAvailable){
+                    NetworkErrorTopBar()
+                }
+            }
         }
     ){
         Box(modifier = Modifier.background(Color.VeryLightGray)){

@@ -1,6 +1,5 @@
 package com.example.applicationhome.core.domain.repository
 
-import com.example.applicationhome.data.data.model.ActionsStates
 import com.example.applicationhome.data.data.model.OrdersClass
 import com.example.applicationhome.data.local.dao.OrdersDao
 import com.example.applicationhome.data.local.entity.OrdersDatabaseClass
@@ -9,10 +8,8 @@ import com.example.applicationhome.domain.ApplicationScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
@@ -29,12 +26,6 @@ class OrderRepository @Inject constructor(
     private val api : FoodAppAPIs,
     @ApplicationScope private val externalScope: CoroutineScope
 ) {
-    private val _loading = MutableStateFlow(false)
-    val loading : StateFlow<Boolean> = _loading
-
-    private val _confirmOrderState = MutableStateFlow<ActionsStates>(ActionsStates.Idle)
-    val confirmOrderState = _confirmOrderState.asStateFlow()
-
     val ordersHistory : StateFlow<List<OrdersDatabaseClass>> =
         userRepository.userData.flatMapLatest { user ->
             val id = user.id
@@ -54,7 +45,7 @@ class OrderRepository @Inject constructor(
     : Flow<List<OrdersDatabaseClass>> = ordersDao.getAllOrders(userId)
 
 
-    suspend fun uploadOrderRequest(orderClass : OrdersClass, userId: String){
+    suspend fun uploadOrderRequest(orderClass : OrdersClass, userId: String): Result<Unit> {
         val current = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val date = current.format(formatter)
@@ -62,15 +53,13 @@ class OrderRepository @Inject constructor(
         val orderId = System.currentTimeMillis()
 
         return try {
-            _loading.value = true
-            _confirmOrderState.value = ActionsStates.Loading
             val response = api.putNewOrder(
                 userId,
                 orderId,
                 orderClass.copy(date = date)
             )
             if(response.isSuccessful){
-                _confirmOrderState.value = ActionsStates.Success
+                Result.success(Unit)
             }else{
                 val errorCode = response.code()
 
@@ -80,12 +69,11 @@ class OrderRepository @Inject constructor(
                     in 500..599 -> "Server down ($errorCode)"
                     else -> "HTTP Error: $errorCode"
                 }
-                _confirmOrderState.value = ActionsStates.Failed(errorMessage)
+                Result.failure(Exception(errorMessage))
             }
+
         } catch (e : Exception){
-            _confirmOrderState.value = ActionsStates.Failed("Network error")
-        } finally {
-            _loading.value = false
+            Result.failure(e)
         }
     }
 

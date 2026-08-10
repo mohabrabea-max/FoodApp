@@ -66,6 +66,7 @@ import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.SnaksB
 import com.example.applicationhome.core.ui.theme.BrownForFont
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
+import com.example.applicationhome.data.data.model.AddToCartStates
 import com.example.applicationhome.data.data.model.Screens
 import kotlinx.coroutines.CoroutineScope
 
@@ -185,7 +186,6 @@ fun Favorite(
                                 {
                                     if (networkState) {
                                         navigationController.navigate(Screens.RestaurantScreen.createRouteWithSnack(restaurantId = item.snack.restaurantId, snackId = item.snack.id))
-                                        favoriteViewModel.deletenewCount()
                                     } else {
                                         navigationController.navigate(Screens.NoInternetScreen.screen)
                                     }
@@ -215,7 +215,9 @@ fun Favorite(
 
                                             val snack = item.snack.snacksEntityToCartItemsClass(userData.id, quantity)
 
-                                            favoriteViewModel.plus(snack, size)
+                                            favoriteViewModel.plus(snack, size){
+                                                navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
+                                            }
                                         },
                                         {
                                             val quantity = cartItems.find { it?.mealKey == "${item.snack.id}_${size}" }?.quantity ?: 0
@@ -247,7 +249,6 @@ fun Favorite(
                                 {
                                     if (networkState) {
                                         navigationController.navigate(Screens.RestaurantScreen.createRouteWithMeal(restaurantId = item.meal.restaurantId, mealId = item.meal.id))
-                                        favoriteViewModel.deletenewCount()
                                     }else{
                                         navigationController.navigate(Screens.NoInternetScreen.screen)
                                     }
@@ -300,33 +301,39 @@ fun Favorite(
             )
         }
 
+        when(errorInCart){
+            is AddToCartStates.ErrorInCartRestaurant -> {
+                AlertDialogMessage(
+                    (errorInCart as AddToCartStates.ErrorInCartRestaurant).title,
+                    (errorInCart as AddToCartStates.ErrorInCartRestaurant).message,
+                    "Start",
+                    {
+                        favoriteViewModel.clearAndStartNewCart(1){
+                            navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
+                        }
+                        favoriteViewModel.alertDialogFalse()
+                    },
+                    "Cancel",
+                    { favoriteViewModel.alertDialogFalse() }
+                )
+            }
 
-        if(errorInCart.first && errorInCart.second == "Error In Restaurant"){
-            AlertDialogMessage(
-                "Start a new cart?",
-                "A new order will clear your cart with '${restaurantName ?: ""}'",
-                "Start",
-                {
-                    favoriteViewModel.clearAndStartNewCart(1)
-                    favoriteViewModel.alertDialogFalse()
-                },
-                "Cancel",
-                { favoriteViewModel.alertDialogFalse() }
-            )
-        }else if(errorInCart.first && errorInCart.second == "User Id Is Empty"){
-            AlertDialogMessage(
-                "Sign in required!",
-                "Please sign in or create an account to add items to your cart and proceed with your order.",
-                "Sign in",
-                {
-                    navigationController.navigate(Screens.LoginScreen.screen)
-                    favoriteViewModel.alertDialogFalse()
-                },
-                "Cancel",
-                { favoriteViewModel.alertDialogFalse() }
-            )
+            is AddToCartStates.ErrorInLoginState -> {
+                AlertDialogMessage(
+                    (errorInCart as AddToCartStates.ErrorInLoginState).title,
+                    (errorInCart as AddToCartStates.ErrorInLoginState).message,
+                    "Sign in",
+                    {
+                        navigationController.navigate(Screens.LoginScreen.screen)
+                        favoriteViewModel.alertDialogFalse()
+                    },
+                    "Cancel",
+                    { favoriteViewModel.alertDialogFalse() }
+                )
+            }
+
+            else -> {}
         }
-
 
         if(viewImageState){
             RestaurantImageView(

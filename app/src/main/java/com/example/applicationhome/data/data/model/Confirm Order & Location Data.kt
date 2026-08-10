@@ -59,3 +59,21 @@ sealed interface ActionsStates{
 sealed interface UiEvent {
     object ShowNetworkError : UiEvent
 }
+
+sealed interface MapEntryPoint {
+    data object Initial : MapEntryPoint
+    data object UserData : MapEntryPoint
+    data object Checkout : MapEntryPoint
+}
+
+sealed class ConfirmOrderScreens(val index : Int) {
+    data class Map(val entryPoint : MapEntryPoint = MapEntryPoint.Initial) : ConfirmOrderScreens(
+        when(entryPoint){
+            MapEntryPoint.Initial -> { 0 }
+            else -> { 4 }
+        }
+    )
+    data object UserData : ConfirmOrderScreens(1)
+    data object Checkout : ConfirmOrderScreens(2)
+    data object PaymentGateway : ConfirmOrderScreens(3)
+}

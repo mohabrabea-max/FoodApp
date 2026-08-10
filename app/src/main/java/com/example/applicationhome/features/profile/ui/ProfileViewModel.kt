@@ -36,16 +36,17 @@ class ProfileViewModel @Inject constructor(
 
     //------------------------------- States ------------------------------
     val loading = profileRepository.loading
-    val isButtonClicked = MutableStateFlow(false)
+    private val _isButtonClicked = MutableStateFlow(false)
+    val isButtonClicked = _isButtonClicked.asStateFlow()
     val isDataEdited = profileRepository.isDataEdited
 
 
 
     //------------------------------- Text Fields ------------------------------
-    val firstNameTextField = TextFieldState()
-    val lastNameTextField = TextFieldState()
-    val phoneNumberTextField = TextFieldState()
-    val addressTextField = TextFieldState()
+    private val firstNameTextField = TextFieldState()
+    private val lastNameTextField = TextFieldState()
+    private val phoneNumberTextField = TextFieldState()
+    private val addressTextField = TextFieldState()
 
     val profileTextFields  = listOf(
         AccountTextFieldClass(
@@ -80,11 +81,14 @@ class ProfileViewModel @Inject constructor(
 
 
     //------------------------------- Text Flows ------------------------------
-    val selectedDate = MutableStateFlow("")
+    private val _selectedDate = MutableStateFlow("")
+    val selectedDate = _selectedDate.asStateFlow()
 
-    val selectedGovernorate = MutableStateFlow("")
+    private val _selectedGovernorate = MutableStateFlow("")
+    val selectedGovernorate = _selectedGovernorate.asStateFlow()
 
-    val selectedCity = MutableStateFlow("")
+    private val _selectedCity = MutableStateFlow("")
+    val selectedCity = _selectedCity.asStateFlow()
 
     private val _searchString = MutableStateFlow("")
     val searchString : StateFlow<String> = _searchString.asStateFlow()
@@ -93,7 +97,7 @@ class ProfileViewModel @Inject constructor(
     //------------------------------- Locations ------------------------------
     private val allLocations = profileRepository.getLocations()
 
-    private val allCities = selectedGovernorate
+    private val allCities = _selectedGovernorate
         .map { governorate ->
             allLocations.find { it.name == governorate }?.cities ?: emptyList()
         }.stateIn(
@@ -149,11 +153,11 @@ class ProfileViewModel @Inject constructor(
                     replace(0, length, user.address)
                 }
 
-                selectedDate.value = user.birthday
+                _selectedDate.value = user.birthday
 
-                selectedGovernorate.value = user.governorate
+                _selectedGovernorate.value = user.governorate
 
-                selectedCity.value = user.city
+                _selectedCity.value = user.city
             }
         }
 
@@ -167,9 +171,9 @@ class ProfileViewModel @Inject constructor(
 
 
         val allTextFlows = listOf(
-            selectedDate,
-            selectedGovernorate,
-            selectedCity
+            _selectedDate,
+            _selectedGovernorate,
+            _selectedCity
         )
 
         allTextFlows.forEach { item ->
@@ -183,27 +187,27 @@ class ProfileViewModel @Inject constructor(
 
     //------------------------------- Selection Functions ------------------------------
     fun selectDate(date : String){
-        selectedDate.value = date
+        _selectedDate.value = date
         isDataChanged()
     }
 
     fun selectGovernorate(governorate : String){
-        selectedCity.value = ""
-        selectedGovernorate.value = governorate
+        _selectedCity.value = ""
+        _selectedGovernorate.value = governorate
         isDataChanged()
     }
     fun unselectGovernorate(){
-        selectedCity.value = ""
-        selectedGovernorate.value = ""
+        _selectedCity.value = ""
+        _selectedGovernorate.value = ""
         isDataChanged()
     }
 
     fun selectCity(city : String){
-        selectedCity.value = city
+        _selectedCity.value = city
         isDataChanged()
     }
     fun unselectCity(){
-        selectedCity.value = ""
+        _selectedCity.value = ""
         isDataChanged()
     }
 
@@ -214,7 +218,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun buttonClick(){
-        isButtonClicked.value = true
+        _isButtonClicked.value = true
     }
 
     private fun isDataChanged(){
@@ -225,9 +229,9 @@ class ProfileViewModel @Inject constructor(
             userData.value.email,
             userData.value.password,
             phoneNumberTextField.text.toString(),
-            selectedDate.value,
-            selectedGovernorate.value,
-            selectedCity.value,
+            _selectedDate.value,
+            _selectedGovernorate.value,
+            _selectedCity.value,
             addressTextField.text.toString(),
             true
         )
@@ -270,9 +274,9 @@ class ProfileViewModel @Inject constructor(
                 userData.value.email,
                 userData.value.password,
                 phoneNumberTextField.text.toString(),
-                selectedDate.value,
-                selectedGovernorate.value,
-                selectedCity.value,
+                _selectedDate.value,
+                _selectedGovernorate.value,
+                _selectedCity.value,
                 addressTextField.text.toString()
             )
 
@@ -283,9 +287,9 @@ class ProfileViewModel @Inject constructor(
                 userData.value.email,
                 userData.value.password,
                 phoneNumberTextField.text.toString(),
-                selectedDate.value,
-                selectedGovernorate.value,
-                selectedCity.value,
+                _selectedDate.value,
+                _selectedGovernorate.value,
+                _selectedCity.value,
                 addressTextField.text.toString(),
                 true
             )

@@ -9,37 +9,37 @@ import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrderScreenViewModel @Inject constructor(
-    private val networkObserver : NetworkObserver,
     private val orderRepository : OrderRepository,
+    networkObserver : NetworkObserver,
     userRepository: UserRepository
 ) : ViewModel(){
 
-    val isNetworkAvailable = MutableStateFlow(false)
+    val isNetworkAvailable = networkObserver.isNetworkAvailable
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = true
+        )
 
     val userData = userRepository.userData
 
-    val selectedOrder = MutableStateFlow(OrdersDatabaseClass())
+    private val _selectedOrder = MutableStateFlow(OrdersDatabaseClass())
+    val selectedOrder = _selectedOrder.asStateFlow()
 
     val ordersHistory = orderRepository.ordersHistory
 
 
-    init {
-        viewModelScope.launch {
-            networkObserver.isNetworkAvailable.collect { available ->
-                isNetworkAvailable.value = available
-            }
-        }
-    }
-
-
     fun selectorder(order : OrdersDatabaseClass){
-        selectedOrder.value = order
+        _selectedOrder.value = order
     }
 
     fun getOrdersHistory(){

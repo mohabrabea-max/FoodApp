@@ -194,3 +194,42 @@ data class BottomSheetActions(
     val alertDialogFalse : () -> Unit,
     val closeBottomSheet : () -> Unit
 )
+
+sealed interface ShowSnackBarEvent {
+    data class AddedToFavorite(
+        val message : String,
+        val actionLabel : String = "",
+        val action : () -> Unit = {}
+    ) : ShowSnackBarEvent
+
+    data class RemoveFromFavorite(
+        val message : String,
+        val actionLabel : String = "",
+        val undo : () -> Unit = {}
+    ) : ShowSnackBarEvent
+
+
+    data class AddedToCart(
+        val message : String,
+        val actionLabel : String = "",
+        val action : () -> Unit = {}
+    ) : ShowSnackBarEvent
+
+    data class RemoveFromCart(
+        val message : String,
+        val actionLabel : String = "",
+        val undo : () -> Unit = {}
+    ) : ShowSnackBarEvent
+}
+
+sealed interface AddToCartStates {
+    data object Idle : AddToCartStates
+    data object Success : AddToCartStates
+    data class ErrorInLoginState(val title : String = "", val message : String = "") : AddToCartStates
+    data class ErrorInCartRestaurant(
+        val title : String = "",
+        val message : String = "",
+        val food : CartItemsClass = CartItemsClass(),
+        val size : String = ""
+    ) : AddToCartStates
+}

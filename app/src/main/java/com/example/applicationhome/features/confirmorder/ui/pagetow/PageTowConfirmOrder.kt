@@ -23,6 +23,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,23 +31,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
-import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.shortBottomSnackBar
+import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.bottomSnackBar
 import com.example.applicationhome.core.ui.theme.BrandBlue
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.DeepMatteBlack
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.ActionsStates
+import com.example.applicationhome.data.data.model.PaymentApiState
 import com.example.applicationhome.data.data.model.PaymentMethod
 import com.example.applicationhome.data.data.model.PaymentState
 import com.example.applicationhome.data.local.entity.CartItemsClass
-import kotlinx.coroutines.CoroutineScope
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun PageTowConfirmOrder(
     confirmOrderState : ActionsStates,
     snackBarHostState : SnackbarHostState,
-    scope : CoroutineScope,
     cart : List<CartItemsClass?>,
     totalPrice : Double,
     locationImage : String,
@@ -55,8 +55,9 @@ fun PageTowConfirmOrder(
     phoneNumber : String,
     payMethodState : PaymentMethod = PaymentMethod.CARD,
     paymentState : PaymentState,
+    paymentApiState : PaymentApiState,
     onMethodSelected : (PaymentMethod) -> Unit,
-    changePageNumber : (Int) -> Unit,
+    openMaps : () -> Unit,
     startPayment : () -> Unit,
     uploadOrder : (Boolean) -> Unit
 ){
@@ -135,7 +136,7 @@ fun PageTowConfirmOrder(
                     streetAndHome = streetAndHome,
                     phoneNumber = phoneNumber
                 ){
-                    changePageNumber(4)
+                    openMaps()
                 }
             }
 
@@ -160,14 +161,15 @@ fun PageTowConfirmOrder(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
                     MyButton(
-                        loading = paymentState == PaymentState.Loading,
+                        loading = paymentApiState == PaymentApiState.Loading,
                         backgroundcolor = if(paymentState == PaymentState.Success) Color.Green else Color.DarkOrange,
                         fontcolor = Color.White,
                         horizontalPadding = 50.dp,
                         title = if(paymentState == PaymentState.Success) "Payment success!" else "Pay now!"
                     ){
-                        startPayment()
-                        changePageNumber(5)
+                        if(paymentState != PaymentState.Success){
+                            startPayment()
+                        }
                     }
                 }
             }
@@ -182,14 +184,9 @@ fun PageTowConfirmOrder(
         }
     }
 
-    when(paymentState){
-        PaymentState.Failed -> {
-            scope.shortBottomSnackBar(
-                snackBarHostState = snackBarHostState,
-                message = "Payment failed. Please try again."
-            )
+    LaunchedEffect(paymentState){
+        if(paymentState is PaymentState.Failed) {
+            snackBarHostState.bottomSnackBar("Payment failed. Please try again.")
         }
-
-        else -> {}
     }
 }

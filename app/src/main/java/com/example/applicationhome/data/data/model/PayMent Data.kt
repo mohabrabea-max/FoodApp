@@ -152,3 +152,7 @@ data class CheckoutUiState(
     val selectedPaymentMethod: PaymentMethod = PaymentMethod.CASH,
     val isProcessing: Boolean = false
 )
+
+//data class UserDataInCheckoutScreen(
+//
+//)

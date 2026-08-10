@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun ErrorTopBar(){
+fun NetworkErrorTopBar(){
     Row(
         modifier = Modifier
             .fillMaxWidth()

@@ -5,8 +5,14 @@ import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,23 +36,21 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.example.applicationhome.core.ui.components.bars.ErrorTopBar
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
-import com.example.applicationhome.core.ui.components.designsystem.MyButton
+import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.data.data.model.ActionsStates
+import com.example.applicationhome.data.data.model.ConfirmOrderScreens
+import com.example.applicationhome.data.data.model.MapEntryPoint
 import com.example.applicationhome.data.data.model.PaymentApiState
 import com.example.applicationhome.data.data.model.PaymentState
 import com.example.applicationhome.data.data.model.Screens
@@ -62,8 +66,11 @@ fun ConfirmOrderScreen(
     navigationController : NavHostController,
     confirmOrderScreenViewModel : ConfirmOrderScreenViewModel
 ){
+    val currentScreen by confirmOrderScreenViewModel.currentScreen.collectAsStateWithLifecycle()
+
+    val topBatTitle by confirmOrderScreenViewModel.topBatTitle.collectAsStateWithLifecycle()
+
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
     val isNetworkAvailable by confirmOrderScreenViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
 
@@ -73,7 +80,6 @@ fun ConfirmOrderScreen(
 
     val confirmOrderState by confirmOrderScreenViewModel.confirmOrderState.collectAsStateWithLifecycle()
     val isButtonClicked by confirmOrderScreenViewModel.isButtonClicked.collectAsStateWithLifecycle()
-    val confirmOrderPages by confirmOrderScreenViewModel.confirmOrderPages.collectAsStateWithLifecycle()
 
     val textFieldConfirmOrderScreenList = confirmOrderScreenViewModel.textFieldConfirmOrderScreenList
 
@@ -108,31 +114,12 @@ fun ConfirmOrderScreen(
     }
 
     BackHandler(enabled = true) {
-        when(confirmOrderPages){
-            0 -> {
-                if (navigationController.previousBackStackEntry != null) {
-                    navigationController.popBackStack()
-                }
-
-                confirmOrderScreenViewModel.lastPage()
-            }
-
-            1 -> { confirmOrderScreenViewModel.lastPage() }
-
-            5 -> {
-                confirmOrderScreenViewModel.onPaymentApiStateChanged(PaymentApiState.Idle)
-                confirmOrderScreenViewModel.changePageNumber(2)
-            }
-
-            else -> {
-                confirmOrderScreenViewModel.changePageNumber(1)
-
+        confirmOrderScreenViewModel.navigateBack{
+            if (navigationController.previousBackStackEntry != null) {
+                navigationController.popBackStack()
             }
         }
     }
-
-    val color = if(bottonState) Color.DarkOrange else Color.VeryLightGray
-    val fontcolor = if(bottonState) Color.White else Color.LightGray
 
 
     Scaffold(
@@ -148,28 +135,15 @@ fun ConfirmOrderScreen(
                 MyTopBar(
                     Color.White,
                     modifier = Modifier.fillMaxWidth().height(100.dp).shadow(elevation = 5.dp),
-                    if(confirmOrderPages in 1..<3) "Checkout"
-                    else if(confirmOrderPages == 5) "PayMent"
-                    else "Location",
+                    topBatTitle,
                     Color.Black,
                     {
                         IconButton(
                             onClick = {
-                                if (confirmOrderPages == 1) {
-                                    confirmOrderScreenViewModel.lastPage()
-
-                                } else if(confirmOrderPages == 0){
+                                confirmOrderScreenViewModel.navigateBack{
                                     if (navigationController.previousBackStackEntry != null) {
                                         navigationController.popBackStack()
                                     }
-
-                                    confirmOrderScreenViewModel.lastPage()
-
-                                }else if(confirmOrderPages == 5){
-                                    confirmOrderScreenViewModel.onPaymentApiStateChanged(PaymentApiState.Idle)
-                                    confirmOrderScreenViewModel.changePageNumber(2)
-                                }else{
-                                    confirmOrderScreenViewModel.changePageNumber(1)
                                 }
                             },
                             modifier = Modifier
@@ -181,123 +155,38 @@ fun ConfirmOrderScreen(
                     },
                 )
 
-                if(confirmOrderPages in 1..<3 && !isNetworkAvailable){
-                    ErrorTopBar()
-                }
-            }
-        },
-
-        bottomBar = {
-            // --------------------------------------------\\ Buttons //--------------------------------------------
-            Column(
-                modifier = Modifier
-                    .padding(bottom = 10.dp)
-                    .pointerInput(Unit) { detectTapGestures { } },
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                // --------------------------------------------\\ Page 1 Button //--------------------------------------------
-                if(confirmOrderPages == 1){
-                    MyButton(
-                        confirmOrderState == ActionsStates.Loading,
-                        color,
-                        fontcolor,
-                        40.dp,
-                        "Save address"
-                    ) {
-                        if(bottonState) confirmOrderScreenViewModel.bottonstate()
-                    }
-
-                    // --------------------------------------------\\ Page 2 Button //--------------------------------------------
-                }else if(confirmOrderPages == 2){
-
+                if(!isNetworkAvailable){
+                    NetworkErrorTopBar()
                 }
             }
         }
     ){
-        Box(modifier = Modifier.fillMaxSize()) {
+        AnimatedContent(
+            targetState = currentScreen,
 
-            // --------------------------------------------\\ Page 1 //--------------------------------------------
-            if(confirmOrderPages == 1){
-                PageOneConfirmOrder(
-                    textFieldConfirmOrderScreenList = textFieldConfirmOrderScreenList,
-                    isButtonClicked = isButtonClicked,
-                    confirmOrderError = confirmOrderError,
-                    location = locationState.locationName,
-                    locationImage = locationImage,
-                    bottonStateChange = { confirmOrderScreenViewModel.bottonStateChange() },
-                    openMaps = { confirmOrderScreenViewModel.changePageNumber(3) }
-                )
+            transitionSpec = {
+                val animationSpec = tween<IntOffset>(durationMillis = 300)
 
-            // --------------------------------------------\\ Page 2 //--------------------------------------------
-            } else if(confirmOrderPages == 2) {
-                PageTowConfirmOrder(
-                    confirmOrderState = confirmOrderState,
-                    snackBarHostState = snackbarHostState,
-                    scope = scope,
-                    cart = cart,
-                    totalPrice = totalprice,
-                    locationImage = locationImage,
-                    city = locationState.locationName,
-                    streetAndHome = streetAndHome,
-                    phoneNumber = phoneNumber,
-                    payMethodState = payMethodState.selectedPaymentMethod,
-                    paymentState = paymentState,
-                    onMethodSelected = { confirmOrderScreenViewModel.onPaymentMethodSelected(it) },
-                    changePageNumber = { confirmOrderScreenViewModel.changePageNumber(5) },
-                    startPayment = { confirmOrderScreenViewModel.startPayment() },
-                    uploadOrder = { paymentButtonState ->
-                        if (clickState.value && paymentButtonState) {
-                            clickState.value = false
-                            confirmOrderScreenViewModel.uploadOrder(
-                                onSuccess = {
-                                    navigationController.navigate(Screens.DashboardScreen.screen) {
-                                        popUpTo(Screens.DashboardScreen.screen) {
-                                            inclusive = true
-                                        }
-                                    }
-                                },
+                // إذا كان رقم الشاشة الجديدة أكبر من القديمة = تقدم للأمام، غير ذلك = رجوع للخلف
+                val isForward = targetState.index > initialState.index
 
-                                onField = {
-                                    clickState.value = true
-                                }
-                            )
-                        }
+                if (isForward) {
+                    // ➡️ حركة التقدم: يدخل من اليمين ويخرج لليسار
+                    (slideInHorizontally(animationSpec) { fullWidth -> fullWidth } + fadeIn()) togetherWith
+                            (slideOutHorizontally(animationSpec) { fullWidth -> -fullWidth } + fadeOut())
+                } else {
+                    // ⬅️ حركة الرجوع: يدخل من اليسار ويخرج لليمين
+                    (slideInHorizontally(animationSpec) { fullWidth -> -fullWidth } + fadeIn()) togetherWith
+                            (slideOutHorizontally(animationSpec) { fullWidth -> fullWidth } + fadeOut())
+                }
+            },
 
-                    }
-                )
-
-            // --------------------------------------------\\ Paymob Web View //--------------------------------------------
-            }else if(confirmOrderPages == 5){
-                when(val state = paymentApiState) {
-                    is PaymentApiState.Success -> {
-                        PaymobWebViewScreen(
-                            paymentToken = state.paymentToken,
-                            onPaymentStateChanged = { paymentState ->
-                                confirmOrderScreenViewModel.onPaymentStateChanged(paymentState)
-
-                                when(paymentState){
-                                    PaymentState.Success -> {
-                                        confirmOrderScreenViewModel.onPaymentApiStateChanged(PaymentApiState.Idle)
-                                        confirmOrderScreenViewModel.changePageNumber(1)
-                                    }
-
-                                    PaymentState.Loading -> {
-
-                                    }
-
-                                    PaymentState.Failed -> {
-                                        confirmOrderScreenViewModel.onPaymentApiStateChanged(PaymentApiState.Idle)
-                                    }
-
-                                    PaymentState.Idle -> {
-                                        confirmOrderScreenViewModel.onPaymentApiStateChanged(PaymentApiState.Idle)
-                                    }
-                                }
-                            }
-                        )
-                    }
-
-                    is PaymentApiState.Loading -> {
+            label = "CheckoutNavAnimation"
+        ){ screen ->
+            when(screen){
+                // --------------------------------------------\\ Map Page //--------------------------------------------
+                is ConfirmOrderScreens.Map -> {
+                    if(locationState.isLoading){
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
@@ -308,49 +197,132 @@ fun ConfirmOrderScreen(
                                 strokeWidth = 4.dp
                             )
                         }
-                    }
 
-                    else -> { confirmOrderScreenViewModel.changePageNumber(2) }
-                }
-
-
-                // --------------------------------------------\\ Map Page //--------------------------------------------
-            } else{
-                if(locationState.isLoading){
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ){
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(48.dp),
-                            color = Color.DarkOrange,
-                            strokeWidth = 4.dp
+                    }else{
+                        StreetMapPage(
+                            initialLatitude = locationState.latitude,
+                            initialLongitude = locationState.longitude,
+                            snackBarHostState = snackbarHostState,
+                            uiEvent = confirmOrderScreenViewModel.uiEvent,
+                            isNetworkAvailable = isNetworkAvailable,
+                            onLocationSelected = { latitude, longitude ->
+                                confirmOrderScreenViewModel.updateSelectedLocation(
+                                    latitude,
+                                    longitude
+                                )
+                            },
+                            fetchCurrentLocation = { confirmOrderScreenViewModel.fetchCurrentLocation() },
+                            retryNetwork = { confirmOrderScreenViewModel.retryNetwork() }
                         )
                     }
+                }
 
-                }else{
-                    StreetMapPage(
-                        initialLatitude = locationState.latitude,
-                        initialLongitude = locationState.longitude,
-                        snackBarHostState = snackbarHostState,
-                        scope = scope,
-                        uiEvent = confirmOrderScreenViewModel.uiEvent,
-                        isNetworkAvailable = isNetworkAvailable,
-                        onLocationSelected = { latitude, longitude ->
-                            confirmOrderScreenViewModel.updateSelectedLocation(
-                                latitude,
-                                longitude
-                            )
+                // --------------------------------------------\\ Page 1 //--------------------------------------------
+                is ConfirmOrderScreens.UserData -> {
+                    PageOneConfirmOrder(
+                        textFieldConfirmOrderScreenList = textFieldConfirmOrderScreenList,
+                        isButtonClicked = isButtonClicked,
+                        confirmOrderError = confirmOrderError,
+                        confirmOrderState = confirmOrderState,
+                        bottonState = bottonState,
+                        location = locationState.locationName,
+                        locationImage = locationImage,
+                        bottonStateChange = { confirmOrderScreenViewModel.bottonStateChange() },
+                        openMaps = {
+                            confirmOrderScreenViewModel.fetchCurrentLocation()
+                            confirmOrderScreenViewModel.navigateTo(ConfirmOrderScreens.Map(MapEntryPoint.UserData))
                         },
-                        changePage = {
-                            if (confirmOrderPages == 4) {
-                                confirmOrderScreenViewModel.changePageNumber(2)
-                            } else {
-                                confirmOrderScreenViewModel.changePageNumber(1)
-                            }
-                        },
-                        retryNetwork = { confirmOrderScreenViewModel.retryNetwork() }
+                        onBottonStateChange = { confirmOrderScreenViewModel.onBottonStateChange() }
                     )
+                }
+
+                // --------------------------------------------\\ Page 2 //--------------------------------------------
+                is ConfirmOrderScreens.Checkout -> {
+                    PageTowConfirmOrder(
+                        confirmOrderState = confirmOrderState,
+                        snackBarHostState = snackbarHostState,
+                        cart = cart,
+                        totalPrice = totalprice,
+                        locationImage = locationImage,
+                        city = locationState.locationName,
+                        streetAndHome = streetAndHome,
+                        phoneNumber = phoneNumber,
+                        payMethodState = payMethodState.selectedPaymentMethod,
+                        paymentState = paymentState,
+                        paymentApiState = paymentApiState,
+                        onMethodSelected = { confirmOrderScreenViewModel.onPaymentMethodSelected(it) },
+                        openMaps = {
+                            confirmOrderScreenViewModel.fetchCurrentLocation()
+                            confirmOrderScreenViewModel.navigateTo(ConfirmOrderScreens.Map(MapEntryPoint.Checkout))
+                        },
+                        startPayment = { confirmOrderScreenViewModel.startPayment() },
+                        uploadOrder = { paymentButtonState ->
+                            if (clickState.value && paymentButtonState) {
+                                clickState.value = false
+                                confirmOrderScreenViewModel.uploadOrder(
+                                    onSuccess = {
+                                        navigationController.navigate(Screens.DashboardScreen.screen) {
+                                            popUpTo(Screens.DashboardScreen.screen) {
+                                                inclusive = true
+                                            }
+                                        }
+                                    },
+
+                                    onField = {
+                                        clickState.value = true
+                                    }
+                                )
+                            }
+                        }
+                    )
+                }
+
+                // --------------------------------------------\\ Paymob Web View //--------------------------------------------
+                is ConfirmOrderScreens.PaymentGateway -> {
+                    when(val state = paymentApiState) {
+                        is PaymentApiState.Success -> {
+                            PaymobWebViewScreen(
+                                paymentToken = state.paymentToken,
+                                onPaymentStateChanged = { paymentState ->
+                                    confirmOrderScreenViewModel.onPaymentStateChanged(paymentState)
+
+                                    when(paymentState){
+                                        PaymentState.Success -> {
+                                            confirmOrderScreenViewModel.onPaymentApiStateChanged(PaymentApiState.Idle)
+                                            confirmOrderScreenViewModel.navigateTo(ConfirmOrderScreens.Map(MapEntryPoint.Checkout))
+                                        }
+
+                                        PaymentState.Loading -> {
+
+                                        }
+
+                                        PaymentState.Failed -> {
+                                            confirmOrderScreenViewModel.onPaymentApiStateChanged(PaymentApiState.Idle)
+                                        }
+
+                                        PaymentState.Idle -> {
+                                            confirmOrderScreenViewModel.onPaymentApiStateChanged(PaymentApiState.Idle)
+                                        }
+                                    }
+                                }
+                            )
+                        }
+
+                        is PaymentApiState.Loading -> {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ){
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(48.dp),
+                                    color = Color.DarkOrange,
+                                    strokeWidth = 4.dp
+                                )
+                            }
+                        }
+
+                        else -> { confirmOrderScreenViewModel.navigateTo(ConfirmOrderScreens.Checkout) }
+                    }
                 }
             }
         }

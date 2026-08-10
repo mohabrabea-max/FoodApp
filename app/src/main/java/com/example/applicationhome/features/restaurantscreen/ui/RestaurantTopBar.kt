@@ -31,14 +31,11 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.example.applicationhome.core.ui.components.bars.RestaurantScreenTopBar
 import com.example.applicationhome.core.ui.components.designsystem.TopBarButtons
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.data.data.model.Screens
-import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,16 +45,17 @@ fun RestaurantTopBar(
     item : RestaurantsEntity,
     isRestaurantInFavorite : Boolean,
     scrollState : LazyListState,
-    navigationController : NavHostController,
-    restaurantViewModel: RestaurantViewModel,
-    userId : String
+    addToFavorite : () -> Unit,
+    removeFromFavorite : () -> Unit,
+    popBackStack : () -> Unit,
+    navigation : () -> Unit
 ){
     val alpha by remember {
         derivedStateOf {
             if(scrollState.firstVisibleItemIndex >= 1){
                 1f
             }else{
-                ((scrollState.firstVisibleItemScrollOffset / 300f) - 1f).coerceIn(0f, 1f)
+                ((scrollState.firstVisibleItemScrollOffset / 150f) - 1f).coerceIn(0f, 1f)
             }
         }
     }
@@ -68,7 +66,7 @@ fun RestaurantTopBar(
             Color.DarkOrange.copy(alpha = alpha),
             modifier = Modifier.fillMaxWidth().height(100.dp),
             item.name,
-            Color.White,
+            Color.White.copy(alpha = alpha),
             {
                 TopBarButtons(
                     {
@@ -78,11 +76,7 @@ fun RestaurantTopBar(
                             tint = Color.Black
                         )
                     },
-                    {
-                        if (navigationController.previousBackStackEntry != null) {
-                            navigationController.popBackStack()
-                        }
-                    },
+                    { popBackStack() },
                     border = 0.dp
                 )
             },
@@ -94,10 +88,7 @@ fun RestaurantTopBar(
                         shape = RoundedCornerShape(30.dp)
                     ).width(if (searchSize > 1) 120.dp else 40.dp).height(40.dp)
                         .background(Color.White).clickable {
-                        navigationController.navigate(Screens.Search.screen) {
-                            launchSingleTop = true
-                            restoreState = true
-                        }
+                            navigation()
                     },
                     contentAlignment = Alignment.Center
                 ) {
@@ -124,15 +115,9 @@ fun RestaurantTopBar(
                 Favorite(
                     isRestaurantInFavorite,
                     {
-                        val restaurantsEntity = FavoriteRestaurantEntity(
-                            item.id,
-                            userId,
-                            false,
-                            false
-                        )
-                        restaurantViewModel.addRestaurantsFavorite(restaurantsEntity)
+                        addToFavorite()
                     },
-                    { restaurantViewModel.removeRestaurantsFavorite(item.id) },
+                    { removeFromFavorite() },
                     modifier = Modifier.padding(5.dp).shadow(
                         elevation = 7.dp,
                         spotColor = Color.VeryLightGray.copy(0.5f),

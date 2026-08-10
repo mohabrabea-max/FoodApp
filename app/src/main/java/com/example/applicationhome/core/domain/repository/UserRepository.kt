@@ -149,11 +149,11 @@ class UserRepository @Inject constructor(
         }
     }
 
-    fun isLogin(){
+    fun login(){
         _isLogin.value = true
     }
 
-    fun isLogout(){
+    fun logout(){
         _isLogin.value = false
     }
 }

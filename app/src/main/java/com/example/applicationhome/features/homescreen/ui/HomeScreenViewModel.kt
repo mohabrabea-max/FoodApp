@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -36,7 +37,8 @@ class HomeScreenViewModel @Inject constructor(
 
     //       *** ---------------------------- \\***  Home Screen Items  ***// ---------------------------- ***
 
-    val selected = MutableStateFlow(0)
+    private val _selected = MutableStateFlow(0)
+    val selected = _selected.asStateFlow()
 
     private val typ = MutableStateFlow("All")
 
@@ -58,24 +60,23 @@ class HomeScreenViewModel @Inject constructor(
             )
 
 
-    val isNetworkAvailable = MutableStateFlow(true)
+    val isNetworkAvailable =
+        networkObserver.isNetworkAvailable
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = true
+            )
 
 
-    init {
-        viewModelScope.launch {
-            networkObserver.isNetworkAvailable.collect { available ->
-                isNetworkAvailable.value = available
-            }
-        }
-    }
 
     fun select(item : CategoriesEntity){
-        selected.value = item.id
+        _selected.value = item.id
         typ.value = item.type
     }
 
     fun unSelected(){
-        selected.value = 0
+        _selected.value = 0
         typ.value = "All"
     }
 

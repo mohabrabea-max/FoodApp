@@ -1,6 +1,5 @@
 package com.example.applicationhome.features.confirmorder.ui.mappage
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -16,10 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -38,15 +40,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
-import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.bottomSnackBar
+import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.bottomSnackBarWithAction
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.DeepMatteBlack
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.UiEvent
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StreetMapPage(
@@ -54,11 +54,10 @@ fun StreetMapPage(
     initialLatitude : Double = 30.0444,
     initialLongitude : Double = 31.2357,
     snackBarHostState : SnackbarHostState,
-    scope : CoroutineScope,
     uiEvent: Flow<UiEvent>,
     isNetworkAvailable : Boolean,
     onLocationSelected : (latitude : Double, longitude : Double) -> Unit,
-    changePage : () -> Unit,
+    fetchCurrentLocation : () -> Unit,
     retryNetwork : () -> Unit
 ){
     val interactionSource = remember { MutableInteractionSource() }
@@ -66,6 +65,7 @@ fun StreetMapPage(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var location = rememberSaveable { Pair(30.0444, 31.2357) }
+
 
     Scaffold(
         modifier = Modifier
@@ -139,35 +139,48 @@ fun StreetMapPage(
                     action = {
                         if(isNetworkAvailable){
                             onLocationSelected(location.first, location.second)
-                            changePage()
                         }
                     }
                 )
             }
         }
-    ) {
-        StreetMapComposable(
-            modifier,
-            initialLatitude,
-            initialLongitude
-        ) { lat, lng ->
-            location = location.copy(first = lat, second = lng)
-        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ){
+            StreetMapComposable(
+                modifier,
+                initialLatitude,
+                initialLongitude
+            ) { lat, lng ->
+                location = location.copy(first = lat, second = lng)
+            }
 
-        LaunchedEffect(uiEvent) {
-            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                uiEvent.collect { event ->
-                    when(event){
-                        UiEvent.ShowNetworkError -> {
-                            scope.bottomSnackBar(
-                                snackBarHostState = snackBarHostState,
-                                onActionClicked = { retryNetwork() },
-                                message = "Error getting location information",
-                                actionLabel = "Retry"
-                            )
+            LaunchedEffect(uiEvent) {
+                lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                    uiEvent.collect { event ->
+                        when(event){
+                            UiEvent.ShowNetworkError -> {
+                                snackBarHostState.bottomSnackBarWithAction(
+                                    message = "Error getting location information",
+                                    actionLabel = "Retry",
+                                    duration = SnackbarDuration.Indefinite
+                                ){ retryNetwork() }
+                            }
                         }
                     }
                 }
+            }
+
+            FloatingActionButton(
+                onClick = { fetchCurrentLocation() },
+                containerColor = Color.DarkOrange,
+                contentColor = Color.White,
+                modifier = Modifier.align(Alignment.BottomEnd).padding(horizontal = 10.dp, vertical = 50.dp)
+            ){
+                Icon(Icons.Default.LocationOn, contentDescription = "Location on")
             }
         }
     }

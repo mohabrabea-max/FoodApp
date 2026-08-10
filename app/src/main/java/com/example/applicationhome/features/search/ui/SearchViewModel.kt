@@ -141,16 +141,12 @@ class SearchViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    val isNetworkAvailable = MutableStateFlow(true)
-
-
-    init {
-        viewModelScope.launch {
-            networkObserver.isNetworkAvailable.collect { available ->
-                isNetworkAvailable.value = available
-            }
-        }
-    }
+    val isNetworkAvailable = networkObserver.isNetworkAvailable
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = true
+        )
 
 
 
