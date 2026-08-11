@@ -1,7 +1,9 @@
 package com.example.applicationhome.data.data.model
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
 
 data class AccountTextFieldClass(
     val id : Int,
@@ -48,3 +50,38 @@ data class Governorate(
 )
 
 data class FirebasePostResponse(val name : String)
+
+
+sealed class SignUpScreens(val index : Int) {
+    data object BasicDataScreen : SignUpScreens(1)
+    data object OptionalDataScreen : SignUpScreens(2)
+}
+
+sealed interface ChickEmailStates {
+    data class PasswordTrue(val userId : String) : ChickEmailStates
+    data object PasswordFalse : ChickEmailStates
+    data object EmailTrue : ChickEmailStates
+    data object EmailFalse : ChickEmailStates
+    data class NetworkError(val errorMessage : String) : ChickEmailStates
+}
+
+sealed interface SignUpStates {
+    data class Success(val userId : String) : SignUpStates
+    data class Error(val errorMessage : String) : SignUpStates
+}
+
+data class SignUpBasicTextFields(
+    val title : String,
+    val textField : TextFieldState,
+    val errorMessage : String? = null,
+    val icon : ImageVector
+)
+
+data class SignUpFullNameTextFields(
+    val title : String,
+    val textField : TextFieldState,
+    val errorMessage : Boolean = false,
+    val roundedCornerShape : RoundedCornerShape,
+    val startPadding : Dp,
+    val endPadding : Dp
+)

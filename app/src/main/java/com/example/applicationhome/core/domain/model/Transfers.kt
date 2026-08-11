@@ -53,7 +53,7 @@ fun Restaurants.restaurantsToRestaurantsEntity(): RestaurantsEntity =
     RestaurantsEntity(
         this.id,
         this.name,
-        this.typ,
+        this.typ.map { it.value },
         this.image,
         this.image2,
         this.review,

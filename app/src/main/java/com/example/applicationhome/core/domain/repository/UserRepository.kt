@@ -1,6 +1,8 @@
 package com.example.applicationhome.core.domain.repository
 
+import com.example.applicationhome.data.data.model.ChickEmailStates
 import com.example.applicationhome.data.data.model.FirebasePostResponse
+import com.example.applicationhome.data.data.model.SignUpStates
 import com.example.applicationhome.data.data.model.UserClassFireBase
 import com.example.applicationhome.data.local.dao.UsersDao
 import com.example.applicationhome.data.local.entity.UpdateAccountState
@@ -33,9 +35,6 @@ class UserRepository @Inject constructor(
     private val api : FoodAppAPIs,
     @ApplicationScope externalScope: CoroutineScope
 ) {
-    private val _loading = MutableStateFlow(false)
-    val loading : StateFlow<Boolean> = _loading
-
     private val _isLogin = MutableStateFlow(false)
     val isLogin : StateFlow<Boolean> = _isLogin
 
@@ -50,9 +49,8 @@ class UserRepository @Inject constructor(
             )
 
 
-    suspend fun setUserDataToDatabase(emailstate : String, passwordstate : String?): Pair<String, UserClass> {
+    suspend fun setUserDataToDatabase(emailstate : String, passwordstate : String?): ChickEmailStates {
         try {
-            _loading.value = true
             val formatEmail = "\"$emailstate\""
             val response = api.getUserData(order = "\"email\"", value = formatEmail)
 
@@ -76,12 +74,12 @@ class UserRepository @Inject constructor(
                             isActive = true
                         )
                         userdao.addUser(data)
-                        return Pair("Password is true", data)
+                        return ChickEmailStates.PasswordTrue(userId)
                     } else {
-                        return Pair("Password is false", UserClass(firstname = "Guest"))
+                        return ChickEmailStates.PasswordFalse
                     }
                 } else {
-                    return Pair("Email is false", UserClass(firstname = "Guest"))
+                    return ChickEmailStates.EmailFalse
                 }
             } else {
                 val errorCode = response.code()
@@ -92,12 +90,10 @@ class UserRepository @Inject constructor(
                     in 500..599 -> "Server down ($errorCode)"
                     else -> "HTTP Error: $errorCode"
                 }
-                return Pair(errorMessage, UserClass(firstname = "Guest"))
+                return ChickEmailStates.NetworkError(errorMessage)
             }
         } catch (e : Exception){
-            return Pair("خطأ في الشبكة: ${e.message}", UserClass(firstname = "Guest"))
-        } finally {
-            _loading.value = false
+            return ChickEmailStates.NetworkError("خطأ في الشبكة: ${e.message}")
         }
     }
 
@@ -111,9 +107,8 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun signUp(userRequest : UserClassFireBase): String {
+    suspend fun signUp(userRequest : UserClassFireBase): SignUpStates {
         try {
-            _loading.value = true
             val response: Response<FirebasePostResponse> = api.signUp(userRequest)
             if (response.isSuccessful && response.body() != null) {
                 val userId = response.body()?.name.toString()
@@ -131,21 +126,22 @@ class UserRepository @Inject constructor(
                     isActive = true
                 )
                 userdao.addUser(userData)
-                return "The operation was successful Account created"
+
+                return SignUpStates.Success(userId)
             } else {
                 val errorCode = response.code()
 
-                return when (errorCode) {
+                val errorMessage = when (errorCode) {
                     401 -> "Unauthorized error ($errorCode)"
                     404 -> "Not found ($errorCode)"
                     in 500..599 -> "Server down ($errorCode)"
                     else -> "HTTP Error: $errorCode"
                 }
+
+                return SignUpStates.Error(errorMessage)
             }
         } catch (e: Exception) {
-            return "خطأ في الشبكة: ${e.message}"
-        }finally {
-            _loading.value = false
+            return SignUpStates.Error("خطأ في الشبكة: ${e.message}")
         }
     }
 

@@ -3,7 +3,6 @@ package com.example.applicationhome.features.login.ui
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Facebook
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,14 +28,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -48,9 +47,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
+import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.Screens
+import com.example.applicationhome.features.signupscreen.ui.SignupTextField
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -58,9 +59,16 @@ fun LoginScreen(
     navigationController : NavHostController,
     loginViewModel: LoginViewModel
 ){
+    val clickState = remember { mutableStateOf(true) }
+
     val loading by loginViewModel.loading.collectAsStateWithLifecycle()
-    val isLogin by loginViewModel.isLogin.collectAsStateWithLifecycle()
+
     val isNetworkAvailable by loginViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
+
+    val loginTextFields by loginViewModel.loginTextFields.collectAsStateWithLifecycle()
+
+
+    val isButtonEnabled by loginViewModel.isButtonEnabled.collectAsStateWithLifecycle()
 
 
     Scaffold(
@@ -101,21 +109,30 @@ fun LoginScreen(
                 )
             }
             Column(modifier = Modifier.align(Alignment.TopCenter)){
+
                 Spacer(modifier = Modifier.height(100.dp))
+
                 Box(
                     modifier = Modifier
                         .size(160.dp)
-                        .clip(shape = RoundedCornerShape(30.dp))
-                        .background(Color.Black)
+                        .clipToBounds()
+                        .clip(shape = RoundedCornerShape(32.dp))
+                        .background(Color.DarkOrange)
                 ){
-                    Text(
-                        text = "Food",
-                        color = Color.White,
-                        fontSize = 40.sp,
-                        modifier = Modifier.align(Alignment.Center)
+                    Image(
+                        painter = painterResource(id = R.drawable.appimage),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .matchParentSize()
+                            .graphicsLayer {
+                                scaleX = 1.22f
+                                scaleY = 1.22f
+                            }
                     )
                 }
             }
+
             Column(
                 modifier = Modifier
                         .fillMaxWidth()
@@ -125,6 +142,7 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
                 Spacer(modifier = Modifier.height(20.dp))
+
                 Text(
                     text = "Login",
                     style = MaterialTheme.typography.titleLarge,
@@ -132,11 +150,15 @@ fun LoginScreen(
                     fontWeight = FontWeight.Bold,
                     fontSize = 35.sp
                 )
+
                 Spacer(modifier = Modifier.height(20.dp))
-                LoginTextField(
-                    loginViewModel.emailstate,
-                    loginViewModel.passwordstate
-                )
+
+                loginTextFields.forEach { item ->
+
+                    if(item != loginTextFields.first()) Spacer(modifier = Modifier.height(25.dp))
+
+                    SignupTextField(item)
+                }
 
                 TextButton(
                     onClick = {},
@@ -153,17 +175,29 @@ fun LoginScreen(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
 
-                LoginButton(
-                    loading,
-                    isLogin,
-                    isNetworkAvailable,
-                    loginViewModel.emailstate.text.isNotEmpty(),
-                    loginViewModel.passwordstate.text.isNotEmpty(),
-                    { navigationController.popBackStack() },
-                    { loginViewModel.login() }
-                )
+                MyButton(
+                    loading = loading,
+                    backgroundcolor = if(isButtonEnabled) Color.DarkOrange else Color.Gray,
+                    fontcolor = Color.White,
+                    horizontalPadding = 40.dp,
+                    title = "Login"
+                ){
+                    if(isNetworkAvailable && clickState.value){
+
+                        clickState.value = false
+
+                        loginViewModel.login(
+
+                            onSuccess = { navigationController.popBackStack() },
+
+                            onField = { clickState.value = true }
+                        )
+                    }
+
+                }
 
                 Spacer(modifier = Modifier.height(25.dp))
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -175,6 +209,7 @@ fun LoginScreen(
                         thickness = 1.dp,
                         color = Color.Gray.copy(alpha = 0.5f)
                     )
+
                     Text(
                         text = "OR",
                         modifier = Modifier.padding(horizontal = 16.dp),
@@ -184,13 +219,16 @@ fun LoginScreen(
                             fontWeight = FontWeight.Medium
                         )
                     )
+
                     HorizontalDivider(
                         modifier = Modifier.weight(1f),
                         thickness = 1.dp,
                         color = Color.Gray.copy(alpha = 0.5f)
                     )
                 }
+
                 Spacer(modifier = Modifier.height(20.dp))
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -214,6 +252,7 @@ fun LoginScreen(
                         modifier = Modifier.size(40.dp)
                     )
                 }
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -242,55 +281,6 @@ fun LoginScreen(
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun LoginButton(
-    loading : Boolean,
-    isLogin : Boolean,
-    isNetworkAvailable : Boolean,
-    emailStateInNotEmpty : Boolean,
-    passwordStateInNotEmpty : Boolean,
-    backStack : () -> Unit,
-    login : () -> Unit
-){
-    val clickState = remember { mutableStateOf(true) }
-
-    LaunchedEffect(key1 = isLogin){
-        if(isLogin){
-            backStack()
-        }
-    }
-
-    Box(
-        modifier = Modifier
-            .padding(start = 40.dp, end = 40.dp)
-            .height(50.dp)
-            .fillMaxWidth()
-            .clip(CircleShape)
-            .background(if(emailStateInNotEmpty && passwordStateInNotEmpty) Color.DarkOrange else Color.Gray)
-            .clickable {
-                if(isNetworkAvailable && clickState.value){
-                    clickState.value = false
-                    login()
-                }
-            },
-        contentAlignment = Alignment.Center
-
-    ){
-        if(loading){
-            CircularProgressIndicator(
-                color = Color.White
-            )
-        }else{
-            Text(
-                text = "Login",
-                style = MaterialTheme.typography.bodyLarge,
-                color = if(emailStateInNotEmpty && passwordStateInNotEmpty) Color.White else Color.Black,
-                fontSize = 18.sp
-            )
         }
     }
 }

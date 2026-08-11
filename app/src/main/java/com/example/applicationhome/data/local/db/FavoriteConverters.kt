@@ -1,6 +1,7 @@
 package com.example.applicationhome.data.local.db
 
 import androidx.room.TypeConverter
+import com.example.applicationhome.data.data.model.CategoriesInWithTitle
 import com.example.applicationhome.data.data.model.MealSizeDetail
 import com.example.applicationhome.data.data.model.OrderItemsClass
 import com.example.applicationhome.data.data.model.UserInformationInOrderClass
@@ -17,9 +18,22 @@ class FavoriteConverters{
     }
 
     @TypeConverter
-    fun toStringList(json: String?): List<String>? {
+    fun toStringList(json : String?): List<String>? {
         if(json == null) return null
         val type = object : TypeToken<List<String>>() {}.type
+        return gson.fromJson(json, type)
+    }
+
+
+    @TypeConverter
+    fun fromCategoriesInWithTitle(categoriesInWithTitle : List<CategoriesInWithTitle>): String? {
+        return gson.toJson(categoriesInWithTitle)
+    }
+
+    @TypeConverter
+    fun toCategoriesInWithTitle(json : String?): List<CategoriesInWithTitle>? {
+        if(json == null) return null
+        val type = object : TypeToken<List<CategoriesInWithTitle>>() {}.type
         return gson.fromJson(json, type)
     }
 
@@ -49,11 +63,11 @@ class FavoriteConverters{
 
 
     @TypeConverter
-    fun fromUserInformationInOrderClass(userInformation: UserInformationInOrderClass): String? {
+    fun fromUserInformationInOrderClass(userInformation : UserInformationInOrderClass): String? {
         return gson.toJson(userInformation)
     }
     @TypeConverter
-    fun toUserInformationInOrderClass(json: String?): UserInformationInOrderClass? {
+    fun toUserInformationInOrderClass(json : String?): UserInformationInOrderClass? {
         if(json == null) return null
         val type = object : TypeToken<UserInformationInOrderClass>() {}.type
         return gson.fromJson(json, type)

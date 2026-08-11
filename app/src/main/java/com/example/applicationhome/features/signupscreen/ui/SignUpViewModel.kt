@@ -1,12 +1,22 @@
 package com.example.applicationhome.features.signupscreen.ui
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.clearText
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.SearchRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
+import com.example.applicationhome.data.data.model.ChickEmailStates
+import com.example.applicationhome.data.data.model.SignUpBasicTextFields
+import com.example.applicationhome.data.data.model.SignUpFullNameTextFields
+import com.example.applicationhome.data.data.model.SignUpScreens
+import com.example.applicationhome.data.data.model.SignUpStates
 import com.example.applicationhome.data.data.model.UserClassFireBase
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,6 +25,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,28 +44,93 @@ class SignUpViewModel @Inject constructor(
         )
 
 
-    val loading : StateFlow<Boolean> = userRepository.loading
+    private val _loading = MutableStateFlow(false)
+    val loading : StateFlow<Boolean> = _loading
 
     val firstnamestate = TextFieldState()
     val lastnamestate = TextFieldState()
+
+    private val _signUpFullNameTextFields = MutableStateFlow(
+        listOf(
+            SignUpFullNameTextFields(
+                title = "First Name",
+                textField = firstnamestate,
+                errorMessage = false,
+                RoundedCornerShape(topStart = 50.dp, bottomStart = 50.dp),
+                40.dp,
+                0.dp
+            ),
+
+            SignUpFullNameTextFields(
+                title = "Last Name",
+                textField = lastnamestate,
+                errorMessage = false,
+                RoundedCornerShape(topEnd = 50.dp, bottomEnd = 50.dp),
+                0.dp,
+                40.dp
+            )
+        )
+    )
+    val signUpFullNameTextFields = _signUpFullNameTextFields.asStateFlow()
+
     val emailstate = TextFieldState()
+
     val passwordstate = TextFieldState()
+
     val confirmpasswordstate = TextFieldState()
+
+    private val _signUpBasicTextFields = MutableStateFlow(
+        listOf(
+            SignUpBasicTextFields(
+                title = "Email address",
+                textField = emailstate,
+                errorMessage = null,
+                icon = Icons.Default.Email
+            ),
+
+            SignUpBasicTextFields(
+                title = "Password",
+                textField = passwordstate,
+                errorMessage = null,
+                icon = Icons.Default.Lock
+            ),
+
+            SignUpBasicTextFields(
+                title = "Confirm password",
+                textField = confirmpasswordstate,
+                errorMessage = null,
+                icon = Icons.Default.Lock
+            )
+        )
+    )
+    val signUpBasicTextFields = _signUpBasicTextFields.asStateFlow()
+
+
     val phonenumberstate = TextFieldState()
     val addressstate = TextFieldState()
 
-    private val _bottonState = MutableStateFlow(false)
-    val bottonState = _bottonState.asStateFlow()
+
+    val isButtonEnabled = snapshotFlow {
+        firstnamestate.text.isNotEmpty() &&
+        lastnamestate.text.isNotEmpty() &&
+        emailstate.text.isNotEmpty() &&
+        passwordstate.text.isNotEmpty() &&
+        confirmpasswordstate.text.isNotEmpty()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = false
+    )
 
 
-    private val _signupPages = MutableStateFlow(1)
+
+    private val _signupPages = MutableStateFlow<SignUpScreens>(SignUpScreens.BasicDataScreen)
     val signupPages = _signupPages.asStateFlow()
 
-    private val _isEmailChecked = MutableStateFlow(false)
-    var isEmailChecked : StateFlow<Boolean> = _isEmailChecked
-
-    fun signUpButton(){
+    fun signUpButton(onSuccess : () -> Unit, onField : () -> Unit){
         viewModelScope.launch {
+            _loading.value = true
+
             val state = userRepository.signUp(
                 UserClassFireBase(
                     firstnamestate.text.toString(),
@@ -66,26 +142,94 @@ class SignUpViewModel @Inject constructor(
                 )
             )
 
-            if (state == "The operation was successful Account created"){
-                _signupPages.value = 1
-                _isEmailChecked.value = false
+            when(state){
+                is SignUpStates.Success -> {
+                    onSuccess()
+
+                    favoriteRepository.addGuestFavoriteToUser(state.userId)
+                    searchRepository.addGuestSearchHistoryToUser(state.userId)
+
+                    _loading.value = false
+                }
+
+                else -> {
+                    onField()
+                    _loading.value = false
+                }
             }
         }
     }
 
-    fun clearFields(){
-        firstnamestate.clearText()
-        lastnamestate.clearText()
-        emailstate.clearText()
-        passwordstate.clearText()
-        confirmpasswordstate.clearText()
-        phonenumberstate.clearText()
-        addressstate.clearText()
-    }
+    private fun bottonstate(){
+        val firstNameStateError = firstnamestate.text.isEmpty()
+        val lastNameStateError = lastnamestate.text.isEmpty()
 
-    fun bottonstate(){
+        _signUpFullNameTextFields.update { item ->
+            item.map { field ->
+                when(field.textField){
+                    firstnamestate -> {
+                        field.copy(errorMessage = firstNameStateError)
+                    }
+
+                    lastnamestate -> {
+                        field.copy(errorMessage = lastNameStateError)
+                    }
+
+                    else -> field
+                }
+            }
+        }
+
+
         val allowedEmail = "^[A-Za-z0-9._%+-]+@(gmail|yahoo|outlook)\\.(com|net)$".toRegex(RegexOption.IGNORE_CASE)
         val isEmailValid = emailstate.text.matches(allowedEmail)
+
+        val emailErrorMessage = if(!isEmailValid || emailstate.text.isEmpty()){
+            "Invalid email."
+        }else{
+            null
+        }
+
+        val passwordErrorMessage =
+            if(
+                passwordstate.text.isEmpty() ||
+                passwordstate.text.length < 8
+            ){
+                "Password must be at least 8 characters long."
+            }else{
+                null
+            }
+
+        val confirmPasswordErrorMessage =
+            if(
+                passwordErrorMessage == null &&
+                passwordstate.text != confirmpasswordstate.text
+            ){
+                "Passwords do not match."
+            }else{
+                null
+            }
+
+        _signUpBasicTextFields.update { item ->
+            item.map { field ->
+                when(field.textField){
+                    emailstate -> {
+                        field.copy(errorMessage = emailErrorMessage)
+                    }
+
+                    passwordstate -> {
+                        field.copy(errorMessage = passwordErrorMessage)
+                    }
+
+                    confirmpasswordstate -> {
+                        field.copy(errorMessage = confirmPasswordErrorMessage)
+                    }
+
+                    else -> field
+                }
+            }
+        }
+
 
         if(
             firstnamestate.text.isNotEmpty()
@@ -95,33 +239,57 @@ class SignUpViewModel @Inject constructor(
             && passwordstate.text.isNotEmpty()
             && passwordstate.text.length >= 8
             && passwordstate.text == confirmpasswordstate.text
+
         ){
-            _bottonState.value = true
-        } else {
-            _bottonState.value = false
+            nextPage()
         }
     }
 
-    fun createAccount(){
+    fun chickEmail(){
         viewModelScope.launch {
+
+            _loading.value = true
+
             val result = userRepository.setUserDataToDatabase(emailstate.text.toString(), null)
-            if(result.first == "Email is false"){
-                _isEmailChecked.value = true
 
-                favoriteRepository.addGuestFavoriteToUser(result.second.id)
+            if(result == ChickEmailStates.EmailFalse){
 
-                searchRepository.addGuestSearchHistoryToUser(result.second.id)
+                bottonstate()
+
+                _loading.value = false
+
             }else{
-                _isEmailChecked.value = false
+
+                _signUpBasicTextFields.update { item ->
+                    item.map {
+                        if (it.textField == emailstate){
+                            it.copy(errorMessage = "Invalid email.")
+                        }else{
+                            it
+                        }
+                    }
+
+                }
+
+                _loading.value = false
+
             }
         }
     }
 
-    fun nextPage(){
-        _signupPages.value += 1
+    private fun nextPage(){
+        _signupPages.value = SignUpScreens.OptionalDataScreen
     }
 
-    fun lastPage(){
-        _signupPages.value -= 1
+    fun lastPage(popBackStack : () -> Unit){
+        when(_signupPages.value){
+            SignUpScreens.OptionalDataScreen -> {
+                _signupPages.value = SignUpScreens.BasicDataScreen
+            }
+
+            SignUpScreens.BasicDataScreen -> {
+                popBackStack()
+            }
+        }
     }
 }

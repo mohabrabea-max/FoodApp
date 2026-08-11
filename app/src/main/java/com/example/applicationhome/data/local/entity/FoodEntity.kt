@@ -9,6 +9,7 @@ import androidx.room.Index
 import androidx.room.Junction
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import com.example.applicationhome.data.data.model.CategoriesInWithTitle
 import com.example.applicationhome.data.data.model.MealSizeDetail
 import com.example.applicationhome.data.data.model.OrderItemsClass
 import com.example.applicationhome.data.data.model.UserInformationInOrderClass
@@ -87,7 +88,7 @@ data class SnacksEntity(
 data class RestaurantsEntity(
     @PrimaryKey val id : Int = 0,
     val name : String = "",
-    val typ : List<String> = listOf(),
+    val typ : List<CategoriesInWithTitle> = listOf(),
     val image : String = "",
     val image2 : String = "",
     val review : Double = 0.0,

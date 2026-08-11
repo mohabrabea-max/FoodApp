@@ -77,7 +77,7 @@ data class Offers(
 data class Restaurants(
     val id : Int = 0,
     @SerializedName("types")
-    val typ : List<String> = listOf(),
+    val typ : Map<String, CategoriesInWithTitle> = emptyMap(),
     val categories : Map<Int, String> = emptyMap(),
     val name : String = "",
     @SerializedName("logo")
@@ -232,4 +232,34 @@ sealed interface AddToCartStates {
         val food : CartItemsClass = CartItemsClass(),
         val size : String = ""
     ) : AddToCartStates
+}
+
+enum class CategoryEnum {
+    BURGER,
+    PIZZA,
+    CHICKEN,
+    KOSHARY,
+    GRILL,
+    SNACKS,
+    DRINK
+}
+
+data class CategoriesInWithTitle(
+    val title : String = "",
+    val category : String = "",
+    val index : Int = 0
+)
+
+sealed interface CategoryInterface {
+
+    data object Burgers : CategoryInterface
+    data object Chicken : CategoryInterface
+    data object Pizza : CategoryInterface
+    data object Koshary : CategoryInterface
+    data object Grill : CategoryInterface
+
+    data object Snacks : CategoryInterface
+    data object Drinks : CategoryInterface
+
+    data object Custom : CategoryInterface
 }

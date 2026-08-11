@@ -12,6 +12,9 @@ import com.example.applicationhome.core.domain.usecase.CartUseCase
 import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
 import com.example.applicationhome.data.data.model.AddToCartStates
 import com.example.applicationhome.data.data.model.BottomSheetItem
+import com.example.applicationhome.data.data.model.CategoriesInWithTitle
+import com.example.applicationhome.data.data.model.CategoryEnum
+import com.example.applicationhome.data.data.model.CategoryInterface
 import com.example.applicationhome.data.data.model.Drink
 import com.example.applicationhome.data.data.model.RestaurantUiState
 import com.example.applicationhome.data.data.model.ShowSnackBarEvent
@@ -65,19 +68,36 @@ class RestaurantViewModel @Inject constructor(
 
     private val _selectedTypeIndex = MutableStateFlow(0)
     val selectedTypeIndex : StateFlow<Int> = _selectedTypeIndex.asStateFlow()
-    private val _typeInRestaurantScreen = MutableStateFlow("")
+    private val _typeInRestaurantScreen = MutableStateFlow(CategoriesInWithTitle())
     val typeInRestaurantScreen = _typeInRestaurantScreen.asStateFlow()
+
+    val screenCategoryInterface = _typeInRestaurantScreen.map {
+        when(it.category){
+            CategoryEnum.BURGER.name -> CategoryInterface.Burgers
+            CategoryEnum.PIZZA.name -> CategoryInterface.Pizza
+            CategoryEnum.CHICKEN.name -> CategoryInterface.Chicken
+            CategoryEnum.KOSHARY.name -> CategoryInterface.Koshary
+            CategoryEnum.GRILL.name -> CategoryInterface.Grill
+            CategoryEnum.SNACKS.name -> CategoryInterface.Snacks
+            CategoryEnum.DRINK.name -> CategoryInterface.Drinks
+            else -> CategoryInterface.Custom
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = CategoryInterface.Custom
+    )
 
     private val _mealSize = MutableStateFlow("")
     val mealSize : StateFlow<String> = _mealSize.asStateFlow()
 
     val foodMenuList : Flow<PagingData<MealWithFavoriteStatus>> = combine(
         _resId,
-        typeInRestaurantScreen
+        _typeInRestaurantScreen
     ) { resId, type ->
         Pair(resId, type)
     }.flatMapLatest { (resId, type) ->
-        restaurantRepository.getMealsFromDatabase(resId, type)
+        restaurantRepository.getMealsFromDatabase(resId, type.category)
     }.cachedIn(viewModelScope)
 
     val snackMenuList : Flow<PagingData<SnackWithFavoriteStatus>> =
@@ -178,9 +198,7 @@ class RestaurantViewModel @Inject constructor(
                 .filterNotNull()
 
             launch {
-                restaurantFlow.first().restaurant.typ.firstOrNull()?.let { firstType ->
-                    selectedtype(0, firstType)
-                }
+                selectedtype(0, restaurantFlow.first().restaurant.typ.minByOrNull { it.index }!!)
             }
 
             combine(foodFlow, restaurantFlow) { food, res ->
@@ -198,9 +216,9 @@ class RestaurantViewModel @Inject constructor(
         }
     }
 
-    fun selectedtype(index : Int, type : String){
+    fun selectedtype(index : Int, category : CategoriesInWithTitle){
         _selectedTypeIndex.value = index
-        _typeInRestaurantScreen.value = type
+        _typeInRestaurantScreen.value = category
     }
 
     fun selectMeal(id : Int, size : String){

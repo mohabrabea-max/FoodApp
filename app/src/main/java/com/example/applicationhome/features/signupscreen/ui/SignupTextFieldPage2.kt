@@ -20,8 +20,6 @@ import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,11 +49,6 @@ fun SignupTextFieldPage2(
             .background(Color.White)
             .padding(start = 25.dp, end = 25.dp)
     ){
-        LaunchedEffect(phonenumberstate) {
-            snapshotFlow { phonenumberstate.text.toString() }
-                .collect { newValue ->
-                }
-        }
         BasicTextField(
             state = phonenumberstate,
             modifier = Modifier.fillMaxSize().padding(start = 30.dp).
@@ -112,11 +105,6 @@ fun SignupTextFieldPage2(
             .background(Color.White)
             .padding(start = 25.dp, end = 25.dp)
     ){
-        LaunchedEffect(addressstate) {
-            snapshotFlow { addressstate.text.toString() }
-                .collect { newValue ->
-                }
-        }
         BasicTextField(
             state = addressstate,
             modifier = Modifier.fillMaxSize().padding(start = 30.dp).

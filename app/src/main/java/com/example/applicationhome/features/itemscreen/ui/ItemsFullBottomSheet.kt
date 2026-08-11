@@ -2,6 +2,7 @@ package com.example.applicationhome.features.itemscreen.ui
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,7 +55,7 @@ fun ItemsFullBottomSheet(
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { targetValue ->
-            targetValue != SheetValue.Hidden
+            targetValue == SheetValue.Expanded
         }
     )
 
@@ -72,7 +74,10 @@ fun ItemsFullBottomSheet(
         Scaffold(
             modifier = Modifier
                 .navigationBarsPadding()
-                .fillMaxSize(),
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTapGestures { }
+                },
             containerColor = Color.VeryLightGray,
             topBar = {
                 ItemScreenTopBar(

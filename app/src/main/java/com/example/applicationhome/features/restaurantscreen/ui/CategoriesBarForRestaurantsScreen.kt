@@ -15,12 +15,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.core.ui.theme.DarkOrange
+import com.example.applicationhome.data.data.model.CategoriesInWithTitle
 
 @Composable
 fun CategoriesBarForRestaurantsScreen(
-    typ : List<String>,
+    typ : List<CategoriesInWithTitle>,
     selectedTypeIndex : Int = 0,
-    selectedType : (Int, String) -> Unit
+    selectedType : (Int, CategoriesInWithTitle) -> Unit
 ){
     ScrollableTabRow(
         modifier = Modifier.fillMaxWidth().
@@ -37,14 +38,14 @@ fun CategoriesBarForRestaurantsScreen(
             }
         }
     ){
-        typ.forEachIndexed { index, typ ->
+        typ.forEachIndexed { index, category ->
             val isSelected = selectedTypeIndex == index
             Tab(
                 selected = isSelected,
-                onClick = { selectedType(index, typ) },
+                onClick = { selectedType(index, category) },
                 text = {
                     Text(
-                        text = typ,
+                        text = category.title,
                         fontSize = 15.sp,
                         style = if(isSelected) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodySmall,
                         color = if(isSelected) Color.Black else Color.Gray,
