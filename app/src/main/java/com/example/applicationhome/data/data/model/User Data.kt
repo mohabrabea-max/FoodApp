@@ -2,6 +2,7 @@ package com.example.applicationhome.data.data.model
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 
@@ -85,3 +86,17 @@ data class SignUpFullNameTextFields(
     val startPadding : Dp,
     val endPadding : Dp
 )
+
+data class VerificationTextFields(
+    val title : String,
+    val textField : TextFieldState,
+    val error : Boolean = false,
+    val stateColor : Color
+)
+
+sealed class LoginPages(val index : Int) {
+    data object LoginPage : LoginPages(1)
+    data object EmailPage : LoginPages(2)
+    data object VerificationCodePage : LoginPages(3)
+    data object ChangePasswordPage : LoginPages(4)
+}

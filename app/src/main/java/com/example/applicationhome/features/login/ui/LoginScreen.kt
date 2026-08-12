@@ -1,13 +1,18 @@
 package com.example.applicationhome.features.login.ui
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,17 +21,12 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Facebook
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,24 +34,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
-import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
+import com.example.applicationhome.data.data.model.LoginPages
 import com.example.applicationhome.data.data.model.Screens
-import com.example.applicationhome.features.signupscreen.ui.SignupTextField
+import com.example.applicationhome.features.login.ui.EmailPage.LoginScreenChickEmailPage
+import com.example.applicationhome.features.login.ui.LoginPage.LoginScreenLoginPage
+import com.example.applicationhome.features.login.ui.NewPasswordPage.LoginScreenChangePasswordPage
+import com.example.applicationhome.features.login.ui.VerificationCodePage.LoginScreenVerificationCodePage
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -61,18 +63,41 @@ fun LoginScreen(
 ){
     val clickState = remember { mutableStateOf(true) }
 
+    val currentScreen by loginViewModel.currentScreen.collectAsStateWithLifecycle()
+
     val loading by loginViewModel.loading.collectAsStateWithLifecycle()
+    val verificationCodeLoading by loginViewModel.verificationCodeLoading.collectAsStateWithLifecycle()
 
     val isNetworkAvailable by loginViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
 
     val loginTextFields by loginViewModel.loginTextFields.collectAsStateWithLifecycle()
+    val checkEmailTextFieldObject by loginViewModel.checkEmailTextFieldObject.collectAsStateWithLifecycle()
+    val verificationCodeTextFieldObject by loginViewModel.verificationCodeTextFieldObject.collectAsStateWithLifecycle()
 
 
-    val isButtonEnabled by loginViewModel.isButtonEnabled.collectAsStateWithLifecycle()
+    val isButtonLoginPageEnabled by loginViewModel.isButtonLoginPageEnabled.collectAsStateWithLifecycle()
+    val isButtonCheckEmailPageEnabled by loginViewModel.isButtonCheckEmailPageEnabled.collectAsStateWithLifecycle()
+
+
+    BackHandler(enabled = true){
+        loginViewModel.navigateBack(
+            onExitLoginScreen = {
+                if (navigationController.previousBackStackEntry != null) {
+                    navigationController.popBackStack()
+                }
+            },
+            onChangeClickState = { clickState.value = it }
+        )
+    }
 
 
     Scaffold(
-        modifier = Modifier.navigationBarsPadding().fillMaxSize(),
+        modifier = Modifier
+            .navigationBarsPadding()
+            .fillMaxSize(),
+
+        containerColor = Color.VeryLightGray,
+
         topBar = {
             MyTopBar(
                 Color.DarkOrange.copy(alpha = 0f),
@@ -82,9 +107,14 @@ fun LoginScreen(
                 {
                     IconButton(
                         onClick = {
-                            if (navigationController.previousBackStackEntry != null) {
-                                navigationController.popBackStack()
-                            }
+                            loginViewModel.navigateBack(
+                                onExitLoginScreen = {
+                                    if (navigationController.previousBackStackEntry != null) {
+                                        navigationController.popBackStack()
+                                    }
+                                },
+                                onChangeClickState = { clickState.value = it }
+                            )
                         },
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
                     ) {
@@ -94,190 +124,133 @@ fun LoginScreen(
             )
         }
     ){
-        Box(
-            modifier = Modifier.fillMaxSize().background(Color.VeryLightGray).navigationBarsPadding(),
-            contentAlignment = Alignment.BottomCenter
-        ){
-            Row(
-                modifier = Modifier.align(Alignment.TopCenter)
+        AnimatedContent(
+            targetState = currentScreen,
+
+            transitionSpec = {
+                val animationSpec = tween<IntOffset>(durationMillis = 300)
+
+                val isForward = targetState.index > initialState.index
+
+                if (isForward) {
+                    (slideInHorizontally(animationSpec) { fullWidth -> fullWidth } + fadeIn()) togetherWith
+                            (slideOutHorizontally(animationSpec) { fullWidth -> -fullWidth } + fadeOut())
+                } else {
+                    (slideInHorizontally(animationSpec) { fullWidth -> -fullWidth } + fadeIn()) togetherWith
+                            (slideOutHorizontally(animationSpec) { fullWidth -> fullWidth } + fadeOut())
+                }
+            },
+
+            label = "LoginNavAnimation"
+        ){ screen ->
+
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.BottomCenter
             ){
-                Image(
-                    painter = painterResource(id = R.drawable.loginimage),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(540.dp)
-                )
-            }
-            Column(modifier = Modifier.align(Alignment.TopCenter)){
-
-                Spacer(modifier = Modifier.height(100.dp))
-
                 Box(
-                    modifier = Modifier
-                        .size(160.dp)
-                        .clipToBounds()
-                        .clip(shape = RoundedCornerShape(32.dp))
-                        .background(Color.DarkOrange)
+                    modifier = Modifier.align(Alignment.TopCenter)
                 ){
                     Image(
-                        painter = painterResource(id = R.drawable.appimage),
+                        painter = painterResource(id = R.drawable.loginimage),
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .matchParentSize()
-                            .graphicsLayer {
-                                scaleX = 1.22f
-                                scaleY = 1.22f
+                        modifier = Modifier.size(540.dp)
+                    )
+                }
+
+                Column(modifier = Modifier.align(Alignment.TopCenter)){
+
+                    Spacer(modifier = Modifier.height(100.dp))
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ){
+                        Text(
+                            text = "Food",
+                            color = Color.White,
+                            fontSize = 60.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            modifier = Modifier
+                                .graphicsLayer(
+                                    scaleX = 1.1f,
+                                    scaleY = 1f
+                                )
+                        )
+
+                        Text(
+                            text = "App",
+                            color = Color.White,
+                            fontSize = 60.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            modifier = Modifier
+                                .graphicsLayer(
+                                    scaleX = 1.1f,
+                                    scaleY = 1f
+                                )
+                        )
+                    }
+                }
+
+                when(screen){
+                    LoginPages.LoginPage -> {
+                        LoginScreenLoginPage(
+                            loginTextFields = loginTextFields,
+                            loading = loading,
+                            isButtonEnabled = isButtonLoginPageEnabled,
+                            login = {
+                                if(isNetworkAvailable && clickState.value && isButtonLoginPageEnabled){
+                                    clickState.value = false
+
+                                    loginViewModel.login(
+
+                                        onSuccess = { navigationController.popBackStack() },
+
+                                        onField = { clickState.value = true }
+                                    )
+                                }
+                            },
+                            signUpNavigation = {
+                                navigationController.navigate(Screens.SignUpScreen.screen)
+                            },
+                            loginScreenNextPage = {
+                                loginViewModel.navigateTo(LoginPages.EmailPage){
+                                    clickState.value = it
+                                }
                             }
-                    )
-                }
-            }
-
-            Column(
-                modifier = Modifier
-                        .fillMaxWidth()
-                        .height(550.dp)
-                        .clip(shape = RoundedCornerShape(topStart = 100.dp))
-                        .background(Color.VeryLightGray),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Text(
-                    text = "Login",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = Color.Black,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 35.sp
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                loginTextFields.forEach { item ->
-
-                    if(item != loginTextFields.first()) Spacer(modifier = Modifier.height(25.dp))
-
-                    SignupTextField(item)
-                }
-
-                TextButton(
-                    onClick = {},
-                    contentPadding = PaddingValues(horizontal = 5.dp),
-                    modifier = Modifier.padding(start = 40.dp).align(Alignment.Start)
-                ){
-                    Text(
-                        text = "Forget your password",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.DarkOrange,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-
-                MyButton(
-                    loading = loading,
-                    backgroundcolor = if(isButtonEnabled) Color.DarkOrange else Color.Gray,
-                    fontcolor = Color.White,
-                    horizontalPadding = 40.dp,
-                    title = "Login"
-                ){
-                    if(isNetworkAvailable && clickState.value){
-
-                        clickState.value = false
-
-                        loginViewModel.login(
-
-                            onSuccess = { navigationController.popBackStack() },
-
-                            onField = { clickState.value = true }
                         )
                     }
 
-                }
+                    LoginPages.EmailPage -> {
+                        LoginScreenChickEmailPage(
+                            item = checkEmailTextFieldObject,
+                            loading = loading,
+                            isButtonEnabled = isButtonCheckEmailPageEnabled,
+                            chickEmail = {
+                                if(isNetworkAvailable && clickState.value && isButtonCheckEmailPageEnabled){
+                                    clickState.value = false
 
-                Spacer(modifier = Modifier.height(25.dp))
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 46.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    HorizontalDivider(
-                        modifier = Modifier.weight(1f),
-                        thickness = 1.dp,
-                        color = Color.Gray.copy(alpha = 0.5f)
-                    )
-
-                    Text(
-                        text = "OR",
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        style = TextStyle(
-                            fontSize = 14.sp,
-                            color = Color.Gray,
-                            fontWeight = FontWeight.Medium
+                                    loginViewModel.chickEmail{
+                                        clickState.value = it
+                                    }
+                                }
+                            },
                         )
-                    )
+                    }
 
-                    HorizontalDivider(
-                        modifier = Modifier.weight(1f),
-                        thickness = 1.dp,
-                        color = Color.Gray.copy(alpha = 0.5f)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 110.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ){
-                    Icon(
-                        Icons.Default.Facebook,
-                        contentDescription = null,
-                        modifier = Modifier.size(40.dp)
-                    )
-                    Icon(
-                        Icons.Default.Facebook,
-                        contentDescription = null,
-                        modifier = Modifier.size(40.dp)
-                    )
-                    Icon(
-                        Icons.Default.Facebook,
-                        contentDescription = null,
-                        modifier = Modifier.size(40.dp)
-                    )
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 60.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ){
-                    Text(
-                        text = "New user?",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.Black,
-                        fontSize = 15.sp
-                    )
-                    TextButton(
-                        onClick = {navigationController.navigate(Screens.SignUpScreen.screen)},
-                        contentPadding = PaddingValues(start = 0.dp),
-                        modifier = Modifier.padding(start = 3.dp)
-                    ){
-                        Text(
-                            text = "Sign Up",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = Color.DarkOrange,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Medium
+                    LoginPages.VerificationCodePage -> {
+                        LoginScreenVerificationCodePage(
+                            item = verificationCodeTextFieldObject,
+                            loading = loading,
+                            verificationCodeLoading = verificationCodeLoading,
+                            resendVerificationCode = { loginViewModel.sendVerificationCode() }
                         )
+                    }
+
+                    LoginPages.ChangePasswordPage -> {
+                        LoginScreenChangePasswordPage()
                     }
                 }
             }

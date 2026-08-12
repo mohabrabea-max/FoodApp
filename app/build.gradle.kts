@@ -47,6 +47,13 @@ android {
         buildConfigField("String", "PAYMOB_IFRAME_ID", "\"$iFrame\"")
 
         buildConfigField("String", "PAYMOB_CALLBACK_URL", "\"https://accept.paymobsolutions.com/api/acceptance/post_pay\"")
+
+
+        val supabaseUrl = localProperties.getProperty("SUPABASEURL") ?: ""
+        buildConfigField("String", "SUPABASEURL", "\"$supabaseUrl\"")
+
+        val supabaseApiKey = localProperties.getProperty("SUPABASEAPIKEY") ?: ""
+        buildConfigField("String", "SUPABASEAPIKEY", "\"$supabaseApiKey\"")
     }
 
     buildTypes {
@@ -143,6 +150,10 @@ dependencies {
     //طلب إذن الموقع
     implementation("com.google.accompanist:accompanist-permissions:0.37.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
+
+    // Supabase Auth (GoTrue)
+    implementation("io.github.jan-tennert.supabase:gotrue-kt:2.6.1") // استخدم أحدث إصدار
+    implementation("io.ktor:ktor-client-cio:2.3.12")
 }
 configurations.all {
     resolutionStrategy {

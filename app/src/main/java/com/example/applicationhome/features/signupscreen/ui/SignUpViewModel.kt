@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -50,6 +51,12 @@ class SignUpViewModel @Inject constructor(
     val firstnamestate = TextFieldState()
     val lastnamestate = TextFieldState()
 
+    val emailstate = TextFieldState()
+
+    val passwordstate = TextFieldState()
+
+    val confirmpasswordstate = TextFieldState()
+
     private val _signUpFullNameTextFields = MutableStateFlow(
         listOf(
             SignUpFullNameTextFields(
@@ -72,12 +79,6 @@ class SignUpViewModel @Inject constructor(
         )
     )
     val signUpFullNameTextFields = _signUpFullNameTextFields.asStateFlow()
-
-    val emailstate = TextFieldState()
-
-    val passwordstate = TextFieldState()
-
-    val confirmpasswordstate = TextFieldState()
 
     private val _signUpBasicTextFields = MutableStateFlow(
         listOf(
@@ -127,6 +128,78 @@ class SignUpViewModel @Inject constructor(
     private val _signupPages = MutableStateFlow<SignUpScreens>(SignUpScreens.BasicDataScreen)
     val signupPages = _signupPages.asStateFlow()
 
+
+    init {
+        observeInputChanges()
+    }
+
+
+    private fun observeInputChanges(){
+        viewModelScope.launch {
+            snapshotFlow { firstnamestate.text }
+                .drop(1)
+                .collect {
+                    clearErrorForFullNameTextFields(firstnamestate)
+                }
+        }
+
+        viewModelScope.launch {
+            snapshotFlow { lastnamestate.text }
+                .drop(1)
+                .collect {
+                    clearErrorForFullNameTextFields(lastnamestate)
+                }
+        }
+
+        viewModelScope.launch {
+            snapshotFlow { emailstate.text }
+                .drop(1)
+                .collect {
+                    clearErrorForField(emailstate)
+                }
+        }
+
+        viewModelScope.launch {
+            snapshotFlow { passwordstate.text }
+                .drop(1)
+                .collect {
+                    clearErrorForField(passwordstate)
+                }
+        }
+
+        viewModelScope.launch {
+            snapshotFlow { confirmpasswordstate.text }
+                .drop(1)
+                .collect {
+                    clearErrorForField(confirmpasswordstate)
+                }
+        }
+    }
+
+    private fun clearErrorForField(fieldTitle : TextFieldState){
+        _signUpBasicTextFields.update {
+            it.map { item ->
+                if(item.textField == fieldTitle && item.errorMessage != null){
+                    item.copy(errorMessage = null)
+                }else{
+                    item
+                }
+            }
+        }
+    }
+
+    private fun clearErrorForFullNameTextFields(fieldTitle : TextFieldState){
+        _signUpFullNameTextFields.update {
+            it.map { item ->
+                if(item.textField == fieldTitle && item.errorMessage){
+                    item.copy(errorMessage = false)
+                }else{
+                    item
+                }
+            }
+        }
+    }
+
     fun signUpButton(onSuccess : () -> Unit, onField : () -> Unit){
         viewModelScope.launch {
             _loading.value = true
@@ -161,8 +234,8 @@ class SignUpViewModel @Inject constructor(
     }
 
     private fun bottonstate(){
-        val firstNameStateError = firstnamestate.text.isEmpty()
-        val lastNameStateError = lastnamestate.text.isEmpty()
+        val firstNameStateError = firstnamestate.text.length < 2
+        val lastNameStateError = lastnamestate.text.length < 2
 
         _signUpFullNameTextFields.update { item ->
             item.map { field ->
@@ -185,7 +258,7 @@ class SignUpViewModel @Inject constructor(
         val isEmailValid = emailstate.text.matches(allowedEmail)
 
         val emailErrorMessage = if(!isEmailValid || emailstate.text.isEmpty()){
-            "Invalid email."
+            "Please enter a valid email address"
         }else{
             null
         }
@@ -195,7 +268,7 @@ class SignUpViewModel @Inject constructor(
                 passwordstate.text.isEmpty() ||
                 passwordstate.text.length < 8
             ){
-                "Password must be at least 8 characters long."
+                "Password must be at least 8 characters long"
             }else{
                 null
             }
@@ -205,7 +278,7 @@ class SignUpViewModel @Inject constructor(
                 passwordErrorMessage == null &&
                 passwordstate.text != confirmpasswordstate.text
             ){
-                "Passwords do not match."
+                "Passwords do not match"
             }else{
                 null
             }
@@ -263,7 +336,7 @@ class SignUpViewModel @Inject constructor(
                 _signUpBasicTextFields.update { item ->
                     item.map {
                         if (it.textField == emailstate){
-                            it.copy(errorMessage = "Invalid email.")
+                            it.copy(errorMessage = "Please enter a valid email address")
                         }else{
                             it
                         }

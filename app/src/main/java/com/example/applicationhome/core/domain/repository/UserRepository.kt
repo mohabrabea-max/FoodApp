@@ -97,6 +97,34 @@ class UserRepository @Inject constructor(
         }
     }
 
+    suspend fun checkEmailInApi(emailstate : String): ChickEmailStates{
+        try {
+            val formatEmail = "\"$emailstate\""
+            val response = api.getUserData(order = "\"email\"", value = formatEmail)
+
+            if(response.isSuccessful && response.body() != null){
+                val userMap = response.body()
+                if(!userMap.isNullOrEmpty()){
+                    return ChickEmailStates.EmailTrue
+                }else{
+                    return ChickEmailStates.EmailFalse
+                }
+            }else{
+                val errorCode = response.code()
+
+                val errorMessage = when (errorCode) {
+                    401 -> "Unauthorized error ($errorCode)"
+                    404 -> "Not found ($errorCode)"
+                    in 500..599 -> "Server down ($errorCode)"
+                    else -> "HTTP Error: $errorCode"
+                }
+                return ChickEmailStates.NetworkError(errorMessage)
+            }
+        } catch (e : Exception){
+            return ChickEmailStates.NetworkError("خطأ في الشبكة: ${e.message}")
+        }
+    }
+
 
     suspend fun logOut(email : String): String{
         return try {

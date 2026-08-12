@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicSecureTextField
 import androidx.compose.foundation.text.BasicTextField
@@ -21,6 +22,7 @@ import androidx.compose.foundation.text.input.TextObfuscationMode
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,24 +47,27 @@ import com.example.applicationhome.data.data.model.SignUpFullNameTextFields
 
 
 @Composable
-fun NameTextField(
-    item : SignUpFullNameTextFields
-){
+fun NameTextField(item : SignUpFullNameTextFields){
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
     BasicTextField(
         state = item.textField,
+
         modifier = Modifier.fillMaxSize(),
+
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+
         onKeyboardAction = {
             keyboardController?.hide()
             focusManager.clearFocus()
         },
+
         textStyle = TextStyle(
             fontSize = 18.sp,
-            color = Color.Black
+            color = if(!item.errorMessage) Color.Black else Color.Red
         ),
+
         decorator = { innerTextField ->
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -80,7 +85,7 @@ fun NameTextField(
         if(item.textField.text.isEmpty()){
             Text(
                 text = "First Name",
-                color = if(!item.errorMessage) Color.Gray else Color.Red,
+                color = Color.Gray,
                 fontSize = 18.sp
             )
         }
@@ -113,12 +118,6 @@ fun SignupTextField(
                 .background(Color.White)
                 .padding(start = 25.dp, end = 25.dp)
         ){
-//        LaunchedEffect(emailstate) {
-//            snapshotFlow { emailstate.text.toString() }
-//                .collect {
-//
-//                }
-//        }
             BasicSecureTextField(
                 state = item.textField,
 
@@ -208,12 +207,31 @@ fun SignupTextField(
         if(item.errorMessage != null){
             Spacer(modifier = Modifier.height(7.dp))
 
-            Text(
-                text = item.errorMessage,
-                color = Color.Red,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(horizontal = 5.dp)
-            )
+            ErrorMessageTextField(item.errorMessage)
         }
+    }
+}
+
+
+@Composable
+fun ErrorMessageTextField(errorMessage : String){
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ){
+        Icon(
+            Icons.Default.Warning,
+            contentDescription = "Warning",
+            tint = Color.Red,
+            modifier = Modifier.padding(start = 15.dp).size(16.5.dp)
+        )
+
+        Text(
+            text = errorMessage,
+            color = Color.Red,
+            fontSize = 13.sp,
+            modifier = Modifier.padding(horizontal = 5.dp)
+        )
     }
 }
