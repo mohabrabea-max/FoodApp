@@ -1,4 +1,4 @@
-package com.example.applicationhome.features.login.ui.NewPasswordPage
+package com.example.applicationhome.features.forgetpassword.NewPasswordPage
 
 import androidx.compose.runtime.Composable
 

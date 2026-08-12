@@ -43,6 +43,8 @@ import com.example.applicationhome.features.cart.ui.Cart
 import com.example.applicationhome.features.cart.ui.CartViewModel
 import com.example.applicationhome.features.confirmorder.ui.ConfirmOrderScreen
 import com.example.applicationhome.features.confirmorder.ui.ConfirmOrderScreenViewModel
+import com.example.applicationhome.features.forgetpassword.ForgetPasswordScreen
+import com.example.applicationhome.features.forgetpassword.ForgetPasswordScreenViewModel
 import com.example.applicationhome.features.login.ui.LoginScreen
 import com.example.applicationhome.features.login.ui.LoginViewModel
 import com.example.applicationhome.features.orders.ui.OrderScreenViewModel
@@ -174,6 +176,11 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
             composable(Screens.SignUpScreen.screen){
                 val signUpViewModel : SignUpViewModel = hiltViewModel()
                 SignUpScreen(navigationController, signUpViewModel)
+            }
+
+            composable(Screens.ForgetPasswordScreen.screen){
+                val viewModel : ForgetPasswordScreenViewModel = hiltViewModel()
+                ForgetPasswordScreen(navigationController, viewModel)
             }
 
             composable(Screens.ConfirmOrderScreen.screen){

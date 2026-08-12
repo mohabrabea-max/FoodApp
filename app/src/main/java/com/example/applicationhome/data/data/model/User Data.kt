@@ -95,8 +95,7 @@ data class VerificationTextFields(
 )
 
 sealed class LoginPages(val index : Int) {
-    data object LoginPage : LoginPages(1)
-    data object EmailPage : LoginPages(2)
-    data object VerificationCodePage : LoginPages(3)
-    data object ChangePasswordPage : LoginPages(4)
+    data object EmailPage : LoginPages(1)
+    data object VerificationCodePage : LoginPages(2)
+    data object ChangePasswordPage : LoginPages(3)
 }

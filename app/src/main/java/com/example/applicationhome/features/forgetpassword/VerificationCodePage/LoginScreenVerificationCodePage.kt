@@ -1,7 +1,6 @@
-package com.example.applicationhome.features.login.ui.VerificationCodePage
+package com.example.applicationhome.features.forgetpassword.VerificationCodePage
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -37,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
@@ -54,7 +52,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.VerificationTextFields
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
@@ -73,15 +70,36 @@ fun LoginScreenVerificationCodePage(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
+
     var timeRemaining by rememberSaveable { mutableStateOf(totalSeconds) }
     val resendVerificationCodeState = timeRemaining == 0
 
-    LaunchedEffect(timeRemaining){
-        if(timeRemaining > 0){
+
+    LaunchedEffect(key1 = timeRemaining, key2 = verificationCodeLoading){
+
+        if(timeRemaining > 0 && !verificationCodeLoading){
+
             delay(1000L.milliseconds)
+
             timeRemaining--
+
         }
+
     }
+
+//    var endTimeMillis by rememberSaveable { mutableLongStateOf(System.currentTimeMillis() + 30_000L) }
+//    LaunchedEffect(key1 = endTimeMillis){
+//        val currentTime = System.currentTimeMillis()
+//        val secondsLeft = ((endTimeMillis - currentTime) / 1000).toInt()
+//
+//        if (secondsLeft > 0) {
+//            timeRemaining = secondsLeft
+//        } else {
+//            timeRemaining = 0
+//        }
+//
+//        delay(1000L.milliseconds)
+//    }
 
     val minutes = timeRemaining / 60
     val seconds = timeRemaining % 60
@@ -95,16 +113,12 @@ fun LoginScreenVerificationCodePage(
         }
     }
 
+
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(550.dp)
-            .clip(shape = RoundedCornerShape(topStart = 100.dp))
-            .background(Color.VeryLightGray),
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        Spacer(modifier = Modifier.height(30.dp))
-
         Column(
             modifier = Modifier.fillMaxWidth(0.65f),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -194,8 +208,8 @@ fun LoginScreenVerificationCodePage(
                                     width = if (isFocused || !isEmpty || item.error) 2.dp else 1.dp,
 
                                     color = if (isFocused) Color.DarkOrange
-                                        else if(isEmpty) Color.LightGray
-                                        else item.stateColor,
+                                    else if(isEmpty) Color.LightGray
+                                    else item.stateColor,
 
                                     shape = RoundedCornerShape(8.dp)
                                 ),
@@ -227,6 +241,8 @@ fun LoginScreenVerificationCodePage(
                 fontSize = 15.sp
             )
 
+            Spacer(modifier = Modifier.width(5.dp))
+
             Text(
                 text = "Resend It",
                 style = MaterialTheme.typography.titleLarge,
@@ -234,27 +250,43 @@ fun LoginScreenVerificationCodePage(
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier
-                    .padding(start = 5.dp)
                     .clickable(
                         interactionSource = interactionSource,
                         indication = null
                     ){
                         if(resendVerificationCodeState) {
+
                             resendVerificationCode()
-                            timeRemaining = totalSeconds
+
+                            if(!verificationCodeLoading){
+                                timeRemaining = totalSeconds
+                            }
                         }
                     }
             )
 
-            Spacer(modifier = Modifier.width(3.dp))
 
             if(!resendVerificationCodeState){
+                Spacer(modifier = Modifier.width(3.dp))
+
                 Text(
                     text = "in $formattedTime",
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.Gray,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium
+                )
+            }
+
+            if(verificationCodeLoading) {
+                Spacer(modifier = Modifier.width(5.dp))
+
+                CircularProgressIndicator(
+                    color = Color.DarkOrange,
+                    strokeWidth = 2.dp,
+                    modifier = Modifier
+                        .size(20.dp)  //  الجم عامل مشكلة في الUI
+                        .align(Alignment.CenterVertically),
                 )
             }
         }
