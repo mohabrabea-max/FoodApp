@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.data.data.model.SignUpBasicTextFields
 import com.example.applicationhome.data.data.model.SignUpFullNameTextFields
+import com.example.applicationhome.data.data.model.TextFieldsTypes
 
 
 @Composable
@@ -97,7 +98,7 @@ fun NameTextField(item : SignUpFullNameTextFields){
 fun SignupTextField(
     item : SignUpBasicTextFields
 ){
-    var isPasswordVisible by remember { mutableStateOf(!(item.title == "Password" || item.title == "Confirm password")) }
+    var isPasswordVisible by remember { mutableStateOf(item.type != TextFieldsTypes.Password) }
 
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -184,7 +185,7 @@ fun SignupTextField(
                     }
                 }
 
-                if(item.title == "Password" || item.title == "Confirm password"){
+                if(item.type == TextFieldsTypes.Password){
                     Box(
                         modifier = Modifier
                             .clickable(

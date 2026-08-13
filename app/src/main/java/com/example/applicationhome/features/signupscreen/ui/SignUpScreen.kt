@@ -222,7 +222,7 @@ fun SignUpScreen(
                                         fontcolor = Color.White,
                                         horizontalPadding = 40.dp,
                                         title = "Next"
-                                    ){ if(state){ signUpViewModel.chickEmail() } }
+                                    ){ if(state){ signUpViewModel.bottonstate() } }
 
                                     Spacer(modifier = Modifier.height(25.dp))
 
@@ -345,15 +345,13 @@ fun SignUpScreen(
                                         signUpViewModel.signUpButton(
 
                                             onSuccess = {
-
-                                                navigationController.popBackStack()
-
+                                                navigationController.navigate(Screens.DashboardScreen.screen) {
+                                                    popUpTo(0) { inclusive = true }
+                                                }
                                             },
 
                                             onField = {
-
                                                 clickState.value = true
-
                                             }
                                         )
                                     }

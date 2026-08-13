@@ -25,7 +25,6 @@ data class UserClassFireBase(
     val firstname : String = "",
     val lastname : String = "",
     val email : String = "",
-    val password : String = "",
     val phonenumber : String = "",
     val birthday : String = "",
     val governorate : String = "",
@@ -58,11 +57,14 @@ sealed class SignUpScreens(val index : Int) {
     data object OptionalDataScreen : SignUpScreens(2)
 }
 
+sealed interface LoginStates {
+    data object Success : LoginStates
+    data class NetworkError(val errorMessage : String) : LoginStates
+}
+
 sealed interface ChickEmailStates {
-    data class PasswordTrue(val userId : String) : ChickEmailStates
-    data object PasswordFalse : ChickEmailStates
-    data object EmailTrue : ChickEmailStates
-    data object EmailFalse : ChickEmailStates
+    data object Success : ChickEmailStates
+    data object EmailIsNotTrue : ChickEmailStates
     data class NetworkError(val errorMessage : String) : ChickEmailStates
 }
 
@@ -71,11 +73,24 @@ sealed interface SignUpStates {
     data class Error(val errorMessage : String) : SignUpStates
 }
 
+data class LoginTextFields(
+    val title : String,
+    val textField : TextFieldState,
+    val icon : ImageVector,
+    val type : TextFieldsTypes
+)
+
+enum class ErrorsType{
+    NETWORK,
+    DATA
+}
+
 data class SignUpBasicTextFields(
     val title : String,
     val textField : TextFieldState,
     val errorMessage : String? = null,
-    val icon : ImageVector
+    val icon : ImageVector,
+    val type : TextFieldsTypes
 )
 
 data class SignUpFullNameTextFields(
@@ -94,8 +109,20 @@ data class VerificationTextFields(
     val stateColor : Color
 )
 
+sealed interface TextFieldsTypes {
+    data object Basic : TextFieldsTypes
+    data object Password : TextFieldsTypes
+    data object PhonNumber : TextFieldsTypes
+}
+
 sealed class LoginPages(val index : Int) {
     data object EmailPage : LoginPages(1)
     data object VerificationCodePage : LoginPages(2)
     data object ChangePasswordPage : LoginPages(3)
+}
+
+sealed class AuthError {
+    object NetworkError : AuthError()
+    object EmailAlreadyExists : AuthError()
+    data class UnknownError(val message: String) : AuthError()
 }

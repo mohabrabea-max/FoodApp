@@ -1,6 +1,7 @@
 package com.example.applicationhome.core.domain.repository
 
 import com.example.applicationhome.data.data.model.Governorate
+import com.example.applicationhome.data.data.model.LoginStates
 import com.example.applicationhome.data.data.model.UserClassFireBase
 import com.example.applicationhome.data.local.dao.UsersDao
 import com.example.applicationhome.data.local.entity.UserClass
@@ -28,28 +29,30 @@ class ProfileRepository @Inject constructor(
         userId : String,
         userDataFireBase : UserClassFireBase,
         userDataDatabase : UserClass
-    ){
-        try {
+    ): LoginStates {
+        return try {
             _loading.value = true
             val response = api.editeProfile(userId, userDataFireBase)
             if(response.isSuccessful){
                 usersDao.addUser(userDataDatabase)
                 _isDataEdited.value = false
+                LoginStates.Success
             }else{
                 val errorCode = response.code()
 
-                when (errorCode) {
+                val errorMessage = when (errorCode) {
                     401 -> "Unauthorized error ($errorCode)"
                     404 -> "Not found ($errorCode)"
                     in 500..599 -> "Server down ($errorCode)"
                     else -> "HTTP Error: $errorCode"
                 }
+
+                LoginStates.NetworkError(errorMessage)
             }
-        }catch (e: Exception){
+        } catch (e: Exception){
             _loading.value = false
             _isDataEdited.value = true
-        }finally {
-            _loading.value = false
+            LoginStates.NetworkError(e.message.toString())
         }
     }
 

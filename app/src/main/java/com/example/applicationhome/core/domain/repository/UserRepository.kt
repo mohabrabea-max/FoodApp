@@ -1,8 +1,7 @@
 package com.example.applicationhome.core.domain.repository
 
 import com.example.applicationhome.data.data.model.ChickEmailStates
-import com.example.applicationhome.data.data.model.FirebasePostResponse
-import com.example.applicationhome.data.data.model.SignUpStates
+import com.example.applicationhome.data.data.model.LoginStates
 import com.example.applicationhome.data.data.model.UserClassFireBase
 import com.example.applicationhome.data.local.dao.UsersDao
 import com.example.applicationhome.data.local.entity.UpdateAccountState
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -49,38 +47,31 @@ class UserRepository @Inject constructor(
             )
 
 
-    suspend fun setUserDataToDatabase(emailstate : String, passwordstate : String?): ChickEmailStates {
-        try {
+    suspend fun setUserDataToDatabase(emailstate : String): LoginStates {
+        return try {
             val formatEmail = "\"$emailstate\""
             val response = api.getUserData(order = "\"email\"", value = formatEmail)
+            val userMap = response.body()
+            val user = userMap?.values?.firstOrNull()
 
-            if(response.isSuccessful && response.body() != null){
-                val userMap = response.body()
-                if(!userMap.isNullOrEmpty()){
-                    val user = userMap.values.firstOrNull()
-                    if(user != null && passwordstate == user.password){
-                        val userId = userMap.keys.firstOrNull().toString()
-                        val data = UserClass(
-                            userId,
-                            user.firstname,
-                            user.lastname,
-                            user.email,
-                            user.password,
-                            user.phonenumber,
-                            user.birthday,
-                            user.governorate,
-                            user.city,
-                            user.address,
-                            isActive = true
-                        )
-                        userdao.addUser(data)
-                        return ChickEmailStates.PasswordTrue(userId)
-                    } else {
-                        return ChickEmailStates.PasswordFalse
-                    }
-                } else {
-                    return ChickEmailStates.EmailFalse
-                }
+            if(response.isSuccessful && user != null){
+
+                val userId = userMap.keys.firstOrNull().toString()
+                val data = UserClass(
+                    userId,
+                    user.firstname,
+                    user.lastname,
+                    user.email,
+                    user.phonenumber,
+                    user.birthday,
+                    user.governorate,
+                    user.city,
+                    user.address,
+                    isActive = true
+                )
+                userdao.addUser(data)
+                LoginStates.Success
+
             } else {
                 val errorCode = response.code()
 
@@ -90,24 +81,23 @@ class UserRepository @Inject constructor(
                     in 500..599 -> "Server down ($errorCode)"
                     else -> "HTTP Error: $errorCode"
                 }
-                return ChickEmailStates.NetworkError(errorMessage)
+                LoginStates.NetworkError(errorMessage)
             }
         } catch (e : Exception){
-            return ChickEmailStates.NetworkError("خطأ في الشبكة: ${e.message}")
+            LoginStates.NetworkError("خطأ في الشبكة: ${e.message}")
         }
     }
 
     suspend fun checkEmailInApi(emailstate : String): ChickEmailStates{
-        try {
+        return try {
             val formatEmail = "\"$emailstate\""
             val response = api.getUserData(order = "\"email\"", value = formatEmail)
-
-            if(response.isSuccessful && response.body() != null){
-                val userMap = response.body()
-                if(!userMap.isNullOrEmpty()){
-                    return ChickEmailStates.EmailTrue
+            val userMap = response.body()
+            if(response.isSuccessful){
+                if(userMap.isNullOrEmpty()){
+                    ChickEmailStates.EmailIsNotTrue
                 }else{
-                    return ChickEmailStates.EmailFalse
+                    ChickEmailStates.Success
                 }
             }else{
                 val errorCode = response.code()
@@ -118,10 +108,10 @@ class UserRepository @Inject constructor(
                     in 500..599 -> "Server down ($errorCode)"
                     else -> "HTTP Error: $errorCode"
                 }
-                return ChickEmailStates.NetworkError(errorMessage)
+                ChickEmailStates.NetworkError(errorMessage)
             }
         } catch (e : Exception){
-            return ChickEmailStates.NetworkError("خطأ في الشبكة: ${e.message}")
+            ChickEmailStates.NetworkError("خطأ في الشبكة: ${e.message}")
         }
     }
 
@@ -135,17 +125,15 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun signUp(userRequest : UserClassFireBase): SignUpStates {
-        try {
-            val response: Response<FirebasePostResponse> = api.signUp(userRequest)
+    suspend fun signUp(userId : String, userRequest : UserClassFireBase): Result<String> {
+        return try {
+            val response = api.editeProfile(userId, userRequest)
             if (response.isSuccessful && response.body() != null) {
-                val userId = response.body()?.name.toString()
                 val userData = UserClass(
                     userId,
                     userRequest.firstname,
                     userRequest.lastname,
                     userRequest.email,
-                    userRequest.password,
                     userRequest.phonenumber,
                     userRequest.birthday,
                     userRequest.governorate,
@@ -155,7 +143,7 @@ class UserRepository @Inject constructor(
                 )
                 userdao.addUser(userData)
 
-                return SignUpStates.Success(userId)
+                Result.success(userId)
             } else {
                 val errorCode = response.code()
 
@@ -166,10 +154,10 @@ class UserRepository @Inject constructor(
                     else -> "HTTP Error: $errorCode"
                 }
 
-                return SignUpStates.Error(errorMessage)
+                Result.failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
-            return SignUpStates.Error("خطأ في الشبكة: ${e.message}")
+            Result.failure(Exception("خطأ في الشبكة: ${e.message}"))
         }
     }
 

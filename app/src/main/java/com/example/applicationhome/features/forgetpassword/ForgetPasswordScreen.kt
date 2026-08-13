@@ -51,6 +51,7 @@ import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.LoginPages
+import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.features.forgetpassword.EmailPage.LoginScreenChickEmailPage
 import com.example.applicationhome.features.forgetpassword.NewPasswordPage.LoginScreenChangePasswordPage
 import com.example.applicationhome.features.forgetpassword.VerificationCodePage.LoginScreenVerificationCodePage
@@ -72,8 +73,10 @@ fun ForgetPasswordScreen(
 
     val checkEmailTextFieldObject by viewModel.checkEmailTextFieldObject.collectAsStateWithLifecycle()
     val verificationCodeTextFieldObject by viewModel.verificationCodeTextFieldObject.collectAsStateWithLifecycle()
+    val newPasswordTextFields by viewModel.newPasswordTextFields.collectAsStateWithLifecycle()
 
     val isButtonCheckEmailPageEnabled by viewModel.isButtonCheckEmailPageEnabled.collectAsStateWithLifecycle()
+    val isButtonChangePasswordPageEnabled by viewModel.isButtonChangePasswordPageEnabled.collectAsStateWithLifecycle()
 
 
     BackHandler(enabled = true){
@@ -229,7 +232,18 @@ fun ForgetPasswordScreen(
                         }
 
                         LoginPages.ChangePasswordPage -> {
-                            LoginScreenChangePasswordPage()
+                            LoginScreenChangePasswordPage(
+                                textFields = newPasswordTextFields,
+                                loading = loading,
+                                isButtonEnabled = isButtonChangePasswordPageEnabled,
+                                changePassword = {
+                                    viewModel.chickFields {
+                                        navigationController.navigate(Screens.LoginScreen.screen) {
+                                            popUpTo(0) { inclusive = true }
+                                        }
+                                    }
+                                }
+                            )
                         }
                     }
                 }

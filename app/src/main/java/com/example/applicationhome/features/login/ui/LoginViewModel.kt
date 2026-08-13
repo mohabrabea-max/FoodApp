@@ -5,52 +5,70 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.snapshotFlow
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
+import com.example.applicationhome.core.domain.Implementations.SupabaseRepositoryImpl
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.SearchRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
-import com.example.applicationhome.data.data.model.ChickEmailStates
-import com.example.applicationhome.data.data.model.SignUpBasicTextFields
+import com.example.applicationhome.data.data.model.ErrorsType
+import com.example.applicationhome.data.data.model.LoginStates
+import com.example.applicationhome.data.data.model.LoginTextFields
+import com.example.applicationhome.data.data.model.TextFieldsTypes
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(SavedStateHandleSaveableApi::class)
 @HiltViewModel
 class LoginViewModel @Inject constructor(
+    savedStateHandle : SavedStateHandle,
     private val userRepository: UserRepository,
     private val favoriteRepository: FavoriteRepository,
     private val searchRepository: SearchRepository,
+    private val supabaseRepositoryImpl : SupabaseRepositoryImpl,
     networkObserver: NetworkObserver
 ) : ViewModel() {
     private val _loading = MutableStateFlow(false)
     val loading : StateFlow<Boolean> = _loading
 
-    val emailTextField = TextFieldState()
-    val passwordTextField = TextFieldState()
+    val emailTextField = savedStateHandle.saveable(
+        key = "emailTextField",
+        saver = TextFieldState.Saver
+    ){
+        TextFieldState()
+    }
+
+    val passwordTextField = savedStateHandle.saveable(
+        key = "passwordTextField",
+        saver = TextFieldState.Saver
+    ){
+        TextFieldState()
+    }
 
     private val _loginTextFields = MutableStateFlow(
         listOf(
-            SignUpBasicTextFields(
+            LoginTextFields(
                 title = "Email address",
                 textField = emailTextField,
-                errorMessage = null,
-                icon = Icons.Default.Email
+                icon = Icons.Default.Email,
+                type = TextFieldsTypes.Basic
             ),
 
-            SignUpBasicTextFields(
+            LoginTextFields(
                 title = "Password",
                 textField = passwordTextField,
-                errorMessage = null,
-                icon = Icons.Default.Lock
+                icon = Icons.Default.Lock,
+                type = TextFieldsTypes.Password
             )
         )
     )
@@ -75,35 +93,6 @@ class LoginViewModel @Inject constructor(
     )
 
 
-    private fun observeInputChanges(){
-        viewModelScope.launch {
-            snapshotFlow { emailTextField.text }
-                .drop(1)
-                .collect {
-                    clearErrorForField(emailTextField)
-                }
-        }
-
-        viewModelScope.launch {
-            snapshotFlow { passwordTextField.text }
-                .drop(1)
-                .collect {
-                    clearErrorForField(passwordTextField)
-                }
-        }
-    }
-
-    private fun clearErrorForField(fieldTitle : TextFieldState) {
-        _loginTextFields.update {
-            it.map { item ->
-                if(item.textField == fieldTitle && item.errorMessage != null){
-                    item.copy(errorMessage = null)
-                }else{
-                    item
-                }
-            }
-        }
-    }
 
     fun logout(){
         viewModelScope.launch {
@@ -113,68 +102,38 @@ class LoginViewModel @Inject constructor(
     }
 
     fun login(onSuccess : () -> Unit, onField : () -> Unit){
-        if (_loading.value) { return }
 
         viewModelScope.launch {
             _loading.value = true
 
-            val result = userRepository.setUserDataToDatabase(emailTextField.text.toString(), passwordTextField.text.toString())
+            supabaseRepositoryImpl.login(emailTextField.text.toString(), passwordTextField.text.toString())
+                .onSuccess { userId ->
+                    val firebaseResult = userRepository.setUserDataToDatabase(emailTextField.text.toString())
 
-            when (result) {
-                is ChickEmailStates.PasswordTrue -> {
-                    userRepository.login()
+                    when (firebaseResult) {
+                        is LoginStates.Success -> {
+                            userRepository.login()
 
-                    onSuccess()
+                            onSuccess()
 
-                    favoriteRepository.addGuestFavoriteToUser(result.userId)
+                            favoriteRepository.addGuestFavoriteToUser(userId)
 
-                    searchRepository.addGuestSearchHistoryToUser(result.userId)
-                }
+                            searchRepository.addGuestSearchHistoryToUser(userId)
+                        }
 
-                is ChickEmailStates.EmailFalse -> {
-
-                    onField()
-
-                    _loginTextFields.update { item ->
-                        item.map { field ->
-                            when(field.textField){
-                                emailTextField -> {
-                                    field.copy(errorMessage = "Please enter a valid email address")
-                                }
-
-                                passwordTextField -> {
-                                    field.copy(errorMessage = null)
-                                }
-
-                                else -> field
-                            }
+                        is LoginStates.NetworkError -> {
+                            onField()
                         }
                     }
                 }
-
-                is ChickEmailStates.PasswordFalse -> {
-
-                    onField()
-
-                    _loginTextFields.update { item ->
-                        item.map { field ->
-                            when(field.textField){
-                                passwordTextField -> {
-                                    field.copy(errorMessage = "Please enter a valid password")
-                                }
-
-                                emailTextField -> {
-                                    field.copy(errorMessage = null)
-                                }
-
-                                else -> field
-                            }
-                        }
+                .onFailure { error ->
+                    if(error == Exception(ErrorsType.DATA.toString())){
+                        "Incorrect email or password"
+                    }else{
+                        "Network error"
                     }
+                    onField()
                 }
-
-                else -> { onField() }
-            }
 
             _loading.value = false
         }
@@ -182,8 +141,6 @@ class LoginViewModel @Inject constructor(
 
 
     init {
-        observeInputChanges()
-
         viewModelScope.launch {
             userData.collect { currentUser ->
                 if(currentUser.id.isNotEmpty()){

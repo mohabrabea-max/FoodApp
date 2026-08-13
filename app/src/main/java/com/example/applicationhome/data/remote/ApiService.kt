@@ -2,7 +2,6 @@ package com.example.applicationhome.data.remote
 
 import com.example.applicationhome.data.data.model.Categories
 import com.example.applicationhome.data.data.model.FavoriteClass
-import com.example.applicationhome.data.data.model.FirebasePostResponse
 import com.example.applicationhome.data.data.model.FoodItem
 import com.example.applicationhome.data.data.model.Offers
 import com.example.applicationhome.data.data.model.OrdersClass
@@ -13,18 +12,11 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
-import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface FoodAppAPIs{
-
-    @POST("users.json")
-    suspend fun signUp(
-        @Body user : UserClassFireBase
-    ): Response<FirebasePostResponse>
-
     @GET("users.json")
     suspend fun getUserData(
         @Query("orderBy") order : String,
@@ -37,6 +29,11 @@ interface FoodAppAPIs{
         @Body newData : UserClassFireBase
     ): Response<Unit>
 
+    @PUT("users/{userId}/password.json")
+    suspend fun changePassword(
+        @Path("userId") userId : String,
+        @Body newPassword : String
+    ): Response<Unit>
 
 
     //                              فانكشن بتجيب الوجبات اللي بعد اخر ابديت بس

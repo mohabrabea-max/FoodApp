@@ -13,14 +13,14 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class SupabaseModule {
+object SupabaseModule {
     @Provides
     @Singleton
     fun provideSupabaseClient(): SupabaseClient {
         return createSupabaseClient(
             supabaseUrl = BuildConfig.SUPABASEURL,
             supabaseKey = BuildConfig.SUPABASEAPIKEY
-        ){
+        ) {
             install(Auth)
         }
     }

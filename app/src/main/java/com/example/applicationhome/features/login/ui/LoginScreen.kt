@@ -51,6 +51,7 @@ import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.Screens
+import com.example.applicationhome.data.data.model.SignUpBasicTextFields
 import com.example.applicationhome.features.signupscreen.ui.SignupTextField
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -182,7 +183,15 @@ fun LoginScreen(
 
                     if (item != loginTextFields.first()) Spacer(modifier = Modifier.height(25.dp))
 
-                    SignupTextField(item)
+                    SignupTextField(
+                        SignUpBasicTextFields(
+                            title = item.title,
+                            textField = item.textField,
+                            errorMessage = null,
+                            icon = item.icon,
+                            type = item.type
+                        )
+                    )
                 }
 
                 Text(
@@ -214,7 +223,11 @@ fun LoginScreen(
 
                         loginViewModel.login(
 
-                            onSuccess = { navigationController.popBackStack() },
+                            onSuccess = {
+                                navigationController.navigate(Screens.DashboardScreen.screen) {
+                                    popUpTo(0) { inclusive = true }
+                                }
+                            },
 
                             onField = { clickState.value = true }
                         )

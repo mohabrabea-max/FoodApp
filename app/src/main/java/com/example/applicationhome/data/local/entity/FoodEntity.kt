@@ -140,7 +140,6 @@ data class UserClass(
     val lastname : String = "",
     @PrimaryKey                 //   عشان الايميل ميتكررش في جدول اليوزرز
     val email : String = "",
-    val password : String = "",
     val phonenumber : String = "",
     val birthday : String = "",
     val governorate : String = "",

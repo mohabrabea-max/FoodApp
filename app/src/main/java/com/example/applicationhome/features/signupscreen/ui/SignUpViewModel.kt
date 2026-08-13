@@ -9,15 +9,19 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.core.domain.Implementations.SupabaseRepositoryImpl
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
+import com.example.applicationhome.core.domain.repository.ProfileRepository
 import com.example.applicationhome.core.domain.repository.SearchRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
-import com.example.applicationhome.data.data.model.ChickEmailStates
+import com.example.applicationhome.data.data.model.AuthError
+import com.example.applicationhome.data.data.model.LoginStates
 import com.example.applicationhome.data.data.model.SignUpBasicTextFields
 import com.example.applicationhome.data.data.model.SignUpFullNameTextFields
 import com.example.applicationhome.data.data.model.SignUpScreens
-import com.example.applicationhome.data.data.model.SignUpStates
+import com.example.applicationhome.data.data.model.TextFieldsTypes
 import com.example.applicationhome.data.data.model.UserClassFireBase
+import com.example.applicationhome.data.local.entity.UserClass
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +39,8 @@ class SignUpViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val favoriteRepository: FavoriteRepository,
     private val searchRepository: SearchRepository,
+    private val profileRepository : ProfileRepository,
+    private val supabaseRepositoryImpl : SupabaseRepositoryImpl,
     networkObserver: NetworkObserver
 ) : ViewModel() {
     val isNetworkAvailable = networkObserver.isNetworkAvailable
@@ -86,21 +92,24 @@ class SignUpViewModel @Inject constructor(
                 title = "Email address",
                 textField = emailstate,
                 errorMessage = null,
-                icon = Icons.Default.Email
+                icon = Icons.Default.Email,
+                type = TextFieldsTypes.Basic
             ),
 
             SignUpBasicTextFields(
                 title = "Password",
                 textField = passwordstate,
                 errorMessage = null,
-                icon = Icons.Default.Lock
+                icon = Icons.Default.Lock,
+                type = TextFieldsTypes.Password
             ),
 
             SignUpBasicTextFields(
                 title = "Confirm password",
                 textField = confirmpasswordstate,
                 errorMessage = null,
-                icon = Icons.Default.Lock
+                icon = Icons.Default.Lock,
+                type = TextFieldsTypes.Password
             )
         )
     )
@@ -127,6 +136,8 @@ class SignUpViewModel @Inject constructor(
 
     private val _signupPages = MutableStateFlow<SignUpScreens>(SignUpScreens.BasicDataScreen)
     val signupPages = _signupPages.asStateFlow()
+
+    private val id = MutableStateFlow("")
 
 
     init {
@@ -204,36 +215,40 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch {
             _loading.value = true
 
-            val state = userRepository.signUp(
-                UserClassFireBase(
-                    firstnamestate.text.toString(),
-                    lastnamestate.text.toString(),
-                    emailstate.text.toString(),
-                    passwordstate.text.toString(),
-                    phonenumberstate.text.toString(),
-                    addressstate.text.toString()
-                )
+            val userData = UserClass(
+                id = id.value,
+                phonenumber = phonenumberstate.text.toString(),
+                address = addressstate.text.toString(),
+                isActive = true
             )
 
-            when(state){
-                is SignUpStates.Success -> {
+            val result = profileRepository.editeProfile(
+                id.value,
+                UserClassFireBase(
+                    phonenumber = phonenumberstate.text.toString(),
+                    address = addressstate.text.toString()
+                ),
+                userData
+            )
+
+            when(result){
+                LoginStates.Success -> {
+                    favoriteRepository.addGuestFavoriteToUser(id.value)
+                    searchRepository.addGuestSearchHistoryToUser(id.value)
+
                     onSuccess()
-
-                    favoriteRepository.addGuestFavoriteToUser(state.userId)
-                    searchRepository.addGuestSearchHistoryToUser(state.userId)
-
-                    _loading.value = false
                 }
 
-                else -> {
+                is LoginStates.NetworkError -> {
                     onField()
-                    _loading.value = false
                 }
             }
+
+            _loading.value = false
         }
     }
 
-    private fun bottonstate(){
+    fun bottonstate(){
         val firstNameStateError = firstnamestate.text.length < 2
         val lastNameStateError = lastnamestate.text.length < 2
 
@@ -248,7 +263,9 @@ class SignUpViewModel @Inject constructor(
                         field.copy(errorMessage = lastNameStateError)
                     }
 
-                    else -> field
+                    else -> {
+                        field
+                    }
                 }
             }
         }
@@ -314,39 +331,66 @@ class SignUpViewModel @Inject constructor(
             && passwordstate.text == confirmpasswordstate.text
 
         ){
+            chickEmail()
             nextPage()
         }
     }
 
-    fun chickEmail(){
+    private fun chickEmail(){
+        if(_loading.value) { return }
+
         viewModelScope.launch {
+
+            bottonstate()
 
             _loading.value = true
 
-            val result = userRepository.setUserDataToDatabase(emailstate.text.toString(), null)
+            supabaseRepositoryImpl.signUp(emailstate.text.toString(), passwordstate.text.toString())
+                .onSuccess { userId ->
+                    id.value = userId
 
-            if(result == ChickEmailStates.EmailFalse){
+                    userRepository.signUp(
+                        userId,
+                        UserClassFireBase(
+                            firstname = firstnamestate.text.toString(),
+                            lastname = lastnamestate.text.toString(),
+                            email = emailstate.text.toString()
+                        )
+                    ).onSuccess { userId ->
+                        favoriteRepository.addGuestFavoriteToUser(userId)
+                        searchRepository.addGuestSearchHistoryToUser(userId)
+                    }.onFailure { error ->
 
-                bottonstate()
+                    }
+                }.onFailure { error ->
+                    val authError = (error as? SupabaseRepositoryImpl.AuthException)?.error
+                        ?: AuthError.UnknownError(error.message ?: "")
 
-                _loading.value = false
+                    when (authError) {
+                        is AuthError.NetworkError -> {
+                            //showNetworkSnackbar()
+                        }
 
-            }else{
+                        is AuthError.EmailAlreadyExists -> {
+                            _signUpBasicTextFields.update { item ->
+                                item.map {
+                                    if (it.textField == emailstate){
+                                        it.copy(errorMessage = "Please enter a valid email address")
+                                    }else{
+                                        it
+                                    }
+                                }
 
-                _signUpBasicTextFields.update { item ->
-                    item.map {
-                        if (it.textField == emailstate){
-                            it.copy(errorMessage = "Please enter a valid email address")
-                        }else{
-                            it
+                            }
+                        }
+
+                        is AuthError.UnknownError -> {
+                            //showGeneralError(authError.message)
                         }
                     }
-
                 }
 
-                _loading.value = false
-
-            }
+            _loading.value = false
         }
     }
 

@@ -3,16 +3,21 @@ package com.example.applicationhome.features.forgetpassword
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
 import com.example.applicationhome.core.domain.Implementations.SupabaseRepositoryImpl
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.ui.theme.BrandBlue
 import com.example.applicationhome.data.data.model.ChickEmailStates
 import com.example.applicationhome.data.data.model.LoginPages
 import com.example.applicationhome.data.data.model.SignUpBasicTextFields
+import com.example.applicationhome.data.data.model.TextFieldsTypes
 import com.example.applicationhome.data.data.model.VerificationTextFields
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -27,8 +33,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(SavedStateHandleSaveableApi::class)
 @HiltViewModel
 class ForgetPasswordScreenViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val userRepository: UserRepository,
     private val supabaseRepositoryImpl : SupabaseRepositoryImpl,
     networkObserver: NetworkObserver
@@ -45,15 +53,6 @@ class ForgetPasswordScreenViewModel @Inject constructor(
 
     val userData = userRepository.userData
 
-    val isButtonCheckEmailPageEnabled = snapshotFlow {
-        checkEmailTextField.text.isNotEmpty()
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = false
-    )
-
-
     private fun observeInputChanges(){
         viewModelScope.launch {
             snapshotFlow { checkEmailTextField.text }
@@ -63,12 +62,26 @@ class ForgetPasswordScreenViewModel @Inject constructor(
                 }
         }
 
-
         viewModelScope.launch {
             snapshotFlow { verificationCodeTextField.text }
                 .drop(1)
                 .collect {
                     clearErrorForField(verificationCodeTextField)
+                }
+        }
+
+        viewModelScope.launch {
+            snapshotFlow { newPasswordTextField.text }
+                .drop(1)
+                .collect {
+                    clearErrorForField(newPasswordTextField)
+                }
+        }
+        viewModelScope.launch {
+            snapshotFlow { confirmNewPasswordTextField.text }
+                .drop(1)
+                .collect {
+                    clearErrorForField(confirmNewPasswordTextField)
                 }
         }
     }
@@ -89,17 +102,41 @@ class ForgetPasswordScreenViewModel @Inject constructor(
                 it
             }
         }
+
+        _newPasswordTextFields.update {
+            it.map { item ->
+                if(item.textField == fieldTitle && item.errorMessage != null){
+                    item.copy(errorMessage = null)
+                }else{
+                    item
+                }
+            }
+        }
     }
 
 
     // --------------------------------------------\\ Chick Email Page //--------------------------------------------
-    val checkEmailTextField = TextFieldState()
+    val isButtonCheckEmailPageEnabled = snapshotFlow {
+        checkEmailTextField.text.isNotEmpty()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = false
+    )
+
+    val checkEmailTextField = savedStateHandle.saveable(
+        key = "checkEmailTextField",
+        saver = TextFieldState.Saver
+    ){
+        TextFieldState()
+    }
     private val _checkEmailTextFieldObject = MutableStateFlow(
         SignUpBasicTextFields(
             title = "Email address",
             textField = checkEmailTextField,
             errorMessage = null,
-            icon = Icons.Default.Email
+            icon = Icons.Default.Email,
+            type = TextFieldsTypes.Basic
         )
     )
     val checkEmailTextFieldObject = _checkEmailTextFieldObject.asStateFlow()
@@ -114,15 +151,19 @@ class ForgetPasswordScreenViewModel @Inject constructor(
             val result = userRepository.checkEmailInApi(checkEmailTextField.text.toString())
 
             when(result){
-                ChickEmailStates.EmailTrue -> {
+                ChickEmailStates.Success -> {
                     navigateTo(LoginPages.VerificationCodePage){}
                     sendVerificationCode()
                 }
 
-                else -> {
+                ChickEmailStates.EmailIsNotTrue -> {
                     _checkEmailTextFieldObject.update {
                         it.copy(errorMessage = "Please enter a valid email address")
                     }
+                }
+
+                is ChickEmailStates.NetworkError -> {
+
                 }
             }
 
@@ -134,7 +175,12 @@ class ForgetPasswordScreenViewModel @Inject constructor(
 
 
     // --------------------------------------------\\ Verification Code Page //--------------------------------------------
-    val verificationCodeTextField = TextFieldState()
+    val verificationCodeTextField = savedStateHandle.saveable(
+        key = "verificationCodeTextField",
+        saver = TextFieldState.Saver
+    ){
+        TextFieldState()
+    }
     private val _verificationCodeTextFieldObject = MutableStateFlow(
         VerificationTextFields(
             title = "",
@@ -167,7 +213,7 @@ class ForgetPasswordScreenViewModel @Inject constructor(
         }
     }
 
-    fun checkVerificationCode(){
+    private fun checkVerificationCode(){
         if (_loading.value) { return }
 
         viewModelScope.launch {
@@ -193,8 +239,118 @@ class ForgetPasswordScreenViewModel @Inject constructor(
 
 
     // --------------------------------------------\\ Change Password Page //--------------------------------------------
-    val newPasswordTextField = TextFieldState()
-    val confirmNewPasswordTextField = TextFieldState()
+    val isButtonChangePasswordPageEnabled = combine(
+        snapshotFlow { newPasswordTextField.text },
+        snapshotFlow { confirmNewPasswordTextField.text }
+    ){ pass, confirmPass ->
+        pass.isNotEmpty() && confirmPass.isNotEmpty()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = false
+    )
+
+    val newPasswordTextField = savedStateHandle.saveable(
+        key = "newPasswordTextField",
+        saver = TextFieldState.Saver
+    ){
+        TextFieldState()
+    }
+
+    val confirmNewPasswordTextField = savedStateHandle.saveable(
+        key = "confirmNewPasswordTextField",
+        saver = TextFieldState.Saver
+    ){
+        TextFieldState()
+    }
+
+    private val _newPasswordTextFields = MutableStateFlow(
+        listOf(
+            SignUpBasicTextFields(
+                title = "New password",
+                textField = newPasswordTextField,
+                errorMessage = null,
+                icon = Icons.Default.Lock,
+                type = TextFieldsTypes.Password
+            ),
+
+            SignUpBasicTextFields(
+                title = "Confirm password",
+                textField = confirmNewPasswordTextField,
+                errorMessage = null,
+                icon = Icons.Default.Lock,
+                type = TextFieldsTypes.Password
+            ),
+        )
+    )
+    val newPasswordTextFields = _newPasswordTextFields.asStateFlow()
+
+
+    fun chickFields(onSuccess: () -> Unit){
+        val passwordErrorMessage =
+            if(
+                newPasswordTextField.text.isEmpty() ||
+                newPasswordTextField.text.length < 8
+            ){
+                "Password must be at least 8 characters long"
+            }else{
+                null
+            }
+
+        val confirmPasswordErrorMessage =
+            if(
+                passwordErrorMessage == null &&
+                newPasswordTextField.text != confirmNewPasswordTextField.text
+            ){
+                "Passwords do not match"
+            }else{
+                null
+            }
+
+        _newPasswordTextFields.update {
+            it.map { item ->
+                when(item.textField){
+                    newPasswordTextField -> {
+                        item.copy(errorMessage = passwordErrorMessage)
+                    }
+
+                    confirmNewPasswordTextField -> {
+                        item.copy(errorMessage = confirmPasswordErrorMessage)
+                    }
+
+                    else -> item
+                }
+            }
+        }
+
+        if(
+            newPasswordTextField.text.isNotEmpty()
+            && newPasswordTextField.text.length >= 8
+            && newPasswordTextField.text == confirmNewPasswordTextField.text
+        ){
+            changePassword{
+                onSuccess()
+            }
+        }
+    }
+
+    private fun changePassword(onSuccess : () -> Unit){
+        if (_loading.value) { return }
+
+        viewModelScope.launch {
+            _loading.value = true
+
+            supabaseRepositoryImpl.updatePassword(newPasswordTextField.text.toString())
+                .onSuccess {
+                    onSuccess()
+                }
+                .onFailure { error ->
+
+                }
+
+            _loading.value = false
+        }
+    }
 
 
     // --------------------------------------------\\ Pages //--------------------------------------------
@@ -209,7 +365,7 @@ class ForgetPasswordScreenViewModel @Inject constructor(
             )
 
     fun navigateTo(screen : LoginPages, navigation : () -> Unit){
-        when(screen){
+        when(currentScreen.value){
             LoginPages.ChangePasswordPage -> {
                 navigation()
             }

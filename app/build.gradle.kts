@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
+    kotlin("plugin.serialization") version "2.2.10"
 }
 
 val localProperties = Properties().apply {
@@ -118,6 +119,7 @@ dependencies {
     implementation("androidx.room:room-runtime:2.7.0")
     implementation(libs.androidx.paging.common)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.play.services.auth)
     ksp("androidx.room:room-compiler:2.7.0")
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.10.0")
@@ -152,8 +154,10 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.3.0")
 
     // Supabase Auth (GoTrue)
-    implementation("io.github.jan-tennert.supabase:gotrue-kt:2.6.1") // استخدم أحدث إصدار
-    implementation("io.ktor:ktor-client-cio:2.3.12")
+    implementation("io.github.jan-tennert.supabase:gotrue-kt:2.6.1")
+    implementation(platform("io.github.jan-tennert.supabase:bom:2.6.1"))
+    implementation("io.ktor:ktor-client-okhttp:2.3.12")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 }
 configurations.all {
     resolutionStrategy {

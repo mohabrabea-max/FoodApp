@@ -223,17 +223,16 @@ class ProfileViewModel @Inject constructor(
 
     private fun isDataChanged(){
         val userDataDatabase = UserClass(
-            userData.value.id,
-            firstNameTextField.text.toString(),
-            lastNameTextField.text.toString(),
-            userData.value.email,
-            userData.value.password,
-            phoneNumberTextField.text.toString(),
-            _selectedDate.value,
-            _selectedGovernorate.value,
-            _selectedCity.value,
-            addressTextField.text.toString(),
-            true
+            id = userData.value.id,
+            firstname = firstNameTextField.text.toString(),
+            lastname = lastNameTextField.text.toString(),
+            email = userData.value.email,
+            phonenumber = phoneNumberTextField.text.toString(),
+            birthday = _selectedDate.value,
+            governorate = _selectedGovernorate.value,
+            city = _selectedCity.value,
+            address = addressTextField.text.toString(),
+            isActive = true
         )
 
         profileRepository.changeIsDataEditedState(userData.value != userDataDatabase)
@@ -269,29 +268,27 @@ class ProfileViewModel @Inject constructor(
 
         viewModelScope.launch {
             val userDataFireBase = UserClassFireBase(
-                firstNameTextField.text.toString(),
-                lastNameTextField.text.toString(),
-                userData.value.email,
-                userData.value.password,
-                phoneNumberTextField.text.toString(),
-                _selectedDate.value,
-                _selectedGovernorate.value,
-                _selectedCity.value,
-                addressTextField.text.toString()
+                firstname = firstNameTextField.text.toString(),
+                lastname = lastNameTextField.text.toString(),
+                email = userData.value.email,
+                phonenumber = phoneNumberTextField.text.toString(),
+                birthday = _selectedDate.value,
+                governorate = _selectedGovernorate.value,
+                city = _selectedCity.value,
+                address = addressTextField.text.toString()
             )
 
             val userDataDatabase = UserClass(
-                userData.value.id,
-                firstNameTextField.text.toString(),
-                lastNameTextField.text.toString(),
-                userData.value.email,
-                userData.value.password,
-                phoneNumberTextField.text.toString(),
-                _selectedDate.value,
-                _selectedGovernorate.value,
-                _selectedCity.value,
-                addressTextField.text.toString(),
-                true
+                id = userData.value.id,
+                firstname = firstNameTextField.text.toString(),
+                lastname = lastNameTextField.text.toString(),
+                email = userData.value.email,
+                phonenumber = phoneNumberTextField.text.toString(),
+                birthday = _selectedDate.value,
+                governorate = _selectedGovernorate.value,
+                city = _selectedCity.value,
+                address = addressTextField.text.toString(),
+                isActive = true
             )
 
             profileRepository.editeProfile(userData.value.id, userDataFireBase, userDataDatabase)

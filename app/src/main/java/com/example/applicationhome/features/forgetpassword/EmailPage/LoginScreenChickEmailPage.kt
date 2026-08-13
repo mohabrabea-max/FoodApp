@@ -31,7 +31,7 @@ fun LoginScreenChickEmailPage(
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Text(
-            text = "Reset Password",
+            text = "Check Email",
             style = MaterialTheme.typography.titleLarge,
             color = Color.Black,
             fontWeight = FontWeight.ExtraBold,
