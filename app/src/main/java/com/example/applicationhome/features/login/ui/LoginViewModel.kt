@@ -10,20 +10,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
-import com.example.applicationhome.core.domain.Implementations.SupabaseRepositoryImpl
+import com.example.applicationhome.core.domain.exception.AppDomainException
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.SearchRepository
+import com.example.applicationhome.core.domain.repository.SupabaseRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.data.data.model.ErrorsType
 import com.example.applicationhome.data.data.model.LoginStates
 import com.example.applicationhome.data.data.model.LoginTextFields
+import com.example.applicationhome.data.data.model.SignUpErrors
 import com.example.applicationhome.data.data.model.TextFieldsTypes
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,7 +39,7 @@ class LoginViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val favoriteRepository: FavoriteRepository,
     private val searchRepository: SearchRepository,
-    private val supabaseRepositoryImpl : SupabaseRepositoryImpl,
+    private val supabaseRepository: SupabaseRepository,
     networkObserver: NetworkObserver
 ) : ViewModel() {
     private val _loading = MutableStateFlow(false)
@@ -92,6 +96,15 @@ class LoginViewModel @Inject constructor(
         initialValue = false
     )
 
+    private val _signUpStates = Channel<SignUpErrors>(Channel.BUFFERED)
+    val signUpStates = _signUpStates.receiveAsFlow()
+
+    fun snackbarError(message : String){
+        viewModelScope.launch {
+            _signUpStates.send(SignUpErrors.Error(message))
+        }
+    }
+
 
 
     fun logout(){
@@ -101,12 +114,15 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    private val _errorType = MutableStateFlow<LoginStates>(LoginStates.Success)
+    val errorType = _errorType.asStateFlow()
+
     fun login(onSuccess : () -> Unit, onField : () -> Unit){
 
         viewModelScope.launch {
             _loading.value = true
 
-            supabaseRepositoryImpl.login(emailTextField.text.toString(), passwordTextField.text.toString())
+            supabaseRepository.login(emailTextField.text.toString(), passwordTextField.text.toString())
                 .onSuccess { userId ->
                     val firebaseResult = userRepository.setUserDataToDatabase(emailTextField.text.toString())
 
@@ -121,17 +137,26 @@ class LoginViewModel @Inject constructor(
                             searchRepository.addGuestSearchHistoryToUser(userId)
                         }
 
-                        is LoginStates.NetworkError -> {
+                        is LoginStates.Error -> {
                             onField()
                         }
                     }
                 }
                 .onFailure { error ->
-                    if(error == Exception(ErrorsType.DATA.toString())){
-                        "Incorrect email or password"
-                    }else{
-                        "Network error"
+                    val domainError = (error as? AppDomainException)?.errorType
+
+                    when(domainError){
+                        ErrorsType.DATA -> {
+                            _errorType.value = LoginStates.Error("Incorrect email or password")
+                        }
+
+                        ErrorsType.NETWORK -> {
+                            snackbarError("Network error")
+                        }
+
+                        else -> { snackbarError("Unknown error") }
                     }
+
                     onField()
                 }
 

@@ -1,8 +1,10 @@
 package com.example.applicationhome
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -82,37 +84,33 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
             modifier = Modifier.fillMaxSize(),
 
             enterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(300)
+                slideInHorizontally(
+                    initialOffsetX = { fullWidth -> fullWidth }, // يدخل من أقصى اليمين كاملاً
+                    animationSpec = tween(300, easing = FastOutSlowInEasing)
                 )
             },
-
-            // 2. خروج الشاشة الحالية لما تفتح شاشة جديدة فوقها (بتتحرك للشمال)
             exitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(300)
+                slideOutHorizontally(
+                    targetOffsetX = { fullWidth -> -fullWidth }, // يخرج لأقصى الشمال كاملاً
+                    animationSpec = tween(300, easing = FastOutSlowInEasing)
                 )
             },
-
-            // 3. عودة الشاشة السابقة لما تدوس Back (بتيجي من الشمال لليمن)
             popEnterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(300)
+                slideInHorizontally(
+                    initialOffsetX = { fullWidth -> -fullWidth }, // يرجع من أقصى الشمال
+                    animationSpec = tween(300, easing = FastOutSlowInEasing)
                 )
             },
-
-            // 4. خروج الشاشة الحالية عند الضغط على Back (بتسحب لليمين وتختفي)
             popExitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(300)
+                slideOutHorizontally(
+                    targetOffsetX = { fullWidth -> fullWidth }, // يخرج لأقصى اليمين
+                    animationSpec = tween(300, easing = FastOutSlowInEasing)
                 )
             }
         ){
-            composable(Screens.DashboardScreen.screen){
+            composable(
+                Screens.DashboardScreen.screen
+            ){
                 val userImageViewModel: UserImageViewModel = viewModel()
                 DashboardScreen(
                     navigationController,
@@ -170,17 +168,26 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
 
             composable(Screens.LoginScreen.screen){
                 val loginViewModel: LoginViewModel = hiltViewModel()
-                LoginScreen(navigationController, loginViewModel)
+                LoginScreen(
+                    navigationController,
+                    loginViewModel
+                )
             }
 
             composable(Screens.SignUpScreen.screen){
                 val signUpViewModel : SignUpViewModel = hiltViewModel()
-                SignUpScreen(navigationController, signUpViewModel)
+                SignUpScreen(
+                    navigationController,
+                    signUpViewModel
+                )
             }
 
             composable(Screens.ForgetPasswordScreen.screen){
                 val viewModel : ForgetPasswordScreenViewModel = hiltViewModel()
-                ForgetPasswordScreen(navigationController, viewModel)
+                ForgetPasswordScreen(
+                    navigationController,
+                    viewModel
+                )
             }
 
             composable(Screens.ConfirmOrderScreen.screen){

@@ -12,6 +12,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -23,7 +24,7 @@ interface FoodAppAPIs{
         @Query("equalTo") value : String
     ): Response<Map<String, UserClassFireBase>>
 
-    @PUT("users/{userId}.json")
+    @PATCH("users/{userId}.json")
     suspend fun editeProfile(
         @Path("userId") userId : String,
         @Body newData : UserClassFireBase

@@ -85,6 +85,7 @@ android {
 dependencies {
     // AndroidX & Lifecycle
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.foundation.layout)
     implementation(libs.androidx.hilt.common)
     implementation(libs.androidx.hilt.work)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -156,6 +157,7 @@ dependencies {
     // Supabase Auth (GoTrue)
     implementation("io.github.jan-tennert.supabase:gotrue-kt:2.6.1")
     implementation(platform("io.github.jan-tennert.supabase:bom:2.6.1"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:2.6.1")
     implementation("io.ktor:ktor-client-okhttp:2.3.12")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 }

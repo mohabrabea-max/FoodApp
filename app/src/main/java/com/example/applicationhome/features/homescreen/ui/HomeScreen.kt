@@ -103,9 +103,7 @@ fun HomeScreen(
                     navigationController
                 )
 
-                if(!isNetworkAvailable){
-                    NetworkErrorTopBar()
-                }
+                NetworkErrorTopBar(isNetworkAvailable = isNetworkAvailable)
             }
         }
     ){

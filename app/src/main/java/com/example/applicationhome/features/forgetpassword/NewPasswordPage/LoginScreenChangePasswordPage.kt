@@ -65,7 +65,7 @@ fun LoginScreenChangePasswordPage(
 
         MyButton(
             loading = loading,
-            backgroundcolor = if(isButtonEnabled) Color.DarkOrange else Color.Gray,
+            backgroundcolor = if(isButtonEnabled) Color.DarkOrange else Color.LightGray,
             fontcolor = Color.White,
             horizontalPadding = 40.dp,
             title = "Change password"

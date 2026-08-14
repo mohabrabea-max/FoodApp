@@ -1,6 +1,7 @@
 package com.example.applicationhome.features.forgetpassword
 
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -11,16 +12,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
-import com.example.applicationhome.core.domain.Implementations.SupabaseRepositoryImpl
+import com.example.applicationhome.core.domain.exception.AppDomainException
+import com.example.applicationhome.core.domain.repository.SupabaseRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.ui.theme.BrandBlue
 import com.example.applicationhome.data.data.model.ChickEmailStates
+import com.example.applicationhome.data.data.model.ErrorsType
 import com.example.applicationhome.data.data.model.LoginPages
 import com.example.applicationhome.data.data.model.SignUpBasicTextFields
+import com.example.applicationhome.data.data.model.SignUpErrors
 import com.example.applicationhome.data.data.model.TextFieldsTypes
 import com.example.applicationhome.data.data.model.VerificationTextFields
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -28,6 +33,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -38,7 +44,7 @@ import javax.inject.Inject
 class ForgetPasswordScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val userRepository: UserRepository,
-    private val supabaseRepositoryImpl : SupabaseRepositoryImpl,
+    private val supabaseRepository: SupabaseRepository,
     networkObserver: NetworkObserver
 ): ViewModel() {
     private val _loading = MutableStateFlow(false)
@@ -153,7 +159,6 @@ class ForgetPasswordScreenViewModel @Inject constructor(
             when(result){
                 ChickEmailStates.Success -> {
                     navigateTo(LoginPages.VerificationCodePage){}
-                    sendVerificationCode()
                 }
 
                 ChickEmailStates.EmailIsNotTrue -> {
@@ -163,7 +168,7 @@ class ForgetPasswordScreenViewModel @Inject constructor(
                 }
 
                 is ChickEmailStates.NetworkError -> {
-
+                    snackbarError(SignUpErrors.Error("Network error"))
                 }
             }
 
@@ -175,12 +180,8 @@ class ForgetPasswordScreenViewModel @Inject constructor(
 
 
     // --------------------------------------------\\ Verification Code Page //--------------------------------------------
-    val verificationCodeTextField = savedStateHandle.saveable(
-        key = "verificationCodeTextField",
-        saver = TextFieldState.Saver
-    ){
-        TextFieldState()
-    }
+    val verificationCodeTextField = TextFieldState()
+
     private val _verificationCodeTextFieldObject = MutableStateFlow(
         VerificationTextFields(
             title = "",
@@ -201,12 +202,9 @@ class ForgetPasswordScreenViewModel @Inject constructor(
         viewModelScope.launch {
             _verificationCodeLoading.value = true
 
-            supabaseRepositoryImpl.sendOtp(checkEmailTextField.text.toString())
-                .onSuccess {
-
-                }
-                .onFailure { error ->
-
+            supabaseRepository.sendOtp(checkEmailTextField.text.toString())
+                .onFailure {
+                    snackbarError(SignUpErrors.Error("Failed to send code. Please try again."))
                 }
 
             _verificationCodeLoading.value = false
@@ -219,14 +217,17 @@ class ForgetPasswordScreenViewModel @Inject constructor(
         viewModelScope.launch {
             _loading.value = true
 
-            supabaseRepositoryImpl.verifyOtp(checkEmailTextField.text.toString(), verificationCodeTextField.text.toString())
+            supabaseRepository.verifyOtp(checkEmailTextField.text.toString(), verificationCodeTextField.text.toString())
                 .onSuccess {
                     _verificationCodeTextFieldObject.update {
                         it.copy(error = false, stateColor = Color.Green)
                     }
 
                     navigateTo(LoginPages.ChangePasswordPage){}
+
+                    verificationCodeTextField.clearText()
                 }
+
                 .onFailure {
                     _verificationCodeTextFieldObject.update {
                         it.copy(error = true, stateColor = Color.Red)
@@ -285,13 +286,9 @@ class ForgetPasswordScreenViewModel @Inject constructor(
     )
     val newPasswordTextFields = _newPasswordTextFields.asStateFlow()
 
-
-    fun chickFields(onSuccess: () -> Unit){
+    fun onChangePasswordClicked(onSuccess: () -> Unit){
         val passwordErrorMessage =
-            if(
-                newPasswordTextField.text.isEmpty() ||
-                newPasswordTextField.text.length < 8
-            ){
+            if(newPasswordTextField.text.length < 8){
                 "Password must be at least 8 characters long"
             }else{
                 null
@@ -306,6 +303,7 @@ class ForgetPasswordScreenViewModel @Inject constructor(
             }else{
                 null
             }
+
 
         _newPasswordTextFields.update {
             it.map { item ->
@@ -323,10 +321,10 @@ class ForgetPasswordScreenViewModel @Inject constructor(
             }
         }
 
+
         if(
-            newPasswordTextField.text.isNotEmpty()
-            && newPasswordTextField.text.length >= 8
-            && newPasswordTextField.text == confirmNewPasswordTextField.text
+            passwordErrorMessage == null
+            && confirmPasswordErrorMessage == null
         ){
             changePassword{
                 onSuccess()
@@ -340,12 +338,34 @@ class ForgetPasswordScreenViewModel @Inject constructor(
         viewModelScope.launch {
             _loading.value = true
 
-            supabaseRepositoryImpl.updatePassword(newPasswordTextField.text.toString())
+            supabaseRepository.updatePassword(newPasswordTextField.text.toString())
                 .onSuccess {
                     onSuccess()
                 }
                 .onFailure { error ->
+                    val authError = (error as? AppDomainException)?.errorType
 
+                    when(authError){
+                        ErrorsType.DATA -> {
+                            _newPasswordTextFields.update {
+                                it.map { item ->
+                                    when(item.textField){
+                                        newPasswordTextField -> {
+                                            item.copy(errorMessage = "Incorrect password")
+                                        }
+
+                                        else -> item
+                                    }
+                                }
+                            }
+                        }
+
+                        ErrorsType.NETWORK -> {
+                            snackbarError(SignUpErrors.Error("Network error"))
+                        }
+
+                        else -> { snackbarError(SignUpErrors.Error("Unknown error")) }
+                    }
                 }
 
             _loading.value = false
@@ -365,28 +385,53 @@ class ForgetPasswordScreenViewModel @Inject constructor(
             )
 
     fun navigateTo(screen : LoginPages, navigation : () -> Unit){
-        when(currentScreen.value){
+        when(_backStack.map { it.last() }){
             LoginPages.ChangePasswordPage -> {
                 navigation()
             }
 
             else -> {
-                _backStack.update { it + screen }
+                if(screen == LoginPages.VerificationCodePage){
+                    sendVerificationCode()
+
+                    _backStack.update { it + screen }
+                }else{
+                    _backStack.update { it + screen }
+                }
             }
         }
     }
 
     fun navigateBack(onExitLoginScreen : () -> Unit, onChangeClickState : (Boolean) -> Unit){
         _backStack.update { currentStack ->
-            if(currentStack.size > 1){
-                currentStack.dropLast(1)
-            }else{
-                onExitLoginScreen()
-                currentStack
+            when(currentStack.last()){
+                LoginPages.ChangePasswordPage -> {
+                    currentStack.dropLast(2)
+                }
+
+                else -> {
+                    if(currentStack.size > 1){
+                        currentStack.dropLast(1)
+                    }else{
+                        onExitLoginScreen()
+                        currentStack
+                    }
+                }
             }
         }
 
         onChangeClickState(true)
+    }
+
+
+    private val _signUpStates = Channel<SignUpErrors>(Channel.BUFFERED)
+    val signUpStates = _signUpStates.receiveAsFlow()
+
+
+    fun snackbarError(message : SignUpErrors){
+        viewModelScope.launch {
+            _signUpStates.send(message)
+        }
     }
 
 

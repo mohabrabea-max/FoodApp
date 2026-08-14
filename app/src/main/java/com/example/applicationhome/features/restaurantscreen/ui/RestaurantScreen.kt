@@ -321,7 +321,7 @@ fun RestaurantScreen(
                 }
             }
 
-            if (!isNetworkAvailable) item { NetworkErrorTopBar() }
+            item {  NetworkErrorTopBar(isNetworkAvailable = isNetworkAvailable) }
 
             item { Spacer(modifier = Modifier.height(10.dp)) }
 

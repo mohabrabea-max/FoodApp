@@ -3,10 +3,12 @@ package com.example.applicationhome.core.domain.model
 import com.example.applicationhome.data.data.model.FoodItem
 import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.data.data.model.Snack
+import com.example.applicationhome.data.data.model.UserClassFireBase
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.MealsEntity
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.local.entity.SnacksEntity
+import com.example.applicationhome.data.local.entity.UserClass
 
 fun FoodItem.foodItemToMealsEntity(): MealsEntity =
     MealsEntity(
@@ -60,4 +62,18 @@ fun Restaurants.restaurantsToRestaurantsEntity(): RestaurantsEntity =
         this.background,
         this.searchKeywords,
         this.topFiveMeals
+    )
+
+fun UserClassFireBase.userClassFireBaseToUserDataDatabase(userData : String): UserClass =
+    UserClass(
+        id = userData,
+        firstname = this.firstname,
+        lastname = this.lastname,
+        email = this.email,
+        phonenumber = this.phonenumber,
+        birthday = this.birthday,
+        governorate = this.governorate,
+        city = this.city,
+        address = this.address,
+        isActive = true
     )

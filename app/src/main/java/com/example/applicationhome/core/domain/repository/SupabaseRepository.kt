@@ -4,6 +4,7 @@ interface SupabaseRepository {
     suspend fun signUp(email: String, pass: String): Result<String>
     suspend fun login(email: String, pass: String): Result<String>
     suspend fun updatePassword(newPassword: String): Result<Unit>
+    suspend fun deleteUser(): Result<Unit>
     fun getCurrentUserId(): String?
 
     suspend fun sendOtp(email : String): Result<Unit>

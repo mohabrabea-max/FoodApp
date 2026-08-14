@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.core.domain.model.userClassFireBaseToUserDataDatabase
 import com.example.applicationhome.core.domain.repository.ProfileRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.data.data.model.AccountTextFieldClass
@@ -35,7 +36,9 @@ class ProfileViewModel @Inject constructor(
 
 
     //------------------------------- States ------------------------------
-    val loading = profileRepository.loading
+    private val _loading = MutableStateFlow(false)
+    val loading : StateFlow<Boolean> = _loading
+
     private val _isButtonClicked = MutableStateFlow(false)
     val isButtonClicked = _isButtonClicked.asStateFlow()
     val isDataEdited = profileRepository.isDataEdited
@@ -266,7 +269,11 @@ class ProfileViewModel @Inject constructor(
             return
         }
 
+        if(_loading.value){ return }
+
         viewModelScope.launch {
+            _loading.value = true
+
             val userDataFireBase = UserClassFireBase(
                 firstname = firstNameTextField.text.toString(),
                 lastname = lastNameTextField.text.toString(),
@@ -278,21 +285,13 @@ class ProfileViewModel @Inject constructor(
                 address = addressTextField.text.toString()
             )
 
-            val userDataDatabase = UserClass(
-                id = userData.value.id,
-                firstname = firstNameTextField.text.toString(),
-                lastname = lastNameTextField.text.toString(),
-                email = userData.value.email,
-                phonenumber = phoneNumberTextField.text.toString(),
-                birthday = _selectedDate.value,
-                governorate = _selectedGovernorate.value,
-                city = _selectedCity.value,
-                address = addressTextField.text.toString(),
-                isActive = true
-            )
+            val userDataDatabase = userDataFireBase.userClassFireBaseToUserDataDatabase(userData.value.id)
 
             profileRepository.editeProfile(userData.value.id, userDataFireBase, userDataDatabase)
+
+            _loading.value = false
+
+            _editeProfileError.value = ProfileEditResult.Success
         }
-        _editeProfileError.value = ProfileEditResult.Success
     }
 }

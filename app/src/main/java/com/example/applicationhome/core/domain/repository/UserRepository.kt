@@ -81,10 +81,10 @@ class UserRepository @Inject constructor(
                     in 500..599 -> "Server down ($errorCode)"
                     else -> "HTTP Error: $errorCode"
                 }
-                LoginStates.NetworkError(errorMessage)
+                LoginStates.Error(errorMessage)
             }
         } catch (e : Exception){
-            LoginStates.NetworkError("خطأ في الشبكة: ${e.message}")
+            LoginStates.Error("خطأ في الشبكة: ${e.message}")
         }
     }
 
@@ -125,7 +125,7 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun signUp(userId : String, userRequest : UserClassFireBase): Result<String> {
+    suspend fun signUp(userId : String, userRequest : UserClassFireBase): Result<Unit> {
         return try {
             val response = api.editeProfile(userId, userRequest)
             if (response.isSuccessful && response.body() != null) {
@@ -143,7 +143,7 @@ class UserRepository @Inject constructor(
                 )
                 userdao.addUser(userData)
 
-                Result.success(userId)
+                Result.success(Unit)
             } else {
                 val errorCode = response.code()
 

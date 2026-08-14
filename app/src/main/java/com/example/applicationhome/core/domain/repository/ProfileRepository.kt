@@ -8,7 +8,6 @@ import com.example.applicationhome.data.local.entity.UserClass
 import com.example.applicationhome.data.local.source.LocalLocationDataSource
 import com.example.applicationhome.data.remote.FoodAppAPIs
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,9 +18,6 @@ class ProfileRepository @Inject constructor(
     private val usersDao : UsersDao,
     private val localDataSource : LocalLocationDataSource
 ) {
-    private val _loading = MutableStateFlow(false)
-    val loading : StateFlow<Boolean> = _loading
-
     private val _isDataEdited = MutableStateFlow(false)
     val isDataEdited = _isDataEdited.asStateFlow()
 
@@ -31,7 +27,6 @@ class ProfileRepository @Inject constructor(
         userDataDatabase : UserClass
     ): LoginStates {
         return try {
-            _loading.value = true
             val response = api.editeProfile(userId, userDataFireBase)
             if(response.isSuccessful){
                 usersDao.addUser(userDataDatabase)
@@ -47,12 +42,11 @@ class ProfileRepository @Inject constructor(
                     else -> "HTTP Error: $errorCode"
                 }
 
-                LoginStates.NetworkError(errorMessage)
+                LoginStates.Error(errorMessage)
             }
         } catch (e: Exception){
-            _loading.value = false
             _isDataEdited.value = true
-            LoginStates.NetworkError(e.message.toString())
+            LoginStates.Error(e.message.toString())
         }
     }
 

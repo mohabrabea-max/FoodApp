@@ -59,7 +59,7 @@ sealed class SignUpScreens(val index : Int) {
 
 sealed interface LoginStates {
     data object Success : LoginStates
-    data class NetworkError(val errorMessage : String) : LoginStates
+    data class Error(val errorMessage : String) : LoginStates
 }
 
 sealed interface ChickEmailStates {
@@ -82,7 +82,8 @@ data class LoginTextFields(
 
 enum class ErrorsType{
     NETWORK,
-    DATA
+    DATA,
+    UNKNOWNERROR
 }
 
 data class SignUpBasicTextFields(
@@ -121,8 +122,13 @@ sealed class LoginPages(val index : Int) {
     data object ChangePasswordPage : LoginPages(3)
 }
 
-sealed class AuthError {
-    object NetworkError : AuthError()
-    object EmailAlreadyExists : AuthError()
-    data class UnknownError(val message: String) : AuthError()
+sealed interface AuthError {
+    data object NetworkError : AuthError
+    data object EmailAlreadyExists : AuthError
+    data object TooManyRequests : AuthError
+    data class UnknownError(val message: String) : AuthError
+}
+
+sealed interface SignUpErrors {
+    data class Error(val message : String) : SignUpErrors
 }

@@ -1,5 +1,12 @@
 package com.example.applicationhome.core.ui.components.bars
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -15,30 +22,50 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun NetworkErrorTopBar(){
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(35.dp)
-            .background(Color(0xFFF9E2DE)),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
-    ){
-        Icon(
-            Icons.Default.Warning,
-            contentDescription = "Warning",
-            tint = Color(0xFF4A1211),
-            modifier = Modifier.padding(start = 15.dp, end = 10.dp).size(18.dp)
-        )
+fun NetworkErrorTopBar(isNetworkAvailable : Boolean, padding : Dp = 15.dp){
+    val visible = !isNetworkAvailable
+    val density = LocalDensity.current
 
-        Text(
-            text = "You're offline — showing cached data",
-            fontSize = 14.sp,
-            color = Color(0xFF4A1211)
-        )
+    AnimatedVisibility(
+        visible = visible,
+        enter = slideInVertically {
+            // Slide in from 40 dp from the top.
+            with(density) { -40.dp.roundToPx() }
+        } + expandVertically(
+            // Expand from the top.
+            expandFrom = Alignment.Top
+        ) + fadeIn(
+            // Fade in with the initial alpha of 0.3f.
+            initialAlpha = 0.3f
+        ),
+        exit = slideOutVertically() + shrinkVertically() + fadeOut()
+    ){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(35.dp)
+                .background(Color(0xFFF9E2DE)),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ){
+            Icon(
+                Icons.Default.Warning,
+                contentDescription = "Warning",
+                tint = Color(0xFF4A1211),
+                modifier = Modifier.padding(start = padding, end = 10.dp).size(18.dp)
+            )
+
+            Text(
+                text = "You're offline — showing cached data",
+                fontSize = 14.sp,
+                color = Color(0xFF4A1211)
+            )
+        }
     }
 }

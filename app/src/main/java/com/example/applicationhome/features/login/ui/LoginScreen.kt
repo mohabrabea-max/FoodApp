@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,8 +28,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,35 +46,50 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
+import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
+import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showNetworkSnackBar
 import com.example.applicationhome.core.ui.theme.DarkOrange
+import com.example.applicationhome.core.ui.theme.MatteBlack
 import com.example.applicationhome.core.ui.theme.VeryLightGray
+import com.example.applicationhome.data.data.model.LoginStates
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.data.model.SignUpBasicTextFields
+import com.example.applicationhome.data.data.model.SignUpErrors
 import com.example.applicationhome.features.signupscreen.ui.SignupTextField
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(
     navigationController : NavHostController,
-    loginViewModel: LoginViewModel
+    viewModel: LoginViewModel
 ){
+    val interactionSource = remember { MutableInteractionSource() }
+
+    val snackBarHostState = remember { SnackbarHostState() }
+    val signUpStates = viewModel.signUpStates
+
     val clickState = remember { mutableStateOf(true) }
 
-    val loading by loginViewModel.loading.collectAsStateWithLifecycle()
+    val loading by viewModel.loading.collectAsStateWithLifecycle()
 
-    val isNetworkAvailable by loginViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
+    val isNetworkAvailable by viewModel.isNetworkAvailable.collectAsStateWithLifecycle()
 
-    val loginTextFields by loginViewModel.loginTextFields.collectAsStateWithLifecycle()
+    val loginTextFields by viewModel.loginTextFields.collectAsStateWithLifecycle()
 
+    val errorType by viewModel.errorType.collectAsStateWithLifecycle()
 
-    val isButtonEnabled by loginViewModel.isButtonLoginPageEnabled.collectAsStateWithLifecycle()
+    val isButtonEnabled by viewModel.isButtonLoginPageEnabled.collectAsStateWithLifecycle()
+
+    val textButtonsColor = if(isNetworkAvailable) Color.DarkOrange else Color.Gray
 
 
     BackHandler(enabled = true){
@@ -85,6 +105,31 @@ fun LoginScreen(
             .fillMaxSize(),
 
         containerColor = Color.VeryLightGray,
+
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackBarHostState,
+                modifier = Modifier
+                    .padding(bottom = 20.dp)
+                    .padding(horizontal = 32.dp)
+            ){ data ->
+                Surface(
+                    color = Color.MatteBlack,
+                    contentColor = Color.White,
+                    shape = RoundedCornerShape(15.dp),
+                    shadowElevation = 4.dp
+                ){
+                    Text(
+                        text = data.visuals.message,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .padding(horizontal = 20.dp, vertical = 12.dp)
+                    )
+                }
+            }
+        },
 
         topBar = {
             MyTopBar(
@@ -157,8 +202,6 @@ fun LoginScreen(
                 }
             }
 
-            val interactionSource = remember { MutableInteractionSource() }
-
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -167,6 +210,8 @@ fun LoginScreen(
                     .background(Color.VeryLightGray),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                NetworkErrorTopBar(isNetworkAvailable = isNetworkAvailable, padding = 80.dp)
+
                 Spacer(modifier = Modifier.height(30.dp))
 
                 Text(
@@ -194,10 +239,37 @@ fun LoginScreen(
                     )
                 }
 
+                when(errorType){
+                    is LoginStates.Error -> {
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Column(
+                            modifier = Modifier
+                                .padding(horizontal = 40.dp)
+                                .fillMaxWidth()
+                                .clip(CircleShape)
+                                .background(Color(0xFFF9E2DE)),
+
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.Center
+                        ){
+                            Text(
+                                text = (errorType as LoginStates.Error).errorMessage,
+                                color = Color(0xFF4A1211),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.padding(10.dp)
+                            )
+                        }
+                    }
+
+                    else -> {}
+                }
+
                 Text(
                     text = "Forget your password",
                     style = MaterialTheme.typography.titleLarge,
-                    color = Color.DarkOrange,
+                    color = textButtonsColor,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier
@@ -206,14 +278,20 @@ fun LoginScreen(
                         .clickable(
                             interactionSource = interactionSource,
                             indication = null
-                        ) { navigationController.navigate(Screens.ForgetPasswordScreen.screen) }
+                        ) {
+                            if(isNetworkAvailable){
+                                navigationController.navigate(Screens.ForgetPasswordScreen.screen)
+                            }else{
+                                viewModel.snackbarError("Network error")
+                            }
+                        }
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
 
                 MyButton(
                     loading = loading,
-                    backgroundcolor = if (isButtonEnabled) Color.DarkOrange else Color.Gray,
+                    backgroundcolor = if (isButtonEnabled && isNetworkAvailable) Color.DarkOrange else Color.LightGray,
                     fontcolor = Color.White,
                     horizontalPadding = 40.dp,
                     title = "Login"
@@ -221,7 +299,7 @@ fun LoginScreen(
                     if(isNetworkAvailable && clickState.value && isButtonEnabled){
                         clickState.value = false
 
-                        loginViewModel.login(
+                        viewModel.login(
 
                             onSuccess = {
                                 navigationController.navigate(Screens.DashboardScreen.screen) {
@@ -308,7 +386,7 @@ fun LoginScreen(
                     Text(
                         text = "Sign Up",
                         style = MaterialTheme.typography.titleLarge,
-                        color = Color.DarkOrange,
+                        color = textButtonsColor,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier
@@ -316,8 +394,28 @@ fun LoginScreen(
                             .clickable(
                                 interactionSource = interactionSource,
                                 indication = null
-                            ) {  navigationController.navigate(Screens.SignUpScreen.screen) }
+                            ) {
+                                if(isNetworkAvailable){
+                                    navigationController.navigate(Screens.SignUpScreen.screen)
+                                }else{
+                                    viewModel.snackbarError("Network error")
+                                }
+                            }
                     )
+                }
+            }
+        }
+
+        LaunchedEffect(Unit){
+            signUpStates.collect { message ->
+                when(message){
+                    is SignUpErrors.Error -> {
+                        launch {
+                            snackBarHostState.showNetworkSnackBar(
+                                message = message.message
+                            )
+                        }
+                    }
                 }
             }
         }

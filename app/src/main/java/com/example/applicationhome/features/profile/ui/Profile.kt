@@ -74,7 +74,6 @@ fun Profile(
     val searchString by profileViewModel.searchString.collectAsStateWithLifecycle()
 
     val buttonColor = if(isDataEdited) Color.BrandBlue else Color.LightGray
-    val buttonFontColor = if(isDataEdited) Color.White else Color.Black
 
     var showGovernorateBottomSheet by rememberSaveable { mutableStateOf(false) }
     var showCityBottomSheet by rememberSaveable { mutableStateOf(false) }
@@ -114,7 +113,6 @@ fun Profile(
             BottomBarForProfileScreen(
                 loading,
                 buttonColor,
-                buttonFontColor,
                 isDataEdited
             ){
                 profileViewModel.editeProfile()
@@ -222,7 +220,6 @@ fun Profile(
 fun BottomBarForProfileScreen(
     loading : Boolean,
     buttonColor : Color,
-    buttonFontColor : Color,
     isDataEdited : Boolean,
     action : () -> Unit
 ){
@@ -241,7 +238,7 @@ fun BottomBarForProfileScreen(
         MyButton(
             loading,
             buttonColor,
-            buttonFontColor,
+            Color.White,
             40.dp,
             "Save edites"
         ) {

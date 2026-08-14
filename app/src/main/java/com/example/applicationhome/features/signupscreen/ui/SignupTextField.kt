@@ -215,7 +215,9 @@ fun SignupTextField(
 
 
 @Composable
-fun ErrorMessageTextField(errorMessage : String){
+fun ErrorMessageTextField(errorMessage : String, textSize : Int = 13){
+    val iconSize = textSize * 1.26
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -225,13 +227,13 @@ fun ErrorMessageTextField(errorMessage : String){
             Icons.Default.Warning,
             contentDescription = "Warning",
             tint = Color.Red,
-            modifier = Modifier.padding(start = 15.dp).size(16.5.dp)
+            modifier = Modifier.padding(start = 15.dp).size(iconSize.dp)
         )
 
         Text(
             text = errorMessage,
             color = Color.Red,
-            fontSize = 13.sp,
+            fontSize = textSize.sp,
             modifier = Modifier.padding(horizontal = 5.dp)
         )
     }

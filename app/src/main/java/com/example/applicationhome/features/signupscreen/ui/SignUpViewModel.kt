@@ -9,26 +9,30 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.core.domain.Implementations.SupabaseRepositoryImpl
+import com.example.applicationhome.core.domain.exception.AuthException
+import com.example.applicationhome.core.domain.model.userClassFireBaseToUserDataDatabase
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.ProfileRepository
 import com.example.applicationhome.core.domain.repository.SearchRepository
-import com.example.applicationhome.core.domain.repository.UserRepository
+import com.example.applicationhome.core.domain.repository.SupabaseRepository
+import com.example.applicationhome.core.domain.usecase.SignUpUseCase
 import com.example.applicationhome.data.data.model.AuthError
 import com.example.applicationhome.data.data.model.LoginStates
 import com.example.applicationhome.data.data.model.SignUpBasicTextFields
+import com.example.applicationhome.data.data.model.SignUpErrors
 import com.example.applicationhome.data.data.model.SignUpFullNameTextFields
 import com.example.applicationhome.data.data.model.SignUpScreens
 import com.example.applicationhome.data.data.model.TextFieldsTypes
 import com.example.applicationhome.data.data.model.UserClassFireBase
-import com.example.applicationhome.data.local.entity.UserClass
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -36,11 +40,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val userRepository: UserRepository,
     private val favoriteRepository: FavoriteRepository,
     private val searchRepository: SearchRepository,
     private val profileRepository : ProfileRepository,
-    private val supabaseRepositoryImpl : SupabaseRepositoryImpl,
+    private val signUpUseCase : SignUpUseCase,
+    private val supabaseRepository : SupabaseRepository,
     networkObserver: NetworkObserver
 ) : ViewModel() {
     val isNetworkAvailable = networkObserver.isNetworkAvailable
@@ -49,7 +53,6 @@ class SignUpViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = true
         )
-
 
     private val _loading = MutableStateFlow(false)
     val loading : StateFlow<Boolean> = _loading
@@ -132,12 +135,11 @@ class SignUpViewModel @Inject constructor(
         initialValue = false
     )
 
-
-
     private val _signupPages = MutableStateFlow<SignUpScreens>(SignUpScreens.BasicDataScreen)
     val signupPages = _signupPages.asStateFlow()
 
-    private val id = MutableStateFlow("")
+    private val _signUpStates = Channel<SignUpErrors>(Channel.BUFFERED)
+    val signUpStates = _signUpStates.receiveAsFlow()
 
 
     init {
@@ -211,35 +213,45 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun signUpButton(onSuccess : () -> Unit, onField : () -> Unit){
+    fun onFinishAccountClicked(onSuccess : () -> Unit, onField : () -> Unit){
+        if(_loading.value){ return }
+
         viewModelScope.launch {
             _loading.value = true
 
-            val userData = UserClass(
-                id = id.value,
+            val userId = supabaseRepository.getCurrentUserId()
+
+            if(userId == null){
+                _loading.value = false
+                onField()
+                return@launch
+            }
+
+            val userDataFireBase = UserClassFireBase(
+                firstname = firstnamestate.text.toString(),
+                lastname = lastnamestate.text.toString(),
+                email = emailstate.text.toString(),
                 phonenumber = phonenumberstate.text.toString(),
                 address = addressstate.text.toString(),
-                isActive = true
             )
 
+            val userClassDatabase = userDataFireBase.userClassFireBaseToUserDataDatabase(userId)
+
             val result = profileRepository.editeProfile(
-                id.value,
-                UserClassFireBase(
-                    phonenumber = phonenumberstate.text.toString(),
-                    address = addressstate.text.toString()
-                ),
-                userData
-            )
+                userId,
+                userDataFireBase,
+                userClassDatabase
+                )
 
             when(result){
                 LoginStates.Success -> {
-                    favoriteRepository.addGuestFavoriteToUser(id.value)
-                    searchRepository.addGuestSearchHistoryToUser(id.value)
+                    favoriteRepository.addGuestFavoriteToUser(userId)
+                    searchRepository.addGuestSearchHistoryToUser(userId)
 
                     onSuccess()
                 }
 
-                is LoginStates.NetworkError -> {
+                is LoginStates.Error -> {
                     onField()
                 }
             }
@@ -248,7 +260,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun bottonstate(){
+    fun onSignUpClicked(){
         val firstNameStateError = firstnamestate.text.length < 2
         val lastNameStateError = lastnamestate.text.length < 2
 
@@ -271,7 +283,7 @@ class SignUpViewModel @Inject constructor(
         }
 
 
-        val allowedEmail = "^[A-Za-z0-9._%+-]+@(gmail|yahoo|outlook)\\.(com|net)$".toRegex(RegexOption.IGNORE_CASE)
+        val allowedEmail = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex(RegexOption.IGNORE_CASE)
         val isEmailValid = emailstate.text.matches(allowedEmail)
 
         val emailErrorMessage = if(!isEmailValid || emailstate.text.isEmpty()){
@@ -320,77 +332,61 @@ class SignUpViewModel @Inject constructor(
             }
         }
 
-
-        if(
-            firstnamestate.text.isNotEmpty()
-            && lastnamestate.text.isNotEmpty()
-            && emailstate.text.isNotEmpty()
-            && isEmailValid
-            && passwordstate.text.isNotEmpty()
-            && passwordstate.text.length >= 8
-            && passwordstate.text == confirmpasswordstate.text
-
-        ){
-            chickEmail()
-            nextPage()
-        }
-    }
-
-    private fun chickEmail(){
         if(_loading.value) { return }
 
-        viewModelScope.launch {
+        if (
+            !firstNameStateError
+            && !lastNameStateError
+            && emailErrorMessage == null
+            && passwordErrorMessage == null
+            && confirmPasswordErrorMessage == null
+        ){
+            viewModelScope.launch {
+                _loading.value = true
 
-            bottonstate()
+                signUpUseCase.performSignUp(
+                    firstName = firstnamestate.text.toString(),
+                    lastName = lastnamestate.text.toString(),
+                    email = emailstate.text.toString(),
+                    password = passwordstate.text.toString()
+                ).onSuccess {
+                    nextPage()
 
-            _loading.value = true
-
-            supabaseRepositoryImpl.signUp(emailstate.text.toString(), passwordstate.text.toString())
-                .onSuccess { userId ->
-                    id.value = userId
-
-                    userRepository.signUp(
-                        userId,
-                        UserClassFireBase(
-                            firstname = firstnamestate.text.toString(),
-                            lastname = lastnamestate.text.toString(),
-                            email = emailstate.text.toString()
-                        )
-                    ).onSuccess { userId ->
-                        favoriteRepository.addGuestFavoriteToUser(userId)
-                        searchRepository.addGuestSearchHistoryToUser(userId)
-                    }.onFailure { error ->
-
-                    }
                 }.onFailure { error ->
-                    val authError = (error as? SupabaseRepositoryImpl.AuthException)?.error
+                    val authError = (error as? AuthException)?.error
                         ?: AuthError.UnknownError(error.message ?: "")
 
                     when (authError) {
-                        is AuthError.NetworkError -> {
-                            //showNetworkSnackbar()
+                        AuthError.NetworkError -> {
+                            snackbarError("Network error")
                         }
 
-                        is AuthError.EmailAlreadyExists -> {
+                        AuthError.EmailAlreadyExists -> {
                             _signUpBasicTextFields.update { item ->
                                 item.map {
-                                    if (it.textField == emailstate){
-                                        it.copy(errorMessage = "Please enter a valid email address")
-                                    }else{
+                                    if (it.textField == emailstate) {
+                                        it.copy(errorMessage = "This email is already registered")
+                                    } else {
                                         it
                                     }
                                 }
-
                             }
                         }
 
-                        is AuthError.UnknownError -> {
-                            //showGeneralError(authError.message)
+                        else -> {
+                            snackbarError("Unexpected error")
                         }
                     }
                 }
 
-            _loading.value = false
+                _loading.value = false
+            }
+        }
+    }
+
+    fun snackbarError(message : String){
+        viewModelScope.launch {
+            _signUpStates.send(SignUpErrors.Error(message))
         }
     }
 

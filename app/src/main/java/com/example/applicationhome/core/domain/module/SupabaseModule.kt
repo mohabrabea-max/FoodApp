@@ -9,6 +9,8 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.postgrest.postgrest
 import javax.inject.Singleton
 
 @Module
@@ -22,6 +24,7 @@ object SupabaseModule {
             supabaseKey = BuildConfig.SUPABASEAPIKEY
         ) {
             install(Auth)
+            install(Postgrest)
         }
     }
 
@@ -29,5 +32,11 @@ object SupabaseModule {
     @Singleton
     fun provideSupabaseAuth(supabaseClient: SupabaseClient): Auth {
         return supabaseClient.auth
+    }
+
+    @Provides
+    @Singleton
+    fun provideSupabasePostgrest(supabaseClient: SupabaseClient): Postgrest {
+        return supabaseClient.postgrest
     }
 }

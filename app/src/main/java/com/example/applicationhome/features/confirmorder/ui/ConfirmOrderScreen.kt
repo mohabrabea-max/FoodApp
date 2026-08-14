@@ -155,9 +155,7 @@ fun ConfirmOrderScreen(
                     },
                 )
 
-                if(!isNetworkAvailable){
-                    NetworkErrorTopBar()
-                }
+                NetworkErrorTopBar(isNetworkAvailable = isNetworkAvailable)
             }
         }
     ){
