@@ -26,4 +26,7 @@ interface UsersDao {            // دا الجزء اللي بينفذ عملي�
 
     @Update(entity = UserClass::class)
     suspend fun updateUser(updateState: UpdateAccountState)
+
+    @Query("DELETE FROM users")
+    suspend fun deleteUserFromDatabase()
 }

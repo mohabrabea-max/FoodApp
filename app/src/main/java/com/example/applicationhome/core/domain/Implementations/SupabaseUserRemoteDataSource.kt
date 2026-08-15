@@ -19,7 +19,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SupabaseRepositoryImpl @Inject constructor(
+class SupabaseUserRemoteDataSource @Inject constructor(
     private val auth : Auth,
     private val postgrest : Postgrest
 ): SupabaseRepository {
@@ -171,6 +171,11 @@ class SupabaseRepositoryImpl @Inject constructor(
     override fun getCurrentUserId(): String? {
         return auth.currentUserOrNull()?.id
     }
+
+
+    suspend fun retrieveUser() = auth.retrieveUserForCurrentSession()
+
+    val sessionStatus = auth.sessionStatus
 
 
     override suspend fun sendOtp(email: String): Result<Unit> {

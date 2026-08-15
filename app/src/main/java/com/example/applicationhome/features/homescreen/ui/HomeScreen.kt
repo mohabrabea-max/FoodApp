@@ -21,12 +21,16 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,6 +61,7 @@ import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Restau
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.LightOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
+import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import kotlinx.coroutines.CoroutineScope
@@ -69,9 +74,16 @@ fun HomeScreen(
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
     homeScreenViewModel : HomeScreenViewModel,
-    scrollState : LazyListState
+    scrollState : LazyListState,
+    syncDataUiState : HomeUiState,
+    isRefreshing : Boolean,
+    syncData : () -> Unit
 ){
+    val state = rememberPullToRefreshState()
+
     val isNetworkAvailable by homeScreenViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
+
+    val isOnline = isNetworkAvailable || syncDataUiState != HomeUiState.Offline
 
     val categories by homeScreenViewModel.categories.collectAsStateWithLifecycle()
     val categorySelected by homeScreenViewModel.selected.collectAsStateWithLifecycle()
@@ -88,188 +100,252 @@ fun HomeScreen(
     val context = LocalContext.current as? Activity
     BackHandler(enabled = true) { context?.finishAffinity() } // ده بيمسح الأبلكيشن من الـ Background ويقفله تماماً
 
-    Scaffold(
-        modifier = Modifier.navigationBarsPadding().
-        fillMaxSize(),
-        topBar = {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                HomeScreenTopBar(
-                    scrollState,
-                    drawerState,
-                    coroutineScope,
-                    navigationController
-                )
 
-                NetworkErrorTopBar(isNetworkAvailable = isNetworkAvailable)
-            }
-        }
+
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+
+        onRefresh = { syncData() },
+
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.VeryLightGray),
+
+        state = state,
+
+        indicator = {
+            Indicator(
+                modifier = Modifier.align(Alignment.TopCenter),
+                isRefreshing = isRefreshing,
+                containerColor = Color.White,
+                color = Color.DarkOrange,
+                state = state
+            )
+        },
+
+        contentAlignment = Alignment.Center
     ){
-        Box(modifier = Modifier.background(Color.VeryLightGray)){
-            Box{
-                LazyColumn (
-                    state = scrollState,
-                    modifier = Modifier.fillMaxSize()
+        Scaffold(
+            modifier = Modifier.navigationBarsPadding().
+            fillMaxSize(),
+
+            containerColor = Color.White,
+
+            topBar = {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ){
-                    item{
-                        Box(modifier = Modifier.height(170.dp).fillMaxWidth().background(Color.DarkOrange)){
-                            Column(
-                                modifier = Modifier.align(Alignment.BottomCenter),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ){
-                                Text(
-                                    text = "What would you like to eat?",
-                                    fontSize = 22.sp,
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = Color.White.copy(alpha = 1f),
-                                    textAlign = TextAlign.Center,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(bottom = 20.dp)
-                                )
-                            }
-                        }
-                    }
+                    HomeScreenTopBar(
+                        scrollState,
+                        drawerState,
+                        coroutineScope,
+                        navigationController
+                    )
 
-                    item{ Box(modifier = Modifier.fillMaxWidth().height(16.dp).background(Color.DarkOrange)) }
+                    NetworkErrorTopBar(isNetworkAvailable = isOnline)
+                }
+            }
+        ){
 
-                    item{
-                        Box(
-                            modifier = Modifier.background(Color.White),
-                            contentAlignment = Alignment.Center
-                        ){
-                            Box(
-                                modifier = Modifier.fillMaxWidth().
-                                height(25.dp).
-                                clip(shape = RoundedCornerShape(bottomStart = 40.dp, bottomEnd = 40.dp)).
-                                background(Color.DarkOrange).
-                                align(Alignment.TopCenter)
+            LazyColumn (
+                state = scrollState,
+                modifier = Modifier.fillMaxSize()
+            ){
+                item {
+                    Box(
+                        modifier = Modifier.height(170.dp).fillMaxWidth()
+                            .background(Color.DarkOrange)
+                    ) {
+                        Column(
+                            modifier = Modifier.align(Alignment.BottomCenter),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "What would you like to eat?",
+                                fontSize = 22.sp,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = Color.White.copy(alpha = 1f),
+                                textAlign = TextAlign.Center,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(bottom = 20.dp)
                             )
-                            SearchBox(){
-                                navigationController.navigate(Screens.Search.screen)
-                            }
                         }
                     }
-                    item{ Box(modifier = Modifier.fillMaxWidth().height(16.dp).background(Color.White)) }
+                }
 
-                    item{
-                        CategoriesBar(
-                            categories,
-                            categorySelected,
-                            { category -> homeScreenViewModel.select(category) },
-                            { homeScreenViewModel.unSelected() },
-                            {
-                                // 1. حدد طول الظل اللي إنت عايزه ينزل تحت البوكس
-                                val shadowHeight = 3.dp.toPx()
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().height(16.dp)
+                            .background(Color.DarkOrange)
+                    )
+                }
 
-                                // 2. حدد درجة شفافية وغمقان الظل
-                                val shadowColor = Color.Gray.copy(alpha = 0.2f)
-
-                                // 3. عملنا فرشة تدرج رأسي تبدأ من نهاية البوكس (size.height) وتنتهي بعد طول الظل
-                                val shadowBrush = Brush.verticalGradient(
-                                    colors = listOf(shadowColor, Color.Transparent),
-                                    startY = size.height,
-                                    endY = size.height + shadowHeight
+                item {
+                    Box(
+                        modifier = Modifier.background(Color.White),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().height(25.dp).clip(
+                                shape = RoundedCornerShape(
+                                    bottomStart = 40.dp,
+                                    bottomEnd = 40.dp
                                 )
-
-                                // 4. رسمنا مستطيل الظل: بيبدأ من صفر في العرض (x=0) يعني مش هيهرب برا الأطراف
-                                // وبيبدأ من نهاية ارتفاع البوكس (y = size.height) يعني مستحيل يطلع فوق
-                                drawRect(
-                                    brush = shadowBrush,
-                                    topLeft = Offset(x = 0f, y = size.height),
-                                    size = Size(width = size.width, height = shadowHeight)
-                                )
-                            }
+                            ).background(Color.DarkOrange).align(Alignment.TopCenter)
                         )
+                        SearchBox() {
+                            navigationController.navigate(Screens.Search.screen)
+                        }
                     }
+                }
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().height(16.dp).background(Color.White)
+                    )
+                }
 
-                    item{ Spacer(modifier = Modifier.height(16.dp)) }
+                when (syncDataUiState) {
+                    HomeUiState.Success, HomeUiState.Offline -> {
+                        item {
+                            CategoriesBar(
+                                categories,
+                                categorySelected,
+                                { category -> homeScreenViewModel.select(category) },
+                                { homeScreenViewModel.unSelected() },
+                                {
+                                    // 1. حدد طول الظل اللي إنت عايزه ينزل تحت البوكس
+                                    val shadowHeight = 3.dp.toPx()
 
-                    item{
-                        Box(modifier = Modifier.fillMaxWidth().height(120.dp)){
-                            HorizontalPager(
-                                state = pagerState,
-                                modifier = Modifier.fillMaxSize(),
-                                contentPadding = PaddingValues(horizontal = 10.dp),
-                                pageSpacing = 10.dp
-                            ) {page ->
-                                val currentOffer = offers[page]
-                                Box(
-                                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)).background(Color.White).clickable {  }
-                                ){
-                                    AsyncImage(
-                                        modifier = Modifier.fillMaxSize(),
-                                        model = ImageRequest.Builder(LocalContext.current).
-                                        data(currentOffer.image).
-                                        crossfade(true).
-                                        size(400, 400).
-                                        precision(Precision.EXACT).
-                                        build(),
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Crop
+                                    // 2. حدد درجة شفافية وغمقان الظل
+                                    val shadowColor = Color.Gray.copy(alpha = 0.2f)
+
+                                    // 3. عملنا فرشة تدرج رأسي تبدأ من نهاية البوكس (size.height) وتنتهي بعد طول الظل
+                                    val shadowBrush = Brush.verticalGradient(
+                                        colors = listOf(shadowColor, Color.Transparent),
+                                        startY = size.height,
+                                        endY = size.height + shadowHeight
                                     )
+
+                                    // 4. رسمنا مستطيل الظل: بيبدأ من صفر في العرض (x=0) يعني مش هيهرب برا الأطراف
+                                    // وبيبدأ من نهاية ارتفاع البوكس (y = size.height) يعني مستحيل يطلع فوق
+                                    drawRect(
+                                        brush = shadowBrush,
+                                        topLeft = Offset(x = 0f, y = size.height),
+                                        size = Size(width = size.width, height = shadowHeight)
+                                    )
+                                }
+                            )
+                        }
+
+                        item { Spacer(modifier = Modifier.height(16.dp)) }
+
+                        item {
+                            Box(modifier = Modifier.fillMaxWidth().height(120.dp)) {
+                                HorizontalPager(
+                                    state = pagerState,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentPadding = PaddingValues(horizontal = 10.dp),
+                                    pageSpacing = 10.dp
+                                ) { page ->
+                                    val currentOffer = offers[page]
+                                    Box(
+                                        modifier = Modifier.fillMaxSize()
+                                            .clip(RoundedCornerShape(10.dp)).background(Color.White)
+                                            .clickable { }
+                                    ) {
+                                        AsyncImage(
+                                            modifier = Modifier.fillMaxSize(),
+                                            model = ImageRequest.Builder(LocalContext.current)
+                                                .data(currentOffer.image).crossfade(true)
+                                                .size(400, 400).precision(Precision.EXACT).build(),
+                                            contentDescription = null,
+                                            contentScale = ContentScale.Crop
+                                        )
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    item{ Spacer(modifier = Modifier.height(16.dp)) }
+                        item { Spacer(modifier = Modifier.height(16.dp)) }
 
-                    item{
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Divider(color = Color.LightOrange.copy(alpha = 0.5f), modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp))
-                        Spacer(modifier = Modifier.height(20.dp))
-                    }
-
-                    items(
-                        count = restaurants.itemCount,
-                        key = restaurants.itemKey { it.restaurant.id }
-                    ){ index ->
-                        val item = restaurants[index]
-
-                        item?.let {
-                            RestaurantsBoxHomeScreen(
-                                item,
-                                item.isFavorite,
-                                {
-                                    imageToView = item.restaurant.image
-                                    viewImageState = true
-                                },
-                                {
-                                    navigationController.navigate(
-                                        Screens.RestaurantScreen.createRoute(restaurantId = item.restaurant.id)
-                                    )
-                                },
-                                {
-                                    val favoriteRestaurantDatabase = FavoriteRestaurantEntity(
-                                        item.restaurant.id,
-                                        userData.id,
-                                        false,
-                                        false
-                                    )
-                                    homeScreenViewModel.addRestaurantsFavorite(favoriteRestaurantDatabase)
-                                },
-                                { homeScreenViewModel.removeRestaurantsFavorite(item.restaurant.id) }
+                        item {
+                            Spacer(modifier = Modifier.height(20.dp))
+                            Divider(
+                                color = Color.LightOrange.copy(alpha = 0.5f),
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(start = 20.dp, end = 20.dp)
                             )
+                            Spacer(modifier = Modifier.height(20.dp))
+                        }
+
+                        items(
+                            count = restaurants.itemCount,
+                            key = restaurants.itemKey { it.restaurant.id }
+                        ) { index ->
+                            val item = restaurants[index]
+
+                            item?.let {
+                                RestaurantsBoxHomeScreen(
+                                    item,
+                                    item.isFavorite,
+                                    {
+                                        imageToView = item.restaurant.image
+                                        viewImageState = true
+                                    },
+                                    {
+                                        navigationController.navigate(
+                                            Screens.RestaurantScreen.createRoute(restaurantId = item.restaurant.id)
+                                        )
+                                    },
+                                    {
+                                        val favoriteRestaurantDatabase = FavoriteRestaurantEntity(
+                                            item.restaurant.id,
+                                            userData.id,
+                                            false,
+                                            false
+                                        )
+                                        homeScreenViewModel.addRestaurantsFavorite(
+                                            favoriteRestaurantDatabase
+                                        )
+                                    },
+                                    { homeScreenViewModel.removeRestaurantsFavorite(item.restaurant.id) }
+                                )
+                            }
+                        }
+
+                        item { Spacer(modifier = Modifier.height(16.dp)) }
+
+                        item { Spacer(modifier = Modifier.height(80.dp)) }
+                    }
+
+                    HomeUiState.Loading -> {
+                        item { Spacer(modifier = Modifier.height(200.dp)) }
+
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(Color.White),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(color = Color.DarkOrange)
+                            }
                         }
                     }
-
-                    item{ Spacer(modifier = Modifier.height(16.dp)) }
-
-                    item{Spacer(modifier = Modifier.height(80.dp))}
                 }
             }
-        }
-        if(viewImageState){
-            RestaurantImageView(
-                imageToView,
-                {
-                    imageToView = ""
-                    viewImageState = false
-                }
-            )
+
+            if(viewImageState){
+                RestaurantImageView(
+                    imageToView,
+                    {
+                        imageToView = ""
+                        viewImageState = false
+                    }
+                )
+            }
         }
     }
 }

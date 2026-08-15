@@ -85,8 +85,6 @@ interface FoodAppAPIs{
     @GET("favorite/{userId}.json")
     suspend fun getFavoriteItems(
         @Path("userId") userId : String,
-        @Query("orderBy") orderBy: String = "\"updatedAt\"",
-        @Query("startAt") lastSyncTimestamp: Long
     ): Response<Map<String, FavoriteClass>>
 
 

@@ -70,6 +70,7 @@ import com.example.applicationhome.core.ui.components.profileAndSetting.UserImag
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.core.ui.theme.model.DashboardScreenViewModel
 import com.example.applicationhome.core.ui.theme.model.UserImageViewModel
+import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.features.favorite.ui.Favorite
 import com.example.applicationhome.features.favorite.ui.FavoriteViewModel
@@ -84,7 +85,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun DashboardScreen(
     navigationController: NavHostController,
-    userImageViewModel : UserImageViewModel
+    userImageViewModel : UserImageViewModel,
+    syncDataUiState : HomeUiState,
+    isRefreshing : Boolean,
+    syncData : () -> Unit
 ){
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -278,8 +282,10 @@ fun DashboardScreen(
                         coroutineScope,
                         navigationController,
                         homeScreenViewModel,
-                        homeListState
-                    )
+                        homeListState,
+                        syncDataUiState,
+                        isRefreshing
+                    ){ syncData() }
                 }
 
                 composable(Screens.Favorite.screen){

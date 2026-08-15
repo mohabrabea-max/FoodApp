@@ -41,7 +41,7 @@ class SearchViewModel @Inject constructor(
     private val searchRepository : SearchRepository,
     homeScreenRepository : HomeScreenRepository,
     userRepository: UserRepository,
-    private val networkObserver : NetworkObserver
+    networkObserver : NetworkObserver
 ): ViewModel() {
 
     val userData = userRepository.userData

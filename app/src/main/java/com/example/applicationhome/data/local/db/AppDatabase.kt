@@ -42,7 +42,7 @@ import com.example.applicationhome.data.local.entity.UserClass
         OffersEntity::class,
         RestaurantCategoryCrossRef::class
     ],
-    version = 56,
+    version = 57,
     exportSchema = false
 )
 

@@ -173,8 +173,8 @@ fun Cart(
                             height(40.dp).
                             clip(CircleShape).
                             clickable{
-                                if (navigationController.previousBackStackEntry != null) {
-                                    navigationController.popBackStack()
+                                navigationController.navigate(Screens.DashboardScreen.screen) {
+                                    popUpTo(0) { inclusive = true }
                                 }
                             }.
                             border(width = 1.dp, color = Color.BrownForFont, shape = RoundedCornerShape(40.dp)).

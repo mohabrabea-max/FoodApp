@@ -38,7 +38,11 @@ class SyncAddToFavoritesWorker @AssistedInject constructor(
                                 val response = api.addToFavorite(
                                     item.userId,
                                     "Meal_${item.mealId}",
-                                    FavoriteClass(item.mealId, "Meal", item.restaurantId)
+                                    FavoriteClass(
+                                        id = item.mealId,
+                                        typ = "Meal",
+                                        restaurants = item.restaurantId
+                                    )
                                 )
                                 Pair(item, response.isSuccessful)
                             }catch (e : Exception){
@@ -67,7 +71,11 @@ class SyncAddToFavoritesWorker @AssistedInject constructor(
                                 val response = api.addToFavorite(
                                     item.userId,
                                     "Restaurant_${item.resId}",
-                                    FavoriteClass(item.resId, "Restaurant", item.resId)
+                                    FavoriteClass(
+                                        id = item.resId,
+                                        typ = "Restaurant",
+                                        restaurants = item.resId
+                                    )
                                 )
                                 Pair(item, response.isSuccessful)
                             }catch (e : Exception){
@@ -96,7 +104,11 @@ class SyncAddToFavoritesWorker @AssistedInject constructor(
                                 val response = api.addToFavorite(
                                     item.userId,
                                     "Snack_${item.snackId}",
-                                    FavoriteClass(item.snackId, "Snack", item.restaurantId)
+                                    FavoriteClass(
+                                        id = item.snackId,
+                                        typ = "Snack",
+                                        restaurants = item.restaurantId
+                                    )
                                 )
                                 Pair(item, response.isSuccessful)
                             }catch (e : Exception){

@@ -34,6 +34,15 @@ interface FoodAndRestaurantsDao {
     @Upsert
     suspend fun syncRestaurantCategoryCrossRef(categories : List<RestaurantCategoryCrossRef>)
 
+    @Transaction
+    suspend fun syncRestaurantsAndCategoriesTransaction(
+        restaurants: List<RestaurantsEntity>,
+        categories: List<RestaurantCategoryCrossRef>
+    ) {
+        syncRestaurantsToDatabase(restaurants)
+        syncRestaurantCategoryCrossRef(categories)
+    }
+
     @Upsert
     suspend fun syncCategoriesToDatabase(categories : List<CategoriesEntity>)
 

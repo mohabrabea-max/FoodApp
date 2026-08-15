@@ -59,6 +59,9 @@ interface FavoriteDao {
     @Query("DELETE FROM favorite_meals WHERE isDeletedOffline = 1 AND isSynced = 0")
     suspend fun cleanUpLocalOnlyDeletedMeals()
 
+    @Query("DELETE FROM favorite_meals")
+    suspend fun deleteAllFavoriteMeals()
+
 
     //             --------------------------------------   Snacks    -------------------------------------
 
@@ -102,6 +105,9 @@ interface FavoriteDao {
 
     @Query("DELETE FROM favorite_snacks WHERE isDeletedOffline = 1 AND isSynced = 0")
     suspend fun cleanUpLocalOnlyDeletedSnacks()
+
+    @Query("DELETE FROM favorite_snacks")
+    suspend fun deleteAllFavoriteSnacks()
 
 
     //              --------------------------------------   Restaurants    -------------------------------------
@@ -147,6 +153,9 @@ interface FavoriteDao {
     @Query("DELETE FROM favorite_restaurants WHERE isDeletedOffline = 1 AND isSynced = 0")
     suspend fun cleanUpLocalOnlyDeletedRestaurants()
 
+    @Query("DELETE FROM favorite_restaurants")
+    suspend fun deleteAllFavoriteRestaurants()
+
 
     //              --------------------------------------   Transaction    -------------------------------------
 
@@ -159,5 +168,12 @@ interface FavoriteDao {
         addFoodToFavorite(foodItems)
         addSnacksToFavorite(snacksItems)
         addRestaurantToFavorite(restaurant)
+    }
+
+    @Transaction
+    suspend fun deleteAllFromFavorite(){
+        deleteAllFavoriteMeals()
+        deleteAllFavoriteSnacks()
+        deleteAllFavoriteRestaurants()
     }
 }

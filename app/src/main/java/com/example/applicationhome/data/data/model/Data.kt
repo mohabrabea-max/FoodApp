@@ -108,8 +108,7 @@ data class Settings(
 data class FavoriteClass(
     val id : Int,
     val typ : String,
-    val restaurants : Int,
-    val updatedAt : Long = 0L
+    val restaurants : Int
 )
 
 sealed interface BottomSheetItem {
@@ -262,4 +261,10 @@ sealed interface CategoryInterface {
     data object Drinks : CategoryInterface
 
     data object Custom : CategoryInterface
+}
+
+sealed interface HomeUiState {
+    data object Loading : HomeUiState
+    data object Success : HomeUiState
+    data object Offline : HomeUiState
 }

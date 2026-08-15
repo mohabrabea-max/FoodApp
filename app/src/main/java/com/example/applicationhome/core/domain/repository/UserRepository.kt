@@ -1,13 +1,16 @@
 package com.example.applicationhome.core.domain.repository
 
+import com.example.applicationhome.core.domain.Implementations.SupabaseUserRemoteDataSource
 import com.example.applicationhome.data.data.model.ChickEmailStates
 import com.example.applicationhome.data.data.model.LoginStates
 import com.example.applicationhome.data.data.model.UserClassFireBase
+import com.example.applicationhome.data.local.dao.FavoriteDao
 import com.example.applicationhome.data.local.dao.UsersDao
 import com.example.applicationhome.data.local.entity.UpdateAccountState
 import com.example.applicationhome.data.local.entity.UserClass
 import com.example.applicationhome.data.remote.FoodAppAPIs
 import com.example.applicationhome.domain.ApplicationScope
+import io.github.jan.supabase.gotrue.SessionStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,9 +32,11 @@ import javax.inject.Singleton
 
 @Singleton
 class UserRepository @Inject constructor(
-    private val userdao: UsersDao,
+    private val supabaseUserRemoteDataSource : SupabaseUserRemoteDataSource,
+    private val userdao : UsersDao,
+    private val favoriteDao: FavoriteDao,
     private val api : FoodAppAPIs,
-    @ApplicationScope externalScope: CoroutineScope
+    @ApplicationScope externalScope : CoroutineScope
 ) {
     private val _isLogin = MutableStateFlow(false)
     val isLogin : StateFlow<Boolean> = _isLogin
@@ -167,5 +172,28 @@ class UserRepository @Inject constructor(
 
     fun logout(){
         _isLogin.value = false
+    }
+
+    suspend fun validateUserOnAppLaunch(): Boolean {
+        return try {
+            supabaseUserRemoteDataSource.retrieveUser()
+            true
+        } catch(e: Exception) {
+            clearLocalData()
+            false
+        }
+    }
+
+    suspend fun observeSessionStatus(){
+        supabaseUserRemoteDataSource.sessionStatus.collect { status ->
+            if(status is SessionStatus.NotAuthenticated){
+                clearLocalData()
+            }
+        }
+    }
+
+    private suspend fun clearLocalData(){
+        userdao.deleteUserFromDatabase()
+        favoriteDao.deleteAllFromFavorite()
     }
 }

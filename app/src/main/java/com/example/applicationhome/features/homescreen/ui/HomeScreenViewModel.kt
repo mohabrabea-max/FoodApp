@@ -30,7 +30,7 @@ class HomeScreenViewModel @Inject constructor(
     private val homeScreenRepository : HomeScreenRepository,
     userRepository: UserRepository,
     private val getFavoriteUseCase : GetFavoriteUseCase,
-    private val networkObserver : NetworkObserver
+    networkObserver : NetworkObserver
 ) : ViewModel(){
 
     val userData = userRepository.userData
