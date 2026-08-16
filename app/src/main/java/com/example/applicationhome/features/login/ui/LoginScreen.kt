@@ -93,8 +93,8 @@ fun LoginScreen(
 
 
     BackHandler(enabled = true){
-        if (navigationController.previousBackStackEntry != null) {
-            navigationController.popBackStack()
+        navigationController.navigate(Screens.DashboardScreen.screen) {
+            popUpTo(0) { inclusive = true }
         }
     }
 
@@ -140,8 +140,8 @@ fun LoginScreen(
                 {
                     IconButton(
                         onClick = {
-                            if (navigationController.previousBackStackEntry != null) {
-                                navigationController.popBackStack()
+                            navigationController.navigate(Screens.DashboardScreen.screen) {
+                                popUpTo(0) { inclusive = true }
                             }
                         },
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)

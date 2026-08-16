@@ -77,7 +77,7 @@ fun HomeScreen(
     scrollState : LazyListState,
     syncDataUiState : HomeUiState,
     isRefreshing : Boolean,
-    syncData : () -> Unit
+    onRefresh : () -> Unit
 ){
     val state = rememberPullToRefreshState()
 
@@ -105,7 +105,7 @@ fun HomeScreen(
     PullToRefreshBox(
         isRefreshing = isRefreshing,
 
-        onRefresh = { syncData() },
+        onRefresh = { onRefresh() },
 
         modifier = Modifier
             .fillMaxSize()
@@ -195,7 +195,7 @@ fun HomeScreen(
                                 )
                             ).background(Color.DarkOrange).align(Alignment.TopCenter)
                         )
-                        SearchBox() {
+                        SearchBox {
                             navigationController.navigate(Screens.Search.screen)
                         }
                     }
@@ -334,6 +334,8 @@ fun HomeScreen(
                             }
                         }
                     }
+
+                    else -> {  }
                 }
             }
 

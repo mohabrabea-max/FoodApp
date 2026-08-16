@@ -1,7 +1,9 @@
 package com.example.applicationhome.features.search.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,12 +17,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Clear
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +45,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.example.applicationhome.core.ui.theme.DarkOrange
+import com.example.applicationhome.core.ui.theme.VeryLightGray
+import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.features.homescreen.ui.CategoriesBar
 import com.example.applicationhome.features.profile.ui.SearchResults
@@ -47,8 +56,13 @@ import com.example.applicationhome.features.profile.ui.SearchResults
 @Composable
 fun Search(
     navigationController : NavHostController,
-    searchViewModel : SearchViewModel
+    searchViewModel : SearchViewModel,
+    syncDataUiState : HomeUiState,
+    isRefreshing : Boolean,
+    onRefresh : () -> Unit
 ){
+    val refreshState = rememberPullToRefreshState()
+
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -90,162 +104,203 @@ fun Search(
             )
         }
     ){ paddingValues ->
-        LazyColumn(
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+
+            onRefresh = { onRefresh() },
+
             modifier = Modifier
+                .padding(paddingValues)
                 .fillMaxSize()
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.Start
+                .background(Color.VeryLightGray),
+
+            state = refreshState,
+
+            indicator = {
+                Indicator(
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    isRefreshing = isRefreshing,
+                    containerColor = Color.White,
+                    color = Color.DarkOrange,
+                    state = refreshState
+                )
+            },
+
+            contentAlignment = Alignment.Center
         ){
-            if(search.text.isNotEmpty() && !searchClickable){
-
-                //       --------------------------\\ Last Search //--------------------------
-                if(searchHistoryAfterFiltering.isNotEmpty()) items(searchHistoryAfterFiltering){ item ->
-                    var isMenuExpanded by remember { mutableStateOf(false) }
-
-                    SearchSuggestions(
-                        text = item,
-                        searchText = search.text,
-                        textColor = Color.Gray,
-                        startIcon = Icons.Default.History,
-                        iconsColor = Color.Gray,
-                        textClickable = {
-                            keyboardController?.hide()
-                            focusManager.clearFocus()
-
-                            searchViewModel.clickSearch(item)
-                        },
-                        northWestClickable = { searchViewModel.searchFilter(item) },
-                        longClick = { isMenuExpanded = true }
-                    )
-
-                    DropdownMenu(
-                        expanded = isMenuExpanded,
-                        onDismissRequest = { isMenuExpanded = false },
-                        offset = DpOffset(x = 25.dp, y = 120.dp),
-                        shape = RoundedCornerShape(20.dp),
-                        shadowElevation = 10.dp,
-                        containerColor = Color.White
+            when(syncDataUiState){
+                HomeUiState.Success, HomeUiState.Offline -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        horizontalAlignment = Alignment.Start
                     ){
-                        DropdownMenuItem(
-                            text = { Text("Delete", color = Color.Red) },
-                            leadingIcon = {
-                                Icon(
-                                    Icons.Outlined.Clear,
-                                    contentDescription = null,
-                                    tint = Color.Red
-                                )
-                            },
-                            onClick = {
-                                isMenuExpanded = false
-                                searchViewModel.deleteFromSearchHistory(item)
-                            }
-                        )
-                    }
+                        if(search.text.isNotEmpty() && !searchClickable){
 
-                    Divider(
-                        color = Color.LightGray.copy(alpha = 0.6f),
-                        modifier = Modifier
-                            .padding(horizontal = 20.dp)
-                    )
-                }
+                            //       --------------------------\\ Last Search //--------------------------
+                            if(searchHistoryAfterFiltering.isNotEmpty()) items(searchHistoryAfterFiltering){ item ->
+                                var isMenuExpanded by remember { mutableStateOf(false) }
 
-                //       --------------------------\\ New Search //--------------------------
-                items(searchSuggestions){ item ->
-                    SearchSuggestions(
-                        text = item,
-                        searchText = search.text,
-                        textColor = Color.Black,
-                        startIcon = Icons.Default.Search,
-                        iconsColor = Color.Black,
-                        textClickable = {
-                            keyboardController?.hide()
-                            focusManager.clearFocus()
-
-                            searchViewModel.clickSearch(item)
-                        },
-                        northWestClickable = { searchViewModel.searchFilter(item) }
-                    )
-
-                    if(item != searchSuggestions.last()) Divider(
-                        color = Color.LightGray.copy(alpha = 0.6f),
-                        modifier = Modifier
-                            .padding(horizontal = 20.dp)
-                    )
-                }
-
-            }else if(search.text.isEmpty()){
-
-                //       --------------------------\\ Categories Bar //--------------------------
-                item{
-                    CategoriesBar(
-                        categories,
-                        0,
-                        {
-                            keyboardController?.hide()
-                            focusManager.clearFocus()
-
-                            searchViewModel.clickSearch(it.name)
-                        },
-                        {}
-                    )
-
-                    //Divider(color = Color.LightGray.copy(alpha = 0.6f))
-                }
-
-                //       --------------------------\\ Search History //--------------------------
-                if(searchHistory.isNotEmpty()){
-                    item{
-                        Text(
-                            text = "Search History",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp)
-                        )
-                    }
-                    item{
-                        FlowRow(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 15.dp, vertical = 10.dp),
-                            horizontalArrangement = Arrangement.spacedBy(5.dp),
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
-                        ){
-                            searchHistory.forEach { item ->
-                                SearchHistoryBox(
+                                SearchSuggestions(
                                     text = item,
-                                    clickable = {
+                                    searchText = search.text,
+                                    textColor = Color.Gray,
+                                    startIcon = Icons.Default.History,
+                                    iconsColor = Color.Gray,
+                                    textClickable = {
                                         keyboardController?.hide()
                                         focusManager.clearFocus()
 
                                         searchViewModel.clickSearch(item)
                                     },
-                                    delete = { searchViewModel.deleteFromSearchHistory(item) }
+                                    northWestClickable = { searchViewModel.searchFilter(item) },
+                                    longClick = { isMenuExpanded = true }
                                 )
+
+                                DropdownMenu(
+                                    expanded = isMenuExpanded,
+                                    onDismissRequest = { isMenuExpanded = false },
+                                    offset = DpOffset(x = 25.dp, y = 120.dp),
+                                    shape = RoundedCornerShape(20.dp),
+                                    shadowElevation = 10.dp,
+                                    containerColor = Color.White
+                                ){
+                                    DropdownMenuItem(
+                                        text = { Text("Delete", color = Color.Red) },
+                                        leadingIcon = {
+                                            Icon(
+                                                Icons.Outlined.Clear,
+                                                contentDescription = null,
+                                                tint = Color.Red
+                                            )
+                                        },
+                                        onClick = {
+                                            isMenuExpanded = false
+                                            searchViewModel.deleteFromSearchHistory(item)
+                                        }
+                                    )
+                                }
+
+                                Divider(
+                                    color = Color.LightGray.copy(alpha = 0.6f),
+                                    modifier = Modifier
+                                        .padding(horizontal = 20.dp)
+                                )
+                            }
+
+                            //       --------------------------\\ New Search //--------------------------
+                            items(searchSuggestions){ item ->
+                                SearchSuggestions(
+                                    text = item,
+                                    searchText = search.text,
+                                    textColor = Color.Black,
+                                    startIcon = Icons.Default.Search,
+                                    iconsColor = Color.Black,
+                                    textClickable = {
+                                        keyboardController?.hide()
+                                        focusManager.clearFocus()
+
+                                        searchViewModel.clickSearch(item)
+                                    },
+                                    northWestClickable = { searchViewModel.searchFilter(item) }
+                                )
+
+                                if(item != searchSuggestions.last()) Divider(
+                                    color = Color.LightGray.copy(alpha = 0.6f),
+                                    modifier = Modifier
+                                        .padding(horizontal = 20.dp)
+                                )
+                            }
+
+                        }else if(search.text.isEmpty()){
+
+                            //       --------------------------\\ Categories Bar //--------------------------
+                            item{
+                                CategoriesBar(
+                                    categories,
+                                    0,
+                                    {
+                                        keyboardController?.hide()
+                                        focusManager.clearFocus()
+
+                                        searchViewModel.clickSearch(it.name)
+                                    },
+                                    {}
+                                )
+
+                                //Divider(color = Color.LightGray.copy(alpha = 0.6f))
+                            }
+
+                            //       --------------------------\\ Search History //--------------------------
+                            if(searchHistory.isNotEmpty()){
+                                item{
+                                    Text(
+                                        text = "Search History",
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp)
+                                    )
+                                }
+                                item{
+                                    FlowRow(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 15.dp, vertical = 10.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                                    ){
+                                        searchHistory.forEach { item ->
+                                            SearchHistoryBox(
+                                                text = item,
+                                                clickable = {
+                                                    keyboardController?.hide()
+                                                    focusManager.clearFocus()
+
+                                                    searchViewModel.clickSearch(item)
+                                                },
+                                                delete = { searchViewModel.deleteFromSearchHistory(item) }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            //       --------------------------\\ Search Results //--------------------------
+                        }else if(search.text.isNotEmpty() && searchClickable){
+                            items(
+                                count = searchResults.itemCount,
+                                key = searchResults.itemKey { it.restaurant.restaurant.id }
+                            ){ index ->
+                                val item = searchResults[index]
+
+                                item?.let{
+                                    SearchResults(
+                                        item,
+                                        mealClickable = { item ->
+                                            navigationController.navigate(Screens.RestaurantScreen.createRouteWithMeal(restaurantId = item.meal.restaurantId, mealId = item.meal.id))
+                                        },
+                                        restaurantClickable = {
+                                            navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.restaurant.restaurant.id))
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
                 }
 
-                //       --------------------------\\ Search Results //--------------------------
-            }else if(search.text.isNotEmpty() && searchClickable){
-                items(
-                    count = searchResults.itemCount,
-                    key = searchResults.itemKey { it.restaurant.restaurant.id }
-                ){ index ->
-                    val item = searchResults[index]
-
-                    item?.let{
-                        SearchResults(
-                            item,
-                            mealClickable = { item ->
-                                navigationController.navigate(Screens.RestaurantScreen.createRouteWithMeal(restaurantId = item.meal.restaurantId, mealId = item.meal.id))
-                            },
-                            restaurantClickable = {
-                                navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.restaurant.restaurant.id))
-                            }
-                        )
+                HomeUiState.Loading -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = Color.DarkOrange)
                     }
                 }
+
+                else -> {  }
             }
         }
     }

@@ -43,6 +43,8 @@ import com.example.applicationhome.core.ui.theme.model.UserImageViewModel
 import com.example.applicationhome.core.ui.theme.screens.NoInternetScreen
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.features.Notifications.Notifications
+import com.example.applicationhome.features.WelcomeScreen.Ui.WelcomeScreen
+import com.example.applicationhome.features.WelcomeScreen.Ui.WelcomeScreenViewModel
 import com.example.applicationhome.features.cart.ui.Cart
 import com.example.applicationhome.features.cart.ui.CartViewModel
 import com.example.applicationhome.features.confirmorder.ui.ConfirmOrderScreen
@@ -80,12 +82,13 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
 
 
     Box(
-        modifier = Modifier.fillMaxSize().
-        background(Color.Black)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
     ){
         NavHost(
             navController = navigationController,
-            startDestination = Screens.DashboardScreen.screen,
+            startDestination = Screens.MySplashScreen.screen,
             modifier = Modifier.fillMaxSize(),
 
             enterTransition = {
@@ -125,8 +128,23 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
                 ){ finalScreenViewModel.refreshData() }
             }
 
+            composable(Screens.WelcomeScreen.screen) {
+                val welcomeScreenViewModel : WelcomeScreenViewModel = hiltViewModel()
+                WelcomeScreen(
+                    viewModel = welcomeScreenViewModel,
+                    navigationController = navigationController
+                )
+            }
+
+            composable(Screens.MySplashScreen.screen){
+                MySplashScreen(
+                    finalScreenViewModel,
+                    navigationController
+                )
+            }
+
             composable(Screens.Profile.screen){
-                val profileViewModel: ProfileViewModel = hiltViewModel()
+                val profileViewModel : ProfileViewModel = hiltViewModel()
                 Profile(
                     navigationController,
                     profileViewModel
@@ -137,8 +155,10 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
                 val searchViewModel : SearchViewModel = hiltViewModel()
                 Search(
                     navigationController,
-                    searchViewModel
-                )
+                    searchViewModel,
+                    syncDataUiState,
+                    isRefreshing
+                ){ finalScreenViewModel.refreshData() }
             }
 
             composable(

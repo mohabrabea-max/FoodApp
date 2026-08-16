@@ -1,7 +1,8 @@
 package com.example.applicationhome.data.data.model
 
 sealed class Screens (val screen : String){
-    //data object ItemScreen : Screens("itemScreen")
+    data object MySplashScreen : Screens("mysplashscreen")
+    data object WelcomeScreen : Screens("welcomescreen")
     data object HomeScreen : Screens("homescreen")
     data object Profile : Screens("profile")
     data object Settings : Screens("settings")

@@ -8,6 +8,7 @@ import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.local.entity.UserClass
 import com.example.applicationhome.data.remote.NetworkObserver
+import com.example.applicationhome.features.WelcomeScreen.repository.WelcomeScreenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,8 +24,11 @@ import javax.inject.Inject
 class FinalScreenViewModel @Inject constructor(
     private val syncAllDataRepository : SyncAllDataRepository,
     private val userRepository : UserRepository,
+    private val welcomeScreenRepository : WelcomeScreenRepository,
     networkObserver: NetworkObserver
 ) : ViewModel() {
+    val isFirsTimeToOpenApp = welcomeScreenRepository.isFirsTimeToOpenApp
+
     val isNetworkAvailable = networkObserver.isNetworkAvailable
         .stateIn(
             scope = viewModelScope,
@@ -32,7 +36,7 @@ class FinalScreenViewModel @Inject constructor(
             initialValue = true
         )
 
-    private val _syncDataUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
+    private val _syncDataUiState = MutableStateFlow<HomeUiState>(HomeUiState.Starting)
     val syncDataUiState = _syncDataUiState.asStateFlow()
 
     private val _isRefreshing = MutableStateFlow(false)
@@ -60,26 +64,43 @@ class FinalScreenViewModel @Inject constructor(
         user: UserClass,
         isForceRefresh: Boolean = false
     ){
-        if (!network) return
-
-        if (isForceRefresh || _syncDataUiState.value != HomeUiState.Success) {
+        if (isForceRefresh) {
             _syncDataUiState.value = HomeUiState.Loading
+        } else {
+            _syncDataUiState.value = HomeUiState.Starting
+        }
+
+        if (!network){
+            _syncDataUiState.value = HomeUiState.Offline
+            return
+        }
+
+        if(!isForceRefresh){
+            if (user.id.isNotEmpty()) {
+                val isValid = userRepository.validateUserOnAppLaunch()
+
+                if (isValid) {
+                    try {
+                        syncAllDataRepository.syncFavoritesInDatabase(user.id)
+                    } catch (e: Exception) {
+                        Log.e("FavoriteSyncError", "الخلل هنا: ${e.javaClass.simpleName} - ${e.message}", e)
+                    }
+                }else{
+                    _syncDataUiState.value = HomeUiState.GuestMode
+                    return
+                }
+            }else{
+                _syncDataUiState.value = HomeUiState.GuestMode
+                return
+            }
+        }
+
+        if (isForceRefresh || _syncDataUiState.value != HomeUiState.Success){
             try {
                 syncAllDataRepository.syncDataParallel()
                 _syncDataUiState.value = HomeUiState.Success
             } catch (e: Exception) {
                 _syncDataUiState.value = HomeUiState.Offline
-            }
-        }
-
-        if (user.id.isNotEmpty()) {
-            val isValid = userRepository.validateUserOnAppLaunch()
-            if (isValid) {
-                try {
-                    syncAllDataRepository.syncFavoritesInDatabase(user.id)
-                } catch (e: Exception) {
-                    Log.e("FavoriteSyncError", "الخلل هنا: ${e.javaClass.simpleName} - ${e.message}", e)
-                }
             }
         }
     }
@@ -93,11 +114,16 @@ class FinalScreenViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 isNetworkAvailable,
-                userRepository.userData
-            ) { network, user -> Pair(network, user) }
+                userRepository.userData,
+                isFirsTimeToOpenApp
+            ) { network, user, isFirsTime -> Triple(network, user, isFirsTime) }
                 .distinctUntilChanged()
-                .collect { (network, user) ->
-                    executeSync(network, user)
+                .collect { (network, user, isFirsTime) ->
+                    if(isFirsTime ?: true){
+                        executeSync(network, user)
+                    }else{
+                        executeSync(network, user, true)
+                    }
                 }
         }
     }

@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -38,7 +37,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -106,8 +104,8 @@ fun SignUpScreen(
         when(signupPages){
             SignUpScreens.BasicDataScreen -> {
                 viewModel.lastPage{
-                    if (navigationController.previousBackStackEntry != null) {
-                        navigationController.popBackStack()
+                    navigationController.navigate(Screens.LoginScreen.screen) {
+                        popUpTo(0) { inclusive = true }
                     }
                 }
             }
@@ -160,8 +158,8 @@ fun SignUpScreen(
                             when(signupPages){
                                 SignUpScreens.BasicDataScreen -> {
                                     viewModel.lastPage{
-                                        if (navigationController.previousBackStackEntry != null) {
-                                            navigationController.popBackStack()
+                                        navigationController.navigate(Screens.LoginScreen.screen) {
+                                            popUpTo(0) { inclusive = true }
                                         }
                                     }
                                 }

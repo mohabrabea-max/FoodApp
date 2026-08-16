@@ -3,12 +3,13 @@ package com.example.applicationhome.data.datastore
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.CATEGORIES_LAST_SYNC
-import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.FAVORITE_LAST_SYNC
+import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.IS_FIRST_OPEN
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.MEALS_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.OFFERS_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.RESTAURANTS_LAST_SYNC
@@ -34,7 +35,7 @@ class DataStoreManager @Inject constructor(
         val RESTAURANTS_LAST_SYNC = longPreferencesKey("restaurants_last_sync")
         val CATEGORIES_LAST_SYNC = longPreferencesKey("categories_last_sync")
         val OFFERS_LAST_SYNC = longPreferencesKey("offers_last_sync")
-        val FAVORITE_LAST_SYNC = longPreferencesKey("favorite_last_sync")
+        val IS_FIRST_OPEN = booleanPreferencesKey("is_first_open")
     }
 
 
@@ -63,9 +64,12 @@ class DataStoreManager @Inject constructor(
         saveLastSyncTime(OFFERS_LAST_SYNC, timestamp)
     }
 
-    val favoriteLastSyncTimeFlow : Flow<Long?> = getSyncTime(FAVORITE_LAST_SYNC)
-    suspend fun updateFavoriteSyncTime(timestamp: Long) {
-        saveLastSyncTime(FAVORITE_LAST_SYNC, timestamp)
+    val isFirstTimeToOpenApp : Flow<Boolean?> = getBoolean(IS_FIRST_OPEN)
+
+    suspend fun updateFirstTimeToOpenApp() {
+        dataStore.edit { preferences ->
+            preferences[IS_FIRST_OPEN] = false
+        }
     }
 
 
@@ -79,6 +83,19 @@ class DataStoreManager @Inject constructor(
                 }
             }.map{ preferences ->
                 preferences[key] ?: 0L
+            }
+    }
+
+    private fun getBoolean(key: Preferences.Key<Boolean>): Flow<Boolean>{
+        return dataStore.data
+            .catch { exception ->
+                if(exception is IOException){
+                    emit(emptyPreferences())
+                }else{
+                    throw exception
+                }
+            }.map{ preferences ->
+                preferences[key] ?: true
             }
     }
 
