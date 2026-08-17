@@ -49,7 +49,7 @@ class DashboardScreenViewModel @Inject constructor(
     fun logout(){
         viewModelScope.launch {
             favoriteRepository.deleteAllFromFavorite()
-            userRepository.logOut(userData.value.email)
+            userRepository.logOut()
             userRepository.logout()
         }
     }

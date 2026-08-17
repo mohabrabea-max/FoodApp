@@ -165,6 +165,11 @@ dependencies {
     // media3
     implementation("androidx.media3:media3-exoplayer:1.3.1")
     implementation("androidx.media3:media3-ui:1.3.1")
+
+    // Shimmer
+    dependencies {
+        implementation("com.valentinilk.shimmer:compose-shimmer:1.5.0")
+    }
 }
 configurations.all {
     resolutionStrategy {

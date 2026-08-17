@@ -3,21 +3,24 @@ package com.example.applicationhome.features.search.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Clear
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -46,11 +49,14 @@ import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.features.homescreen.ui.CategoriesBar
 import com.example.applicationhome.features.profile.ui.SearchResults
+import com.example.applicationhome.features.shimmers.boxes.CategoriesShimmer
+import com.example.applicationhome.features.shimmers.boxes.TextInSearchShimmer
+import com.example.applicationhome.features.shimmers.screens.SearchResultScreenShimmer
+import com.valentinilk.shimmer.shimmer
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -82,9 +88,12 @@ fun Search(
 
 
     Scaffold(
-        modifier = Modifier.navigationBarsPadding().
-        fillMaxSize(),
+        modifier = Modifier
+            .navigationBarsPadding().
+            fillMaxSize(),
+
         containerColor = Color.White,
+
         topBar = {
             SearchScreenTopBar(
                 totalInCart = cartTotalNumber,
@@ -105,39 +114,44 @@ fun Search(
         }
     ){ paddingValues ->
         PullToRefreshBox(
-            isRefreshing = isRefreshing,
+            isRefreshing = if(search.text.isEmpty()) isRefreshing else false,
 
-            onRefresh = { onRefresh() },
+            onRefresh = {
+                if(search.text.isEmpty()){
+                    onRefresh()
+                }
+            },
 
             modifier = Modifier
                 .padding(paddingValues)
-                .fillMaxSize()
-                .background(Color.VeryLightGray),
+                .fillMaxSize(),
 
             state = refreshState,
 
             indicator = {
-                Indicator(
-                    modifier = Modifier.align(Alignment.TopCenter),
-                    isRefreshing = isRefreshing,
-                    containerColor = Color.White,
-                    color = Color.DarkOrange,
-                    state = refreshState
-                )
+                if(search.text.isEmpty()){
+                    Indicator(
+                        modifier = Modifier.align(Alignment.TopCenter),
+                        isRefreshing = if(search.text.isEmpty()) isRefreshing else false,
+                        containerColor = Color.White,
+                        color = Color.DarkOrange,
+                        state = refreshState
+                    )
+                }
             },
 
             contentAlignment = Alignment.Center
         ){
-            when(syncDataUiState){
-                HomeUiState.Success, HomeUiState.Offline -> {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        horizontalAlignment = Alignment.Start
-                    ){
-                        if(search.text.isNotEmpty() && !searchClickable){
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.Start
+            ){
+                if(search.text.isNotEmpty() && !searchClickable){
 
-                            //       --------------------------\\ Last Search //--------------------------
+                    //       --------------------------\\ Last Search //--------------------------
+                    when(syncDataUiState){
+                        HomeUiState.Success, HomeUiState.Offline -> {
                             if(searchHistoryAfterFiltering.isNotEmpty()) items(searchHistoryAfterFiltering){ item ->
                                 var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -211,10 +225,24 @@ fun Search(
                                         .padding(horizontal = 20.dp)
                                 )
                             }
+                        }
 
-                        }else if(search.text.isEmpty()){
+                        HomeUiState.Loading -> {
+                            items(5) {
+                                Spacer(modifier = Modifier.height(15.dp))
 
-                            //       --------------------------\\ Categories Bar //--------------------------
+                                TextInSearchShimmer()
+                            }
+                        }
+
+                        else -> {}
+                    }
+
+                }else if(search.text.isEmpty()){
+
+                    //       --------------------------\\ Categories Bar //--------------------------
+                    when(syncDataUiState){
+                        HomeUiState.Success, HomeUiState.Offline -> {
                             item{
                                 CategoriesBar(
                                     categories,
@@ -264,9 +292,40 @@ fun Search(
                                     }
                                 }
                             }
+                        }
 
-                            //       --------------------------\\ Search Results //--------------------------
-                        }else if(search.text.isNotEmpty() && searchClickable){
+                        HomeUiState.Loading -> {
+                            item {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .shimmer()
+                                        .background(Color.White),
+                                    verticalArrangement = Arrangement.Top,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ){
+                                    Spacer(modifier = Modifier.height(15.dp))
+
+                                    LazyRow(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        contentPadding = PaddingValues(horizontal = 15.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(15.dp)
+                                    ){
+                                        items(6){
+                                            CategoriesShimmer()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        else -> {}
+                    }
+
+                    //       --------------------------\\ Search Results //--------------------------
+                }else if(search.text.isNotEmpty() && searchClickable){
+                    when(syncDataUiState){
+                        HomeUiState.Success, HomeUiState.Offline -> {
                             items(
                                 count = searchResults.itemCount,
                                 key = searchResults.itemKey { it.restaurant.restaurant.id }
@@ -286,21 +345,14 @@ fun Search(
                                 }
                             }
                         }
+
+                        HomeUiState.Loading -> {
+                            item { SearchResultScreenShimmer() }
+                        }
+
+                        else -> {}
                     }
                 }
-
-                HomeUiState.Loading -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.White),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = Color.DarkOrange)
-                    }
-                }
-
-                else -> {  }
             }
         }
     }

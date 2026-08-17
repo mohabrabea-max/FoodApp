@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -64,6 +63,7 @@ import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
+import com.example.applicationhome.features.shimmers.screens.HomeScreenShimmer
 import kotlinx.coroutines.CoroutineScope
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity")
@@ -246,7 +246,7 @@ fun HomeScreen(
                                 HorizontalPager(
                                     state = pagerState,
                                     modifier = Modifier.fillMaxSize(),
-                                    contentPadding = PaddingValues(horizontal = 10.dp),
+                                    contentPadding = PaddingValues(horizontal = 32.dp),
                                     pageSpacing = 10.dp
                                 ) { page ->
                                     val currentOffer = offers[page]
@@ -315,24 +315,26 @@ fun HomeScreen(
                             }
                         }
 
-                        item { Spacer(modifier = Modifier.height(16.dp)) }
-
-                        item { Spacer(modifier = Modifier.height(80.dp)) }
+                        item { Spacer(modifier = Modifier.height(95.dp)) }
                     }
 
                     HomeUiState.Loading -> {
-                        item { Spacer(modifier = Modifier.height(200.dp)) }
+                        item { HomeScreenShimmer() }
 
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(Color.White),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(color = Color.DarkOrange)
-                            }
-                        }
+                        item { Spacer(modifier = Modifier.height(95.dp)) }
+
+//                        item { Spacer(modifier = Modifier.height(200.dp)) }
+//
+//                        item {
+//                            Box(
+//                                modifier = Modifier
+//                                    .fillMaxSize()
+//                                    .background(Color.White),
+//                                contentAlignment = Alignment.Center
+//                            ) {
+//                                CircularProgressIndicator(color = Color.DarkOrange)
+//                            }
+//                        }
                     }
 
                     else -> {  }

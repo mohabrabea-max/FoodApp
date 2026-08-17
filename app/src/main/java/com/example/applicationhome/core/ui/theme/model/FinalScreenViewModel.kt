@@ -119,6 +119,10 @@ class FinalScreenViewModel @Inject constructor(
             ) { network, user, isFirsTime -> Triple(network, user, isFirsTime) }
                 .distinctUntilChanged()
                 .collect { (network, user, isFirsTime) ->
+                    if(_syncDataUiState.value == HomeUiState.Success){
+                        return@collect
+                    }
+
                     if(isFirsTime ?: true){
                         executeSync(network, user)
                     }else{

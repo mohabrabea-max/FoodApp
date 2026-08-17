@@ -6,7 +6,6 @@ import com.example.applicationhome.data.data.model.LoginStates
 import com.example.applicationhome.data.data.model.UserClassFireBase
 import com.example.applicationhome.data.local.dao.FavoriteDao
 import com.example.applicationhome.data.local.dao.UsersDao
-import com.example.applicationhome.data.local.entity.UpdateAccountState
 import com.example.applicationhome.data.local.entity.UserClass
 import com.example.applicationhome.data.remote.FoodAppAPIs
 import com.example.applicationhome.domain.ApplicationScope
@@ -42,7 +41,7 @@ class UserRepository @Inject constructor(
     val isLogin : StateFlow<Boolean> = _isLogin
 
     val userData : StateFlow<UserClass> =
-        userdao.getActiveUser(true)
+        userdao.getActiveUser()
             .map { userInDb ->
                 userInDb ?: UserClass(firstname = "Guest")
             }.stateIn(
@@ -71,8 +70,7 @@ class UserRepository @Inject constructor(
                     user.birthday,
                     user.governorate,
                     user.city,
-                    user.address,
-                    isActive = true
+                    user.address
                 )
                 userdao.addUser(data)
                 LoginStates.Success
@@ -121,9 +119,9 @@ class UserRepository @Inject constructor(
     }
 
 
-    suspend fun logOut(email : String): String{
+    suspend fun logOut(): String{
         return try {
-            userdao.updateUser(UpdateAccountState(email, isActive = false))
+            userdao.deleteUserFromDatabase()
             "Success"
         } catch (e : Exception){
             "خطأ في الشبكة: ${e.message}"
@@ -143,8 +141,7 @@ class UserRepository @Inject constructor(
                     userRequest.birthday,
                     userRequest.governorate,
                     userRequest.city,
-                    userRequest.address,
-                    isActive = true
+                    userRequest.address
                 )
                 userdao.addUser(userData)
 

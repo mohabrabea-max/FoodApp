@@ -109,7 +109,7 @@ class LoginViewModel @Inject constructor(
 
     fun logout(){
         viewModelScope.launch {
-            userRepository.logOut(userData.value.email)
+            userRepository.logOut()
             userRepository.logout()
         }
     }

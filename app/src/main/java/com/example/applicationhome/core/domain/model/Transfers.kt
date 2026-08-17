@@ -74,6 +74,5 @@ fun UserClassFireBase.userClassFireBaseToUserDataDatabase(userData : String): Us
         birthday = this.birthday,
         governorate = this.governorate,
         city = this.city,
-        address = this.address,
-        isActive = true
+        address = this.address
     )

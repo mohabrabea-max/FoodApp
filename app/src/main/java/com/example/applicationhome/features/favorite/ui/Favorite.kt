@@ -147,7 +147,6 @@ fun Favorite(
                             val isRestaurantInFavorite = item.isFavorite
 
                             RestaurantsBox(
-                                false,
                                 item.restaurant,
                                 isRestaurantInFavorite,
                                 {

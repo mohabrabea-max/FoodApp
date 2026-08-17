@@ -48,6 +48,8 @@ fun SearchResults(
     restaurantClickable : () -> Unit = {}
 ){
     val interactionSource = remember { MutableInteractionSource() }
+
+
     Column(
         modifier = Modifier
             .fillMaxWidth()

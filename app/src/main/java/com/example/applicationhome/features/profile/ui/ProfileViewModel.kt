@@ -234,8 +234,7 @@ class ProfileViewModel @Inject constructor(
             birthday = _selectedDate.value,
             governorate = _selectedGovernorate.value,
             city = _selectedCity.value,
-            address = addressTextField.text.toString(),
-            isActive = true
+            address = addressTextField.text.toString()
         )
 
         profileRepository.changeIsDataEditedState(userData.value != userDataDatabase)

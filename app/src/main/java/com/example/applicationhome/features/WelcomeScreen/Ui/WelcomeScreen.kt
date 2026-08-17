@@ -32,6 +32,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -41,6 +43,7 @@ import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.theme.BrownForFont
 import com.example.applicationhome.core.ui.theme.DarkOrange
+import com.example.applicationhome.core.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.data.data.model.Screens
 
 @SuppressLint("ContextCastToActivity")
@@ -65,15 +68,22 @@ fun WelcomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1.2f)
-            ) {
+            ){
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CurvedBottomShape())
+                        .background(Color.MediumBrownForTitle),
+                )
+
                 EmbeddedVideoPlayer(
                     videoResId = R.raw.appintrovideo,
                     modifier = Modifier
+                        .padding(bottom = 10.dp)
                         .fillMaxSize()
                         .clip(CurvedBottomShape()),
                 )
 
-                // شريط العلم وزر Skip
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -82,7 +92,6 @@ fun WelcomeScreen(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // زر Skip
                     Text(
                         text = "Skip",
                         color = Color.White,
@@ -103,7 +112,6 @@ fun WelcomeScreen(
                     )
                 }
 
-                // نص Welcome to و بادج talabat
                 Column(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -113,15 +121,15 @@ fun WelcomeScreen(
                     Text(
                         text = "Welcome to",
                         color = Color.White,
-                        fontSize = 47.sp,
-                        fontWeight = FontWeight.ExtraBold
+                        fontSize = 48.sp,
+                        fontFamily = FontFamily(Font(R.font.permanent_marker_latin_normal)),
+                        fontWeight = FontWeight.Medium
                     )
 
                     Spacer(modifier = Modifier.height(35.dp))
                 }
             }
 
-            // 2️⃣ الجزء السفلي: الوصف والأزرار
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -130,7 +138,7 @@ fun WelcomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ){
-                Spacer(modifier = Modifier.height(50.dp))
+                Spacer(modifier = Modifier.height(45.dp))
 
                 Text(
                     text = "Log in or sign up to save more,\nshop faster, and get personalized perks",
@@ -175,7 +183,7 @@ fun WelcomeScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ){
-            Spacer(modifier = Modifier.height(70.dp))
+            Spacer(modifier = Modifier.height(65.dp))
 
             Column(
                 modifier = Modifier
