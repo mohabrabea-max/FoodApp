@@ -38,7 +38,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.applicationhome.core.ui.theme.BrandBlue
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.theme.BrownForFont
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.data.data.model.Screens
@@ -66,20 +66,11 @@ fun WelcomeScreen(
                     .fillMaxWidth()
                     .weight(1.2f)
             ) {
-                // صورة الخضار مقصوصة كـ Curve من الأسفل
-//            Image(
-//                painter = painterResource(id = ), // استبدل بدريس الصورة
-//                contentDescription = null,
-//                contentScale = ContentScale.Crop,
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .clip(CurvedBottomShape())
-//            )
-                Box(
+                EmbeddedVideoPlayer(
+                    videoResId = R.raw.appintrovideo,
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(CurvedBottomShape())
-                        .background(Color.BrandBlue)
+                        .clip(CurvedBottomShape()),
                 )
 
                 // شريط العلم وزر Skip
@@ -122,7 +113,7 @@ fun WelcomeScreen(
                     Text(
                         text = "Welcome to",
                         color = Color.White,
-                        fontSize = 45.sp,
+                        fontSize = 47.sp,
                         fontWeight = FontWeight.ExtraBold
                     )
 
@@ -210,11 +201,11 @@ fun WelcomeScreen(
 fun CurvedBottomShape() = GenericShape { size, _ ->
     moveTo(0f, 0f)
     lineTo(size.width, 0f)
-    lineTo(size.width, size.height - 40f)
+    lineTo(size.width, size.height - 70f)
     // رسم منحنى بـ QuadTo
     quadraticBezierTo(
-        size.width / 2f, size.height + 40f, // نقطة التحكم للأسفل
-        0f, size.height - 40f
+        size.width / 2f, size.height + 70f, // نقطة التحكم للأسفل
+        0f, size.height - 70f
     )
     close()
 }

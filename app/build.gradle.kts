@@ -161,6 +161,10 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:postgrest-kt:2.6.1")
     implementation("io.ktor:ktor-client-okhttp:2.3.12")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    // media3
+    implementation("androidx.media3:media3-exoplayer:1.3.1")
+    implementation("androidx.media3:media3-ui:1.3.1")
 }
 configurations.all {
     resolutionStrategy {
