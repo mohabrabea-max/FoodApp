@@ -14,7 +14,7 @@ interface CartDao {            // دا الجزء اللي بينفذ عمليا
     //               --------------------------------------   Cart Items    -------------------------------------
 
     @Query("SELECT * FROM cart_items WHERE userId = :userid")
-    fun getCartItems(userid : String): Flow<List<CartItemsClass?>>
+    fun getCartItems(userid : String): Flow<List<CartItemsClass>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addCartItem(cartItem : CartItemsClass)

@@ -322,22 +322,7 @@ fun HomeScreen(
                         item { HomeScreenShimmer() }
 
                         item { Spacer(modifier = Modifier.height(95.dp)) }
-
-//                        item { Spacer(modifier = Modifier.height(200.dp)) }
-//
-//                        item {
-//                            Box(
-//                                modifier = Modifier
-//                                    .fillMaxSize()
-//                                    .background(Color.White),
-//                                contentAlignment = Alignment.Center
-//                            ) {
-//                                CircularProgressIndicator(color = Color.DarkOrange)
-//                            }
-//                        }
                     }
-
-                    else -> {  }
                 }
             }
 

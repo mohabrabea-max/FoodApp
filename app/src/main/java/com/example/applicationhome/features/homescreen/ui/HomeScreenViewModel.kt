@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.example.applicationhome.core.domain.repository.HomeScreenRepository
+import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
 import com.example.applicationhome.data.local.entity.CategoriesEntity
@@ -27,7 +27,7 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val homeScreenRepository : HomeScreenRepository,
+    private val syncAllDataRepository: SyncAllDataRepository,
     userRepository: UserRepository,
     private val getFavoriteUseCase : GetFavoriteUseCase,
     networkObserver : NetworkObserver
@@ -44,15 +44,15 @@ class HomeScreenViewModel @Inject constructor(
 
     val filterRestaurants : Flow<PagingData<RestaurantWithFavoriteStatus>> =
         typ.flatMapLatest { type ->
-            homeScreenRepository.getRestaurantsFromDatabase(type)
+            syncAllDataRepository.getRestaurantsFromDatabase(type)
         }.cachedIn(viewModelScope)
 
 
     val categories : StateFlow<List<CategoriesEntity>> =
-        homeScreenRepository.categoriesFromDatabase
+        syncAllDataRepository.categoriesFromDatabase
 
     val offers : StateFlow<List<OffersEntity>> =
-        homeScreenRepository.getAllOffersFromDatabase()
+        syncAllDataRepository.getAllOffersFromDatabase()
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),

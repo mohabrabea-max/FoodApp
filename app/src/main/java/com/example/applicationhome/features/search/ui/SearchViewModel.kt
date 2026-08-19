@@ -9,8 +9,8 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.example.applicationhome.core.domain.repository.CartRepository
-import com.example.applicationhome.core.domain.repository.HomeScreenRepository
 import com.example.applicationhome.core.domain.repository.SearchRepository
+import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.data.local.entity.CategoriesEntity
 import com.example.applicationhome.data.local.entity.RestaurantWithFeaturedMeals
@@ -38,9 +38,9 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     cartRepository : CartRepository,
-    private val searchRepository : SearchRepository,
-    homeScreenRepository : HomeScreenRepository,
     userRepository: UserRepository,
+    syncAllDataRepository: SyncAllDataRepository,
+    private val searchRepository : SearchRepository,
     networkObserver : NetworkObserver
 ): ViewModel() {
 
@@ -50,7 +50,7 @@ class SearchViewModel @Inject constructor(
     //       *** ---------------------------- \\***  Categories  ***// ---------------------------- ***
 
     val categories : StateFlow<List<CategoriesEntity>> =
-        homeScreenRepository.categoriesFromDatabase
+        syncAllDataRepository.categoriesFromDatabase
 
 
     //       *** ---------------------------- \\***  Search  ***// ---------------------------- ***

@@ -1,5 +1,6 @@
 package com.example.applicationhome.features.WelcomeScreen.Ui
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.annotation.RawRes
@@ -16,6 +17,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 
+@SuppressLint("UseKtx")
 @OptIn(UnstableApi::class)
 @Composable
 fun EmbeddedVideoPlayer(

@@ -2,7 +2,6 @@ package com.example.applicationhome.core.domain.usecase
 
 import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.data.data.model.AddToCartStates
-import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
@@ -53,7 +52,7 @@ class CartUseCase @Inject constructor(
             }
         }else{
 
-            val cartRestaurant = cartRepository.getCartRestaurantData(food)?: Restaurants()
+            val cartRestaurant = cartRepository.getCartRestaurantData(food)
             cartRepository.createNewCart(userid, food, size, food.type, food.priceOfOne, cartRestaurant, finalNumber)
             return AddToCartStates.Success
 
@@ -97,7 +96,7 @@ class CartUseCase @Inject constructor(
 
         }else{
 
-            val cartRestaurant = cartRepository.getCartRestaurantData(food)?: Restaurants()
+            val cartRestaurant = cartRepository.getCartRestaurantData(food)
             cartRepository.createNewCart(userid, food, size, food.type, food.priceOfOne, cartRestaurant, newCount)
 
             return AddToCartStates.Success

@@ -14,7 +14,7 @@ import javax.inject.Inject
 class DashboardScreenViewModel @Inject constructor(
     private val userRepository : UserRepository,
     private val favoriteRepository : FavoriteRepository,
-    private val cartRepository : CartRepository
+    cartRepository : CartRepository
 ) : ViewModel(){
     val state = MutableStateFlow(true)
 

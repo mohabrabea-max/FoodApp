@@ -14,7 +14,12 @@ import com.example.applicationhome.data.data.model.MealSizeDetail
 import com.example.applicationhome.data.data.model.OrderItemsClass
 import com.example.applicationhome.data.data.model.UserInformationInOrderClass
 
-@Entity(tableName = "categories_entity")
+@Entity(
+    tableName = "categories_entity",
+    indices = [
+        Index(value = ["id"])
+    ]
+)
 data class CategoriesEntity(
     @PrimaryKey val id : Int = 0,
     val name : String = "",

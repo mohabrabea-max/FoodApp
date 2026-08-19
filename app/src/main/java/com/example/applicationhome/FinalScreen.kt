@@ -78,6 +78,7 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
     val navigationController = rememberNavController()
 
     val syncDataUiState by finalScreenViewModel.syncDataUiState.collectAsStateWithLifecycle()
+    val syncUserUiState by finalScreenViewModel.syncUserUiState.collectAsStateWithLifecycle()
     val isRefreshing by finalScreenViewModel.isRefreshing.collectAsStateWithLifecycle()
 
 

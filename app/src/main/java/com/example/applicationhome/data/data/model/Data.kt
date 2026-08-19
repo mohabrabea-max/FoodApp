@@ -264,9 +264,13 @@ sealed interface CategoryInterface {
 }
 
 sealed interface HomeUiState {
-    data object Starting : HomeUiState
-    data object GuestMode : HomeUiState
     data object Loading : HomeUiState
     data object Success : HomeUiState
     data object Offline : HomeUiState
+}
+
+sealed interface UserUiState {
+    data object Starting : UserUiState
+    data object GuestMode : UserUiState
+    data object Success : UserUiState
 }

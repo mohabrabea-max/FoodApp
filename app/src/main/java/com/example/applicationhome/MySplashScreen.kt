@@ -15,8 +15,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.model.FinalScreenViewModel
-import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.data.model.Screens
+import com.example.applicationhome.data.data.model.UserUiState
 
 @Composable
 fun MySplashScreen(
@@ -24,14 +24,15 @@ fun MySplashScreen(
     navigationController : NavHostController
 ){
     val syncState by viewModel.syncDataUiState.collectAsStateWithLifecycle()
+    val syncUserUiState by viewModel.syncUserUiState.collectAsStateWithLifecycle()
     val isFirstTime by viewModel.isFirsTimeToOpenApp.collectAsStateWithLifecycle()
 
     LaunchedEffect(syncState, isFirstTime){
         println(isFirstTime)
         println(syncState)
-        if (syncState !is HomeUiState.Starting && isFirstTime != null) {
+        if (syncUserUiState !is UserUiState.Starting && isFirstTime != null) {
             val destination = when {
-                syncState is HomeUiState.GuestMode && isFirstTime == true -> Screens.WelcomeScreen.screen
+                syncUserUiState is UserUiState.GuestMode && isFirstTime == true -> Screens.WelcomeScreen.screen
                 else -> Screens.DashboardScreen.screen
             }
 

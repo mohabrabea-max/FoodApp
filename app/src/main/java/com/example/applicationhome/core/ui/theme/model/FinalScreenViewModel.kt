@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.data.data.model.HomeUiState
+import com.example.applicationhome.data.data.model.UserUiState
 import com.example.applicationhome.data.local.entity.UserClass
 import com.example.applicationhome.data.remote.NetworkObserver
 import com.example.applicationhome.features.WelcomeScreen.repository.WelcomeScreenRepository
@@ -13,8 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -24,7 +24,7 @@ import javax.inject.Inject
 class FinalScreenViewModel @Inject constructor(
     private val syncAllDataRepository : SyncAllDataRepository,
     private val userRepository : UserRepository,
-    private val welcomeScreenRepository : WelcomeScreenRepository,
+    welcomeScreenRepository : WelcomeScreenRepository,
     networkObserver: NetworkObserver
 ) : ViewModel() {
     val isFirsTimeToOpenApp = welcomeScreenRepository.isFirsTimeToOpenApp
@@ -36,8 +36,11 @@ class FinalScreenViewModel @Inject constructor(
             initialValue = true
         )
 
-    private val _syncDataUiState = MutableStateFlow<HomeUiState>(HomeUiState.Starting)
+    private val _syncDataUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val syncDataUiState = _syncDataUiState.asStateFlow()
+
+    private val _syncUserUiState = MutableStateFlow<UserUiState>(UserUiState.Starting)
+    val syncUserUiState = _syncUserUiState.asStateFlow()
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
@@ -48,9 +51,8 @@ class FinalScreenViewModel @Inject constructor(
             _isRefreshing.value = true
             try {
                 val network = isNetworkAvailable.first()
-                val user = userRepository.userData.first()
 
-                executeSync(network, user, true)
+                executeSync(network, true)
             } catch (e: Exception) {
                 Log.e("RefreshError", e.message.toString())
             } finally {
@@ -60,48 +62,42 @@ class FinalScreenViewModel @Inject constructor(
     }
 
     private suspend fun executeSync(
-        network: Boolean,
-        user: UserClass,
-        isForceRefresh: Boolean = false
+        network : Boolean,
+        isForceRefresh : Boolean = false
     ){
-        if (isForceRefresh) {
-            _syncDataUiState.value = HomeUiState.Loading
-        } else {
-            _syncDataUiState.value = HomeUiState.Starting
-        }
-
-        if (!network){
+        if(!network){
             _syncDataUiState.value = HomeUiState.Offline
             return
         }
 
-        if(!isForceRefresh){
-            if (user.id.isNotEmpty()) {
-                val isValid = userRepository.validateUserOnAppLaunch()
-
-                if (isValid) {
-                    try {
-                        syncAllDataRepository.syncFavoritesInDatabase(user.id)
-                    } catch (e: Exception) {
-                        Log.e("FavoriteSyncError", "الخلل هنا: ${e.javaClass.simpleName} - ${e.message}", e)
-                    }
-                }else{
-                    _syncDataUiState.value = HomeUiState.GuestMode
-                    return
-                }
-            }else{
-                _syncDataUiState.value = HomeUiState.GuestMode
-                return
-            }
-        }
-
         if (isForceRefresh || _syncDataUiState.value != HomeUiState.Success){
             try {
+                _syncDataUiState.value = HomeUiState.Loading
                 syncAllDataRepository.syncDataParallel()
                 _syncDataUiState.value = HomeUiState.Success
             } catch (e: Exception) {
                 _syncDataUiState.value = HomeUiState.Offline
             }
+        }
+    }
+
+    private suspend fun syncFavorite(user : UserClass){
+        if (user.id.isNotEmpty()) {
+            val isValid = userRepository.validateUserOnAppLaunch()
+
+            if(isValid){
+                try {
+                    syncAllDataRepository.syncFavoritesInDatabase(user.id)
+                } catch (e: Exception) {
+                    _syncUserUiState.value = UserUiState.GuestMode
+                    return                }
+            }else{
+                _syncUserUiState.value = UserUiState.GuestMode
+                return
+            }
+        }else{
+            _syncUserUiState.value = UserUiState.GuestMode
+            return
         }
     }
 
@@ -112,23 +108,19 @@ class FinalScreenViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            combine(
-                isNetworkAvailable,
-                userRepository.userData,
-                isFirsTimeToOpenApp
-            ) { network, user, isFirsTime -> Triple(network, user, isFirsTime) }
-                .distinctUntilChanged()
-                .collect { (network, user, isFirsTime) ->
-                    if(_syncDataUiState.value == HomeUiState.Success){
-                        return@collect
-                    }
+            userRepository.userData.collectLatest { user ->
+                syncFavorite(user)
+            }
+        }
 
-                    if(isFirsTime ?: true){
-                        executeSync(network, user)
-                    }else{
-                        executeSync(network, user, true)
-                    }
+        viewModelScope.launch {
+            isNetworkAvailable.collectLatest { network ->
+                if(_syncDataUiState.value == HomeUiState.Success){
+                    return@collectLatest
                 }
+
+                executeSync(network)
+            }
         }
     }
 }

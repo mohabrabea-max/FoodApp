@@ -8,17 +8,19 @@ import com.example.applicationhome.data.data.model.ErrorsType
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.gotrue.OtpType
+import io.github.jan.supabase.gotrue.SessionStatus
 import io.github.jan.supabase.gotrue.providers.builtin.Email
 import io.github.jan.supabase.gotrue.providers.builtin.OTP
+import io.github.jan.supabase.gotrue.user.UserInfo
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.rpc
+import kotlinx.coroutines.flow.StateFlow
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
+
 class SupabaseUserRemoteDataSource @Inject constructor(
     private val auth : Auth,
     private val postgrest : Postgrest
@@ -173,9 +175,9 @@ class SupabaseUserRemoteDataSource @Inject constructor(
     }
 
 
-    suspend fun retrieveUser() = auth.retrieveUserForCurrentSession()
+    override suspend fun retrieveUser(): UserInfo = auth.retrieveUserForCurrentSession()
 
-    val sessionStatus = auth.sessionStatus
+    override val sessionStatus : StateFlow<SessionStatus> = auth.sessionStatus
 
 
     override suspend fun sendOtp(email: String): Result<Unit> {
