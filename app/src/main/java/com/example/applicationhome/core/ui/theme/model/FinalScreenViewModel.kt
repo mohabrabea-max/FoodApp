@@ -5,16 +5,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
+import com.example.applicationhome.core.domain.repository.WelcomeScreenRepository
 import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.data.model.UserUiState
 import com.example.applicationhome.data.local.entity.UserClass
 import com.example.applicationhome.data.remote.NetworkObserver
-import com.example.applicationhome.features.WelcomeScreen.repository.WelcomeScreenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -44,6 +46,8 @@ class FinalScreenViewModel @Inject constructor(
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
+
+    private var userId = ""
 
 
     fun refreshData(){
@@ -81,23 +85,31 @@ class FinalScreenViewModel @Inject constructor(
         }
     }
 
-    private suspend fun syncFavorite(user : UserClass){
-        if (user.id.isNotEmpty()) {
-            val isValid = userRepository.validateUserOnAppLaunch()
-
-            if(isValid){
-                try {
-                    syncAllDataRepository.syncFavoritesInDatabase(user.id)
-                } catch (e: Exception) {
-                    _syncUserUiState.value = UserUiState.GuestMode
-                    return                }
-            }else{
-                _syncUserUiState.value = UserUiState.GuestMode
-                return
-            }
-        }else{
+    private suspend fun syncFavorite(user : UserClass, network: Boolean){
+        if(user.id.isEmpty()){
             _syncUserUiState.value = UserUiState.GuestMode
             return
+        }
+
+        if(userId == user.id) return
+
+        if(!network){
+            _syncUserUiState.value = UserUiState.Offline
+            return
+        }
+
+        val isValid = userRepository.validateUserOnAppLaunch()
+
+        if(!isValid){
+            _syncUserUiState.value = UserUiState.GuestMode
+            return
+        }
+
+        try {
+            syncAllDataRepository.syncFavoritesInDatabase(user.id)
+            userId = user.id
+            _syncUserUiState.value = UserUiState.Success
+        } catch (e: Exception) {
         }
     }
 
@@ -108,16 +120,21 @@ class FinalScreenViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            userRepository.userData.collectLatest { user ->
-                syncFavorite(user)
+            combine(
+                isNetworkAvailable,
+                userRepository.userData
+            ){ network, user ->
+                Pair(network, user)
+            }.distinctUntilChanged()
+            .collectLatest { (network, user) ->
+                println(user)
+                syncFavorite(user, network)
             }
         }
 
         viewModelScope.launch {
-            isNetworkAvailable.collectLatest { network ->
-                if(_syncDataUiState.value == HomeUiState.Success){
-                    return@collectLatest
-                }
+            isNetworkAvailable.collect { network ->
+                if(_syncDataUiState.value == HomeUiState.Success) return@collect
 
                 executeSync(network)
             }

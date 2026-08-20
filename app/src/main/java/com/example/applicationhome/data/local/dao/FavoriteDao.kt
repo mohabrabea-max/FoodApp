@@ -165,6 +165,8 @@ interface FavoriteDao {
         snacksItems : List<FavoriteSnackEntity>,
         restaurant : List<FavoriteRestaurantEntity>
     ){
+        deleteAllFromFavorite()
+
         addFoodToFavorite(foodItems)
         addSnacksToFavorite(snacksItems)
         addRestaurantToFavorite(restaurant)

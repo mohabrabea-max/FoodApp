@@ -149,12 +149,8 @@ data class UserClass(
     val birthday : String = "",
     val governorate : String = "",
     val city : String = "",
-    val address : String = ""
-)
-
-data class UpdateAccountState(
-    val email : String = "",
-    val isActive : Boolean = false
+    val address : String = "",
+    val isActive: Boolean = false
 )
 
 

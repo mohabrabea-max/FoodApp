@@ -2,7 +2,7 @@ package com.example.applicationhome.features.WelcomeScreen.Ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.features.WelcomeScreen.repository.WelcomeScreenRepository
+import com.example.applicationhome.core.domain.repository.WelcomeScreenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

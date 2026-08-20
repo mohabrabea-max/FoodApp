@@ -1,5 +1,6 @@
-package com.example.applicationhome.features.WelcomeScreen.repository
+package com.example.applicationhome.core.domain.Implementations
 
+import com.example.applicationhome.core.domain.repository.WelcomeScreenRepository
 import com.example.applicationhome.data.datastore.DataStoreManager
 import com.example.applicationhome.domain.ApplicationScope
 import kotlinx.coroutines.CoroutineScope
@@ -10,11 +11,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WelcomeScreenRepository @Inject constructor(
+class WelcomeScreenRepositoryImpl @Inject constructor(
     private val dataStoreManager: DataStoreManager,
     @ApplicationScope private val externalScope: CoroutineScope
-){
-    val isFirsTimeToOpenApp : StateFlow<Boolean?> =
+): WelcomeScreenRepository {
+    override val isFirsTimeToOpenApp : StateFlow<Boolean?> =
         dataStoreManager.isFirstTimeToOpenApp
             .stateIn(
                 scope = externalScope,
@@ -22,7 +23,7 @@ class WelcomeScreenRepository @Inject constructor(
                 initialValue = null
             )
 
-    suspend fun updateFirstTimeToOpenApp(){
+    override suspend fun updateFirstTimeToOpenApp(){
         dataStoreManager.updateFirstTimeToOpenApp()
     }
 }

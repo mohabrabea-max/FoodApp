@@ -23,13 +23,11 @@ fun MySplashScreen(
     viewModel: FinalScreenViewModel,
     navigationController : NavHostController
 ){
-    val syncState by viewModel.syncDataUiState.collectAsStateWithLifecycle()
+    //val syncState by viewModel.syncDataUiState.collectAsStateWithLifecycle()
     val syncUserUiState by viewModel.syncUserUiState.collectAsStateWithLifecycle()
     val isFirstTime by viewModel.isFirsTimeToOpenApp.collectAsStateWithLifecycle()
 
-    LaunchedEffect(syncState, isFirstTime){
-        println(isFirstTime)
-        println(syncState)
+    LaunchedEffect(isFirstTime, syncUserUiState){
         if (syncUserUiState !is UserUiState.Starting && isFirstTime != null) {
             val destination = when {
                 syncUserUiState is UserUiState.GuestMode && isFirstTime == true -> Screens.WelcomeScreen.screen

@@ -4,8 +4,11 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.snapshotFlow
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
 import com.example.applicationhome.core.domain.model.userClassFireBaseToUserDataDatabase
 import com.example.applicationhome.core.domain.repository.ProfileRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
@@ -24,8 +27,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(SavedStateHandleSaveableApi::class)
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     userRepository: UserRepository,
     private val profileRepository : ProfileRepository
 ) : ViewModel(){
@@ -46,10 +51,31 @@ class ProfileViewModel @Inject constructor(
 
 
     //------------------------------- Text Fields ------------------------------
-    private val firstNameTextField = TextFieldState()
-    private val lastNameTextField = TextFieldState()
-    private val phoneNumberTextField = TextFieldState()
-    private val addressTextField = TextFieldState()
+    private val firstNameTextField = savedStateHandle.saveable(
+        key = "firstNameTextField",
+        saver = TextFieldState.Saver
+    ){
+        TextFieldState()
+    }
+
+    private val lastNameTextField = savedStateHandle.saveable(
+        key = "lastNameTextField",
+        saver = TextFieldState.Saver
+    ){
+        TextFieldState()
+    }
+    private val phoneNumberTextField = savedStateHandle.saveable(
+        key = "phoneNumberTextField",
+        saver = TextFieldState.Saver
+    ){
+        TextFieldState()
+    }
+    private val addressTextField = savedStateHandle.saveable(
+        key = "addressTextField",
+        saver = TextFieldState.Saver
+    ){
+        TextFieldState()
+    }
 
     val profileTextFields  = listOf(
         AccountTextFieldClass(
@@ -234,7 +260,8 @@ class ProfileViewModel @Inject constructor(
             birthday = _selectedDate.value,
             governorate = _selectedGovernorate.value,
             city = _selectedCity.value,
-            address = addressTextField.text.toString()
+            address = addressTextField.text.toString(),
+            isActive = true
         )
 
         profileRepository.changeIsDataEditedState(userData.value != userDataDatabase)

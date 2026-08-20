@@ -52,6 +52,16 @@ interface FoodAndRestaurantsDao {
 
     //----------------------------------------------------------------\\ Get Data //----------------------------------------------------------------
 
+    @Query("SELECT id FROM meals_entity")
+    suspend fun getMealsIdsFromDatabase(): List<Int>
+
+    @Query("SELECT id FROM snacks_entity")
+    suspend fun getSnacksIdsFromDatabase(): List<Int>
+
+    @Query("SELECT id FROM restaurants_entity")
+    suspend fun getRestaurantsIdsFromDatabase(): List<Int>
+
+
     @Transaction
     @Query("SELECT * FROM meals_entity WHERE restaurantId = :restaurantId AND category =:type")
     fun getMealsFromDatabase(restaurantId : Int, type : String): PagingSource<Int, MealWithFavoriteStatus>

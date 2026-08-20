@@ -11,6 +11,7 @@ import com.example.applicationhome.core.domain.Implementations.SearchRepositoryI
 import com.example.applicationhome.core.domain.Implementations.SupabaseUserRemoteDataSource
 import com.example.applicationhome.core.domain.Implementations.SyncAllDataRepositoryImpl
 import com.example.applicationhome.core.domain.Implementations.UserRepositoryImpl
+import com.example.applicationhome.core.domain.Implementations.WelcomeScreenRepositoryImpl
 import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.LocationRepository
@@ -22,6 +23,7 @@ import com.example.applicationhome.core.domain.repository.SearchRepository
 import com.example.applicationhome.core.domain.repository.SupabaseRepository
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
+import com.example.applicationhome.core.domain.repository.WelcomeScreenRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -96,4 +98,10 @@ abstract class RepositoryModule {
     abstract fun bindUserRepository(
         userRepositoryImpl : UserRepositoryImpl
     ): UserRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindWelcomeScreenRepository(
+        welcomeScreenRepositoryImpl : WelcomeScreenRepositoryImpl
+    ): WelcomeScreenRepository
 }

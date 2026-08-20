@@ -12,7 +12,7 @@ interface UsersDao {            // دا الجزء اللي بينفذ عملي�
 //    @Query("SELECT * FROM users")
 //    suspend fun getAllUsers(): List<UserClass>
 
-    @Query("SELECT * FROM users")
+    @Query("SELECT * FROM users WHERE isActive = 1")
     fun getActiveUser(): Flow<UserClass?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

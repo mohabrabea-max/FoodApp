@@ -1,5 +1,6 @@
 package com.example.applicationhome.core.domain.Implementations
 
+import android.util.Log
 import com.example.applicationhome.core.domain.repository.SupabaseRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.data.data.model.ChickEmailStates
@@ -10,6 +11,7 @@ import com.example.applicationhome.data.local.dao.UsersDao
 import com.example.applicationhome.data.local.entity.UserClass
 import com.example.applicationhome.data.remote.FoodAppAPIs
 import com.example.applicationhome.domain.ApplicationScope
+import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.gotrue.SessionStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 class UserRepositoryImpl @Inject constructor(
     private val supabaseRepository : SupabaseRepository,
@@ -59,7 +62,8 @@ class UserRepositoryImpl @Inject constructor(
                     user.birthday,
                     user.governorate,
                     user.city,
-                    user.address
+                    user.address,
+                    true
                 )
                 userdao.addUser(data)
                 LoginStates.Success
@@ -125,7 +129,8 @@ class UserRepositoryImpl @Inject constructor(
                     userRequest.birthday,
                     userRequest.governorate,
                     userRequest.city,
-                    userRequest.address
+                    userRequest.address,
+                    true
                 )
                 userdao.addUser(userData)
 
@@ -159,9 +164,18 @@ class UserRepositoryImpl @Inject constructor(
         return try {
             supabaseRepository.retrieveUser()
             true
+        } catch (e : CancellationException){
+            throw e
+        }catch (e: RestException) {
+            if(e.statusCode == 401 || e.statusCode == 403){
+                clearLocalData()
+                false
+            }else{
+                true
+            }
         } catch(e: Exception) {
-            clearLocalData()
-            false
+            Log.e("ValidateUser", "Network error, continuing offline: ${e.message}")
+            true
         }
     }
 

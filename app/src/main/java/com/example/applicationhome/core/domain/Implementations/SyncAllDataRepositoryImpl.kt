@@ -202,49 +202,59 @@ class SyncAllDataRepositoryImpl @Inject constructor(
     override suspend fun syncFavoritesInDatabase(userId : String){
         retryLocally{
             val response = api.getFavoriteItems(userId)
-            val favorite = response.body()
 
-            if(response.isSuccessful && favorite != null){
+            if(response.isSuccessful){
+                val mealsIdsInDatabase = foodAndRestaurantsDao.getMealsIdsFromDatabase().toSet()
+                val snacksIdsInDatabase = foodAndRestaurantsDao.getSnacksIdsFromDatabase().toSet()
+                val restaurantsIdsInDatabase = foodAndRestaurantsDao.getRestaurantsIdsFromDatabase().toSet()
+
+                val favorite = response.body() ?: emptyMap()
+
                 val mealsFavorite = mutableListOf<FavoriteMealEntity>()
                 val snacksFavorite = mutableListOf<FavoriteSnackEntity>()
                 val restaurantsFavorite = mutableListOf<FavoriteRestaurantEntity>()
 
                 favorite.values.forEach { item ->
-                    when(item.typ){
-                        "Meal" ->
-                            mealsFavorite.add(
-                                FavoriteMealEntity(
-                                    item.id,
-                                    userId,
-                                    item.restaurants,
-                                    true,
-                                    false
+                    when(item.typ.lowercase()){
+                        "meal" ->
+                            if(item.id in mealsIdsInDatabase){
+                                mealsFavorite.add(
+                                    FavoriteMealEntity(
+                                        item.id,
+                                        userId,
+                                        item.restaurants,
+                                        true,
+                                        false
+                                    )
                                 )
-                            )
+                            }
 
-                        "Snack" ->
-                            snacksFavorite.add(
-                                FavoriteSnackEntity(
-                                    item.id,
-                                    userId,
-                                    item.restaurants,
-                                    true,
-                                    false
+                        "snack" ->
+                            if(item.id in snacksIdsInDatabase){
+                                snacksFavorite.add(
+                                    FavoriteSnackEntity(
+                                        item.id,
+                                        userId,
+                                        item.restaurants,
+                                        true,
+                                        false
+                                    )
                                 )
-                            )
+                            }
 
-                        "Restaurant" ->
-                            restaurantsFavorite.add(
-                                FavoriteRestaurantEntity(
-                                    item.id,
-                                    userId,
-                                    true,
-                                    false
+                        "restaurant" ->
+                            if(item.id in restaurantsIdsInDatabase){
+                                restaurantsFavorite.add(
+                                    FavoriteRestaurantEntity(
+                                        item.id,
+                                        userId,
+                                        true,
+                                        false
+                                    )
                                 )
-                            )
+                            }
                     }
                 }
-
                 favoriteDao.addAllToFavorite(mealsFavorite, snacksFavorite, restaurantsFavorite)
             }else{
                 throw HttpException(response)

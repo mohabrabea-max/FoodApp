@@ -23,7 +23,11 @@ object SupabaseModule {
             supabaseUrl = BuildConfig.SUPABASEURL,
             supabaseKey = BuildConfig.SUPABASEAPIKEY
         ) {
-            install(Auth)
+            install(Auth){
+                alwaysAutoRefresh = true
+                autoLoadFromStorage = true
+            }
+
             install(Postgrest)
         }
     }

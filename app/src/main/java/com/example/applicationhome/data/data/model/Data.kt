@@ -273,4 +273,5 @@ sealed interface UserUiState {
     data object Starting : UserUiState
     data object GuestMode : UserUiState
     data object Success : UserUiState
+    data object Offline : UserUiState
 }
