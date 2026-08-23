@@ -1,10 +1,15 @@
 package com.example.applicationhome.data.data.model
 
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.paging.compose.LazyPagingItems
 import com.example.applicationhome.data.local.entity.CartItemsClass
+import com.example.applicationhome.data.local.entity.CategoriesEntity
+import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
+import com.example.applicationhome.data.local.entity.OffersEntity
 import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.SnackWithFavoriteStatus
+import com.example.applicationhome.data.local.entity.UserClass
 import com.google.gson.annotations.SerializedName
 
 data class FoodItem(
@@ -275,3 +280,20 @@ sealed interface UserUiState {
     data object Success : UserUiState
     data object Offline : UserUiState
 }
+
+
+data class HomeScreenActions(
+    val select : (CategoriesEntity) -> Unit = {},
+    val unSelected : () -> Unit = {},
+    val addRestaurantsFavorite : (FavoriteRestaurantEntity) -> Unit = {},
+    val removeRestaurantsFavorite : (Int) -> Unit = {}
+)
+
+data class HomeScreenParameters(
+    val isNetworkAvailable : Boolean = false,
+    val categories : List<CategoriesEntity> = emptyList(),
+    val categorySelected : Int = 0,
+    val userData : UserClass = UserClass(),
+    val restaurants : LazyPagingItems<RestaurantWithFavoriteStatus>? = null,
+    val offers : List<OffersEntity> = emptyList(),
+)

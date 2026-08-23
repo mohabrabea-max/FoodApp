@@ -64,12 +64,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.applicationhome.core.ui.components.Options
 import com.example.applicationhome.core.ui.components.bars.MyBottomBar
 import com.example.applicationhome.core.ui.components.profileAndSetting.UserImage
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.core.ui.theme.model.DashboardScreenViewModel
 import com.example.applicationhome.core.ui.theme.model.UserImageViewModel
+import com.example.applicationhome.data.data.model.HomeScreenActions
+import com.example.applicationhome.data.data.model.HomeScreenParameters
 import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.features.favorite.ui.Favorite
@@ -277,14 +280,41 @@ fun DashboardScreen(
             ){
                 composable(Screens.HomeScreen.screen){
                     val homeScreenViewModel : HomeScreenViewModel = hiltViewModel()
+
+                    val isNetworkAvailable by homeScreenViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
+
+                    val categories by homeScreenViewModel.categories.collectAsStateWithLifecycle()
+                    val categorySelected by homeScreenViewModel.selected.collectAsStateWithLifecycle()
+
+                    val userData by homeScreenViewModel.userData.collectAsStateWithLifecycle()
+                    val restaurants = homeScreenViewModel.filterRestaurants.collectAsLazyPagingItems()
+                    val offers by homeScreenViewModel.offers.collectAsStateWithLifecycle()
+
+                    val actions = HomeScreenActions(
+                        select = homeScreenViewModel::select,
+                        unSelected = homeScreenViewModel::unSelected,
+                        addRestaurantsFavorite = homeScreenViewModel::addRestaurantsFavorite,
+                        removeRestaurantsFavorite = homeScreenViewModel::removeRestaurantsFavorite
+                    )
+
+                    val parameters = HomeScreenParameters(
+                        isNetworkAvailable = isNetworkAvailable,
+                        categories = categories,
+                        categorySelected = categorySelected,
+                        userData = userData,
+                        restaurants = restaurants,
+                        offers = offers
+                    )
+
                     HomeScreen(
-                        drawerState,
-                        coroutineScope,
-                        navigationController,
-                        homeScreenViewModel,
-                        homeListState,
-                        syncDataUiState,
-                        isRefreshing
+                        drawerState = drawerState,
+                        coroutineScope = coroutineScope,
+                        navigationController = navigationController,
+                        onActions = actions,
+                        parameters = parameters,
+                        scrollState = homeListState,
+                        syncDataUiState = syncDataUiState,
+                        isRefreshing = isRefreshing
                     ){ syncData() }
                 }
 

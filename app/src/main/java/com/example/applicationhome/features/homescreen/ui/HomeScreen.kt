@@ -48,9 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -60,6 +58,8 @@ import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Restau
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.LightOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
+import com.example.applicationhome.data.data.model.HomeScreenActions
+import com.example.applicationhome.data.data.model.HomeScreenParameters
 import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
@@ -73,7 +73,8 @@ fun HomeScreen(
     drawerState : DrawerState,
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
-    homeScreenViewModel : HomeScreenViewModel,
+    onActions : HomeScreenActions,
+    parameters : HomeScreenParameters,
     scrollState : LazyListState,
     syncDataUiState : HomeUiState,
     isRefreshing : Boolean,
@@ -81,18 +82,9 @@ fun HomeScreen(
 ){
     val state = rememberPullToRefreshState()
 
-    val isNetworkAvailable by homeScreenViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
+    val isOnline = parameters.isNetworkAvailable || syncDataUiState != HomeUiState.Offline
 
-    val isOnline = isNetworkAvailable || syncDataUiState != HomeUiState.Offline
-
-    val categories by homeScreenViewModel.categories.collectAsStateWithLifecycle()
-    val categorySelected by homeScreenViewModel.selected.collectAsStateWithLifecycle()
-
-    val userData by homeScreenViewModel.userData.collectAsStateWithLifecycle()
-    val restaurants = homeScreenViewModel.filterRestaurants.collectAsLazyPagingItems()
-    val offers by homeScreenViewModel.offers.collectAsStateWithLifecycle()
-
-    val pagerState = rememberPagerState(pageCount = {offers.size})
+    val pagerState = rememberPagerState(pageCount = {parameters.offers.size})
 
     var viewImageState by remember { mutableStateOf(false) }
     var imageToView by remember { mutableStateOf("") }
@@ -210,10 +202,10 @@ fun HomeScreen(
                     HomeUiState.Success, HomeUiState.Offline -> {
                         item {
                             CategoriesBar(
-                                categories,
-                                categorySelected,
-                                { category -> homeScreenViewModel.select(category) },
-                                { homeScreenViewModel.unSelected() },
+                                parameters.categories,
+                                parameters.categorySelected,
+                                { category -> onActions.select(category) },
+                                { onActions.unSelected() },
                                 {
                                     // 1. حدد طول الظل اللي إنت عايزه ينزل تحت البوكس
                                     val shadowHeight = 3.dp.toPx()
@@ -249,7 +241,7 @@ fun HomeScreen(
                                     contentPadding = PaddingValues(horizontal = 32.dp),
                                     pageSpacing = 10.dp
                                 ) { page ->
-                                    val currentOffer = offers[page]
+                                    val currentOffer = parameters.offers[page]
                                     Box(
                                         modifier = Modifier.fillMaxSize()
                                             .clip(RoundedCornerShape(10.dp)).background(Color.White)
@@ -280,11 +272,11 @@ fun HomeScreen(
                             Spacer(modifier = Modifier.height(20.dp))
                         }
 
-                        items(
-                            count = restaurants.itemCount,
-                            key = restaurants.itemKey { it.restaurant.id }
+                        if(parameters.restaurants != null) items(
+                            count = parameters.restaurants.itemCount,
+                            key = parameters.restaurants.itemKey { it.restaurant.id }
                         ) { index ->
-                            val item = restaurants[index]
+                            val item = parameters.restaurants[index]
 
                             item?.let {
                                 RestaurantsBoxHomeScreen(
@@ -302,15 +294,15 @@ fun HomeScreen(
                                     {
                                         val favoriteRestaurantDatabase = FavoriteRestaurantEntity(
                                             item.restaurant.id,
-                                            userData.id,
+                                            parameters.userData.id,
                                             false,
                                             false
                                         )
-                                        homeScreenViewModel.addRestaurantsFavorite(
+                                        onActions.addRestaurantsFavorite(
                                             favoriteRestaurantDatabase
                                         )
                                     },
-                                    { homeScreenViewModel.removeRestaurantsFavorite(item.restaurant.id) }
+                                    { onActions.removeRestaurantsFavorite(item.restaurant.id) }
                                 )
                             }
                         }
