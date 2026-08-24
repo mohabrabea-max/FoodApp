@@ -40,7 +40,7 @@ class HomeScreenViewModelTest {
 
     @Test
     fun addRestaurantsFavorite_shouldCallUseCase() = runTest{
-        val favoriteRestaurantEntity = FakeRestaurants.favoriteRestaurantEntityFakes().first
+        val favoriteRestaurantEntity = FakeRestaurants.favoriteRestaurantEntityFakes().first()
 
         val viewModel = getViewModel()
 
@@ -55,7 +55,7 @@ class HomeScreenViewModelTest {
 
     @Test
     fun select_Category_shouldUpdateSelectedCategoryState() = runTest {
-        val favoriteRestaurantEntity = FakeRestaurants.favoriteRestaurantEntityFakes().first
+        val favoriteRestaurantEntity = FakeRestaurants.favoriteRestaurantEntityFakes().first()
         val restaurantsEntityFakes = FakeRestaurants.restaurantsEntityFakes().find { it.id == favoriteRestaurantEntity.resId }
 
         val viewModel = getViewModel()

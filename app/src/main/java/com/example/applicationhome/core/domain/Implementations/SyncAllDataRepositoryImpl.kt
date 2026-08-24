@@ -6,6 +6,7 @@ import androidx.paging.PagingData
 import com.example.applicationhome.core.domain.model.foodItemToMealsEntity
 import com.example.applicationhome.core.domain.model.restaurantsToRestaurantsEntity
 import com.example.applicationhome.core.domain.model.snackToSnacksEntity
+import com.example.applicationhome.core.domain.module.IODispatcher
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.data.datastore.DataStoreManager
 import com.example.applicationhome.data.local.dao.FavoriteDao
@@ -20,9 +21,8 @@ import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatu
 import com.example.applicationhome.data.remote.FoodAppAPIs
 import com.example.applicationhome.domain.ApplicationScope
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -41,7 +41,8 @@ class SyncAllDataRepositoryImpl @Inject constructor(
     private val foodAndRestaurantsDao : FoodAndRestaurantsDao,
     private val favoriteDao : FavoriteDao,
     private val dataStoreManager : DataStoreManager,
-    @ApplicationScope externalScope: CoroutineScope
+    @ApplicationScope externalScope: CoroutineScope,
+    @IODispatcher private val dispatcher : CoroutineDispatcher
 ): SyncAllDataRepository {
     // *** ---------------------- \\***  Sync Data For Room Database  ***// ---------------------- ***
 
@@ -187,19 +188,17 @@ class SyncAllDataRepositoryImpl @Inject constructor(
     }
 
     override suspend fun syncDataParallel() {
-        withContext(Dispatchers.IO) {
-            coroutineScope {
-                launch { syncAllMealsToDatabase() }
-                launch { syncAllSnacksToDatabase() }
-                launch { syncAllRestaurantsToDatabase() }
-                launch { syncCategoriesToDatabase() }
-                launch { syncOffersToDatabase() }
-            }
+        withContext(dispatcher) {
+            launch { syncAllMealsToDatabase() }
+            launch { syncAllSnacksToDatabase() }
+            launch { syncAllRestaurantsToDatabase() }
+            launch { syncCategoriesToDatabase() }
+            launch { syncOffersToDatabase() }
         }
     }
 
 
-    override suspend fun syncFavoritesInDatabase(userId : String){
+    override suspend fun syncFavoritesInDatabase(userId : String) = withContext(dispatcher){
         retryLocally{
             val response = api.getFavoriteItems(userId)
 

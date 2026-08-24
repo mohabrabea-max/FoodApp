@@ -5,7 +5,7 @@ import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
 
 object FakeRestaurants {
-    fun restaurantsEntityFakes() = arrayListOf(
+    fun restaurantsEntityFakes() = listOf(
         RestaurantsEntity(
             id = 1,
             name = "aaa",
@@ -71,7 +71,7 @@ object FakeRestaurants {
         ),
     )
 
-    fun favoriteRestaurantEntityFakes() = arrayListOf(
+    fun favoriteRestaurantEntityFakes() = listOf(
         FavoriteRestaurantEntity(
             resId = 1,
             userId = "abcd"

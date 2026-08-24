@@ -6,7 +6,6 @@ import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
 import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.SnackWithFavoriteStatus
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface FavoriteRepository {
@@ -23,13 +22,6 @@ interface FavoriteRepository {
 
 
     // *** ---------------------- \\***  Favorite Functions  ***// ---------------------- ***
-    fun getFoodFavoriteFromDatabase(userId : String)
-            : Flow<List<MealWithFavoriteStatus>>
-    fun getSnacksFavoriteFromDatabase(userId : String)
-            : Flow<List<SnackWithFavoriteStatus>>
-    fun getRestaurantsFavoriteFromDatabase(userId : String)
-            : Flow<List<RestaurantWithFavoriteStatus>>
-
     suspend fun addFoodToFavorite(foodItem : FavoriteMealEntity)
     suspend fun addSnackToFavorite(snackItem : FavoriteSnackEntity)
     suspend fun addRestaurantToFavorite(restaurantItem : FavoriteRestaurantEntity)

@@ -8,9 +8,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class WelcomeScreenRepositoryImpl @Inject constructor(
     private val dataStoreManager: DataStoreManager,
     @ApplicationScope private val externalScope: CoroutineScope

@@ -14,113 +14,92 @@ class CartUseCase @Inject constructor(
         if(userid.isEmpty()) return AddToCartStates.ErrorInLoginState()
 
         val cartItems = cartRepository.cartItems.value
-        val mealKey = "${food.mealId}_${size}"
-        val currentItem = cartItems.find { it?.mealKey == mealKey }
 
-        val finalNumber = if (currentItem != null){
-            if(currentItem.quantity == 99){
-                99
-            }else{
-                currentItem.quantity + 1
-            }
-        }else{
-            1
-        }
-
-        if(cartItems.isNotEmpty()){
-
-            val currentCart = cartRepository.cartInformation.value
-
-            if(food.restaurantId == currentCart?.restaurantId){
-
-                if(cartItems.find { it?.mealKey == mealKey } != null){
-
-                    cartRepository.updateQuantity(userid, food, size, food.priceOfOne, finalNumber)
-
-                }else{
-
-                    cartRepository.addMealToCart(userid, food, size, food.type, food.priceOfOne, finalNumber)
-
-                }
-
-                return AddToCartStates.Success
-
-            }else{
-
-                return AddToCartStates.ErrorInCartRestaurant(food = food, size = size)
-
-            }
-        }else{
-
+        if(cartItems.isEmpty()){
             val cartRestaurant = cartRepository.getCartRestaurantData(food)
-            cartRepository.createNewCart(userid, food, size, food.type, food.priceOfOne, cartRestaurant, finalNumber)
+            cartRepository.createNewCart(userid, food, size, food.type, food.priceOfOne, cartRestaurant, 1)
             return AddToCartStates.Success
-
         }
+
+
+        val currentCart = cartRepository.cartInformation.value
+
+        if(food.restaurantId != currentCart?.restaurantId){
+            return AddToCartStates.ErrorInCartRestaurant(food = food, size = size)
+        }
+
+
+        val mealKey = "${food.mealId}_${size}"
+        val currentItem = cartItems.find { it.mealKey == mealKey }
+
+        if(currentItem == null) {
+            cartRepository.addMealToCart(userid, food, size, food.type, food.priceOfOne, 1)
+            return AddToCartStates.Success
+        }
+
+        if(currentItem.quantity >= 99) return AddToCartStates.Success
+
+        val finalNumber = currentItem.quantity + 1
+        cartRepository.updateQuantity(userid, food, size, food.priceOfOne, finalNumber)
+
+        return AddToCartStates.Success
     }
 
-    suspend fun updateCount(userid : String, food : CartItemsClass, size : String, newCount : Int): AddToCartStates {
+
+    suspend fun updateCount(userid : String, food : CartItemsClass, size : String, quantityToAdd : Int): AddToCartStates {
         if(userid.isEmpty()) return AddToCartStates.ErrorInLoginState()
 
         val cartItems = cartRepository.cartItems.value
-        val mealKey = "${food.mealId}_${size}"
-        val cartItem = cartItems.find { it?.mealKey == mealKey }
 
-        if(cartItems.isNotEmpty()){
-
-            val currentCart = cartRepository.cartInformation.value
-
-            if(food.restaurantId == currentCart?.restaurantId){
-
-                if(cartItem != null){
-                    val finalNumber =
-                        if(cartItem.quantity + newCount > 99){
-                            99
-                        }else{
-                            cartItem.quantity + newCount
-                        }
-                    cartRepository.updateQuantity(userid, food, size, food.priceOfOne, finalNumber)
-
-                }else{
-
-                    cartRepository.addMealToCart(userid, food, size, food.type, food.priceOfOne, newCount)
-                }
-
-                return AddToCartStates.Success
-
-            }else{
-
-                return AddToCartStates.ErrorInCartRestaurant(food = food, size = size)
-
-            }
-
-        }else{
-
+        if(cartItems.isEmpty()){
             val cartRestaurant = cartRepository.getCartRestaurantData(food)
-            cartRepository.createNewCart(userid, food, size, food.type, food.priceOfOne, cartRestaurant, newCount)
+            cartRepository.createNewCart(userid, food, size, food.type, food.priceOfOne, cartRestaurant, quantityToAdd)
 
             return AddToCartStates.Success
-
         }
+
+
+        val currentCart = cartRepository.cartInformation.value
+
+        if(food.restaurantId != currentCart?.restaurantId){
+            return AddToCartStates.ErrorInCartRestaurant(food = food, size = size)
+        }
+
+
+        val mealKey = "${food.mealId}_${size}"
+        val cartItem = cartItems.find { it.mealKey == mealKey }
+
+        if(cartItem == null){
+            cartRepository.addMealToCart(userid, food, size, food.type, food.priceOfOne, quantityToAdd)
+            return AddToCartStates.Success
+        }
+
+        if(cartItem.quantity >= 99){
+            return AddToCartStates.Success
+        }
+
+        val finalNumber =
+            if(cartItem.quantity + quantityToAdd >= 99){
+                99
+            }else{
+                cartItem.quantity + quantityToAdd
+            }
+
+        cartRepository.updateQuantity(userid, food, size, food.priceOfOne, finalNumber)
+
+        return AddToCartStates.Success
     }
 
     suspend fun minus(userid : String, food: CartItemsClass, size : String){
         val cartItems = cartRepository.cartItems.value
         val mealKey = "${food.mealId}_${size}"
-        val cartItem = cartItems.find { it?.mealKey == mealKey }
+        val cartItem = cartItems.find { it.mealKey == mealKey } ?: return
 
-        if(cartItem != null){
-
-            if(cartItem.quantity == 1){
-
-                cartRepository.deleteFromCart(userid, food.mealId, size)
-
-            }else{
-
-                val finalNumber = cartItem.quantity - 1
-                cartRepository.updateQuantity(userid, food, size, food.priceOfOne, finalNumber)
-
-            }
+        if(cartItem.quantity <= 1){
+            cartRepository.deleteFromCart(userid, food.mealId, size)
+        }else{
+            val finalNumber = cartItem.quantity - 1
+            cartRepository.updateQuantity(userid, food, size, food.priceOfOne, finalNumber)
         }
     }
 

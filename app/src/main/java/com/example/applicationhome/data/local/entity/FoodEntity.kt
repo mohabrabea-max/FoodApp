@@ -204,7 +204,7 @@ data class FavoriteMealEntity(
 )
 
 data class MealWithFavoriteStatus(
-    @Embedded val meal : MealsEntity,
+    @Embedded val meal : MealsEntity = MealsEntity(),
     @Relation(  //                      الجزء دا لربط جدول MealsEntity بجدول FavoriteMealEntity و عرضهم كداتا كلاس MealWithFavoriteStatus
         parentColumn = "id",
         entityColumn = "mealId"

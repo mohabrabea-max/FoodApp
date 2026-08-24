@@ -8,6 +8,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.applicationhome.SyncAddToFavoritesWorker
 import com.example.applicationhome.SyncRemoveFromFavoritesWorker
+import com.example.applicationhome.core.domain.module.IODispatcher
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.data.local.dao.FavoriteDao
@@ -18,10 +19,9 @@ import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.SnackWithFavoriteStatus
 import com.example.applicationhome.domain.ApplicationScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -37,7 +38,8 @@ class FavoriteRepositoryImpl @Inject constructor(
     userRepository: UserRepository,
     private val favoriteDao : FavoriteDao,
     private val workManager : WorkManager,
-    @ApplicationScope private val externalScope: CoroutineScope
+    @ApplicationScope private val externalScope: CoroutineScope,
+    @IODispatcher private val dispatcher : CoroutineDispatcher
 ): FavoriteRepository {
 
 // *** ---------------------- \\***  Favorite Items  ***// ---------------------- ***
@@ -45,7 +47,7 @@ class FavoriteRepositoryImpl @Inject constructor(
     override val favoriteMeals : StateFlow<List<MealWithFavoriteStatus>> =
         userRepository.userData.flatMapLatest { user ->
             val id = user.id
-            getFoodFavoriteFromDatabase(id)
+            favoriteDao.getFoodFromDatabase(id)
         }.stateIn(
             scope = externalScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -56,7 +58,7 @@ class FavoriteRepositoryImpl @Inject constructor(
     override val favoriteSnacks : StateFlow<List<SnackWithFavoriteStatus>> =
         userRepository.userData.flatMapLatest { user ->
             val id = user.id
-            getSnacksFavoriteFromDatabase(id)
+            favoriteDao.getSnacksFromDatabase(id)
         }.stateIn(
             scope = externalScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -67,7 +69,7 @@ class FavoriteRepositoryImpl @Inject constructor(
     override val favoriteRestaurantsFromDatabase : StateFlow<List<RestaurantWithFavoriteStatus>> =
         userRepository.userData.flatMapLatest { user ->
             val id = user.id
-            getRestaurantsFavoriteFromDatabase(id)
+            favoriteDao.getRestaurantsFromDatabase(id)
         }.stateIn(
             scope = externalScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -115,16 +117,6 @@ class FavoriteRepositoryImpl @Inject constructor(
 
 
     // *** ---------------------- \\***  Favorite Functions  ***// ---------------------- ***
-
-    override fun getFoodFavoriteFromDatabase(userId : String)
-    : Flow<List<MealWithFavoriteStatus>> = favoriteDao.getFoodFromDatabase(userId)
-
-    override fun getSnacksFavoriteFromDatabase(userId : String)
-    : Flow<List<SnackWithFavoriteStatus>> = favoriteDao.getSnacksFromDatabase(userId)
-
-    override fun getRestaurantsFavoriteFromDatabase(userId : String)
-    : Flow<List<RestaurantWithFavoriteStatus>> = favoriteDao.getRestaurantsFromDatabase(userId)
-
 
     override suspend fun addFoodToFavorite(foodItem : FavoriteMealEntity){
         favoriteDao.addFoodToFavorite(listOf(foodItem))
@@ -200,7 +192,7 @@ class FavoriteRepositoryImpl @Inject constructor(
 
 
     override suspend fun addGuestFavoriteToUser(userId : String){
-        coroutineScope {
+        withContext(dispatcher){
             launch { favoriteDao.addGuestMealsFavoriteToUser(userId) }
             launch { favoriteDao.addGuestSnacksFavoriteToUser(userId) }
             launch { favoriteDao.addGuestRestaurantsFavoriteToUser(userId) }
