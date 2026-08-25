@@ -40,7 +40,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.core.ui.theme.DeepMatteBlack
 import com.example.applicationhome.core.ui.theme.model.DashboardScreenViewModel
 import com.example.applicationhome.data.data.model.Screens
 import kotlinx.coroutines.CoroutineScope
@@ -62,8 +61,12 @@ fun MyBottomBar(
     val interactionSource = remember { MutableInteractionSource() }
 
     val totalInFavorite by dashboardScreenViewModel.totalInFavorite.collectAsStateWithLifecycle()
-
     val cartCount by dashboardScreenViewModel.totalNumberInCart.collectAsStateWithLifecycle()
+
+    val isHomeActive = currentRoute == Screens.HomeScreen.screen
+    val isFavoriteActive = currentRoute == Screens.Favorite.screen
+    val isSettingsActive = currentRoute == Screens.Settings.screen
+
 
     Box(
         modifier = Modifier
@@ -80,7 +83,6 @@ fun MyBottomBar(
             modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically
         ){
-            val isHomeActive = currentRoute == Screens.HomeScreen.screen
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -110,11 +112,10 @@ fun MyBottomBar(
                     Icons.Outlined.Home,
                     contentDescription = "Home",
                     modifier = Modifier.size(28.dp),
-                    tint = if(isHomeActive) Color.DarkOrange else Color.DeepMatteBlack
+                    tint = if(isHomeActive) Color.DarkOrange else Color.Gray
                 )
             }
 
-            val isFavoriteActive = currentRoute == Screens.Favorite.screen
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -155,7 +156,7 @@ fun MyBottomBar(
                         Icons.Outlined.FavoriteBorder,
                         contentDescription = "Favorite",
                         modifier = Modifier.size(28.dp),
-                        tint = if(isFavoriteActive) Color.DarkOrange else Color.DeepMatteBlack
+                        tint = if(isFavoriteActive) Color.DarkOrange else Color.Gray
                     )
                 }
             }
@@ -190,12 +191,11 @@ fun MyBottomBar(
                         Icons.Outlined.ShoppingCart,
                         contentDescription = "Cart",
                         modifier = Modifier.size(28.dp),
-                        tint = Color.DeepMatteBlack
+                        tint = Color.Gray
                     )
                 }
             }
 
-            val isSettingsActive = currentRoute == Screens.Settings.screen
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -230,7 +230,7 @@ fun MyBottomBar(
                     Icons.Outlined.Person,
                     contentDescription = "Settings",
                     modifier = Modifier.size(28.dp),
-                    tint = if(isSettingsActive) Color.DarkOrange else Color.DeepMatteBlack
+                    tint = if(isSettingsActive) Color.DarkOrange else Color.Gray
                 )
             }
         }

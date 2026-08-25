@@ -235,7 +235,7 @@ class RestaurantViewModel @Inject constructor(
         _mealSize.value = size
     }
 
-    fun closeBottomSheet(){
+    fun closeItemScreen(){
         _mealId.value = null
         _snackId.value = null
 
@@ -248,6 +248,7 @@ class RestaurantViewModel @Inject constructor(
         _mealSize.value = ""
 
         deletenewCount()
+        println(_uiState.value.bottomSheetItem)
     }
 
 
@@ -312,7 +313,7 @@ class RestaurantViewModel @Inject constructor(
         }
     }
 
-    fun updateCount(food : CartItemsClass, size : String, newCount : Int, cartNavigation : () -> Unit) {
+    fun updateCount(food : CartItemsClass, size : String, newCount : Int, cartNavigation : () -> Unit, onCloseItemScreen : () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val userId = userRepository.userData.value.id
             val state = cartUseCase.plus(userId, food, size, newCount)
@@ -320,7 +321,7 @@ class RestaurantViewModel @Inject constructor(
             when(state){
                 AddToCartStates.Success -> {
                     sendAddedToCartChannel{ cartNavigation() }
-                    closeBottomSheet()
+                    onCloseItemScreen()
                     deletenewCount()
                 }
 
@@ -359,7 +360,7 @@ class RestaurantViewModel @Inject constructor(
         }
     }
 
-    fun clearAndStartNewCart(count : Int, cartNavigation : () -> Unit) {
+    fun clearAndStartNewCart(count : Int, cartNavigation : () -> Unit, onCloseItemScreen : () -> Unit) {
         viewModelScope.launch {
             val newFood = newFoodInCart.value
             val newSize = newFoodInCartSize.value
@@ -371,7 +372,7 @@ class RestaurantViewModel @Inject constructor(
 
                 sendAddedToCartChannel{ cartNavigation() }
 
-                closeBottomSheet()
+                onCloseItemScreen()
 
                 deletenewCount()
 

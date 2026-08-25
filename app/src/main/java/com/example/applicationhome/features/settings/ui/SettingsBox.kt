@@ -2,6 +2,7 @@ package com.example.applicationhome.features.settings.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,26 +20,32 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import com.example.applicationhome.core.domain.model.ProfileData.settings
 import com.example.applicationhome.core.ui.theme.BrownForFont
 import com.example.applicationhome.data.data.model.ProfileOptions
+import com.example.applicationhome.data.data.model.Settings
+import com.example.applicationhome.data.data.model.SettingsScreens
 
 @Composable
-fun SettingsOptionsBox(item : ProfileOptions, navigationController : NavHostController){
+fun SettingsOptionsBox(item : ProfileOptions, navigation : () -> Unit){
+    val interactionSource = remember { MutableInteractionSource() }
+
     Box{
         Box(
             modifier = Modifier.aspectRatio(2.3f).
             padding(start = 5.dp, end = 5.dp).
             clip(RoundedCornerShape(10.dp)).
             background(Color.White).
-            clickable{ navigationController.navigate(item.screen.screen) }
+            clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ){ navigation() }
         ){
             Row(
                 modifier = Modifier.fillMaxSize().padding(15.dp),
@@ -71,21 +78,30 @@ fun SettingsOptionsBox(item : ProfileOptions, navigationController : NavHostCont
 }
 
 @Composable
-fun SettingsBox(){
-    Column(modifier = Modifier.padding(start = 5.dp, end = 5.dp)){
-        Column(modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)).background(Color.White)){
-            settings.forEach{ item ->
-                Column(modifier = Modifier.fillMaxSize().clickable{ }.padding(start = 17.dp, end = 17.dp)){
-                    Spacer(modifier = Modifier.height(25.dp))
-                    Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
-                        Icon(modifier = Modifier.size(20.dp), imageVector = item.icon, contentDescription = item.title, tint = Color.Black)
-                        Spacer(modifier = Modifier.width(15.dp))
-                        Text(text = item.title, fontSize = 17.sp, color = Color.BrownForFont)
-                        //Text(text = item.value, fontSize = 13.sp, color = Color.MediumBrownForTitle)
+fun SettingsBox(settings : List<Settings>, onClickable : (SettingsScreens) -> Unit){
+    val interactionSource = remember { MutableInteractionSource() }
+
+    Column(modifier = Modifier.padding(start = 5.dp, end = 5.dp).fillMaxSize().clip(RoundedCornerShape(10.dp)).background(Color.White)){
+        settings.forEach{ item ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ){
+                        onClickable(item.option)
                     }
-                    Spacer(modifier = Modifier.height(25.dp))
-                    if(item != settings.last()) Divider(color = Color.LightGray.copy(alpha = 0.2f))
+                    .padding(start = 17.dp, end = 17.dp)
+            ){
+                Spacer(modifier = Modifier.height(25.dp))
+                Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
+                    Icon(modifier = Modifier.size(20.dp), imageVector = item.icon, contentDescription = item.title, tint = Color.Black)
+                    Spacer(modifier = Modifier.width(15.dp))
+                    Text(text = item.title, fontSize = 17.sp, color = Color.BrownForFont)
                 }
+                Spacer(modifier = Modifier.height(25.dp))
+                if(item != settings.last()) Divider(color = Color.LightGray.copy(alpha = 0.2f))
             }
         }
     }

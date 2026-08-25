@@ -1,6 +1,5 @@
 package com.example.applicationhome.data.data.model
 
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.paging.compose.LazyPagingItems
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.CategoriesEntity
@@ -99,17 +98,6 @@ data class Restaurants(
 
 
 
-data class Options(
-    val title : String,
-    val icon : ImageVector,
-    val screen: String
-)
-
-data class Settings(
-    val title : String,
-    val icon : ImageVector
-)
-
 data class FavoriteClass(
     val id : Int,
     val typ : String,
@@ -190,7 +178,11 @@ data class BottomSheetActions(
     val addFavorite : () -> Unit,
     val removeFavorite : () -> Unit,
     val selectSize : (String) -> Unit,
-    val updateCount : (food : CartItemsClass, size : String, newCount : Int) -> Unit,
+    val updateCount : (
+        food : CartItemsClass,
+        size : String,
+        newCount : Int
+    ) -> Unit,
     val clearAndStartNewCart : (Int) -> Unit,
     val minusnewCount : () -> Unit,
     val plusnewCount : () -> Unit,

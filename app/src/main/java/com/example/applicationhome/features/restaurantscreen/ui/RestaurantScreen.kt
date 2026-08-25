@@ -1,6 +1,7 @@
 package com.example.applicationhome.features.restaurantscreen.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -79,7 +80,9 @@ import com.example.applicationhome.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
 import com.example.applicationhome.features.itemscreen.ui.ItemsFullBottomSheet
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -95,7 +98,6 @@ fun RestaurantScreen(
     var activeId by rememberSaveable { mutableStateOf(0) }
 
     val scrollState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
 
     val searchSize by remember {
         derivedStateOf {
@@ -142,6 +144,15 @@ fun RestaurantScreen(
 
     val mealSize by restaurantViewModel.mealSize.collectAsStateWithLifecycle()
 
+
+    val animDuration = 300
+    val animateIn = remember(uiState.bottomSheetItem) {
+        MutableTransitionState(false).apply {
+            targetState = uiState.bottomSheetItem != null
+        }
+    }
+    val scope = rememberCoroutineScope()
+
     val bottomSheetActions =
         BottomSheetActions(
             navigation = { screenItem ->
@@ -166,19 +177,46 @@ fun RestaurantScreen(
                 restaurantViewModel.selectSize(it)
             },
             updateCount = { food , size , newCount ->
-                restaurantViewModel.updateCount(food, size, newCount){
-                    navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
-                }
+                restaurantViewModel.updateCount(
+                    food = food,
+                    size = size,
+                    newCount = newCount,
+                    cartNavigation = {
+                        navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
+                    },
+                    onCloseItemScreen = {
+                        scope.launch {
+                            animateIn.targetState = false
+                            delay(animDuration.toLong().milliseconds)
+                            restaurantViewModel.closeItemScreen()
+                        }
+                    }
+                )
             },
-            clearAndStartNewCart = { restaurantViewModel.clearAndStartNewCart(it){
-                    navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
-                }
+            clearAndStartNewCart = {
+                restaurantViewModel.clearAndStartNewCart(
+                    count = it,
+                    cartNavigation = { navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true } },
+                    onCloseItemScreen = {
+                        scope.launch {
+                            animateIn.targetState = false
+                            delay(animDuration.toLong().milliseconds)
+                            restaurantViewModel.closeItemScreen()
+                        }
+                    }
+                )
             },
             minusnewCount = { restaurantViewModel.minusnewCount() },
             plusnewCount = { restaurantViewModel.plusnewCount() },
             deletenewCount = { restaurantViewModel.deletenewCount() },
             alertDialogFalse = { restaurantViewModel.alertDialogFalse() },
-            closeBottomSheet = { restaurantViewModel.closeBottomSheet() }
+            closeBottomSheet = {
+                scope.launch {
+                    animateIn.targetState = false
+                    delay(animDuration.toLong().milliseconds)
+                    restaurantViewModel.closeItemScreen()
+                }
+            }
         )
 
 
@@ -348,7 +386,6 @@ fun RestaurantScreen(
                                 2.5f,
                                 {
                                     restaurantViewModel.selectSnack(item.snack.id, size)
-
                                 },
                                 {
                                     Favorite(
@@ -374,7 +411,7 @@ fun RestaurantScreen(
                                     AddBox(
                                         item.snack.id,
                                         {
-                                            val quantity = cartItems.find { it?.mealKey == "${item.snack.id}_${size}" }?.quantity ?: 0
+                                            val quantity = cartItems.find { it.mealKey == "${item.snack.id}_${size}" }?.quantity ?: 0
 
                                             val snack = item.snack.snacksEntityToCartItemsClass(userData.id, quantity)
 
@@ -383,7 +420,7 @@ fun RestaurantScreen(
                                             }
                                         },
                                         {
-                                            val quantity = cartItems.find { it?.mealKey == "${item.snack.id}_${size}" }?.quantity ?: 0
+                                            val quantity = cartItems.find { it.mealKey == "${item.snack.id}_${size}" }?.quantity ?: 0
 
                                             val snack = item.snack.snacksEntityToCartItemsClass(userData.id, quantity)
 
@@ -391,7 +428,7 @@ fun RestaurantScreen(
                                         },
                                         { activeId = item.snack.id },
                                         activeId,
-                                        cartItems.find { it?.mealKey == "${item.snack.id}_${size}" }?.quantity
+                                        cartItems.find { it.mealKey == "${item.snack.id}_${size}" }?.quantity
                                             ?: 0
                                     )
                                 }
@@ -514,9 +551,17 @@ fun RestaurantScreen(
                     (errorInCart as AddToCartStates.ErrorInCartRestaurant).message,
                     "Start",
                     {
-                        restaurantViewModel.clearAndStartNewCart(newCount){
-                            navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
-                        }
+                        restaurantViewModel.clearAndStartNewCart(
+                            count = newCount,
+                            cartNavigation = { navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true } },
+                            onCloseItemScreen = {
+                                scope.launch {
+                                    animateIn.targetState = false
+                                    delay(animDuration.toLong().milliseconds)
+                                    restaurantViewModel.closeItemScreen()
+                                }
+                            }
+                        )
                         restaurantViewModel.alertDialogFalse()
                     },
                     "Cancel",
@@ -569,15 +614,17 @@ fun RestaurantScreen(
                 viewImageState = false
             }
         }
+    }
 
-        uiState.bottomSheetItem?.let { item ->
-            ItemsFullBottomSheet(
-                item,
-                mealSize,
-                bottomSheetActions,
-                userData,
-                newCount
-            )
-        }
+    uiState.bottomSheetItem?.let { item ->
+        ItemsFullBottomSheet(
+            bottomSheetItem = item,
+            size = mealSize,
+            actions = bottomSheetActions,
+            userData = userData,
+            newCount = newCount,
+            animDuration = animDuration,
+            animateIn = animateIn
+        )
     }
 }

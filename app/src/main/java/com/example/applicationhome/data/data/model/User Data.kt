@@ -18,7 +18,7 @@ data class ProfileOptions(
     val title : String,
     var description : String?,
     val icon: ImageVector,
-    val screen : Screens
+    val screen: String
 )
 
 data class UserClassFireBase(

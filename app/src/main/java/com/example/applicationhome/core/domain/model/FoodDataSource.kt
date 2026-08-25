@@ -1,91 +1,71 @@
 package com.example.applicationhome.core.domain.model
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.RestaurantMenu
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.ShoppingCartCheckout
 import com.example.applicationhome.data.data.model.Options
 import com.example.applicationhome.data.data.model.ProfileOptions
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.data.model.Settings
-import java.util.Calendar
+import com.example.applicationhome.data.data.model.SettingsScreens
 
 object ProfileData {
-    val days = (1..31).toList()
-    val months = (1..12).toList()
-    val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-    val years = (1900..currentYear).toList()
-
-    private val profileoptions = listOf(
+    fun profileOptions() = listOf(
         ProfileOptions(
             "Orders",
             "Manage & track",
             Icons.Default.ShoppingCartCheckout,
-            Screens.LastOrdersScreen
+            Screens.LastOrdersScreen.screen
         ),
         ProfileOptions(
             "Notifications",
             null,
             Icons.Default.Notifications,
-            Screens.HomeScreen
+            Screens.Notifications.screen
         ),
         ProfileOptions(
             "Account Center",
             null,
             Icons.Default.Person,
-            Screens.HomeScreen
+            Screens.Profile.screen
         ),
         ProfileOptions(
             "Wishlist",
             "saved items",
             Icons.Default.FavoriteBorder,
-            Screens.Favorite
+            Screens.Favorite.screen
         )
     )
 
-    val settings = listOf(
-        Settings("Language", Icons.Default.Language),
-        Settings("Privacy & Security", Icons.Default.Lock),
-        Settings("Help Center", Icons.Default.Call),
-        Settings("About App", Icons.Default.Info),
-        Settings("Logout", Icons.Default.ExitToApp),
-        Settings("Delete Account", Icons.Default.Delete)
+    fun settings1() = listOf(
+        Settings("Language", Icons.Default.Language, SettingsScreens.Language),
+        Settings("About App", Icons.Default.Info, SettingsScreens.AboutApp),
     )
 
-    fun profileOptions(): List<ProfileOptions>{
-        return profileoptions
-    }
-
-    fun settingsata(): List<Settings>{
-        return settings
-    }
+    fun settings2() = listOf(
+        Settings("Logout", Icons.AutoMirrored.Filled.ExitToApp, SettingsScreens.Logout),
+        Settings("Delete Account", Icons.Default.Delete, SettingsScreens.DeleteAccount)
+    )
 }
 
 object Drawer {
-    private val options = listOf(
-        Options("Home", Icons.Default.Home, Screens.HomeScreen.screen),
+    fun optionsData1() = listOf(
+        Options("Search", Icons.Default.Search, Screens.Search.screen),
+        Options("Cart", Icons.Default.ShoppingCart, Screens.Cart.screen)
+    )
+
+    fun optionsData2() = listOf(
         Options("Profile", Icons.Default.Person, Screens.Profile.screen),
-        Options("Settings", Icons.Default.Settings, Screens.Settings.screen)
+        Options("Notifications", Icons.Default.Notifications, Screens.Notifications.screen),
     )
-    private val menuOptions = listOf(
-        Options("Menu", Icons.Default.RestaurantMenu, Screens.RestaurantScreen.screen)
-    )
-    fun optionsData(): List<Options>{
-        return options
-    }
-    fun menuOptionsData(): List<Options>{
-        return menuOptions
-    }
 }
 
 object TapRowData {

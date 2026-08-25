@@ -118,8 +118,9 @@ fun HomeScreen(
         contentAlignment = Alignment.Center
     ){
         Scaffold(
-            modifier = Modifier.navigationBarsPadding().
-            fillMaxSize(),
+            modifier = Modifier
+                .navigationBarsPadding()
+                .fillMaxSize(),
 
             containerColor = Color.White,
 

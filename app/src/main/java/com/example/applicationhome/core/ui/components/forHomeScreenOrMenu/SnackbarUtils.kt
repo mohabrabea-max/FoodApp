@@ -10,6 +10,8 @@ suspend fun SnackbarHostState.bottomSnackBarWithAction(
     duration : SnackbarDuration = SnackbarDuration.Short,
     onActionClicked : () -> Unit
 ){
+    currentSnackbarData?.dismiss()
+
     val result = this.showSnackbar(
             message = message,
             actionLabel = actionLabel,
@@ -25,10 +27,12 @@ suspend fun SnackbarHostState.bottomSnackBar(
     message : String,
     duration : SnackbarDuration = SnackbarDuration.Short
 ){
-   this.showSnackbar(
+    currentSnackbarData?.dismiss()
+
+    this.showSnackbar(
         message = message,
         duration = duration,
-   )
+    )
 }
 
 // "Item added to cart successfully!"

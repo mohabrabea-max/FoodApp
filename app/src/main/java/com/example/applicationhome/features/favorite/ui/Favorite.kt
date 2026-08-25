@@ -1,7 +1,6 @@
 package com.example.applicationhome.features.favorite.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -40,13 +39,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -77,18 +74,11 @@ fun Favorite(
     drawerState : DrawerState,
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
-    dashboardScreenViewModel : NavHostController,
+    dashboardNavController : NavHostController,
     favoriteViewModel : FavoriteViewModel,
     favoriteListState : LazyGridState
 ){
     val snackBarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-
-    val context = LocalContext.current as? Activity
-    BackHandler(enabled = true) {
-        // ده بيمسح الأبلكيشن من الـ Background ويقفله تماماً
-        context?.finishAffinity()
-    }
 
     var viewImageState by remember { mutableStateOf(false) }
     var imageToView by remember { mutableStateOf("") }
@@ -117,6 +107,12 @@ fun Favorite(
     val count = favoriteFoodCount + favoriteRestaurantsCount + favoriteSnacksCount
 
     val selectedCategoryInFavoriteScreen by favoriteViewModel.selectedCategorieInFavoriteScreen.collectAsStateWithLifecycle()
+
+    BackHandler(enabled = true) {
+        dashboardNavController.navigate(Screens.HomeScreen.screen) {
+            popUpTo(0) { inclusive = true }
+        }
+    }
 
 
     Box(modifier = Modifier.fillMaxSize()){
@@ -275,7 +271,7 @@ fun Favorite(
                     item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
                 }
             }else{
-                EmptyFavoriteScreen(dashboardScreenViewModel)
+                EmptyFavoriteScreen(dashboardNavController)
             }
         }
         SnackbarHost(

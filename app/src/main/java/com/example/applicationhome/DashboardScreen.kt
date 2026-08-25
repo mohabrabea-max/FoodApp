@@ -25,9 +25,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.AssignmentReturn
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.outlined.AssignmentReturn
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.ShoppingCartCheckout
 import androidx.compose.material3.DrawerValue
@@ -51,6 +51,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
@@ -126,12 +127,22 @@ fun DashboardScreen(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet(drawerContainerColor = Color.White,modifier = Modifier.width(drawerWidth)){
+            val isFullyClosed = drawerState.currentValue == DrawerValue.Closed &&
+                    drawerState.targetValue == DrawerValue.Closed
+
+            ModalDrawerSheet(
+                drawerContainerColor = Color.White,
+                modifier = Modifier
+                    .width(drawerWidth)
+                    .graphicsLayer {
+                        alpha = if (isFullyClosed) 0f else 1f
+                    }
+            ){
                 IconButton(
                     onClick = {if(stat) dashboardScreenViewModel.stateFalse() else dashboardScreenViewModel.stateTrue()},
                     modifier = Modifier.align(if(stat) Alignment.End else Alignment.CenterHorizontally))
                 {
-                    Icon(if(stat) Icons.Default.KeyboardArrowLeft else Icons.Default.KeyboardArrowRight, contentDescription = null, tint = Color.Black)
+                    Icon(if(stat) Icons.AutoMirrored.Filled.KeyboardArrowLeft else Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.Black)
                 }
                 //Divider(color = Color.LightGray)
                 Box(
@@ -195,6 +206,7 @@ fun DashboardScreen(
                 }
                 Options(
                     navigationController,
+                    dashboardNavController,
                     drawerState,
                     coroutineScope,
                     dashboardScreenViewModel
@@ -203,7 +215,7 @@ fun DashboardScreen(
         }
     ){
         Scaffold(
-            containerColor = Color.Black,
+            containerColor = Color.White,
             modifier = Modifier.
             fillMaxSize(),
             bottomBar = {
@@ -216,15 +228,15 @@ fun DashboardScreen(
                     contentAlignment = Alignment.BottomCenter
                 ){
                     MyBottomBar(
-                        navigationController,
-                        dashboardNavController,
-                        currentRoute,
-                        dashboardScreenViewModel,
-                        homeListState,
-                        favoriteListState,
-                        settingsListState,
-                        coroutineScope,
-                        { isMenuExpanded = true }
+                        navigationController = navigationController,
+                        dashboardNavController = dashboardNavController,
+                        currentRoute = currentRoute,
+                        dashboardScreenViewModel = dashboardScreenViewModel,
+                        homeListState = homeListState,
+                        favoriteListState = favoriteListState,
+                        settingsListState = settingsListState,
+                        scope = coroutineScope,
+                        profileLongClick = { isMenuExpanded = true }
                     )
 
                     Box(
@@ -250,7 +262,7 @@ fun DashboardScreen(
 
                             DropdownMenuItem(
                                 text = { Text("Returns") },
-                                leadingIcon = { Icon(Icons.Outlined.AssignmentReturn, contentDescription = null) },
+                                leadingIcon = { Icon(Icons.AutoMirrored.Outlined.AssignmentReturn, contentDescription = null) },
                                 onClick = {
                                     isMenuExpanded = false
                                 }
@@ -336,7 +348,7 @@ fun DashboardScreen(
                         drawerState,
                         coroutineScope,
                         navigationController,
-                        userImageViewModel,
+                        dashboardNavController,
                         settingsListState,
                         settingsViewModel
                     )

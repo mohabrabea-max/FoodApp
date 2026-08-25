@@ -1,10 +1,7 @@
 package com.example.applicationhome.features.settings.ui
 
-import android.annotation.SuppressLint
-import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -25,8 +21,8 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -52,46 +47,53 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.core.domain.model.ProfileData
+import com.example.applicationhome.core.domain.model.ProfileData.settings1
+import com.example.applicationhome.core.domain.model.ProfileData.settings2
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.profileAndSetting.UserImage
 import com.example.applicationhome.core.ui.theme.BrownForFont
 import com.example.applicationhome.core.ui.theme.DeepMatteBlack
 import com.example.applicationhome.core.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.core.ui.theme.model.UserImageViewModel
 import com.example.applicationhome.data.data.model.Screens
+import com.example.applicationhome.data.data.model.Settings
+import com.example.applicationhome.data.data.model.SettingsScreens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Settings(
     drawerState : DrawerState,
     coroutineScope : CoroutineScope,
     navigationController : NavHostController,
-    userImageViewModel: UserImageViewModel,
+    dashboardNavController : NavHostController,
     settingsListState : LazyGridState,
     settingsViewModel : SettingsViewModel
 ){
     val userData by settingsViewModel.userData.collectAsStateWithLifecycle()
+    val isLogin by settingsViewModel.isLogin.collectAsStateWithLifecycle()
 
     val description = userData.phonenumber.ifEmpty { userData.email }
 
     val interactionSource = remember { MutableInteractionSource() }
 
     val profileoptions = ProfileData.profileOptions()
-    val context = LocalContext.current as? Activity
+
 
     BackHandler(enabled = true) {
-        // ده بيمسح الأبلكيشن من الـ Background ويقفله تماماً
-        context?.finishAffinity()
+        dashboardNavController.navigate(Screens.HomeScreen.screen) {
+            popUpTo(0) { inclusive = true }
+        }
     }
 
     Scaffold(
-        modifier = Modifier.navigationBarsPadding().fillMaxSize(),
+        modifier = Modifier
+            .navigationBarsPadding()
+            .fillMaxSize(),
+
         topBar = {
-            Column(modifier = Modifier.clip(RoundedCornerShape(30.dp)).shadow(elevation = 3.dp)){
+            Column(modifier = Modifier.shadow(elevation = 3.dp)){
                 MyTopBar(
                     Color.White,
                     modifier = Modifier.fillMaxWidth().height(100.dp),
@@ -119,14 +121,13 @@ fun Settings(
                         }
                     }
                 )
-                Column(
-                    modifier = Modifier.fillMaxWidth().
-                    height(90.dp).
-                    background(Color.LightGray).
-                    clickable (
-                        interactionSource = interactionSource,
-                        indication = null
-                    ){ navigationController.navigate(Screens.Profile.screen) }
+
+                if(isLogin) Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(90.dp)
+                        //.clip(RoundedCornerShape(30.dp))
+                        .background(Color.LightGray)
                 ){
                     Row(
                         modifier = Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp),
@@ -138,9 +139,7 @@ fun Settings(
                             clip(CircleShape),
                             contentAlignment = Alignment.Center
                         ){
-                            UserImage(
-                                userImageViewModel
-                            )
+                            UserImage()
                         }
                         Spacer(modifier = Modifier.width(15.dp))
                         Column(modifier = Modifier.weight(2.5f),horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center){
@@ -161,8 +160,8 @@ fun Settings(
                 }
             }
         }
-    ){
-        Column(modifier = Modifier.statusBarsPadding().background(Color.VeryLightGray).padding(10.dp)){
+    ){ paddingValues ->
+        Column(modifier = Modifier.padding(paddingValues).background(Color.VeryLightGray).padding(horizontal = 10.dp)){
             LazyVerticalGrid(
                 state = settingsListState,
                 modifier = Modifier.fillMaxSize(),
@@ -170,14 +169,18 @@ fun Settings(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 horizontalArrangement = Arrangement.Center
             ){
-                item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(150.dp))}
-                items(profileoptions){item ->
+                item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(15.dp))}
+
+                items(profileoptions){ item ->
                     SettingsOptionsBox(
-                        item,
-                        navigationController
-                    )
+                        item
+                    ){
+                        navigationController.navigate(item.screen)
+                    }
                 }
+
                 item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(5.dp))}
+
                 item(span = { GridItemSpan(2) }){
                     Row(modifier = Modifier.padding(start = 5.dp), horizontalArrangement = Arrangement.Start){
                         Text(
@@ -188,9 +191,21 @@ fun Settings(
                         )
                     }
                 }
+
                 item(span = { GridItemSpan(2) }){
-                    SettingsBox()
+                    SettingsBox(settings1()){  }
                 }
+
+                item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(5.dp))}
+
+                if(isLogin) item(span = { GridItemSpan(2) }){
+                    SettingsBox(settings2()){ if(it == SettingsScreens.Logout) settingsViewModel.logout() }
+                }
+
+                if(!isLogin) item(span = { GridItemSpan(2) }){
+                    SettingsBox(listOf(Settings("LogIn", Icons.AutoMirrored.Filled.Login, SettingsScreens.LogoIn))){ navigationController.navigate(Screens.LoginScreen.screen) }
+                }
+
                 item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(80.dp))}
             }
         }
