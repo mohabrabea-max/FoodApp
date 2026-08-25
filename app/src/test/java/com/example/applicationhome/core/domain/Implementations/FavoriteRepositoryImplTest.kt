@@ -28,6 +28,7 @@ class FavoriteRepositoryImplTest {
     private val workManager = mockk<WorkManager>(relaxed = true)
 
 
+    // *** ---------------------- \\***  Return Items Test  ***// ---------------------- ***
     @Test
     fun favoriteMeals_whenUserDataEmitted_returnsMealsFromDao() = runTest {
         val repository = getFavoriteRepository(backgroundScope)
@@ -59,6 +60,7 @@ class FavoriteRepositoryImplTest {
     }
 
 
+    // *** ---------------------- \\***  Add Items Test  ***// ---------------------- ***
     @Test
     fun addFoodToFavorite_shouldCallDao() = runTest {
         val favoriteMealEntity = FakesFavoriteEntity.fakesMealsFavoriteEntity().first().favoriteInfo!!
@@ -99,6 +101,7 @@ class FavoriteRepositoryImplTest {
     }
 
 
+    // *** ---------------------- \\***  Remove Items Test  ***// ---------------------- ***
     @Test
     fun deleteFoodFromFavorite_shouldCallDaoAndTriggerWorker() = runTest {
         val mealId = FakesFavoriteEntity.fakesMealsFavoriteEntity().first().meal.id
@@ -142,6 +145,7 @@ class FavoriteRepositoryImplTest {
     }
 
 
+    // *** ---------------------- \\***  Add Guest Favorite To User Test  ***// ---------------------- ***
     @Test
     fun addGuestFavoriteToUser_shouldCallAllThreeDaoMethods() = runTest {
         val userId = "aaaaa"
@@ -155,6 +159,7 @@ class FavoriteRepositoryImplTest {
     }
 
 
+    // *** ---------------------- \\***  Remove All Test  ***// ---------------------- ***
     @Test
     fun deleteAllFromFavorite_shouldCallDao() = runTest {
         val repository = getFavoriteRepository(backgroundScope)

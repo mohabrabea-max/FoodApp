@@ -125,15 +125,12 @@ fun Cart(
                         item{Spacer(modifier = Modifier.height(100.dp))}
 
                         items(cartItems) { item ->
-                            if(item != null) {
-                                CartBox(
-                                    item,
-                                    { cartViewModel.plus(item, item.size) },
-                                    { cartViewModel.minus(item, item.size) },
-                                    { cartViewModel.delete(item.mealId, item.size) }
-                                )
-                            }
-
+                            CartBox(
+                                item,
+                                { cartViewModel.plus(item, item.size) },
+                                { cartViewModel.minus(item, item.size) },
+                                { cartViewModel.delete(item.mealId, item.size) }
+                            )
                         }
                         item{
                             PaymentSummaryCartScreen(

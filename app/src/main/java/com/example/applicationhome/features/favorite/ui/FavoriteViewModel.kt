@@ -15,7 +15,6 @@ import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -124,7 +123,7 @@ class FavoriteViewModel @Inject constructor(
 
 
     fun plus(food: CartItemsClass, size : String, cartNavigation : () -> Unit){
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             val userId = userRepository.userData.value.id
             val state = cartUseCase.plus(userId, food, size)
 
@@ -162,7 +161,7 @@ class FavoriteViewModel @Inject constructor(
     }
 
     fun minus(food: CartItemsClass, size : String){
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             val userId = userRepository.userData.value.id
             cartUseCase.minus(userId, food, size)
         }
@@ -173,10 +172,10 @@ class FavoriteViewModel @Inject constructor(
             val newFood = newFoodInCart.value
             val newSize = newFoodInCartSize.value
             val userId = userRepository.userData.value.id
-            val finally = cartUseCase.clearAndStartNewCart(userId, newFoodInCart.value, newFoodInCartSize.value)
+            cartUseCase.clearAllCart(userId)
 
-            if(finally && newFood != null && newSize != null){
-                cartUseCase.updateCount(userId, newFood, newSize, count)
+            if(newFood != null && newSize != null){
+                cartUseCase.plus(userId, newFood, newSize, count)
 
                 sendAddedToCartChannel{ cartNavigation() }
 

@@ -315,7 +315,7 @@ class RestaurantViewModel @Inject constructor(
     fun updateCount(food : CartItemsClass, size : String, newCount : Int, cartNavigation : () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val userId = userRepository.userData.value.id
-            val state = cartUseCase.updateCount(userId, food, size, newCount)
+            val state = cartUseCase.plus(userId, food, size, newCount)
 
             when(state){
                 AddToCartStates.Success -> {
@@ -364,10 +364,10 @@ class RestaurantViewModel @Inject constructor(
             val newFood = newFoodInCart.value
             val newSize = newFoodInCartSize.value
             val userId = userRepository.userData.value.id
-            val finally = cartUseCase.clearAndStartNewCart(userId, newFoodInCart.value, newFoodInCartSize.value)
+            cartUseCase.clearAllCart(userId)
 
-            if(finally && newFood != null && newSize != null){
-                cartUseCase.updateCount(userId, newFood, newSize, count)
+            if(newFood != null && newSize != null){
+                cartUseCase.plus(userId, newFood, newSize, count)
 
                 sendAddedToCartChannel{ cartNavigation() }
 
