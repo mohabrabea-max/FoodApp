@@ -19,3 +19,19 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-dontwarn org.slf4j.impl.StaticLoggerBinder
+
+-keep class com.google.firebase.database.** { *; }
+
+-keepattributes *Annotation*
+-keepclassmembers class * {
+    @com.google.firebase.database.PropertyName <fields>;
+    @com.google.firebase.database.PropertyName <methods>;
+}
+-keepclassmembers class * {
+    @com.google.firebase.database.Exclude <fields>;
+    @com.google.firebase.database.Exclude <methods>;
+}
+
+-keep class com.yourpackage.name.data.remote.firebase.** { *; }

@@ -42,11 +42,11 @@ import com.example.applicationhome.data.local.entity.UserClass
         OffersEntity::class,
         RestaurantCategoryCrossRef::class
     ],
-    version = 62,
+    version = 63,
     exportSchema = false
 )
 
-@TypeConverters(FavoriteConverters::class)
+@TypeConverters(DataConverters::class)
 
 abstract class UsersDatabase : RoomDatabase(){
     abstract val userDao : UsersDao
@@ -54,5 +54,4 @@ abstract class UsersDatabase : RoomDatabase(){
     abstract val favoriteDao : FavoriteDao
     abstract val ordersDao : OrdersDao
     abstract val foodAndRestaurantsDao : FoodAndRestaurantsDao
-
 }

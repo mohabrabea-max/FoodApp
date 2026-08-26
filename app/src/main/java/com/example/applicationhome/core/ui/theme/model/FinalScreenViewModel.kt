@@ -127,7 +127,6 @@ class FinalScreenViewModel @Inject constructor(
                 Pair(network, user)
             }.distinctUntilChanged()
             .collectLatest { (network, user) ->
-                println(user)
                 syncFavorite(user, network)
             }
         }

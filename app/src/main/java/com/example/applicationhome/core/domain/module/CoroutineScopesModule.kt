@@ -1,4 +1,4 @@
-package com.example.applicationhome.domain
+package com.example.applicationhome.core.domain.module
 
 import dagger.Module
 import dagger.Provides

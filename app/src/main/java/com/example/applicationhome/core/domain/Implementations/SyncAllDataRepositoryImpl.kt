@@ -19,7 +19,7 @@ import com.example.applicationhome.data.local.entity.OffersEntity
 import com.example.applicationhome.data.local.entity.RestaurantCategoryCrossRef
 import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.data.remote.FoodAppAPIs
-import com.example.applicationhome.domain.ApplicationScope
+import com.example.applicationhome.core.domain.module.ApplicationScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope

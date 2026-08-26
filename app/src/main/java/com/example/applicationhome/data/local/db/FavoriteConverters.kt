@@ -3,12 +3,13 @@ package com.example.applicationhome.data.local.db
 import androidx.room.TypeConverter
 import com.example.applicationhome.data.data.model.CategoriesInWithTitle
 import com.example.applicationhome.data.data.model.MealSizeDetail
+import com.example.applicationhome.data.data.model.OrderHistoryClass
 import com.example.applicationhome.data.data.model.OrderItemsClass
 import com.example.applicationhome.data.data.model.UserInformationInOrderClass
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class FavoriteConverters{
+class DataConverters{
     private val gson = Gson()
 
 
@@ -16,7 +17,6 @@ class FavoriteConverters{
     fun fromStringList(typeList : List<String>): String?{
         return gson.toJson(typeList)
     }
-
     @TypeConverter
     fun toStringList(json : String?): List<String>? {
         if(json == null) return null
@@ -29,7 +29,6 @@ class FavoriteConverters{
     fun fromCategoriesInWithTitle(categoriesInWithTitle : List<CategoriesInWithTitle>): String? {
         return gson.toJson(categoriesInWithTitle)
     }
-
     @TypeConverter
     fun toCategoriesInWithTitle(json : String?): List<CategoriesInWithTitle>? {
         if(json == null) return null
@@ -82,6 +81,18 @@ class FavoriteConverters{
     fun toOrderItemsClass(json : String?): List<OrderItemsClass>? {
         if(json == null) return null
         val type = object : TypeToken<List<OrderItemsClass>>() {}.type
+        return gson.fromJson(json, type)
+    }
+
+
+    @TypeConverter
+    fun fromOrderHistoryClass(orderHistory : List<OrderHistoryClass>): String? {
+        return gson.toJson(orderHistory)
+    }
+    @TypeConverter
+    fun toOrderHistoryClass(json : String?): List<OrderHistoryClass>?{
+        if(json == null) return null
+        val type = object : TypeToken<List<OrderHistoryClass>>() {}.type
         return gson.fromJson(json, type)
     }
 }

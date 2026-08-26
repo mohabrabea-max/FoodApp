@@ -35,6 +35,12 @@ data class UserInformationInOrderClass(
     val locationAddress : String = ""
 )
 
+data class OrderHistoryClass(
+    val date : String,
+    val state : String,
+    val details : String
+)
+
 data class OrdersClass(
     val date : String = "",
     val state : String = "",
@@ -44,6 +50,7 @@ data class OrdersClass(
     val totalPrice : Double = 0.0,
     val userInformation : UserInformationInOrderClass = UserInformationInOrderClass(),
     val orderItems : List<OrderItemsClass> = emptyList(),
+    val orderHistory : List<OrderHistoryClass>,
     val restaurantName : String = "",
     val restaurantImage : String = "",
     val restaurantId : Int = 0

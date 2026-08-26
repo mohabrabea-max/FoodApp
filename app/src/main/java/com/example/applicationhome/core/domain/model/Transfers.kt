@@ -1,11 +1,15 @@
 package com.example.applicationhome.core.domain.model
 
 import com.example.applicationhome.data.data.model.FoodItem
+import com.example.applicationhome.data.data.model.OrderStates
+import com.example.applicationhome.data.data.model.OrderStatesEnum
+import com.example.applicationhome.data.data.model.OrderUiClass
 import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.data.data.model.Snack
 import com.example.applicationhome.data.data.model.UserClassFireBase
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.MealsEntity
+import com.example.applicationhome.data.local.entity.OrdersDatabaseClass
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
 import com.example.applicationhome.data.local.entity.SnacksEntity
 import com.example.applicationhome.data.local.entity.UserClass
@@ -76,4 +80,22 @@ fun UserClassFireBase.userClassFireBaseToUserDataDatabase(userData : String): Us
         city = this.city,
         address = this.address,
         isActive = true
+    )
+
+fun OrdersDatabaseClass.ordersDatabaseClassToOrderUiClass(): OrderUiClass =
+    OrderUiClass(
+        orderId = this.orderId,
+        userId = this.userId,
+        date = this.date,
+        state = OrderStates.fromEnum(OrderStatesEnum.fromString(this.state)),
+        subtotal = this.subtotal,
+        delivery = this.delivery,
+        service = this.service,
+        totalPrice = this.totalPrice,
+        restaurantName = this.restaurantName,
+        restaurantImage = this.restaurantImage,
+        restaurantId = this.restaurantId,
+        userInformation = this.userInformation,
+        orderItems = this.orderItems,
+        orderHistory = this.orderHistory
     )

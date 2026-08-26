@@ -33,7 +33,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showNetworkSnackBar
@@ -55,7 +54,6 @@ import com.example.applicationhome.features.login.ui.LoginScreen
 import com.example.applicationhome.features.login.ui.LoginViewModel
 import com.example.applicationhome.features.orders.ui.OrderScreenViewModel
 import com.example.applicationhome.features.orders.ui.lastorders.LastOrdersScreen
-import com.example.applicationhome.features.orders.ui.orderscreen.OrderScreen
 import com.example.applicationhome.features.profile.ui.Profile
 import com.example.applicationhome.features.profile.ui.ProfileViewModel
 import com.example.applicationhome.features.restaurantscreen.ui.RestaurantScreen
@@ -226,29 +224,12 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
                 )
             }
 
-            navigation(startDestination = Screens.LastOrdersScreen.screen, route = "Orders"){
-                composable(Screens.LastOrdersScreen.screen){ backStackEntry ->
-                    val parentEntry = remember(backStackEntry){
-                        navigationController.getBackStackEntry("Orders")
-                    }
-
-                    val orderScreenViewModel : OrderScreenViewModel = hiltViewModel(parentEntry)
-
-                    LastOrdersScreen(navigationController, orderScreenViewModel)
-                }
-
-                composable(Screens.OrderScreen.screen){ backStackEntry ->
-                    val parentEntry = remember(backStackEntry){
-                        navigationController.getBackStackEntry("Orders")
-                    }
-
-                    val orderScreenViewModel : OrderScreenViewModel = hiltViewModel(parentEntry)
-
-                    OrderScreen(
-                        orderScreenViewModel,
-                        navigationController
-                    )
-                }
+            composable(Screens.LastOrdersScreen.screen){
+                val orderScreenViewModel : OrderScreenViewModel = hiltViewModel()
+                LastOrdersScreen(
+                    navigationController,
+                    orderScreenViewModel
+                )
             }
 
             composable(Screens.NoInternetScreen.screen){

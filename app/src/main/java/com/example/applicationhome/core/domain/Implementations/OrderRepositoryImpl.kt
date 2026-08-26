@@ -1,54 +1,43 @@
 package com.example.applicationhome.core.domain.Implementations
 
+import com.example.applicationhome.core.domain.model.ordersDatabaseClassToOrderUiClass
 import com.example.applicationhome.core.domain.repository.OrderRepository
-import com.example.applicationhome.core.domain.repository.UserRepository
+import com.example.applicationhome.data.data.model.OrderHistoryClass
+import com.example.applicationhome.data.data.model.OrderStatesEnum
+import com.example.applicationhome.data.data.model.OrderUiClass
 import com.example.applicationhome.data.data.model.OrdersClass
 import com.example.applicationhome.data.local.dao.OrdersDao
 import com.example.applicationhome.data.local.entity.OrdersDatabaseClass
 import com.example.applicationhome.data.remote.FoodAppAPIs
-import com.example.applicationhome.domain.ApplicationScope
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrderRepositoryImpl @Inject constructor(
-    userRepository: UserRepository,
     private val ordersDao : OrdersDao,
-    private val api : FoodAppAPIs,
-    @ApplicationScope private val externalScope: CoroutineScope
+    private val api : FoodAppAPIs
 ): OrderRepository {
-    override val ordersHistory : StateFlow<List<OrdersDatabaseClass>> =
-        userRepository.userData.flatMapLatest { user ->
-            val id = user.id
-            if(id.isNotEmpty()){
-                getOrdersHistoryFromDatabase(id)
-            }else{
-                flowOf(emptyList())
+    override fun getOrdersHistoryFromDatabase(userId : String, state : List<OrderStatesEnum>)
+    : Flow<List<OrderUiClass>> =
+        ordersDao.getOrders(userId, state.map { it.rawValue })
+            .map { item ->
+                item.map {
+                    it.ordersDatabaseClassToOrderUiClass()
+                }
             }
-        }.stateIn(
-            scope = externalScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
-
-
-    override fun getOrdersHistoryFromDatabase(userId : String)
-    : Flow<List<OrdersDatabaseClass>> = ordersDao.getAllOrders(userId)
 
 
     override suspend fun uploadOrderRequest(orderClass : OrdersClass, userId: String): Result<Unit> {
         val current = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val orderHistoryFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH)
         val date = current.format(formatter)
+        val orderHistoryDate = current.format(orderHistoryFormatter)
 
         val orderId = System.currentTimeMillis()
 
@@ -56,7 +45,16 @@ class OrderRepositoryImpl @Inject constructor(
             val response = api.putNewOrder(
                 userId,
                 orderId,
-                orderClass.copy(date = date)
+                orderClass.copy(
+                    date = date,
+                    orderHistory = listOf(
+                        OrderHistoryClass(
+                            date = orderHistoryDate,
+                            state = orderClass.state,
+                            details = ""
+                        )
+                    )
+                )
             )
             if(response.isSuccessful){
                 Result.success(Unit)
@@ -84,21 +82,23 @@ class OrderRepositoryImpl @Inject constructor(
             if(response.isSuccessful && orders != null){
                 val ordersHistory = orders.map { (key, value) ->
                     OrdersDatabaseClass(
-                        key,
-                        userId,
-                        value.date,
-                        value.state,
-                        value.subtotal,
-                        value.delivery,
-                        value.service,
-                        value.totalPrice,
-                        value.restaurantName,
-                        value.restaurantImage,
-                        value.restaurantId,
-                        value.userInformation,
-                        value.orderItems
+                        orderId = key,
+                        userId = userId,
+                        date = value.date,
+                        state = value.state,
+                        subtotal = value.subtotal,
+                        delivery = value.delivery,
+                        service = value.service,
+                        totalPrice = value.totalPrice,
+                        restaurantName = value.restaurantName,
+                        restaurantImage = value.restaurantImage,
+                        restaurantId = value.restaurantId,
+                        userInformation = value.userInformation,
+                        orderItems = value.orderItems,
+                        orderHistory = value.orderHistory
                     )
                 }
+
                 ordersDao.addNewOrders(ordersHistory)
                 "Success"
             }else{

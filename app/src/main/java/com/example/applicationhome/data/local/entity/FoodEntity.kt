@@ -11,6 +11,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.example.applicationhome.data.data.model.CategoriesInWithTitle
 import com.example.applicationhome.data.data.model.MealSizeDetail
+import com.example.applicationhome.data.data.model.OrderHistoryClass
 import com.example.applicationhome.data.data.model.OrderItemsClass
 import com.example.applicationhome.data.data.model.UserInformationInOrderClass
 
@@ -311,5 +312,6 @@ data class OrdersDatabaseClass(
     val restaurantImage : String = "",
     val restaurantId : Int = 0,
     val userInformation : UserInformationInOrderClass = UserInformationInOrderClass(),
-    val orderItems : List<OrderItemsClass> = emptyList()
+    val orderItems : List<OrderItemsClass> = emptyList(),
+    val orderHistory : List<OrderHistoryClass> = emptyList()
 )

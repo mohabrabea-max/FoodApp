@@ -1,4 +1,4 @@
-package com.example.applicationhome.features.orders.ui
+package com.example.applicationhome.features.orders.ui.lastorders
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,10 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,46 +25,45 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import com.example.applicationhome.core.ui.theme.BrandBlue
 import com.example.applicationhome.core.ui.theme.BrownForFont
-import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.data.data.model.Screens
-import com.example.applicationhome.data.local.entity.OrdersDatabaseClass
+import com.example.applicationhome.data.data.model.OrderStatesEnum
+import com.example.applicationhome.data.data.model.OrderUiClass
 
 @Composable
 fun LastOrdersBox(
-    navigationController: NavHostController,
-    orderScreenViewModel : OrderScreenViewModel,
-    order : OrdersDatabaseClass
+    order : OrderUiClass,
+    onOpenOrderScreen : () -> Unit
 ){
-    var color by remember { mutableStateOf(Color.Gray) }
-    if(order.state == "Preparing" || order.state == "Out for Delivery"){
-        color = Color.DarkOrange
-    }else if(order.state == "Delivered"){
-        color = Color.Green
-    }else if(order.state == "Cancelled" || order.state == "Failed"){
-        color = Color.Red
-    }
+    val orderState = order.state.enumState
+    val orderStateTitle = stringResource(order.state.title)
+
+    val color =
+        when(orderState){
+            OrderStatesEnum.PREPARING -> { Color.BrandBlue }
+            OrderStatesEnum.DELIVERING -> { Color.BrandBlue }
+            OrderStatesEnum.DELIVERED -> { Color.Green }
+            OrderStatesEnum.CANCELLED -> { Color.Red }
+        }
 
     val quantity = order.orderItems.sumOf { item -> item.quantity }
+
     Box(
         modifier = Modifier
-            .padding(horizontal = 15.dp)
             .fillMaxWidth()
             .height(160.dp)
-            .clip(shape = RoundedCornerShape(15.dp))
+            .shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(20.dp))
             .clickable {
-                navigationController.navigate(Screens.OrderScreen.screen)
-                orderScreenViewModel.selectorder(order)
+                onOpenOrderScreen()
             }
-            .shadow(elevation = 5.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(15.dp))
             .background(Color.White)
     ){
         Row(
@@ -228,7 +223,7 @@ fun LastOrdersBox(
                             contentAlignment = Alignment.Center
                         ){
                             Text(
-                                text = order.state,
+                                text = orderStateTitle,
                                 fontSize = 10.sp,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = Color.White,

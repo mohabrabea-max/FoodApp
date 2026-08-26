@@ -1,5 +1,6 @@
 package com.example.applicationhome.data.data.model
 
+import androidx.annotation.Keep
 import androidx.paging.compose.LazyPagingItems
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.CategoriesEntity
@@ -11,6 +12,7 @@ import com.example.applicationhome.data.local.entity.SnackWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.UserClass
 import com.google.gson.annotations.SerializedName
 
+@Keep
 data class FoodItem(
     val id : Int = 0,
     val category : String = "ALL",
@@ -25,6 +27,7 @@ data class FoodItem(
     val updatedAt : Long = 0L
 )
 
+@Keep
 data class Snack(
     val id : Int = 0,
     val name : String = "",
@@ -38,6 +41,7 @@ data class Snack(
     val updatedAt : Long = 0L
 )
 
+@Keep
 data class Drink(
     val id : Int,
     val name : String,
@@ -47,6 +51,7 @@ data class Drink(
     val updatedAt : Long = 0L
 )
 
+@Keep
 data class MealSizeDetail(
     val size : String = "",
     val price : Double = 0.0,
@@ -54,12 +59,14 @@ data class MealSizeDetail(
     val snack : Map<Int, MealSnacks> = emptyMap()
 )
 
+@Keep
 data class MealSnacks(
     val size : String = "",
     val name : String = "",
     val image : String = ""
 )
 
+@Keep
 data class Categories(
     val id : Int = 0,
     val name : String = "",
@@ -69,6 +76,7 @@ data class Categories(
     val updatedAt : Long = 0L
 )
 
+@Keep
 data class Offers(
     val restaurantId : Int = 0,
     val id : Int = 0,
@@ -78,6 +86,7 @@ data class Offers(
     val updatedAt : Long = 0L
 )
 
+@Keep
 data class Restaurants(
     val id : Int = 0,
     @SerializedName("types")
@@ -98,6 +107,7 @@ data class Restaurants(
 
 
 
+@Keep
 data class FavoriteClass(
     val id : Int,
     val typ : String,

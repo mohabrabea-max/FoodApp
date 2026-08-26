@@ -7,7 +7,7 @@ import androidx.paging.cachedIn
 import com.example.applicationhome.core.domain.module.MainDispatcher
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
-import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
+import com.example.applicationhome.core.domain.usecase.FavoriteUseCase
 import com.example.applicationhome.data.local.entity.CategoriesEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.OffersEntity
@@ -31,7 +31,7 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val syncAllDataRepository : SyncAllDataRepository,
     userRepository : UserRepository,
-    private val getFavoriteUseCase : GetFavoriteUseCase,
+    private val favoriteUseCase : FavoriteUseCase,
     networkObserver : NetworkObserver,
     @MainDispatcher private val dispatcher : CoroutineDispatcher
 ) : ViewModel(){
@@ -88,13 +88,13 @@ class HomeScreenViewModel @Inject constructor(
 
     fun addRestaurantsFavorite(restaurant: FavoriteRestaurantEntity){
         viewModelScope.launch(dispatcher) {
-            getFavoriteUseCase.addRestaurantsFavorite(restaurant)
+            favoriteUseCase.addRestaurantsFavorite(restaurant)
         }
     }
 
     fun removeRestaurantsFavorite(resId : Int){
         viewModelScope.launch(dispatcher) {
-            getFavoriteUseCase.removeRestaurantsFavorite(resId)
+            favoriteUseCase.removeRestaurantsFavorite(resId)
         }
     }
 }

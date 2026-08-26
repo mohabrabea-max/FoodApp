@@ -2,7 +2,7 @@ package com.example.applicationhome.features.homescreen.ui
 
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
-import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
+import com.example.applicationhome.core.domain.usecase.FavoriteUseCase
 import com.example.applicationhome.data.local.entity.CategoriesEntity
 import com.example.applicationhome.data.remote.NetworkObserver
 import com.example.applicationhome.fakes.FakeRestaurants
@@ -26,7 +26,7 @@ class HomeScreenViewModelTest {
 
     private val syncAllDataRepository = mockk<SyncAllDataRepository>(relaxed = true)
     private val userRepository = mockk<UserRepository>(relaxed = true)
-    private val getFavoriteUseCase = mockk<GetFavoriteUseCase>(relaxed = true)
+    private val getFavoriteUseCase = mockk<FavoriteUseCase>(relaxed = true)
 
     @Before
     fun setUp(){

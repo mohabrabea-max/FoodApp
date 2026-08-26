@@ -11,6 +11,6 @@ interface OrdersDao {
     @Upsert
     suspend fun addNewOrders(orders : List<OrdersDatabaseClass>)
 
-    @Query("SELECT * FROM orders_history WHERE userId =:userId ORDER BY orderId DESC")
-    fun getAllOrders(userId : String) : Flow<List<OrdersDatabaseClass>>
+    @Query("SELECT * FROM orders_history WHERE userId =:userId AND state IN (:states) ORDER BY orderId DESC")
+    fun getOrders(userId : String, states : List<String>) : Flow<List<OrdersDatabaseClass>>
 }

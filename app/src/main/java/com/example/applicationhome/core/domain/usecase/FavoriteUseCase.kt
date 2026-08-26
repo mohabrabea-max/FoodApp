@@ -7,7 +7,7 @@ import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
 import javax.inject.Inject
 
-class GetFavoriteUseCase @Inject constructor(
+class FavoriteUseCase @Inject constructor(
     private val userRepository: UserRepository,
     private val favoriteRepository : FavoriteRepository
 ){

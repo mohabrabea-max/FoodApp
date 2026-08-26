@@ -7,7 +7,7 @@ import com.example.applicationhome.data.local.dao.CartDao
 import com.example.applicationhome.data.local.entity.CartClass
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.remote.FoodAppAPIs
-import com.example.applicationhome.domain.ApplicationScope
+import com.example.applicationhome.core.domain.module.ApplicationScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

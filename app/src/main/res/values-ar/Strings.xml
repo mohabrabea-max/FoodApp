@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Food App</string>
+    <string name="tab_preparing">جار التجهيز</string>
+    <string name="tab_delivering">جار التوصيل</string>
+    <string name="tab_delivered">تم التوصيل</string>
+    <string name="tab_cancelled">تم الإلغاء</string>
+    <string name="orders_history">سجل الطلبات</string>
+    <string name="order_details">تفاصيل الطلب</string>
+</resources>

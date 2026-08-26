@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Food App</string>
+    <string name="tab_preparing">Preparing</string>
+    <string name="tab_delivering">Delivering</string>
+    <string name="tab_delivered">Delivered</string>
+    <string name="tab_cancelled">Cancelled</string>
+    <string name="orders_history">Orders History</string>
+    <string name="order_details">Order details</string>
 </resources>

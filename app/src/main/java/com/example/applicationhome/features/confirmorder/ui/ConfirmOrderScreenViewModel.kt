@@ -17,6 +17,7 @@ import com.example.applicationhome.data.data.model.ConfirmOrderScreens
 import com.example.applicationhome.data.data.model.MapEntryPoint
 import com.example.applicationhome.data.data.model.MapUiState
 import com.example.applicationhome.data.data.model.OrderItemsClass
+import com.example.applicationhome.data.data.model.OrderStatesEnum
 import com.example.applicationhome.data.data.model.OrdersClass
 import com.example.applicationhome.data.data.model.PaymentApiState
 import com.example.applicationhome.data.data.model.PaymentMethod
@@ -446,7 +447,7 @@ class ConfirmOrderScreenViewModel @Inject constructor(
 
             val order = OrdersClass(
                 date = "",
-                state = "Preparing",
+                state = OrderStatesEnum.PREPARING.rawValue,
                 subtotal = subtotal,
                 delivery = delivery,
                 service = service,
@@ -461,6 +462,7 @@ class ConfirmOrderScreenViewModel @Inject constructor(
                     _locationState.value.locationFullName
                 ),
                 orderItems = orderItems,
+                orderHistory = emptyList(),
                 restaurantName = orderInformation.restaurantName,
                 restaurantImage = orderInformation.restaurantImage,
                 restaurantId = orderInformation.restaurantId

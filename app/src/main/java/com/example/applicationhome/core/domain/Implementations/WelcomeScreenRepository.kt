@@ -2,7 +2,7 @@ package com.example.applicationhome.core.domain.Implementations
 
 import com.example.applicationhome.core.domain.repository.WelcomeScreenRepository
 import com.example.applicationhome.data.datastore.DataStoreManager
-import com.example.applicationhome.domain.ApplicationScope
+import com.example.applicationhome.core.domain.module.ApplicationScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

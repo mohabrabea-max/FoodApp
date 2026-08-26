@@ -9,7 +9,7 @@ import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.RestaurantRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
-import com.example.applicationhome.core.domain.usecase.GetFavoriteUseCase
+import com.example.applicationhome.core.domain.usecase.FavoriteUseCase
 import com.example.applicationhome.data.data.model.AddToCartStates
 import com.example.applicationhome.data.data.model.BottomSheetItem
 import com.example.applicationhome.data.data.model.CategoriesInWithTitle
@@ -56,7 +56,7 @@ class RestaurantViewModel @Inject constructor(
     private val restaurantRepository : RestaurantRepository,
     private val userRepository : UserRepository,
     private val cartUseCase : CartUseCase,
-    private val getFavoriteUseCase : GetFavoriteUseCase
+    private val favoriteUseCase : FavoriteUseCase
 ): ViewModel(){
 
     val userData = userRepository.userData
@@ -500,34 +500,34 @@ class RestaurantViewModel @Inject constructor(
 
     fun addMealFavorite(food : FavoriteMealEntity){
         viewModelScope.launch {
-            getFavoriteUseCase.addMealFavorite(food)
+            favoriteUseCase.addMealFavorite(food)
         }
     }
     fun addSnackFavorite(snack : FavoriteSnackEntity){
         viewModelScope.launch {
-            getFavoriteUseCase.addSnackFavorite(snack)
+            favoriteUseCase.addSnackFavorite(snack)
         }
     }
     fun addRestaurantsFavorite(restaurants: FavoriteRestaurantEntity){
         viewModelScope.launch {
-            getFavoriteUseCase.addRestaurantsFavorite(restaurants)
+            favoriteUseCase.addRestaurantsFavorite(restaurants)
         }
     }
 
 
     fun removeMealFavorite(mealId : Int){
         viewModelScope.launch {
-            getFavoriteUseCase.removeMealFavorite(mealId)
+            favoriteUseCase.removeMealFavorite(mealId)
         }
     }
     fun removeSnackFavorite(snackId : Int){
         viewModelScope.launch {
-            getFavoriteUseCase.removeSnackFavorite(snackId)
+            favoriteUseCase.removeSnackFavorite(snackId)
         }
     }
     fun removeRestaurantsFavorite(resId : Int){
         viewModelScope.launch {
-            getFavoriteUseCase.removeRestaurantsFavorite(resId)
+            favoriteUseCase.removeRestaurantsFavorite(resId)
         }
     }
 }
