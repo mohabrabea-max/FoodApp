@@ -40,7 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.core.ui.theme.model.DashboardScreenViewModel
+import com.example.applicationhome.core.ui.components.model.DashboardScreenViewModel
 import com.example.applicationhome.data.data.model.Screens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

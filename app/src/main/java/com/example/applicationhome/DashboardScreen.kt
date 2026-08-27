@@ -70,8 +70,8 @@ import com.example.applicationhome.core.ui.components.Options
 import com.example.applicationhome.core.ui.components.bars.MyBottomBar
 import com.example.applicationhome.core.ui.components.profileAndSetting.UserImage
 import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.core.ui.theme.model.DashboardScreenViewModel
-import com.example.applicationhome.core.ui.theme.model.UserImageViewModel
+import com.example.applicationhome.core.ui.components.model.DashboardScreenViewModel
+import com.example.applicationhome.core.ui.components.model.UserImageViewModel
 import com.example.applicationhome.data.data.model.HomeScreenActions
 import com.example.applicationhome.data.data.model.HomeScreenParameters
 import com.example.applicationhome.data.data.model.HomeUiState

@@ -26,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -40,10 +41,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
+import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
+import com.example.applicationhome.core.ui.components.screens.EmptyScreen
 import com.example.applicationhome.core.ui.theme.DeepMatteBlack
+import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.data.model.OrdersHistoryScreens
 import com.example.applicationhome.features.orders.ui.OrderScreenViewModel
 import com.example.applicationhome.features.orders.ui.orderscreen.OrderScreen
+import com.example.applicationhome.features.shimmers.screens.OrdersHistoryShimmer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -56,12 +61,28 @@ fun LastOrdersScreen(
 ){
     val scope = rememberCoroutineScope()
 
-    val screens = orderScreenViewModel.statesBar
-    val pagerState = rememberPagerState(pageCount = { screens.size })
+    val isNetworkAvailable by orderScreenViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
+
+    val screenState by orderScreenViewModel.screenState.collectAsStateWithLifecycle()
 
     val preparingOrdersHistory by orderScreenViewModel.preparingOrdersHistory.collectAsStateWithLifecycle()
     val deliveredOrdersHistory by orderScreenViewModel.deliveredOrdersHistory.collectAsStateWithLifecycle()
     val cancelledOrdersHistory by orderScreenViewModel.cancelledOrdersHistory.collectAsStateWithLifecycle()
+
+    val screens = orderScreenViewModel.statesBar
+    val initialPage by orderScreenViewModel.initialPage.collectAsStateWithLifecycle()
+    val pagerState = rememberPagerState(initialPage = initialPage,pageCount = { screens.size })
+    LaunchedEffect(initialPage){
+        pagerState.animateScrollToPage(
+            page = initialPage,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioNoBouncy,
+                stiffness = Spring.StiffnessMediumLow
+            )
+        )
+    }
+
+    val actionState by orderScreenViewModel.actionState.collectAsStateWithLifecycle()
 
     val selectedOrder by orderScreenViewModel.selectedOrder.collectAsStateWithLifecycle()
     val correctTimelineStep by orderScreenViewModel.correctTimelineStep.collectAsStateWithLifecycle()
@@ -118,6 +139,8 @@ fun LastOrdersScreen(
                     }
                 )
 
+                NetworkErrorTopBar(isNetworkAvailable = isNetworkAvailable)
+
                 Spacer(modifier = Modifier.height(5.dp))
 
                 OrdersHistoryStatesBar(
@@ -144,7 +167,7 @@ fun LastOrdersScreen(
             state = pagerState,
             beyondViewportPageCount = 2,
             modifier = Modifier.fillMaxSize()
-        ) { page ->
+        ){ page ->
             LazyColumn(
                 modifier = Modifier
                     .padding(horizontal = 15.dp)
@@ -152,50 +175,52 @@ fun LastOrdersScreen(
             ){
                 item{Spacer(modifier = Modifier.height(160.dp))}
 
-                if(
-                    preparingOrdersHistory.isNotEmpty()
-                    || deliveredOrdersHistory.isNotEmpty()
-                    || cancelledOrdersHistory.isNotEmpty()
-                ){
-                    when(screens[page]){
-                        OrdersHistoryScreens.Preparing -> {
-                            if(preparingOrdersHistory.isNotEmpty()){
-                                items(preparingOrdersHistory){ item ->
-                                    Spacer(modifier = Modifier.height(10.dp))
-                                    LastOrdersBox(item){
-                                        orderScreenViewModel.openOrderScreen(item)
+                when(screenState){
+                    HomeUiState.Success, HomeUiState.Offline -> {
+                        when(screens[page]){
+                            OrdersHistoryScreens.Preparing -> {
+                                if(preparingOrdersHistory.isNotEmpty()){
+                                    items(preparingOrdersHistory){ item ->
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        LastOrdersBox(item){
+                                            orderScreenViewModel.openOrderScreen(item)
+                                        }
                                     }
+                                }else{
+                                    item { EmptyScreen(R.string.no_previous_requests) }
                                 }
-                            }else{
+                            }
 
+                            OrdersHistoryScreens.Delivered -> {
+                                if(deliveredOrdersHistory.isNotEmpty()){
+                                    items(deliveredOrdersHistory){ item ->
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        LastOrdersBox(item){
+                                            orderScreenViewModel.openOrderScreen(item)
+                                        }
+                                    }
+                                }else{
+                                    item { EmptyScreen(R.string.no_previous_requests) }
+                                }
+                            }
+
+                            OrdersHistoryScreens.Cancelled -> {
+                                if(cancelledOrdersHistory.isNotEmpty()){
+                                    items(cancelledOrdersHistory){ item ->
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        LastOrdersBox(item){
+                                            orderScreenViewModel.openOrderScreen(item)
+                                        }
+                                    }
+                                }else{
+                                    item { EmptyScreen(R.string.no_previous_requests) }
+                                }
                             }
                         }
+                    }
 
-                        OrdersHistoryScreens.Delivered -> {
-                            if(deliveredOrdersHistory.isNotEmpty()){
-                                items(deliveredOrdersHistory){ item ->
-                                    Spacer(modifier = Modifier.height(10.dp))
-                                    LastOrdersBox(item){
-                                        orderScreenViewModel.openOrderScreen(item)
-                                    }
-                                }
-                            }else{
-
-                            }
-                        }
-
-                        OrdersHistoryScreens.Cancelled -> {
-                            if(cancelledOrdersHistory.isNotEmpty()){
-                                items(cancelledOrdersHistory){ item ->
-                                    Spacer(modifier = Modifier.height(10.dp))
-                                    LastOrdersBox(item){
-                                        orderScreenViewModel.openOrderScreen(item)
-                                    }
-                                }
-                            }else{
-
-                            }
-                        }
+                    HomeUiState.Loading -> {
+                        item { OrdersHistoryShimmer() }
                     }
                 }
 
@@ -207,9 +232,18 @@ fun LastOrdersScreen(
     selectedOrder?.let { item ->
         OrderScreen(
             order = item,
+            isNetworkAvailable = isNetworkAvailable,
             timelineStep = correctTimelineStep,
             animateIn = animateIn,
             animDuration = animDuration,
+            actionState = actionState,
+            onRepurchase = { orderScreenViewModel.repurchaseOrder(item) },
+            onCancel = {
+                orderScreenViewModel.cancelOrder(
+                    orderId = item.orderId,
+                    index = item.orderHistory.size
+                )
+            },
             onCloseOrderScreen = {
                 scope.launch {
                     animateIn.targetState = false

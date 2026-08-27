@@ -8,7 +8,7 @@ import javax.inject.Inject
 class CartUseCase @Inject constructor(
     private val cartRepository : CartRepository
 ){
-    suspend fun plus(userId : String, food: CartItemsClass, size : String, quantityToAdd : Int = 1): AddToCartStates {
+    suspend fun plus(userId : String, food : CartItemsClass, size : String, quantityToAdd : Int = 1): AddToCartStates {
         if(userId.isEmpty()) return AddToCartStates.ErrorInLoginState()
 
         val cartItems = cartRepository.cartItems.value
@@ -40,6 +40,27 @@ class CartUseCase @Inject constructor(
 
         val finalNumber = (cartItem.quantity + quantityToAdd).coerceAtMost(99)
         cartRepository.updateQuantity(userId, food, size, food.priceOfOne, finalNumber)
+
+        return AddToCartStates.Success
+    }
+
+
+    suspend fun addMoreThanOneItem(
+        userId : String,
+        foods : List<CartItemsClass>,
+        resId : Int,
+        resName : String,
+        resImage : String
+    ): AddToCartStates {
+        if(userId.isEmpty()) return AddToCartStates.ErrorInLoginState()
+
+        cartRepository.createNewCartForMoreThanOneItem(
+            userId = userId,
+            foods = foods,
+            resId = resId,
+            resName = resName,
+            resImage = resImage
+        )
 
         return AddToCartStates.Success
     }

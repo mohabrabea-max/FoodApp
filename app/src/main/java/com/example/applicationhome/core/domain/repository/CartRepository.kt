@@ -30,6 +30,14 @@ interface CartRepository {
         number: Int
     ) : String
 
+    suspend fun createNewCartForMoreThanOneItem(
+        userId : String,
+        foods : List<CartItemsClass>,
+        resId : Int,
+        resName : String,
+        resImage : String
+    ): String
+
     suspend fun addMealToCart(
         userId : String,
         food: CartItemsClass,

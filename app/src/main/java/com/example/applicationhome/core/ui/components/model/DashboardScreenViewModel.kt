@@ -1,4 +1,4 @@
-package com.example.applicationhome.core.ui.theme.model
+package com.example.applicationhome.core.ui.components.model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

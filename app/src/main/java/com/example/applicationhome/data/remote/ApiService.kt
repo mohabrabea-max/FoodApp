@@ -30,12 +30,6 @@ interface FoodAppAPIs{
         @Body newData : UserClassFireBase
     ): Response<Unit>
 
-    @PUT("users/{userId}/password.json")
-    suspend fun changePassword(
-        @Path("userId") userId : String,
-        @Body newPassword : String
-    ): Response<Unit>
-
 
     //                              فانكشن بتجيب الوجبات اللي بعد اخر ابديت بس
     @GET("meals.json")
@@ -109,7 +103,14 @@ interface FoodAppAPIs{
         @Path("userId") userId : String,
         @Path("orderId") orderId : Long,
         @Body order : OrdersClass
-    ): Response<OrdersClass>
+    ): Response<Unit>
+
+    @PATCH("orders/{userId}/{orderId}.json")
+    suspend fun cancelOrder(
+        @Path("userId") userId: String,
+        @Path("orderId") orderId: Long,
+        @Body updates : @JvmSuppressWildcards Map<String, Any>
+    ): Response<Unit>
 
     @GET("orders/{userId}.json")
     suspend fun getLastOrders(

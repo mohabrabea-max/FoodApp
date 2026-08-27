@@ -7,4 +7,8 @@
     <string name="tab_cancelled">تم الإلغاء</string>
     <string name="orders_history">سجل الطلبات</string>
     <string name="order_details">تفاصيل الطلب</string>
+    <string name="no_previous_requests">لا توجد طلبات سابقة</string>
+    <string name="repurchase">إعادة الشراء</string>
+    <string name="cancel">إلغاء</string>
+    <string name="cancel_order">إلغاء الطلب</string>
 </resources>

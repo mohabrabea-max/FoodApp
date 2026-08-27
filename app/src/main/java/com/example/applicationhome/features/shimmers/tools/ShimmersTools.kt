@@ -16,12 +16,13 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun TextShimmer(
-    width : Dp = 150.dp
+    width : Dp = 150.dp,
+    height : Dp = 17.dp
 ){
     Box(
         modifier = Modifier
             .width(width)
-            .height(17.dp)
+            .height(height)
             .clip(RoundedCornerShape(7.dp))
             .background(Color.LightGray)
     )

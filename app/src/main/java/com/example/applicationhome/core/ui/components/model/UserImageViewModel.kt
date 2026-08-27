@@ -1,4 +1,4 @@
-package com.example.applicationhome.core.ui.theme.model
+package com.example.applicationhome.core.ui.components.model
 
 import android.net.Uri
 import androidx.compose.runtime.getValue

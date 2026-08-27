@@ -66,3 +66,9 @@ data class TimelineStep(
     val isCompleted : Boolean,
     val isCurrent : Boolean
 )
+
+sealed class RepurchaseOrderStates(val message : String){
+    data object RestaurantIsDeleted : RepurchaseOrderStates("The restaurant no longer exists")
+    data object MealsAreDeleted : RepurchaseOrderStates("Some meals were omitted")
+    data object Success : RepurchaseOrderStates("Success")
+}

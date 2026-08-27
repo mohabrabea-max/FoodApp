@@ -240,14 +240,21 @@ sealed interface AddToCartStates {
     ) : AddToCartStates
 }
 
-enum class CategoryEnum {
-    BURGER,
-    PIZZA,
-    CHICKEN,
-    KOSHARY,
-    GRILL,
-    SNACKS,
-    DRINK
+enum class CategoryEnum(val rawValue : String){
+    BURGER("BURGER"),
+    PIZZA("PIZZA"),
+    CHICKEN("CHICKEN"),
+    KOSHARY("KOSHARY"),
+    GRILL("GRILL"),
+    SNACKS("SNACKS"),
+    DRINK("DRINK"),
+    NOTHING("NOTHING");
+
+    companion object {
+        fun fromString(value : String?): CategoryEnum {
+            return entries.find { it.rawValue.equals(value, ignoreCase = true) } ?: NOTHING
+        }
+    }
 }
 
 data class CategoriesInWithTitle(

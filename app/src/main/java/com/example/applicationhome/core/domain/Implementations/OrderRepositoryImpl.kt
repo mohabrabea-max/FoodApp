@@ -6,22 +6,47 @@ import com.example.applicationhome.data.data.model.OrderHistoryClass
 import com.example.applicationhome.data.data.model.OrderStatesEnum
 import com.example.applicationhome.data.data.model.OrderUiClass
 import com.example.applicationhome.data.data.model.OrdersClass
+import com.example.applicationhome.data.local.dao.FoodAndRestaurantsDao
 import com.example.applicationhome.data.local.dao.OrdersDao
 import com.example.applicationhome.data.local.entity.OrdersDatabaseClass
 import com.example.applicationhome.data.remote.FoodAppAPIs
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.io.IOException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrderRepositoryImpl @Inject constructor(
     private val ordersDao : OrdersDao,
+    private val foodAndRestaurantsDao : FoodAndRestaurantsDao,
     private val api : FoodAppAPIs
 ): OrderRepository {
+    private suspend fun <T> retryLocally(
+        times : Int = 3,
+        initialDelay : Long = 1500,
+        block : suspend  () -> T
+    ): T {
+        var currentDelay = initialDelay
+
+        repeat(times - 1){
+            try {
+                return block()
+            } catch (e: Exception) {
+                if(e is CancellationException) throw e
+                delay(currentDelay.milliseconds)
+                currentDelay *= 2
+            }
+        }
+        return block()
+    }
+
     override fun getOrdersHistoryFromDatabase(userId : String, state : List<OrderStatesEnum>)
     : Flow<List<OrderUiClass>> =
         ordersDao.getOrders(userId, state.map { it.rawValue })
@@ -41,7 +66,7 @@ class OrderRepositoryImpl @Inject constructor(
 
         val orderId = System.currentTimeMillis()
 
-        return try {
+        val result = retryLocally{
             val response = api.putNewOrder(
                 userId,
                 orderId,
@@ -69,9 +94,41 @@ class OrderRepositoryImpl @Inject constructor(
                 }
                 Result.failure(Exception(errorMessage))
             }
+        }
+        return result
+    }
 
-        } catch (e : Exception){
-            Result.failure(e)
+    override suspend fun cancelOrder(
+        userId : String,
+        orderId : Long,
+        index : Int
+    ): Result<Unit> = runCatching {
+        val current = LocalDateTime.now()
+        val orderHistoryFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH)
+        val orderHistoryDate = current.format(orderHistoryFormatter)
+
+        retryLocally {
+            val cancelState = OrderHistoryClass(
+                date = orderHistoryDate,
+                state = OrderStatesEnum.CANCELLED.rawValue,
+                details = "You cancelled your order on $orderHistoryDate"
+            )
+            val updates = mapOf(
+                "state" to OrderStatesEnum.CANCELLED.rawValue,
+                "orderHistory/$index" to cancelState
+            )
+
+            val response = api.cancelOrder(
+                userId = userId,
+                orderId = orderId,
+                updates = updates
+            )
+
+            if(response.isSuccessful){
+                Unit
+            }else{
+                throw IOException("Server Error code: ${response.code()}")
+            }
         }
     }
 
@@ -115,5 +172,32 @@ class OrderRepositoryImpl @Inject constructor(
             E.printStackTrace()
             "Network error"
         }
+    }
+
+    override suspend fun checkAreMealsDeleted(
+        mealsIds : List<Int>,
+        snacksIds : List<Int>
+    ): Boolean {
+        val distinctMeals = mealsIds.distinct()
+        val distinctSnacks = snacksIds.distinct()
+
+        return foodAndRestaurantsDao.checkAll(
+            mealsIds = distinctMeals,
+            snacksIds = distinctSnacks
+        )
+    }
+
+    override suspend fun checkIsRestaurantDeleted(resId : Int): Boolean {
+        return foodAndRestaurantsDao.checkAreRestaurantsDeleted(resId)
+    }
+
+    override suspend fun getRestaurantImage(resId : Int): String{
+        return foodAndRestaurantsDao.getRestaurantImage(resId)
+    }
+    override suspend fun getMealsImages(ids : List<Int>): Map<Int, String?>{
+        return foodAndRestaurantsDao.getMealsImages(ids)
+    }
+    override suspend fun getSnacksImages(ids : List<Int>): Map<Int, String?>{
+        return foodAndRestaurantsDao.getSnacksImages(ids)
     }
 }

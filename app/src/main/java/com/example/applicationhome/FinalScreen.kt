@@ -37,9 +37,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showNetworkSnackBar
 import com.example.applicationhome.core.ui.theme.MatteBlack
-import com.example.applicationhome.core.ui.theme.model.FinalScreenViewModel
-import com.example.applicationhome.core.ui.theme.model.UserImageViewModel
-import com.example.applicationhome.core.ui.theme.screens.NoInternetScreen
+import com.example.applicationhome.core.ui.components.model.FinalScreenViewModel
+import com.example.applicationhome.core.ui.components.model.UserImageViewModel
+import com.example.applicationhome.core.ui.components.screens.NoInternetScreen
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.features.Notifications.Notifications
 import com.example.applicationhome.features.WelcomeScreen.Ui.WelcomeScreen

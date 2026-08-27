@@ -1,6 +1,7 @@
 package com.example.applicationhome.core.domain.model
 
 import com.example.applicationhome.data.data.model.FoodItem
+import com.example.applicationhome.data.data.model.OrderItemsClass
 import com.example.applicationhome.data.data.model.OrderStates
 import com.example.applicationhome.data.data.model.OrderStatesEnum
 import com.example.applicationhome.data.data.model.OrderUiClass
@@ -98,4 +99,20 @@ fun OrdersDatabaseClass.ordersDatabaseClassToOrderUiClass(): OrderUiClass =
         userInformation = this.userInformation,
         orderItems = this.orderItems,
         orderHistory = this.orderHistory
+    )
+
+
+fun OrderItemsClass.orderItemsClassToCartItemsClass(userId : String, resId : Int, image : String): CartItemsClass =
+    CartItemsClass(
+        userId = userId,
+        mealKey = "${this.mealId}_${this.size}",
+        mealId = this.mealId,
+        name = this.mealName,
+        type = this.type,
+        size = this.size,
+        quantity = this.quantity,
+        priceOfOne = this.price,
+        totalPrice = this.price * this.quantity,
+        image = image,
+        restaurantId = resId
     )

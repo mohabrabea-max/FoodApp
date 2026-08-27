@@ -2,6 +2,7 @@ package com.example.applicationhome.data.local.dao
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
+import androidx.room.MapColumn
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
@@ -105,6 +106,16 @@ interface FoodAndRestaurantsDao {
     fun getRestaurantOffersFromDatabase(resId : Int): Flow<List<OffersEntity>>
 
 
+    @Query("SELECT image FROM restaurants_entity WHERE id = :resId")
+    suspend fun getRestaurantImage(resId : Int): String
+
+    @Query("SELECT id,image FROM meals_entity WHERE id IN (:ids)")
+    suspend fun getMealsImages(ids : List<Int>): Map<@MapColumn(columnName = "id")Int, @MapColumn(columnName = "image")String?>
+
+    @Query("SELECT id,image FROM snacks_entity WHERE id IN (:ids)")
+    suspend fun getSnacksImages(ids : List<Int>): Map<@MapColumn(columnName = "id")Int, @MapColumn(columnName = "image")String?>
+
+
     //----------------------------------------------------------------\\ Search //----------------------------------------------------------------
 
     @Query("""
@@ -140,4 +151,28 @@ interface FoodAndRestaurantsDao {
 
     @Query("DELETE FROM search_history WHERE title = :searchTitle")
     suspend fun deleteFromSearchHistory(searchTitle : String)
+
+
+    //----------------------------------------------------------------\\ Checking //----------------------------------------------------------------
+
+    @Query("SELECT id FROM meals_entity WHERE id IN (:ids)")
+    suspend fun checkAreMealsDeleted(ids : List<Int>): List<Int>
+
+    @Query("SELECT id FROM snacks_entity WHERE id IN (:ids)")
+    suspend fun checkAreSnacksDeleted(ids : List<Int>): List<Int>
+
+    @Query("SELECT EXISTS(SELECT 1 FROM restaurants_entity WHERE id = :resId)")
+    suspend fun checkAreRestaurantsDeleted(resId : Int): Boolean
+
+    @Transaction
+    suspend fun checkAll(
+        mealsIds : List<Int>,
+        snacksIds : List<Int>
+    ): Boolean {
+        val meals = checkAreMealsDeleted(mealsIds)
+        val snacks = checkAreSnacksDeleted(snacksIds)
+
+        return meals.size == mealsIds.size &&
+                snacks.size == snacksIds.size
+    }
 }

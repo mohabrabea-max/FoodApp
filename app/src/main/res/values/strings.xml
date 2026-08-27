@@ -6,4 +6,8 @@
     <string name="tab_cancelled">Cancelled</string>
     <string name="orders_history">Orders History</string>
     <string name="order_details">Order details</string>
+    <string name="no_previous_requests">No previous requests</string>
+    <string name="repurchase">Repurchase</string>
+    <string name="cancel">Cancel</string>
+    <string name="cancel_order">Cancel order</string>
 </resources>

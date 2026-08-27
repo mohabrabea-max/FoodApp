@@ -147,3 +147,37 @@ fun TextInSearchShimmer(){
         }
     }
 }
+
+@Composable
+fun OrdersShimmer(
+    height : Int = 150,
+    StringNumber : Int = 4
+){
+    val SquareShimmerSize = (height / 1.6).dp
+    val Spacer = (height / 9).dp
+
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 15.dp)
+            .height(height.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        SquareShimmer(size = SquareShimmerSize)
+
+        Spacer(modifier = Modifier.width(Spacer))
+
+        Column(
+            modifier = Modifier.fillMaxHeight().padding(vertical = 20.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.Start
+        ){
+            var width = 170.dp
+            repeat(StringNumber){
+                TextShimmer(width = width, height = 15.dp)
+                width -= width/3
+            }
+        }
+    }
+}

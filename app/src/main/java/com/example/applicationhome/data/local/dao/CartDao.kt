@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import com.example.applicationhome.data.local.entity.CartClass
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +22,9 @@ interface CartDao {            // دا الجزء اللي بينفذ عمليا
 
     @Query("UPDATE cart_items SET quantity = :newQuantity, totalPrice = :newTotalPrice WHERE userId = :userId AND mealKey = :mealkey")
     suspend fun updateCartItem(newQuantity: Int, newTotalPrice : Double, userId : String, mealkey : String)
+
+    @Upsert
+    suspend fun updateMoreThanOneCartItem(foods : List<CartItemsClass>)
 
     @Query("DELETE FROM cart_items WHERE userId = :userId AND mealKey = :mealkey")
     suspend fun deleteItemFromCart(mealkey : String, userId : String)
