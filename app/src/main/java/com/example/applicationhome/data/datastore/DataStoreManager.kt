@@ -12,6 +12,7 @@ import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.IS_FIRST_OPEN
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.MEALS_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.OFFERS_LAST_SYNC
+import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.ORDERS_HISTORY_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.RESTAURANTS_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.SNACKS_LAST_SYNC
 import dagger.Module
@@ -35,6 +36,7 @@ class DataStoreManager @Inject constructor(
         val RESTAURANTS_LAST_SYNC = longPreferencesKey("restaurants_last_sync")
         val CATEGORIES_LAST_SYNC = longPreferencesKey("categories_last_sync")
         val OFFERS_LAST_SYNC = longPreferencesKey("offers_last_sync")
+        val ORDERS_HISTORY_LAST_SYNC = longPreferencesKey("orders_history_last_sync")
         val IS_FIRST_OPEN = booleanPreferencesKey("is_first_open")
     }
 
@@ -62,6 +64,11 @@ class DataStoreManager @Inject constructor(
     val offersLastSyncTimeFlow : Flow<Long?> = getSyncTime(OFFERS_LAST_SYNC)
     suspend fun updateOffersSyncTime(timestamp: Long){
         saveLastSyncTime(OFFERS_LAST_SYNC, timestamp)
+    }
+
+    val ordersHistoryLastSyncTimeFlow : Flow<Long?> = getSyncTime(ORDERS_HISTORY_LAST_SYNC)
+    suspend fun updateOrdersHistorySyncTime(timestamp: Long){
+        saveLastSyncTime(ORDERS_HISTORY_LAST_SYNC, timestamp)
     }
 
     val isFirstTimeToOpenApp : Flow<Boolean?> = getBoolean(IS_FIRST_OPEN)

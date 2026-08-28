@@ -114,6 +114,8 @@ interface FoodAppAPIs{
 
     @GET("orders/{userId}.json")
     suspend fun getLastOrders(
-        @Path("userId") userId : String
+        @Path("userId") userId : String,
+        @Query("orderBy") orderBy : String = "\"updatedAt\"",
+        @Query("startAt") lastSyncTimestamp : Long,
     ): Response<Map<Long, OrdersClass>>
 }

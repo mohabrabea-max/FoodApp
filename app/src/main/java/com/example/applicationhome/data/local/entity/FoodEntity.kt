@@ -313,5 +313,6 @@ data class OrdersDatabaseClass(
     val restaurantId : Int = 0,
     val userInformation : UserInformationInOrderClass = UserInformationInOrderClass(),
     val orderItems : List<OrderItemsClass> = emptyList(),
-    val orderHistory : List<OrderHistoryClass> = emptyList()
+    val orderHistory : List<OrderHistoryClass> = emptyList(),
+    val updatedAt : Long = 0L
 )

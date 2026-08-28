@@ -98,7 +98,8 @@ fun OrdersDatabaseClass.ordersDatabaseClassToOrderUiClass(): OrderUiClass =
         restaurantId = this.restaurantId,
         userInformation = this.userInformation,
         orderItems = this.orderItems,
-        orderHistory = this.orderHistory
+        orderHistory = this.orderHistory,
+        updatedAt = this.updatedAt
     )
 
 

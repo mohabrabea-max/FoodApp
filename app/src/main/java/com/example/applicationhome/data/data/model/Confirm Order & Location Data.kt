@@ -53,7 +53,8 @@ data class OrdersClass(
     val orderHistory : List<OrderHistoryClass>,
     val restaurantName : String = "",
     val restaurantImage : String = "",
-    val restaurantId : Int = 0
+    val restaurantId : Int = 0,
+    val updatedAt : Long = 0L
 )
 
 sealed interface ActionsStates{

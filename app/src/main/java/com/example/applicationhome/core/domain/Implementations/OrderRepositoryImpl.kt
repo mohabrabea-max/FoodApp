@@ -2,10 +2,12 @@ package com.example.applicationhome.core.domain.Implementations
 
 import com.example.applicationhome.core.domain.model.ordersDatabaseClassToOrderUiClass
 import com.example.applicationhome.core.domain.repository.OrderRepository
+import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.data.model.OrderHistoryClass
 import com.example.applicationhome.data.data.model.OrderStatesEnum
 import com.example.applicationhome.data.data.model.OrderUiClass
 import com.example.applicationhome.data.data.model.OrdersClass
+import com.example.applicationhome.data.datastore.DataStoreManager
 import com.example.applicationhome.data.local.dao.FoodAndRestaurantsDao
 import com.example.applicationhome.data.local.dao.OrdersDao
 import com.example.applicationhome.data.local.entity.OrdersDatabaseClass
@@ -14,6 +16,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 import java.time.LocalDateTime
@@ -26,6 +29,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class OrderRepositoryImpl @Inject constructor(
     private val ordersDao : OrdersDao,
     private val foodAndRestaurantsDao : FoodAndRestaurantsDao,
+    private val dataStoreManager : DataStoreManager,
     private val api : FoodAppAPIs
 ): OrderRepository {
     private suspend fun <T> retryLocally(
@@ -78,7 +82,8 @@ class OrderRepositoryImpl @Inject constructor(
                             state = orderClass.state,
                             details = ""
                         )
-                    )
+                    ),
+                    updatedAt = orderId
                 )
             )
             if(response.isSuccessful){
@@ -107,6 +112,8 @@ class OrderRepositoryImpl @Inject constructor(
         val orderHistoryFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH)
         val orderHistoryDate = current.format(orderHistoryFormatter)
 
+        val newUpdateTime = System.currentTimeMillis()
+
         retryLocally {
             val cancelState = OrderHistoryClass(
                 date = orderHistoryDate,
@@ -115,7 +122,8 @@ class OrderRepositoryImpl @Inject constructor(
             )
             val updates = mapOf(
                 "state" to OrderStatesEnum.CANCELLED.rawValue,
-                "orderHistory/$index" to cancelState
+                "orderHistory/$index" to cancelState,
+                "updatedAt" to newUpdateTime
             )
 
             val response = api.cancelOrder(
@@ -132,10 +140,16 @@ class OrderRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getOrders(userId: String) : String{
+    override suspend fun getOrders(userId: String) : HomeUiState {
         return try {
-            val response = api.getLastOrders(userId)
+            val lastSyncTimestamp = dataStoreManager.ordersHistoryLastSyncTimeFlow.firstOrNull() ?: 0L
+
+            val response = api.getLastOrders(
+                userId = userId,
+                lastSyncTimestamp = lastSyncTimestamp
+            )
             val orders = response.body()
+
             if(response.isSuccessful && orders != null){
                 val ordersHistory = orders.map { (key, value) ->
                     OrdersDatabaseClass(
@@ -152,12 +166,17 @@ class OrderRepositoryImpl @Inject constructor(
                         restaurantId = value.restaurantId,
                         userInformation = value.userInformation,
                         orderItems = value.orderItems,
-                        orderHistory = value.orderHistory
+                        orderHistory = value.orderHistory,
+                        updatedAt = value.updatedAt
                     )
                 }
 
                 ordersDao.addNewOrders(ordersHistory)
-                "Success"
+
+                val newUpdateTime = ordersHistory.maxOfOrNull { it.updatedAt }?: lastSyncTimestamp
+                dataStoreManager.updateOrdersHistorySyncTime(newUpdateTime)
+
+                HomeUiState.Success
             }else{
                 val errorCode = response.code()
 
@@ -167,10 +186,10 @@ class OrderRepositoryImpl @Inject constructor(
                     in 500..599 -> "Server down ($errorCode)"
                     else -> "HTTP Error: $errorCode"
                 }
+                HomeUiState.Offline
             }
-        } catch (E : Exception){
-            E.printStackTrace()
-            "Network error"
+        } catch (e : Exception){
+            HomeUiState.Offline
         }
     }
 

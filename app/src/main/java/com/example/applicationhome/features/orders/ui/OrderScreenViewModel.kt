@@ -185,11 +185,13 @@ class OrderScreenViewModel @Inject constructor(
 
             val id = userData.value.id
             if(id.isNotEmpty()){
-                orderRepository.getOrders(id)
+                val result = orderRepository.getOrders(id)
+                delay(200.milliseconds)
+                selectInitialPage()
+                _screenState.value = result
+            }else{
+                _screenState.value = HomeUiState.Success
             }
-            delay(200.milliseconds)
-            selectInitialPage()
-            _screenState.value = HomeUiState.Success
         }
     }
 

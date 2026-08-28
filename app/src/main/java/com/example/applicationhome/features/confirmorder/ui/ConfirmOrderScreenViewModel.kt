@@ -465,7 +465,7 @@ class ConfirmOrderScreenViewModel @Inject constructor(
                 orderHistory = emptyList(),
                 restaurantName = orderInformation.restaurantName,
                 restaurantImage = orderInformation.restaurantImage,
-                restaurantId = orderInformation.restaurantId
+                restaurantId = orderInformation.restaurantId,
             )
 
             _confirmOrderState.value = ActionsStates.Loading
