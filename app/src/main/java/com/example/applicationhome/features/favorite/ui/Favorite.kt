@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -299,31 +300,32 @@ fun Favorite(
         when(errorInCart){
             is AddToCartStates.ErrorInCartRestaurant -> {
                 AlertDialogMessage(
-                    (errorInCart as AddToCartStates.ErrorInCartRestaurant).title,
-                    (errorInCart as AddToCartStates.ErrorInCartRestaurant).message,
-                    "Start",
-                    {
+                    title = stringResource((errorInCart as AddToCartStates.ErrorInCartRestaurant).title),
+                    content = stringResource((errorInCart as AddToCartStates.ErrorInCartRestaurant).message) +
+                            (errorInCart as AddToCartStates.ErrorInCartRestaurant).restaurantName,
+                    confirmButtonText = stringResource(R.string.start),
+                    confirmButton = {
                         favoriteViewModel.clearAndStartNewCart(1){
                             navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
                         }
                         favoriteViewModel.alertDialogFalse()
                     },
-                    "Cancel",
-                    { favoriteViewModel.alertDialogFalse() }
+                    dismissButtonText = stringResource(R.string.cancel),
+                    dismissButton = { favoriteViewModel.alertDialogFalse() }
                 )
             }
 
             is AddToCartStates.ErrorInLoginState -> {
                 AlertDialogMessage(
-                    (errorInCart as AddToCartStates.ErrorInLoginState).title,
-                    (errorInCart as AddToCartStates.ErrorInLoginState).message,
-                    "Sign in",
-                    {
+                    title = stringResource((errorInCart as AddToCartStates.ErrorInLoginState).title),
+                    content = stringResource((errorInCart as AddToCartStates.ErrorInLoginState).message),
+                    confirmButtonText = stringResource(R.string.sign_in),
+                    confirmButton = {
                         navigationController.navigate(Screens.LoginScreen.screen)
                         favoriteViewModel.alertDialogFalse()
                     },
-                    "Cancel",
-                    { favoriteViewModel.alertDialogFalse() }
+                    dismissButtonText = stringResource(R.string.cancel),
+                    dismissButton = { favoriteViewModel.alertDialogFalse() }
                 )
             }
 

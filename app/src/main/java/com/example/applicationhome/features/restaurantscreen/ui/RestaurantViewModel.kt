@@ -288,10 +288,9 @@ class RestaurantViewModel @Inject constructor(
                 is AddToCartStates.ErrorInCartRestaurant -> {
                     alertDialogTrue(
                         AddToCartStates.ErrorInCartRestaurant(
-                            title = "Start a new cart?",
-                            message = "A new order will clear your cart with '${cartInformation.value?.restaurantName}'",
-                            state.food,
-                            state.size
+                            restaurantName = " '${cartInformation.value?.restaurantName}'",
+                            food = state.food,
+                            size = state.size
                         )
                     )
 
@@ -301,10 +300,7 @@ class RestaurantViewModel @Inject constructor(
 
                 is AddToCartStates.ErrorInLoginState -> {
                     alertDialogTrue(
-                        AddToCartStates.ErrorInLoginState(
-                            title = "Sign in required!",
-                            message = "Please sign in or create an account to add items to your cart and proceed with your order."
-                        )
+                        AddToCartStates.ErrorInLoginState()
                     )
                 }
 
@@ -328,10 +324,9 @@ class RestaurantViewModel @Inject constructor(
                 is AddToCartStates.ErrorInCartRestaurant -> {
                     alertDialogTrue(
                         AddToCartStates.ErrorInCartRestaurant(
-                            title = "Start a new cart?",
-                            message = "A new order will clear your cart with '${cartInformation.value?.restaurantName}'",
-                            state.food,
-                            state.size
+                            restaurantName = " '${cartInformation.value?.restaurantName}'",
+                            food = state.food,
+                            size = state.size
                         )
                     )
 
@@ -341,10 +336,7 @@ class RestaurantViewModel @Inject constructor(
 
                 is AddToCartStates.ErrorInLoginState -> {
                     alertDialogTrue(
-                        AddToCartStates.ErrorInLoginState(
-                            title = "Sign in required!",
-                            message = "Please sign in or create an account to add items to your cart and proceed with your order."
-                        )
+                        AddToCartStates.ErrorInLoginState()
                     )
                 }
 

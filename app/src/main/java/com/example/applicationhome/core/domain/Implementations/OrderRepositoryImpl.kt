@@ -181,14 +181,36 @@ class OrderRepositoryImpl @Inject constructor(
         val distinctMeals = mealsIds.distinct()
         val distinctSnacks = snacksIds.distinct()
 
-        return foodAndRestaurantsDao.checkAll(
+        val result = foodAndRestaurantsDao.checkAll(
             mealsIds = distinctMeals,
             snacksIds = distinctSnacks
         )
+        val meals = result.first
+        val snacks = result.second
+
+        return meals.size != distinctMeals.size ||
+                snacks.size != distinctSnacks.size
     }
 
-    override suspend fun checkIsRestaurantDeleted(resId : Int): Boolean {
-        return foodAndRestaurantsDao.checkAreRestaurantsDeleted(resId)
+    override suspend fun filterOrderItems(
+        mealsIds : List<Int>,
+        snacksIds : List<Int>
+    ): List<Int> {
+        val distinctMeals = mealsIds.distinct()
+        val distinctSnacks = snacksIds.distinct()
+
+        val result = foodAndRestaurantsDao.checkAll(
+            mealsIds = distinctMeals,
+            snacksIds = distinctSnacks
+        )
+
+        val currentList = result.first + result.second
+
+        return currentList
+    }
+
+    override suspend fun isRestaurantExist(resId : Int): Boolean {
+        return foodAndRestaurantsDao.isRestaurantExist(resId)
     }
 
     override suspend fun getRestaurantImage(resId : Int): String{

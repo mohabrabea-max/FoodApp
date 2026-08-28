@@ -29,22 +29,21 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 
-//@Preview(showBackground = true, widthDp = 400, heightDp = 600)
 @Composable
 fun AlertDialogMessage(
     title : String,
     content : String,
     confirmButtonText : String,
     confirmButton : () -> Unit,
-    dismissButtonText : String,
-    dismissButton : () -> Unit,
+    dismissButtonText : String? = null,
+    dismissButton : (() -> Unit)? = null,
 ){
     Dialog(
-        onDismissRequest = { dismissButton() },
+        onDismissRequest = { if(dismissButton != null) dismissButton() else confirmButton() },
         properties = DialogProperties(
             usePlatformDefaultWidth = false // عشان يفرش في الجناب
         )
-    ) {
+    ){
         Card(
             modifier = Modifier.
             fillMaxWidth().
@@ -69,19 +68,23 @@ fun AlertDialogMessage(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Button(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(40.dp),
-                        onClick = { dismissButton() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                        shape = CircleShape,
-                        border = BorderStroke(width = 0.5.dp, color = Color.LightGray)
-                    ){
-                        Text(text = dismissButtonText, color = Color.Black)
+                ){
+                    if(dismissButtonText != null && dismissButton != null){
+                        Button(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(40.dp),
+                            onClick = { dismissButton() },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                            shape = CircleShape,
+                            border = BorderStroke(width = 0.5.dp, color = Color.LightGray)
+                        ){
+                            Text(text = dismissButtonText, color = Color.Black)
+                        }
+
+                        Spacer(modifier = Modifier.width(10.dp))
                     }
-                    Spacer(modifier = Modifier.width(10.dp))
+
                     Button(
                         modifier = Modifier
                             .weight(1f)

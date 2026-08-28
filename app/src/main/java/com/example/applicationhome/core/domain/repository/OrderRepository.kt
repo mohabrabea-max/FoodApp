@@ -11,7 +11,11 @@ interface OrderRepository {
     suspend fun cancelOrder(userId : String, orderId : Long, index : Int): Result<Unit>
     suspend fun getOrders(userId: String) : String
     suspend fun checkAreMealsDeleted(mealsIds : List<Int>, snacksIds : List<Int>): Boolean
-    suspend fun checkIsRestaurantDeleted(resId : Int): Boolean
+    suspend fun filterOrderItems(
+        mealsIds : List<Int>,
+        snacksIds : List<Int>
+    ): List<Int>
+    suspend fun isRestaurantExist(resId : Int): Boolean
     suspend fun getRestaurantImage(resId : Int): String
     suspend fun getMealsImages(ids : List<Int>): Map<Int, String?>
     suspend fun getSnacksImages(ids : List<Int>): Map<Int, String?>

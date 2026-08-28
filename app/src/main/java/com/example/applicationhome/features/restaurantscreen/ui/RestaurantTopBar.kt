@@ -29,8 +29,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.bars.RestaurantScreenTopBar
 import com.example.applicationhome.core.ui.components.designsystem.TopBarButtons
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
@@ -103,7 +105,7 @@ fun RestaurantTopBar(
                             modifier = Modifier.padding(start = 8.dp)
                         )
                         if (searchSize > 1) Text(
-                            text = "Search",
+                            text = stringResource(R.string.search),
                             softWrap = false,
                             color = Color.Black,
                             fontSize = 18.sp,

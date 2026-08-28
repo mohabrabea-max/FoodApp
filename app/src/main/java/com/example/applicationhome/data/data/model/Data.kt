@@ -1,7 +1,9 @@
 package com.example.applicationhome.data.data.model
 
 import androidx.annotation.Keep
+import androidx.annotation.StringRes
 import androidx.paging.compose.LazyPagingItems
+import com.example.applicationhome.R
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.CategoriesEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
@@ -231,10 +233,14 @@ sealed interface ShowSnackBarEvent {
 sealed interface AddToCartStates {
     data object Idle : AddToCartStates
     data object Success : AddToCartStates
-    data class ErrorInLoginState(val title : String = "", val message : String = "") : AddToCartStates
+    data class ErrorInLoginState(
+        @StringRes val title : Int = R.string.sign_in_required,
+        @StringRes val message : Int = R.string.please_sign_in_or_create_an_account_to_add_items_to_your_cart_and_proceed_with_your_order
+    ) : AddToCartStates
     data class ErrorInCartRestaurant(
-        val title : String = "",
-        val message : String = "",
+        @StringRes val title : Int = R.string.start_a_new_cart,
+        val restaurantName : String = "",
+        @StringRes val message : Int = R.string.a_new_order_will_clear_your_cart_with,
         val food : CartItemsClass = CartItemsClass(),
         val size : String = ""
     ) : AddToCartStates

@@ -10,4 +10,26 @@
     <string name="repurchase">Repurchase</string>
     <string name="cancel">Cancel</string>
     <string name="cancel_order">Cancel order</string>
+    <string name="the_restaurant_no_longer_exists">The restaurant no longer exists</string>
+    <string name="some_meals_were_omitted">Some meals were omitted</string>
+    <string name="the_meals_have_been_added_to_the_shopping_cart">The meals have been added to the shopping cart</string>
+    <string name="go_to_cart">Go to cart</string>
+    <string name="success">Success!</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sorry">Sorry!</string>
+    <string name="disclaimer">Disclaimer!</string>
+    <string name="add_anyway">Add anyway</string>
+    <string name="all_previous_meals_will_be_deleted_from_the_shopping_cart">All previous meals will be deleted from the shopping cart</string>
+    <string name="are_you_sure_you_want_to_cancel_the_order">Are you sure you want to cancel the order?</string>
+    <string name="yes_i_m_sure">Yes, I\'m sure</string>
+    <string name="sign_in_required">Sign in required!</string>
+    <string name="please_sign_in_or_create_an_account_to_add_items_to_your_cart_and_proceed_with_your_order">Please sign in or create an account to add items to your cart and proceed with your order</string>
+    <string name="start_a_new_cart">Start a new cart?</string>
+    <string name="a_new_order_will_clear_your_cart_with">A new order will clear your cart with</string>
+    <string name="start">Start</string>
+    <string name="search">Search</string>
+    <string name="all_meals_are_unavailable">All meals are unavailable</string>
+    <string name="done">Done</string>
+    <string name="the_order_could_not_be_cancelled_please_try_again_later">The order could not be cancelled, please try again later</string>
+    <string name="try_again">Try again</string>
 </resources>

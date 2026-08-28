@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -60,6 +61,7 @@ import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import com.example.applicationhome.R
 import com.example.applicationhome.core.domain.model.snacksEntityToCartItemsClass
 import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.components.forCart.AlertDialogMessage
@@ -257,10 +259,10 @@ fun RestaurantScreen(
 
         topBar = {
             RestaurantTopBar(
-                searchSize,
-                uiState.restaurantData.restaurant,
-                uiState.restaurantData.isFavorite,
-                scrollState,
+                searchSize = searchSize,
+                item = uiState.restaurantData.restaurant,
+                isRestaurantInFavorite = uiState.restaurantData.isFavorite,
+                scrollState = scrollState,
                 addToFavorite = {
                     val restaurantsEntity = FavoriteRestaurantEntity(
                         uiState.restaurantData.restaurant.id,
@@ -547,10 +549,11 @@ fun RestaurantScreen(
         when(errorInCart){
             is AddToCartStates.ErrorInCartRestaurant -> {
                 AlertDialogMessage(
-                    (errorInCart as AddToCartStates.ErrorInCartRestaurant).title,
-                    (errorInCart as AddToCartStates.ErrorInCartRestaurant).message,
-                    "Start",
-                    {
+                    title = stringResource((errorInCart as AddToCartStates.ErrorInCartRestaurant).title),
+                    content = stringResource((errorInCart as AddToCartStates.ErrorInCartRestaurant).message) +
+                            (errorInCart as AddToCartStates.ErrorInCartRestaurant).restaurantName,
+                    confirmButtonText = stringResource(R.string.start),
+                    confirmButton = {
                         restaurantViewModel.clearAndStartNewCart(
                             count = newCount,
                             cartNavigation = { navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true } },
@@ -564,22 +567,22 @@ fun RestaurantScreen(
                         )
                         restaurantViewModel.alertDialogFalse()
                     },
-                    "Cancel",
-                    { restaurantViewModel.alertDialogFalse() }
+                    dismissButtonText = stringResource(R.string.cancel),
+                    dismissButton = { restaurantViewModel.alertDialogFalse() }
                 )
             }
 
             is AddToCartStates.ErrorInLoginState -> {
                 AlertDialogMessage(
-                    (errorInCart as AddToCartStates.ErrorInLoginState).title,
-                    (errorInCart as AddToCartStates.ErrorInLoginState).message,
-                    "Sign in",
-                    {
+                    title = stringResource((errorInCart as AddToCartStates.ErrorInLoginState).title),
+                    content = stringResource((errorInCart as AddToCartStates.ErrorInLoginState).message),
+                    confirmButtonText = stringResource(R.string.sign_in),
+                    confirmButton = {
                         navigationController.navigate(Screens.LoginScreen.screen)
                         restaurantViewModel.alertDialogFalse()
                     },
-                    "Cancel",
-                    { restaurantViewModel.alertDialogFalse() }
+                    dismissButtonText = stringResource(R.string.cancel),
+                    dismissButton = { restaurantViewModel.alertDialogFalse() }
                 )
             }
 

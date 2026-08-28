@@ -11,4 +11,26 @@
     <string name="repurchase">إعادة الشراء</string>
     <string name="cancel">إلغاء</string>
     <string name="cancel_order">إلغاء الطلب</string>
+    <string name="the_restaurant_no_longer_exists">لم يعد المطعم موجودًا</string>
+    <string name="some_meals_were_omitted">تم حذف بعض الوجبات</string>
+    <string name="the_meals_have_been_added_to_the_shopping_cart">تمت اضافة الوجبات الى سلة المشتريات</string>
+    <string name="go_to_cart">سلة المشتريات</string>
+    <string name="success">تمت العملية بنجاح!</string>
+    <string name="sign_in">تسجيل الدخول</string>
+    <string name="sorry">عذرًا!</string>
+    <string name="disclaimer">نويه!</string>
+    <string name="add_anyway">أضف على أي حال</string>
+    <string name="all_previous_meals_will_be_deleted_from_the_shopping_cart">سيتم حذف جميع الوجبات من سلة المشتريات</string>
+    <string name="are_you_sure_you_want_to_cancel_the_order">هل أنت متأكد من أنك تريد إلغاء الطلب؟</string>
+    <string name="yes_i_m_sure">نعم، أنا متأكد</string>
+    <string name="sign_in_required">تسجيل الدخول مطلوب!</string>
+    <string name="please_sign_in_or_create_an_account_to_add_items_to_your_cart_and_proceed_with_your_order">يرجى تسجيل الدخول أو إنشاء حساب لإضافة المنتجات إلى سلة التسوق الخاصة بك ومتابعة طلبك</string>
+    <string name="start_a_new_cart">هل تريد إنشاء سلة تسوق جديدة؟</string>
+    <string name="a_new_order_will_clear_your_cart_with">سيؤدي الطلب الجديد إلى مسح سلة التسوق الخاصة بك من مطعم</string>
+    <string name="start">بدء</string>
+    <string name="search">بحث</string>
+    <string name="all_meals_are_unavailable">جميع الوجبات غير موجودة</string>
+    <string name="done">إنهاء</string>
+    <string name="the_order_could_not_be_cancelled_please_try_again_later">يتعذر إلغاء الطلب، حاول مرة أخرى لاحقًا</string>
+    <string name="try_again">حاول مجددًا</string>
 </resources>

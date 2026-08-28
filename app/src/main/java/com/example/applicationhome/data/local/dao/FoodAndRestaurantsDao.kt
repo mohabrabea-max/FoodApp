@@ -162,17 +162,16 @@ interface FoodAndRestaurantsDao {
     suspend fun checkAreSnacksDeleted(ids : List<Int>): List<Int>
 
     @Query("SELECT EXISTS(SELECT 1 FROM restaurants_entity WHERE id = :resId)")
-    suspend fun checkAreRestaurantsDeleted(resId : Int): Boolean
+    suspend fun isRestaurantExist(resId : Int): Boolean
 
     @Transaction
     suspend fun checkAll(
         mealsIds : List<Int>,
         snacksIds : List<Int>
-    ): Boolean {
+    ): Pair<List<Int>, List<Int>> {
         val meals = checkAreMealsDeleted(mealsIds)
         val snacks = checkAreSnacksDeleted(snacksIds)
 
-        return meals.size == mealsIds.size &&
-                snacks.size == snacksIds.size
+        return Pair(meals, snacks)
     }
 }
