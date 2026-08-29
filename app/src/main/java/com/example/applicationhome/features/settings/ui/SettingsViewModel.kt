@@ -21,7 +21,6 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             favoriteRepository.deleteAllFromFavorite()
             userRepository.logOut()
-            userRepository.logout()
         }
     }
 }

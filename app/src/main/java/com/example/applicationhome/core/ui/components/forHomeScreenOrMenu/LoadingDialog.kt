@@ -24,7 +24,7 @@ fun LoadingDialog(isLoading : Boolean){
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.3f)),
+                    .background(Color.Black.copy(alpha = 0.4f)),
                 contentAlignment = Alignment.Center
             ){
                 CircularProgressIndicator(

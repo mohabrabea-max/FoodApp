@@ -7,6 +7,7 @@ import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,7 +17,8 @@ class DashboardScreenViewModel @Inject constructor(
     private val favoriteRepository : FavoriteRepository,
     cartRepository : CartRepository
 ) : ViewModel(){
-    val state = MutableStateFlow(true)
+    private val _state = MutableStateFlow(true)
+    val state = _state.asStateFlow()
 
     val isLogin = userRepository.isLogin
 
@@ -33,24 +35,23 @@ class DashboardScreenViewModel @Inject constructor(
                 if(currentUser.id.isNotEmpty()){
                     userRepository.login()
                 }else{
-                    userRepository.logout()
+                    userRepository.logOut()
                 }
             }
         }
     }
 
     fun stateTrue(){
-        state.value = true
+        _state.value = true
     }
     fun stateFalse(){
-        state.value = false
+        _state.value = false
     }
 
     fun logout(){
         viewModelScope.launch {
             favoriteRepository.deleteAllFromFavorite()
             userRepository.logOut()
-            userRepository.logout()
         }
     }
 }

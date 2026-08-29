@@ -241,4 +241,8 @@ class OrderRepositoryImpl @Inject constructor(
     override suspend fun getSnacksImages(ids : List<Int>): Map<Int, String?>{
         return foodAndRestaurantsDao.getSnacksImages(ids)
     }
+
+    override suspend fun resetOrdersHistorySyncTime(){
+        dataStoreManager.updateOrdersHistorySyncTime(0L)
+    }
 }

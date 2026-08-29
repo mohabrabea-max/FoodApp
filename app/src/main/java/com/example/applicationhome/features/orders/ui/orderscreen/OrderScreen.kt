@@ -226,6 +226,7 @@ fun OrderScreen(
                     }
                 }
             }
+
             LoadingDialog(isLoading = actionState == ActionsStates.Loading)
         }
     }

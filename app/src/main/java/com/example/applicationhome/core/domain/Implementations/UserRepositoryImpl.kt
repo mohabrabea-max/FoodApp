@@ -1,6 +1,8 @@
 package com.example.applicationhome.core.domain.Implementations
 
 import android.util.Log
+import com.example.applicationhome.core.domain.module.ApplicationScope
+import com.example.applicationhome.core.domain.repository.OrderRepository
 import com.example.applicationhome.core.domain.repository.SupabaseRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.data.data.model.ChickEmailStates
@@ -10,7 +12,6 @@ import com.example.applicationhome.data.local.dao.FavoriteDao
 import com.example.applicationhome.data.local.dao.UsersDao
 import com.example.applicationhome.data.local.entity.UserClass
 import com.example.applicationhome.data.remote.FoodAppAPIs
-import com.example.applicationhome.core.domain.module.ApplicationScope
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.gotrue.SessionStatus
 import kotlinx.coroutines.CoroutineScope
@@ -24,6 +25,7 @@ import kotlin.coroutines.cancellation.CancellationException
 
 class UserRepositoryImpl @Inject constructor(
     private val supabaseRepository : SupabaseRepository,
+    private val orderRepository : OrderRepository,
     private val userdao : UsersDao,
     private val favoriteDao: FavoriteDao,
     private val api : FoodAppAPIs,
@@ -114,6 +116,8 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun logOut(){
         userdao.deleteUserFromDatabase()
+        orderRepository.resetOrdersHistorySyncTime()
+        _isLogin.value = false
     }
 
     override suspend fun signUp(userId : String, userRequest : UserClassFireBase): Result<Unit> {
@@ -154,10 +158,6 @@ class UserRepositoryImpl @Inject constructor(
 
     override fun login(){
         _isLogin.value = true
-    }
-
-    override fun logout(){
-        _isLogin.value = false
     }
 
     override suspend fun validateUserOnAppLaunch(): Boolean {

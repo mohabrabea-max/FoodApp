@@ -56,7 +56,8 @@ fun LastOrdersBox(
 
     val quantity = order.orderItems.sumOf { item -> item.quantity }
 
-    Box(
+
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(160.dp)
@@ -64,174 +65,166 @@ fun LastOrdersBox(
             .clickable {
                 onOpenOrderScreen()
             }
-            .background(Color.White)
+            .background(Color.White),
+
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ){
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .size(100.dp)
+                .clip(shape = RoundedCornerShape(15.dp))
+                .border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(15.dp)),
+            contentAlignment = Alignment.Center
+        ){
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current).
+                data(order.restaurantImage).
+                crossfade(true).
+                precision(Precision.EXACT).
+                build(),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
+        Column(
+            modifier = Modifier.fillMaxHeight(0.8f),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.Start
         ){
             Row(
-                modifier = Modifier.weight(4f),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth().padding(end = 15.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ){
+                Text(
+                    text = "Order",
+                    fontSize = 15.sp,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.BrownForFont,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 5.dp)
+                )
+                Text(
+                    text = "${order.orderId}",
+                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.BrownForFont,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 5.dp)
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(end = 15.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ){
+                Text(
+                    text = "Restaurant",
+                    fontSize = 15.sp,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.BrownForFont,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 2.dp)
+                )
+                Text(
+                    text = order.restaurantName,
+                    fontSize = 15.sp,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.BrownForFont,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 2.dp)
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(end = 15.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ){
+                Text(
+                    text = "Items",
+                    fontSize = 15.sp,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.BrownForFont,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 2.dp)
+                )
+                Text(
+                    text = "$quantity",
+                    fontSize = 15.sp,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.Blue,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 2.dp)
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(end = 15.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ){
+                Text(
+                    text = "Price",
+                    fontSize = 15.sp,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.BrownForFont,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 2.dp)
+                )
+                Text(
+                    text = "EGP ${order.totalPrice}",
+                    fontSize = 15.sp,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.Red,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 2.dp)
+                )
+            }
+
+
+            //Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(end = 15.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ){
+                Text(
+                    text = order.date,
+                    fontSize = 13.sp,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.Gray,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.padding(vertical = 2.dp)
+                )
                 Box(
                     modifier = Modifier
-                        .padding(horizontal = 10.dp)
-                        .size(100.dp)
-                        .clip(shape = RoundedCornerShape(15.dp))
-                        .border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(15.dp)),
+                        .width(60.dp)
+                        .height(25.dp)
+                        .clip(shape = RoundedCornerShape(10.dp))
+                        .background(color),
                     contentAlignment = Alignment.Center
                 ){
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current).
-                        data(order.restaurantImage).
-                        crossfade(true).
-                        precision(Precision.EXACT).
-                        build(),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
+                    Text(
+                        text = orderStateTitle,
+                        fontSize = 10.sp,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold
                     )
-                }
-                Column(
-                    modifier = Modifier.fillMaxHeight(0.8f),
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    horizontalAlignment = Alignment.Start
-                ){
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(end = 15.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ){
-                        Text(
-                            text = "Order",
-                            fontSize = 15.sp,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = Color.BrownForFont,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(vertical = 5.dp)
-                        )
-                        Text(
-                            text = "${order.orderId}",
-                            fontSize = 12.sp,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = Color.BrownForFont,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(vertical = 5.dp)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(end = 15.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ){
-                        Text(
-                            text = "Restaurant",
-                            fontSize = 15.sp,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = Color.BrownForFont,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(vertical = 2.dp)
-                        )
-                        Text(
-                            text = order.restaurantName,
-                            fontSize = 15.sp,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = Color.BrownForFont,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(vertical = 2.dp)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(end = 15.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ){
-                        Text(
-                            text = "Items",
-                            fontSize = 15.sp,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = Color.BrownForFont,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(vertical = 2.dp)
-                        )
-                        Text(
-                            text = "$quantity",
-                            fontSize = 15.sp,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = Color.Blue,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(vertical = 2.dp)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(end = 15.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ){
-                        Text(
-                            text = "Price",
-                            fontSize = 15.sp,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = Color.BrownForFont,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(vertical = 2.dp)
-                        )
-                        Text(
-                            text = "EGP ${order.totalPrice}",
-                            fontSize = 15.sp,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = Color.Red,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(vertical = 2.dp)
-                        )
-                    }
-
-
-                    //Spacer(modifier = Modifier.height(10.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(end = 15.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ){
-                        Text(
-                            text = order.date,
-                            fontSize = 13.sp,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = Color.Gray,
-                            textAlign = TextAlign.End,
-                            modifier = Modifier.padding(vertical = 2.dp)
-                        )
-                        Box(
-                            modifier = Modifier
-                                .width(60.dp)
-                                .height(25.dp)
-                                .clip(shape = RoundedCornerShape(10.dp))
-                                .background(color),
-                            contentAlignment = Alignment.Center
-                        ){
-                            Text(
-                                text = orderStateTitle,
-                                fontSize = 10.sp,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = Color.White,
-                                textAlign = TextAlign.Center,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
                 }
             }
         }

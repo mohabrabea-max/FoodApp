@@ -110,7 +110,6 @@ class LoginViewModel @Inject constructor(
     fun logout(){
         viewModelScope.launch {
             userRepository.logOut()
-            userRepository.logout()
         }
     }
 
@@ -171,7 +170,7 @@ class LoginViewModel @Inject constructor(
                 if(currentUser.id.isNotEmpty()){
                     userRepository.login()
                 }else{
-                    userRepository.logout()
+                    userRepository.logOut()
                 }
             }
         }

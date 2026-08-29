@@ -28,8 +28,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -75,15 +78,20 @@ fun LastOrdersScreen(
 
     val screens = orderScreenViewModel.statesBar
     val initialPage by orderScreenViewModel.initialPage.collectAsStateWithLifecycle()
+    var hasHandled by rememberSaveable { mutableStateOf(false) }
     val pagerState = rememberPagerState(initialPage = initialPage,pageCount = { screens.size })
-    LaunchedEffect(initialPage){
-        pagerState.animateScrollToPage(
-            page = initialPage,
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioNoBouncy,
-                stiffness = Spring.StiffnessMediumLow
+
+    LaunchedEffect(screenState){
+        if(screenState != HomeUiState.Loading && !hasHandled){
+            pagerState.animateScrollToPage(
+                page = initialPage,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioNoBouncy,
+                    stiffness = Spring.StiffnessMediumLow
+                )
             )
-        )
+            hasHandled = true
+        }
     }
 
     val actionState by orderScreenViewModel.actionState.collectAsStateWithLifecycle()
@@ -271,7 +279,17 @@ fun LastOrdersScreen(
                 orderScreenViewModel.closeCheckCancelOrderAlertDialogMessage()
                 orderScreenViewModel.cancelOrder(
                     orderId = order.orderId
-                )
+                ){
+                    scope.launch {
+                        pagerState.animateScrollToPage(
+                            page = initialPage,
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioNoBouncy,
+                                stiffness = Spring.StiffnessMediumLow
+                            )
+                        )
+                    }
+                }
             },
             dismissButtonText = stringResource(R.string.cancel),
             dismissButton = { orderScreenViewModel.closeCheckCancelOrderAlertDialogMessage() }
@@ -288,7 +306,17 @@ fun LastOrdersScreen(
                 orderScreenViewModel.resetActionState()
                 orderScreenViewModel.cancelOrder(
                     orderId = order.orderId
-                )
+                ){
+                    scope.launch {
+                        pagerState.animateScrollToPage(
+                            page = initialPage,
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioNoBouncy,
+                                stiffness = Spring.StiffnessMediumLow
+                            )
+                        )
+                    }
+                }
             },
             dismissButtonText = stringResource(R.string.cancel),
             dismissButton = { orderScreenViewModel.resetActionState() }
@@ -320,11 +348,11 @@ fun LastOrdersScreen(
                     content = stringResource(item.message),
                     confirmButtonText = stringResource(R.string.go_to_cart),
                     confirmButton = {
-                        orderScreenViewModel.closeRepurchaseOrderStates()
+                        orderScreenViewModel.closeRepurchaseOrderStatesDialog()
                         navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
                     },
                     dismissButtonText = stringResource(R.string.cancel),
-                    dismissButton = { orderScreenViewModel.closeRepurchaseOrderStates() }
+                    dismissButton = { orderScreenViewModel.closeRepurchaseOrderStatesDialog() }
                 )
             }
 
@@ -333,7 +361,7 @@ fun LastOrdersScreen(
                     title = stringResource(R.string.sorry),
                     content = stringResource(item.message),
                     confirmButtonText = stringResource(R.string.done),
-                    confirmButton = { orderScreenViewModel.closeRepurchaseOrderStates() }
+                    confirmButton = { orderScreenViewModel.closeRepurchaseOrderStatesDialog() }
                 )
             }
 
@@ -344,11 +372,11 @@ fun LastOrdersScreen(
                     content = stringResource(item.message),
                     confirmButtonText = stringResource(R.string.add_anyway),
                     confirmButton = {
-                        orderScreenViewModel.closeRepurchaseOrderStates()
+                        orderScreenViewModel.closeRepurchaseOrderStatesDialog()
                         orderScreenViewModel.filterOrderItems(order)
                     },
                     dismissButtonText = stringResource(R.string.cancel),
-                    dismissButton = { orderScreenViewModel.closeRepurchaseOrderStates() }
+                    dismissButton = { orderScreenViewModel.closeRepurchaseOrderStatesDialog() }
                 )
             }
 
@@ -357,7 +385,7 @@ fun LastOrdersScreen(
                     title = stringResource(R.string.sorry),
                     content = stringResource(item.message),
                     confirmButtonText = stringResource(R.string.done),
-                    confirmButton = { orderScreenViewModel.closeRepurchaseOrderStates() }
+                    confirmButton = { orderScreenViewModel.closeRepurchaseOrderStatesDialog() }
                 )
             }
         }

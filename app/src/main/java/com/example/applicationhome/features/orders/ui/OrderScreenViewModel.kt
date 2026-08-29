@@ -20,27 +20,28 @@ import com.example.applicationhome.data.data.model.TimelineStep
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrderScreenViewModel @Inject constructor(
     private val orderRepository : OrderRepository,
     private val ordersHistoryUseCase : OrdersHistoryUseCase,
-    networkObserver : NetworkObserver,
-    userRepository : UserRepository
+    private val userRepository : UserRepository,
+    networkObserver : NetworkObserver
 ): ViewModel(){
+
+    // --------------------------------------------\\ Basic Data //--------------------------------------------
 
     val isNetworkAvailable = networkObserver.isNetworkAvailable
         .stateIn(
@@ -48,12 +49,6 @@ class OrderScreenViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = true
         )
-
-    val userData = userRepository.userData
-
-    private val _selectedOrder = MutableStateFlow<OrderUiClass?>(null)
-    val selectedOrder = _selectedOrder.asStateFlow()
-
 
     val preparingOrdersHistory : StateFlow<List<OrderUiClass>> =
         userRepository.userData.flatMapLatest { user ->
@@ -141,9 +136,15 @@ class OrderScreenViewModel @Inject constructor(
 
     val correctTimelineStep = _timelineStep.asStateFlow()
 
+
+    private val _selectedOrder = MutableStateFlow<OrderUiClass?>(null)
+    val selectedOrder = _selectedOrder.asStateFlow()
+
     private val _screenState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val screenState = _screenState.asStateFlow()
 
+
+    // --------------------------------------------\\ Basic Functions //--------------------------------------------
 
     fun openOrderScreen(order : OrderUiClass){
         val targetStepIndex = OrderStates.fromEnum(order.state.enumState).index
@@ -179,39 +180,49 @@ class OrderScreenViewModel @Inject constructor(
         _selectedOrder.value = null
     }
 
-    private fun getOrdersHistory(){
-        viewModelScope.launch {
-            _screenState.value = HomeUiState.Loading
+    private suspend fun getOrdersHistory(){
+        _screenState.value = HomeUiState.Loading
 
-            val id = userData.value.id
-            if(id.isNotEmpty()){
-                val result = orderRepository.getOrders(id)
-                delay(200.milliseconds)
-                selectInitialPage()
-                _screenState.value = result
-            }else{
-                _screenState.value = HomeUiState.Success
+        val id = userRepository.userData.value.id
+        if(id.isNotEmpty()){
+            val result = orderRepository.getOrders(id)
+            _screenState.value = result
+        }else{
+            _screenState.value = HomeUiState.Success
+        }
+    }
+
+
+    // --------------------------------------------\\ Initial Page //--------------------------------------------
+
+    val initialPage : StateFlow<Int> =
+        combine(
+            preparingOrdersHistory,
+            deliveredOrdersHistory,
+            cancelledOrdersHistory
+        ){ preparing, delivered, cancelled ->
+            when{
+                preparing.isNotEmpty() -> 0
+                delivered.isNotEmpty() -> 1
+                cancelled.isNotEmpty() -> 2
+                else -> 0
             }
-        }
-    }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
+        )
 
-    private val _initialPage = MutableStateFlow(0)
-    val initialPage = _initialPage.asStateFlow()
 
-    private fun selectInitialPage(){
-        _initialPage.value = when{
-            preparingOrdersHistory.value.isNotEmpty() -> 0
-            deliveredOrdersHistory.value.isNotEmpty() -> 1
-            cancelledOrdersHistory.value.isNotEmpty() -> 2
-            else -> 0
-        }
-    }
-
+    // --------------------------------------------\\ Cancel Order //--------------------------------------------
 
     private val _actionState = MutableStateFlow<ActionsStates>(ActionsStates.Idle)
     val actionState = _actionState.asStateFlow()
 
-    fun cancelOrder(orderId : Long){
+
+
+
+    fun cancelOrder(orderId : Long, isPageEmpty : () -> Unit){
         viewModelScope.launch {
             _actionState.value = ActionsStates.Loading
 
@@ -220,8 +231,10 @@ class OrderScreenViewModel @Inject constructor(
 
             if(result is ActionsStates.Success){
                 getOrdersHistory()
-                selectInitialPage()
+
                 closeOrderScreen()
+
+                isPageEmpty()
             }
         }
     }
@@ -230,6 +243,7 @@ class OrderScreenViewModel @Inject constructor(
         _actionState.value = ActionsStates.Idle
     }
 
+    // --------------------------------------------\\ Cancel Order Dialog Message //--------------------------------------------
 
     private val _showCheckCancelOrderAlertDialogMessage = MutableStateFlow(false)
     val showCheckCancelOrderAlertDialogMessage = _showCheckCancelOrderAlertDialogMessage.asStateFlow()
@@ -243,6 +257,7 @@ class OrderScreenViewModel @Inject constructor(
     }
 
 
+    // --------------------------------------------\\ Repurchase Order //--------------------------------------------
 
     private val _repurchaseOrderStates = MutableStateFlow<RepurchaseOrderStates?>(null)
     val repurchaseOrderStates = _repurchaseOrderStates.asStateFlow()
@@ -269,10 +284,12 @@ class OrderScreenViewModel @Inject constructor(
         }
     }
 
-    fun closeRepurchaseOrderStates(){
+    fun closeRepurchaseOrderStatesDialog(){
         _repurchaseOrderStates.value = null
     }
 
+
+    // --------------------------------------------\\ Repurchase Order Dialog Message //--------------------------------------------
 
     private val _showCheckRepurchaseAlertDialogMessage = MutableStateFlow(false)
     val showCheckRepurchaseAlertDialogMessage = _showCheckRepurchaseAlertDialogMessage.asStateFlow()
@@ -283,6 +300,10 @@ class OrderScreenViewModel @Inject constructor(
     fun closeCheckRepurchaseAlertDialogMessage(){
         _showCheckRepurchaseAlertDialogMessage.value = false
     }
+
+
+
+
 
     init {
         viewModelScope.launch {
