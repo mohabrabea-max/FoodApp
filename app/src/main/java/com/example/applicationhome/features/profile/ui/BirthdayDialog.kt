@@ -34,11 +34,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.theme.BrownForFont
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import java.text.SimpleDateFormat
@@ -81,7 +83,7 @@ fun BirthdayDialog(
 
             label = {
                 Text(
-                    "Birthday",
+                    stringResource(R.string.birthday),
                     fontSize = 16.sp,
                     color = Color.Gray
                 )
@@ -89,7 +91,7 @@ fun BirthdayDialog(
 
             placeholder = {
                 Text(
-                    "Birthday",
+                    stringResource(R.string.birthday),
                     fontSize = 16.sp,
                     color = Color.Gray
                 )
@@ -98,7 +100,7 @@ fun BirthdayDialog(
             readOnly = true,
 
             trailingIcon = {
-                Icon(imageVector = Icons.Default.DateRange, contentDescription = "Select Date")
+                Icon(imageVector = Icons.Default.DateRange, contentDescription = stringResource(R.string.select_date))
             },
 
             modifier = Modifier
@@ -187,7 +189,7 @@ fun BirthdayDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = { showDatePicker = false }) {
-                        Text("Cancel", color = Color.Gray, fontSize = 14.sp)
+                        Text(stringResource(R.string.cancel), color = Color.Gray, fontSize = 14.sp)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     TextButton(onClick = {
@@ -199,7 +201,7 @@ fun BirthdayDialog(
                         showDatePicker = false
                     }) {
                         Text(
-                            "OK",
+                            stringResource(R.string.select),
                             color = Color.DarkOrange,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold

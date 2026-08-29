@@ -26,7 +26,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -157,7 +158,7 @@ fun ForgetPasswordScreen(
                         },
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
                     ) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = Color.White)
                     }
                 }
             )
@@ -188,7 +189,7 @@ fun ForgetPasswordScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Change password",
+                        text = stringResource(R.string.change_password),
                         color = Color.White,
                         fontSize = 38.sp,
                         fontWeight = FontWeight.Medium

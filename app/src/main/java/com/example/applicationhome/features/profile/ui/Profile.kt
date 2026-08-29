@@ -33,11 +33,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.theme.BrandBlue
@@ -88,7 +90,7 @@ fun Profile(
                 MyTopBar(
                     Color.White,
                     modifier = Modifier.fillMaxWidth().height(100.dp).shadow(elevation = 5.dp),
-                    "Profile",
+                    stringResource(R.string.edite_profile),
                     Color.DeepMatteBlack,
                     {
                         IconButton(
@@ -123,7 +125,7 @@ fun Profile(
             item {
                 Column(modifier = Modifier.padding(15.dp).fillMaxSize().clip(RoundedCornerShape(10.dp)).background(Color.White).padding(17.dp)){
 
-                    Text(text = "Personal Information", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                    Text(text = stringResource(R.string.personal_information), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
 
                     Spacer(modifier = Modifier.height(15.dp))
 
@@ -154,7 +156,7 @@ fun Profile(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     SelectionOutlinedTextField(
-                        "Governorate",
+                        stringResource(R.string.governorate),
                         selectedGovernorate,
                         { showGovernorateBottomSheet = true }
                     )
@@ -162,7 +164,7 @@ fun Profile(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     SelectionOutlinedTextField(
-                        "City",
+                        stringResource(R.string.city),
                         selectedCity,
                         { showCityBottomSheet = true },
                         selectedGovernorate.isNotEmpty()
@@ -176,7 +178,7 @@ fun Profile(
 
         if(showGovernorateBottomSheet){
             SelectBottomSheet(
-                "Search Governorates",
+                stringResource(R.string.search_governorates),
                 searchString,
                 filteredGovernoratesList,
                 { showGovernorateBottomSheet = false },
@@ -194,7 +196,7 @@ fun Profile(
 
         if(showCityBottomSheet){
             SelectBottomSheet(
-                "Search Cities",
+                stringResource(R.string.search_cities),
                 searchString,
                 filteredCitiesList,
                 { showCityBottomSheet = false },
@@ -240,7 +242,7 @@ fun BottomBarForProfileScreen(
             buttonColor,
             Color.White,
             40.dp,
-            "Save edites"
+            stringResource(R.string.save_edites)
         ) {
             if (isDataEdited) {
                 action()

@@ -173,25 +173,25 @@ class ConfirmOrderScreenViewModel @Inject constructor(
             initialValue = ConfirmOrderScreens.Map(MapEntryPoint.Initial)
         )
 
-    val topBatTitle : StateFlow<String> =
+    val topBatTitle : StateFlow<Int> =
         _backStack.map { screen ->
             when(screen.last()){
                 ConfirmOrderScreens.UserData, ConfirmOrderScreens.Checkout -> {
-                   "Checkout"
+                   R.string.checkout
                 }
 
                 ConfirmOrderScreens.PaymentGateway -> {
-                    "Payment"
+                    R.string.payment
                 }
 
                 else -> {
-                    "Location"
+                    R.string.location
                 }
             }
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = "Location"
+            initialValue = R.string.location
         )
 
 

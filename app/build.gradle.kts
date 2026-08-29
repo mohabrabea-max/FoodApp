@@ -182,9 +182,10 @@ dependencies {
     implementation("androidx.media3:media3-ui:1.3.1")
 
     // Shimmer
-    dependencies {
-        implementation("com.valentinilk.shimmer:compose-shimmer:1.5.0")
-    }
+    implementation("com.valentinilk.shimmer:compose-shimmer:1.5.0")
+
+    // appcompat
+    implementation("androidx.appcompat:appcompat:1.7.0")
 }
 configurations.all {
     resolutionStrategy {

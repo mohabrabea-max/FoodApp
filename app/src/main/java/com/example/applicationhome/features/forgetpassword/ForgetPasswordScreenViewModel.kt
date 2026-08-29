@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
+import com.example.applicationhome.R
 import com.example.applicationhome.core.domain.exception.AppDomainException
 import com.example.applicationhome.core.domain.repository.SupabaseRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
@@ -138,7 +139,7 @@ class ForgetPasswordScreenViewModel @Inject constructor(
     }
     private val _checkEmailTextFieldObject = MutableStateFlow(
         SignUpBasicTextFields(
-            title = "Email address",
+            title = R.string.email_address,
             textField = checkEmailTextField,
             errorMessage = null,
             icon = Icons.Default.Email,
@@ -163,7 +164,7 @@ class ForgetPasswordScreenViewModel @Inject constructor(
 
                 ChickEmailStates.EmailIsNotTrue -> {
                     _checkEmailTextFieldObject.update {
-                        it.copy(errorMessage = "Please enter a valid email address")
+                        it.copy(errorMessage = R.string.please_enter_a_valid_email_address)
                     }
                 }
 
@@ -268,7 +269,7 @@ class ForgetPasswordScreenViewModel @Inject constructor(
     private val _newPasswordTextFields = MutableStateFlow(
         listOf(
             SignUpBasicTextFields(
-                title = "New password",
+                title = R.string.new_password,
                 textField = newPasswordTextField,
                 errorMessage = null,
                 icon = Icons.Default.Lock,
@@ -276,7 +277,7 @@ class ForgetPasswordScreenViewModel @Inject constructor(
             ),
 
             SignUpBasicTextFields(
-                title = "Confirm password",
+                title = R.string.confirm_password,
                 textField = confirmNewPasswordTextField,
                 errorMessage = null,
                 icon = Icons.Default.Lock,
@@ -289,7 +290,7 @@ class ForgetPasswordScreenViewModel @Inject constructor(
     fun onChangePasswordClicked(onSuccess: () -> Unit){
         val passwordErrorMessage =
             if(newPasswordTextField.text.length < 8){
-                "Password must be at least 8 characters long"
+                R.string.password_must_be_at_least_8_characters_long
             }else{
                 null
             }
@@ -299,7 +300,7 @@ class ForgetPasswordScreenViewModel @Inject constructor(
                 passwordErrorMessage == null &&
                 newPasswordTextField.text != confirmNewPasswordTextField.text
             ){
-                "Passwords do not match"
+                R.string.passwords_do_not_match
             }else{
                 null
             }
@@ -351,7 +352,7 @@ class ForgetPasswordScreenViewModel @Inject constructor(
                                 it.map { item ->
                                     when(item.textField){
                                         newPasswordTextField -> {
-                                            item.copy(errorMessage = "Incorrect password")
+                                            item.copy(errorMessage = R.string.incorrect_password)
                                         }
 
                                         else -> item

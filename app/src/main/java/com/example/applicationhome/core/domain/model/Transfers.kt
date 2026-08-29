@@ -1,5 +1,6 @@
 package com.example.applicationhome.core.domain.model
 
+import com.example.applicationhome.data.data.model.CategoryEnum
 import com.example.applicationhome.data.data.model.FoodItem
 import com.example.applicationhome.data.data.model.OrderItemsClass
 import com.example.applicationhome.data.data.model.OrderStates
@@ -46,7 +47,7 @@ fun SnacksEntity.snacksEntityToCartItemsClass(userId : String, quantity : Int): 
         "${this.id}_${this.priceANDsize.keys.last()}",
         this.id,
         this.name,
-        "Snack",
+        CategoryEnum.SNACKS.rawValue,
         this.priceANDsize.keys.last(),
         quantity,
         this.priceANDsize.values.last(),

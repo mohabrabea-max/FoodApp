@@ -21,8 +21,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.R
 
 @Composable
 fun SearchBox(
@@ -53,7 +55,7 @@ fun SearchBox(
                 modifier = Modifier.padding(start = 15.dp)
             )
             Text(
-                text = "Search food",
+                text = stringResource(R.string.search_food),
                 softWrap = false,
                 color = Color.Gray,
                 fontSize = 15.sp,
@@ -62,16 +64,3 @@ fun SearchBox(
         }
     }
 }
-
-//        Box(
-//            modifier = Modifier.size(40.dp).clip(CircleShape).background(Color.DarkOrange),
-//            contentAlignment = Alignment.Center
-//        ){
-//            IconButton(onClick = {}){
-//                Icon(
-//                    Icons.Default.Tune,
-//                    contentDescription = null,
-//                    tint = Color.White
-//                )
-//            }
-//        }

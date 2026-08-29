@@ -9,6 +9,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.R
 import com.example.applicationhome.core.domain.exception.AuthException
 import com.example.applicationhome.core.domain.model.userClassFireBaseToUserDataDatabase
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
@@ -69,7 +70,7 @@ class SignUpViewModel @Inject constructor(
     private val _signUpFullNameTextFields = MutableStateFlow(
         listOf(
             SignUpFullNameTextFields(
-                title = "First Name",
+                title = R.string.first_name,
                 textField = firstnamestate,
                 errorMessage = false,
                 RoundedCornerShape(topStart = 50.dp, bottomStart = 50.dp),
@@ -78,7 +79,7 @@ class SignUpViewModel @Inject constructor(
             ),
 
             SignUpFullNameTextFields(
-                title = "Last Name",
+                title = R.string.last_name,
                 textField = lastnamestate,
                 errorMessage = false,
                 RoundedCornerShape(topEnd = 50.dp, bottomEnd = 50.dp),
@@ -92,7 +93,7 @@ class SignUpViewModel @Inject constructor(
     private val _signUpBasicTextFields = MutableStateFlow(
         listOf(
             SignUpBasicTextFields(
-                title = "Email address",
+                title = R.string.email_address,
                 textField = emailstate,
                 errorMessage = null,
                 icon = Icons.Default.Email,
@@ -100,7 +101,7 @@ class SignUpViewModel @Inject constructor(
             ),
 
             SignUpBasicTextFields(
-                title = "Password",
+                title = R.string.password,
                 textField = passwordstate,
                 errorMessage = null,
                 icon = Icons.Default.Lock,
@@ -108,7 +109,7 @@ class SignUpViewModel @Inject constructor(
             ),
 
             SignUpBasicTextFields(
-                title = "Confirm password",
+                title = R.string.confirm_password,
                 textField = confirmpasswordstate,
                 errorMessage = null,
                 icon = Icons.Default.Lock,
@@ -287,7 +288,7 @@ class SignUpViewModel @Inject constructor(
         val isEmailValid = emailstate.text.matches(allowedEmail)
 
         val emailErrorMessage = if(!isEmailValid || emailstate.text.isEmpty()){
-            "Please enter a valid email address"
+            R.string.please_enter_a_valid_email_address
         }else{
             null
         }
@@ -297,7 +298,7 @@ class SignUpViewModel @Inject constructor(
                 passwordstate.text.isEmpty() ||
                 passwordstate.text.length < 8
             ){
-                "Password must be at least 8 characters long"
+                R.string.password_must_be_at_least_8_characters_long
             }else{
                 null
             }
@@ -307,7 +308,7 @@ class SignUpViewModel @Inject constructor(
                 passwordErrorMessage == null &&
                 passwordstate.text != confirmpasswordstate.text
             ){
-                "Passwords do not match"
+                R.string.passwords_do_not_match
             }else{
                 null
             }
@@ -365,7 +366,7 @@ class SignUpViewModel @Inject constructor(
                             _signUpBasicTextFields.update { item ->
                                 item.map {
                                     if (it.textField == emailstate) {
-                                        it.copy(errorMessage = "This email is already registered")
+                                        it.copy(errorMessage = R.string.this_email_is_already_registered)
                                     } else {
                                         it
                                     }

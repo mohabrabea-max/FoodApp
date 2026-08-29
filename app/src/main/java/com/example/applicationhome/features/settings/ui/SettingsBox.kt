@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.core.ui.theme.BrownForFont
@@ -36,9 +37,11 @@ import com.example.applicationhome.data.data.model.SettingsScreens
 fun SettingsOptionsBox(item : ProfileOptions, navigation : () -> Unit){
     val interactionSource = remember { MutableInteractionSource() }
 
+    val description = item.description
+
     Box{
         Box(
-            modifier = Modifier.aspectRatio(2.3f).
+            modifier = Modifier.aspectRatio(2.2f).
             padding(start = 5.dp, end = 5.dp).
             clip(RoundedCornerShape(10.dp)).
             background(Color.White).
@@ -58,14 +61,14 @@ fun SettingsOptionsBox(item : ProfileOptions, navigation : () -> Unit){
                 Spacer(modifier = Modifier.width(10.dp))
                 Column(horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center){
                     Text(
-                        text = item.title,
+                        text = stringResource(item.title),
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.Black,
                         fontSize = 18.sp,
                     )
-                    if(item.description != null){
+                    if(description != null){
                         Text(
-                            text = item.description.toString(),
+                            text = stringResource(description),
                             style = MaterialTheme.typography.titleLarge,
                             color = Color.Gray,
                             fontSize = 15.sp,
@@ -95,12 +98,15 @@ fun SettingsBox(settings : List<Settings>, onClickable : (SettingsScreens) -> Un
                     .padding(start = 17.dp, end = 17.dp)
             ){
                 Spacer(modifier = Modifier.height(25.dp))
+
                 Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
-                    Icon(modifier = Modifier.size(20.dp), imageVector = item.icon, contentDescription = item.title, tint = Color.Black)
+                    Icon(modifier = Modifier.size(20.dp), imageVector = item.icon, contentDescription = stringResource(item.title), tint = Color.Black)
                     Spacer(modifier = Modifier.width(15.dp))
-                    Text(text = item.title, fontSize = 17.sp, color = Color.BrownForFont)
+                    Text(text = stringResource(item.title), fontSize = 17.sp, color = Color.BrownForFont)
                 }
+
                 Spacer(modifier = Modifier.height(25.dp))
+
                 if(item != settings.last()) Divider(color = Color.LightGray.copy(alpha = 0.2f))
             }
         }

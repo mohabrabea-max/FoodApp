@@ -362,7 +362,7 @@ fun EmptyFavoriteScreen(
         )
         Spacer(modifier = Modifier.height(30.dp))
         Text(
-            text = "There's nothing in your wishlist",
+            text = stringResource(R.string.there_s_nothing_in_your_wishlist),
             fontSize = 22.sp,
             style = MaterialTheme.typography.labelLarge,
             color = Color.BrownForFont,
@@ -389,7 +389,7 @@ fun EmptyFavoriteScreen(
             padding(7.dp).align(Alignment.CenterHorizontally)
         ){
             Text(
-                text = "Add items",
+                text = stringResource(R.string.add_food),
                 fontSize = 15.sp,
                 style = MaterialTheme.typography.labelLarge,
                 color = Color.BrownForFont,

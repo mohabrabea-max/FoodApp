@@ -27,11 +27,13 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.R
 
 @Composable
 fun SignupTextFieldPage2(
@@ -87,7 +89,7 @@ fun SignupTextFieldPage2(
             )
             if(phonenumberstate.text.isEmpty()){
                 Text(
-                    text = "Phone number (Optional)",
+                    text = stringResource(R.string.phone_number_optional),
                     color = Color.Gray,
                     fontSize = 18.sp
                 )
@@ -143,7 +145,7 @@ fun SignupTextFieldPage2(
             )
             if(addressstate.text.isEmpty()){
                 Text(
-                    text = "Address (Optional)",
+                    text = stringResource(R.string.address_optional),
                     color = Color.Gray,
                     fontSize = 18.sp
                 )

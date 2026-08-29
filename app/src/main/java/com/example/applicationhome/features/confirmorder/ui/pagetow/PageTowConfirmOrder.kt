@@ -29,7 +29,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.bottomSnackBar
 import com.example.applicationhome.core.ui.theme.BrandBlue
@@ -63,6 +65,7 @@ fun PageTowConfirmOrder(
 ){
     val paymentButtonState = (payMethodState == PaymentMethod.CASH || paymentState == PaymentState.Success)
 
+    val payment_failed_please_try_again = stringResource(R.string.payment_failed_please_try_again)
 
     Scaffold(
         modifier = Modifier
@@ -115,7 +118,7 @@ fun PageTowConfirmOrder(
                     if(paymentButtonState) Color.BrandBlue else Color.VeryLightGray,
                     if(paymentButtonState) Color.White else Color.LightGray,
                     40.dp,
-                    "Confirm order"
+                    stringResource(R.string.confirm_order)
                 ) {
                     uploadOrder(paymentButtonState)
                 }
@@ -165,7 +168,9 @@ fun PageTowConfirmOrder(
                         backgroundcolor = if(paymentState == PaymentState.Success) Color.Green else Color.DarkOrange,
                         fontcolor = Color.White,
                         horizontalPadding = 50.dp,
-                        title = if(paymentState == PaymentState.Success) "Payment success!" else "Pay now!"
+                        title = if(paymentState == PaymentState.Success) stringResource(R.string.payment_success) else stringResource(
+                            R.string.pay_now
+                        )
                     ){
                         if(paymentState != PaymentState.Success){
                             startPayment()
@@ -186,7 +191,7 @@ fun PageTowConfirmOrder(
 
     LaunchedEffect(paymentState){
         if(paymentState is PaymentState.Failed) {
-            snackBarHostState.bottomSnackBar("Payment failed. Please try again.")
+            snackBarHostState.bottomSnackBar(payment_failed_please_try_again)
         }
     }
 }

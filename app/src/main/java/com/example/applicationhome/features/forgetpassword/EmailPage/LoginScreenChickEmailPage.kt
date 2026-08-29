@@ -10,9 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.data.data.model.SignUpBasicTextFields
@@ -31,7 +33,7 @@ fun LoginScreenChickEmailPage(
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Text(
-            text = "Check Email",
+            text = stringResource(R.string.check_email),
             style = MaterialTheme.typography.titleLarge,
             color = Color.Black,
             fontWeight = FontWeight.ExtraBold,
@@ -41,7 +43,7 @@ fun LoginScreenChickEmailPage(
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = "Enter your email address.",
+            text = stringResource(R.string.enter_your_email_address_to_retrieve),
             style = MaterialTheme.typography.titleLarge,
             color = Color.Gray,
             fontSize = 15.sp
@@ -58,7 +60,7 @@ fun LoginScreenChickEmailPage(
             backgroundcolor = if(isButtonEnabled) Color.DarkOrange else Color.LightGray,
             fontcolor = Color.White,
             horizontalPadding = 40.dp,
-            title = "Next"
+            title = stringResource(R.string.next)
         ){
             chickEmail()
         }

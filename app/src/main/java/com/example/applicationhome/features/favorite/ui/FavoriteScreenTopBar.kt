@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
@@ -41,7 +42,7 @@ fun FavoriteScreenTopBar(
         MyTopBar(
             Color.White,
             modifier = Modifier.fillMaxWidth().height(100.dp).shadow(elevation = 5.dp),
-            "Favorite",
+            stringResource(R.string.favorite),
             Color.DeepMatteBlack,
             {
                 IconButton(

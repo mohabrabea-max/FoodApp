@@ -1,22 +1,31 @@
 package com.example.applicationhome.data.data.model
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 
+enum class AccountTextFieldEnum {
+    F_NAME,
+    L_NAME,
+    PHONE,
+    ADDRESS
+}
+
 data class AccountTextFieldClass(
     val id : Int,
-    val title : String,
-    val emptyCount : String,
+    @StringRes val title : Int,
+    @StringRes val emptyCount : Int,
     val textField : TextFieldState,
-    val icon : ImageVector?
+    val icon : ImageVector?,
+    val type : AccountTextFieldEnum
 )
 
 data class ProfileOptions(
-    val title : String,
-    var description : String?,
+    @StringRes val title : Int,
+    @StringRes var description : Int?,
     val icon: ImageVector,
     val screen: String
 )
@@ -74,7 +83,7 @@ sealed interface SignUpStates {
 }
 
 data class LoginTextFields(
-    val title : String,
+    @StringRes val title : Int,
     val textField : TextFieldState,
     val icon : ImageVector,
     val type : TextFieldsTypes
@@ -87,15 +96,15 @@ enum class ErrorsType{
 }
 
 data class SignUpBasicTextFields(
-    val title : String,
+    @StringRes val title : Int,
     val textField : TextFieldState,
-    val errorMessage : String? = null,
+    @StringRes val errorMessage : Int? = null,
     val icon : ImageVector,
     val type : TextFieldsTypes
 )
 
 data class SignUpFullNameTextFields(
-    val title : String,
+    @StringRes val title : Int,
     val textField : TextFieldState,
     val errorMessage : Boolean = false,
     val roundedCornerShape : RoundedCornerShape,

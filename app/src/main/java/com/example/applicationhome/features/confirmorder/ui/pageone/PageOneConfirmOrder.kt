@@ -153,7 +153,7 @@ fun PageOneConfirmOrder(
                         ){
 
                             Text(
-                                text = "Area",
+                                text = stringResource(R.string.area),
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium
@@ -170,7 +170,7 @@ fun PageOneConfirmOrder(
                         contentAlignment = Alignment.CenterEnd
                     ){
                         Text(
-                            text = "Change",
+                            text = stringResource(R.string.change),
                             color = Color.DarkOrange,
                             fontSize = 15.sp
                         )

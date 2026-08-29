@@ -43,6 +43,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalTextToolbar
 import androidx.compose.ui.platform.TextToolbar
 import androidx.compose.ui.platform.TextToolbarStatus
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +52,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.data.data.model.VerificationTextFields
 import kotlinx.coroutines.delay
@@ -124,7 +126,7 @@ fun LoginScreenVerificationCodePage(
             horizontalAlignment = Alignment.CenterHorizontally
         ){
             Text(
-                text = "Verification Code",
+                text = stringResource(R.string.verification_code),
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.Black,
                 fontWeight = FontWeight.ExtraBold,
@@ -134,7 +136,7 @@ fun LoginScreenVerificationCodePage(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "Enter the verification code to confirm your identity",
+                text = stringResource(R.string.enter_the_verification_code_to_confirm_your_identity),
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.Gray,
                 fontSize = 15.sp,
@@ -235,7 +237,7 @@ fun LoginScreenVerificationCodePage(
             horizontalArrangement = Arrangement.Center
         ){
             Text(
-                text = "Didn't Get The Code?",
+                text = stringResource(R.string.didn_t_get_the_code),
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.Black,
                 fontSize = 15.sp
@@ -244,7 +246,7 @@ fun LoginScreenVerificationCodePage(
             Spacer(modifier = Modifier.width(5.dp))
 
             Text(
-                text = "Resend It",
+                text = stringResource(R.string.resend_it),
                 style = MaterialTheme.typography.titleLarge,
                 color = if(resendVerificationCodeState) Color.DarkOrange else Color.Gray,
                 fontSize = 15.sp,
@@ -270,7 +272,7 @@ fun LoginScreenVerificationCodePage(
                 Spacer(modifier = Modifier.width(3.dp))
 
                 Text(
-                    text = "in $formattedTime",
+                    text = stringResource(R.string.in__time) + " $formattedTime",
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.Gray,
                     fontSize = 15.sp,

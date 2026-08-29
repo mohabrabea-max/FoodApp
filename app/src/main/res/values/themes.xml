@@ -6,7 +6,7 @@
         <item name="postSplashScreenTheme">@style/Theme.ApplicationHome</item>
     </style>
 
-    <style name="Theme.ApplicationHome" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.ApplicationHome" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/lightBackgroundForCards</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>

@@ -9,10 +9,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
+import com.example.applicationhome.R
 import com.example.applicationhome.core.domain.model.userClassFireBaseToUserDataDatabase
 import com.example.applicationhome.core.domain.repository.ProfileRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.data.data.model.AccountTextFieldClass
+import com.example.applicationhome.data.data.model.AccountTextFieldEnum
 import com.example.applicationhome.data.data.model.ProfileEditResult
 import com.example.applicationhome.data.data.model.UserClassFireBase
 import com.example.applicationhome.data.local.entity.UserClass
@@ -79,32 +81,36 @@ class ProfileViewModel @Inject constructor(
 
     val profileTextFields  = listOf(
         AccountTextFieldClass(
-            102,
-            "First Name",
-            "First Name",
-            firstNameTextField,
-            Icons.Default.Edit
+            id = 102,
+            title = R.string.first_name,
+            emptyCount = R.string.first_name,
+            textField = firstNameTextField,
+            icon = Icons.Default.Edit,
+            type = AccountTextFieldEnum.F_NAME
         ),
         AccountTextFieldClass(
-            103,
-            "Last Name",
-            "Last Name",
-            lastNameTextField,
-            Icons.Default.Edit
+            id = 103,
+            title = R.string.last_name,
+            emptyCount = R.string.last_name,
+            textField = lastNameTextField,
+            icon = Icons.Default.Edit,
+            type = AccountTextFieldEnum.L_NAME
         ),
         AccountTextFieldClass(
-            104,
-            "Phone number",
-            "01011223344",
-            phoneNumberTextField,
-            Icons.Default.Edit
+            id = 104,
+            title = R.string.phone_number,
+            emptyCount = R.string._01011223344,
+            textField = phoneNumberTextField,
+            icon = Icons.Default.Edit,
+            type = AccountTextFieldEnum.PHONE
         ),
         AccountTextFieldClass(
-            105,
-            "Address",
-            "street - building - floor",
-            addressTextField,
-            Icons.Default.Edit
+            id = 105,
+            title = R.string.address,
+            emptyCount = R.string.street_building_floor,
+            textField = addressTextField,
+            icon = Icons.Default.Edit,
+            type = AccountTextFieldEnum.ADDRESS
         )
     )
 

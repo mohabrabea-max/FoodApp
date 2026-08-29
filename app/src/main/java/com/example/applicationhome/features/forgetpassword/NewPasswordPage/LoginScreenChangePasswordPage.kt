@@ -10,10 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.data.data.model.SignUpBasicTextFields
@@ -36,7 +38,7 @@ fun LoginScreenChangePasswordPage(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Reset Password",
+                text = stringResource(R.string.reset_password),
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.Black,
                 fontWeight = FontWeight.ExtraBold,
@@ -46,7 +48,7 @@ fun LoginScreenChangePasswordPage(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "Set s Strong password to secure access Always Stay Safe",
+                text = stringResource(R.string.set_s_strong_password_to_secure_access_always_stay_safe),
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.Gray,
                 fontSize = 15.sp,
@@ -68,7 +70,7 @@ fun LoginScreenChangePasswordPage(
             backgroundcolor = if(isButtonEnabled) Color.DarkOrange else Color.LightGray,
             fontcolor = Color.White,
             horizontalPadding = 40.dp,
-            title = "Change password"
+            title = stringResource(R.string.change_password)
         ){
             changePassword()
         }

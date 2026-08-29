@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -93,8 +94,12 @@ fun LoginScreen(
 
 
     BackHandler(enabled = true){
-        navigationController.navigate(Screens.DashboardScreen.screen) {
-            popUpTo(0) { inclusive = true }
+        if (navigationController.previousBackStackEntry != null) {
+            navigationController.popBackStack()
+        }else{
+            navigationController.navigate(Screens.DashboardScreen.screen) {
+                popUpTo(0) { inclusive = true }
+            }
         }
     }
 
@@ -140,8 +145,12 @@ fun LoginScreen(
                 {
                     IconButton(
                         onClick = {
-                            navigationController.navigate(Screens.DashboardScreen.screen) {
-                                popUpTo(0) { inclusive = true }
+                            if (navigationController.previousBackStackEntry != null) {
+                                navigationController.popBackStack()
+                            }else{
+                                navigationController.navigate(Screens.DashboardScreen.screen) {
+                                    popUpTo(0) { inclusive = true }
+                                }
                             }
                         },
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
@@ -215,7 +224,7 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(30.dp))
 
                 Text(
-                    text = "Login",
+                    text = stringResource(R.string.login),
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.Black,
                     fontWeight = FontWeight.Bold,
@@ -267,7 +276,7 @@ fun LoginScreen(
                 }
 
                 Text(
-                    text = "Forget your password",
+                    text = stringResource(R.string.forget_your_password),
                     style = MaterialTheme.typography.titleLarge,
                     color = textButtonsColor,
                     fontSize = 15.sp,
@@ -278,7 +287,7 @@ fun LoginScreen(
                         .clickable(
                             interactionSource = interactionSource,
                             indication = null
-                        ) {
+                        ){
                             if(isNetworkAvailable){
                                 navigationController.navigate(Screens.ForgetPasswordScreen.screen)
                             }else{
@@ -294,7 +303,7 @@ fun LoginScreen(
                     backgroundcolor = if (isButtonEnabled && isNetworkAvailable) Color.DarkOrange else Color.LightGray,
                     fontcolor = Color.White,
                     horizontalPadding = 40.dp,
-                    title = "Login"
+                    title = stringResource(R.string.login)
                 ) {
                     if(isNetworkAvailable && clickState.value && isButtonEnabled){
                         clickState.value = false
@@ -327,7 +336,7 @@ fun LoginScreen(
                     )
 
                     Text(
-                        text = "OR",
+                        text = stringResource(R.string.or),
                         modifier = Modifier.padding(horizontal = 16.dp),
                         style = TextStyle(
                             fontSize = 14.sp,
@@ -377,14 +386,14 @@ fun LoginScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "New user?",
+                        text = stringResource(R.string.new_user),
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.Black,
                         fontSize = 15.sp
                     )
 
                     Text(
-                        text = "Sign Up",
+                        text = stringResource(R.string.sign_up),
                         style = MaterialTheme.typography.titleLarge,
                         color = textButtonsColor,
                         fontSize = 15.sp,

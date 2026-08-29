@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -78,7 +79,7 @@ fun Cart(
             MyTopBar(
                 Color.White,
                 modifier = Modifier.fillMaxWidth().height(100.dp).shadow(elevation = 5.dp),
-                "Cart",
+                stringResource(R.string.cart),
                 Color.DeepMatteBlack,
                 {
                     IconButton(
@@ -149,7 +150,7 @@ fun Cart(
                         )
                         Spacer(modifier = Modifier.height(30.dp))
                         Text(
-                            text = "There's nothing in your cart yet",
+                            text = stringResource(R.string.there_s_nothing_in_your_cart_yet),
                             fontSize = 22.sp,
                             style = MaterialTheme.typography.labelLarge,
                             color = Color.BrownForFont,
@@ -158,7 +159,7 @@ fun Cart(
                         )
                         Spacer(modifier = Modifier.height(7.dp))
                         Text(
-                            text = "Ready to order?",
+                            text = stringResource(R.string.ready_to_order),
                             fontSize = 14.sp,
                             style = MaterialTheme.typography.bodySmall,
                             color = Color.Gray,
@@ -178,7 +179,7 @@ fun Cart(
                             padding(7.dp).align(Alignment.CenterHorizontally)
                         ){
                             Text(
-                                text = "Add items",
+                                text = stringResource(R.string.add_food),
                                 fontSize = 15.sp,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = Color.BrownForFont,
@@ -201,7 +202,7 @@ fun Cart(
                         Color.DarkOrange,
                         Color.White,
                         40.dp,
-                        "Checkout"
+                        stringResource(R.string.checkout)
                     ){ navigationController.navigate(Screens.ConfirmOrderScreen.screen) }
                 }
             }

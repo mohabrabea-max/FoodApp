@@ -35,10 +35,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.bottomSnackBarWithAction
 import com.example.applicationhome.core.ui.theme.DarkOrange
@@ -61,6 +63,9 @@ fun StreetMapPage(
     retryNetwork : () -> Unit
 ){
     val interactionSource = remember { MutableInteractionSource() }
+
+    val snackBarMessage = stringResource(R.string.error_getting_location_information)
+    val retry = stringResource(R.string.retry)
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -135,7 +140,7 @@ fun StreetMapPage(
                     backgroundcolor = buttonColor,
                     fontcolor = fontButtonColor,
                     horizontalPadding = 30.dp,
-                    title = "Select Location",
+                    title = stringResource(R.string.select_location),
                     action = {
                         if(isNetworkAvailable){
                             onLocationSelected(location.first, location.second)
@@ -164,8 +169,8 @@ fun StreetMapPage(
                         when(event){
                             UiEvent.ShowNetworkError -> {
                                 snackBarHostState.bottomSnackBarWithAction(
-                                    message = "Error getting location information",
-                                    actionLabel = "Retry",
+                                    message = snackBarMessage,
+                                    actionLabel = retry,
                                     duration = SnackbarDuration.Indefinite
                                 ){ retryNetwork() }
                             }

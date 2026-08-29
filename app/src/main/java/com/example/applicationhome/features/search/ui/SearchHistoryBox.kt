@@ -31,10 +31,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.R
 
 @Composable
 fun SearchHistoryBox(
@@ -98,7 +100,7 @@ fun SearchHistoryBox(
             containerColor = Color.White
         ){
             DropdownMenuItem(
-                text = { Text("Search") },
+                text = { Text(stringResource(R.string.search)) },
                 leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
                 onClick = {
                     isMenuExpanded = false
@@ -107,7 +109,7 @@ fun SearchHistoryBox(
             )
 
             DropdownMenuItem(
-                text = { Text("Delete", color = Color.Red) },
+                text = { Text(stringResource(R.string.delete), color = Color.Red) },
                 leadingIcon = {
                     Icon(
                         Icons.Outlined.Clear,

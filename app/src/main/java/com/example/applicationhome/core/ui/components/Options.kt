@@ -31,14 +31,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.applicationhome.R
 import com.example.applicationhome.core.domain.model.Drawer
-import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.components.model.DashboardScreenViewModel
+import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.data.data.model.Screens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -70,7 +72,7 @@ fun Options(
                 NavigationDrawerItem(
                     label = {
                         if(state) Text(
-                            text = item.title,
+                            text = stringResource(item.title),
                             color = Color.DarkOrange,
                             modifier = Modifier.layout { measurable, constraints ->
                                 val placeable = measurable.measure(
@@ -86,7 +88,15 @@ fun Options(
                         )
                     },
                     selected = currentRoute == item.screen,
-                    icon = {Icon(imageVector = item.icon, contentDescription = item.title, tint = Color.DarkOrange, modifier = Modifier.padding(start = 5.dp))},
+                    icon = {
+                        Icon(
+                            imageVector = item.icon,
+                            contentDescription = stringResource(item.title),
+                            tint = Color.DarkOrange,
+                            modifier = Modifier
+                                .padding(start = 5.dp)
+                        )
+                    },
                     onClick = {
                         coroutineScope.launch{
                             drawerState.close()
@@ -110,7 +120,7 @@ fun Options(
                 NavigationDrawerItem(
                     label = {
                         if(state) Text(
-                            text = item.title,
+                            text = stringResource(item.title),
                             color = Color.DarkOrange,
                             modifier = Modifier.layout { measurable, constraints ->
                                 val placeable = measurable.measure(
@@ -126,7 +136,15 @@ fun Options(
                         )
                     },
                     selected = currentRoute == item.screen,
-                    icon = {Icon(imageVector = item.icon, contentDescription = item.title, tint = Color.DarkOrange, modifier = Modifier.padding(start = 5.dp))},
+                    icon = {
+                        Icon(
+                            imageVector = item.icon,
+                            contentDescription = stringResource(item.title),
+                            tint = Color.DarkOrange,
+                            modifier = Modifier
+                                .padding(start = 5.dp)
+                        )
+                    },
                     onClick = {
                         coroutineScope.launch{
                             drawerState.close()
@@ -140,7 +158,7 @@ fun Options(
                 NavigationDrawerItem(
                     label = {
                         if(state) Text(
-                            text = "Settings",
+                            text = stringResource(R.string.settings),
                             color = Color.DarkOrange,
                             modifier = Modifier.layout { measurable, constraints ->
                                 val placeable = measurable.measure(
@@ -156,7 +174,16 @@ fun Options(
                         )
                     },
                     selected = currentRoute == Screens.Settings.screen,
-                    icon = {Icon(imageVector = Icons.Default.Settings, contentDescription = "Settings", tint = Color.DarkOrange, modifier = Modifier.padding(start = 5.dp))},
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = stringResource(R.string.settings
+                            ),
+                            tint = Color.DarkOrange,
+                            modifier = Modifier
+                                .padding(start = 5.dp)
+                        )
+                    },
                     onClick = {
                         coroutineScope.launch{
                             drawerState.close()
@@ -186,18 +213,18 @@ fun Options(
                 NavigationDrawerItem(
                     label = {
                         if(state) Text(
-                            text = if(isLogIn) "Logout" else "Login",
+                            text = if(isLogIn) stringResource(R.string.logout) else stringResource(R.string.sign_in),
                             color = if(isLogIn) Color.Red else Color.Green,
                             modifier = Modifier.layout { measurable, constraints ->
-                            val placeable = measurable.measure(
-                                constraints.copy(
-                                    minWidth = fixedWidth,
-                                    maxWidth = fixedWidth
+                                val placeable = measurable.measure(
+                                    constraints.copy(
+                                        minWidth = fixedWidth,
+                                        maxWidth = fixedWidth
+                                    )
                                 )
-                            )
-                            layout(width = constraints.maxWidth, height = placeable.height) {
-                                placeable.placeRelative(0, 0)
-                            }
+                                layout(width = constraints.maxWidth, height = placeable.height) {
+                                    placeable.placeRelative(0, 0)
+                                }
                             }
                         )
                     },
@@ -205,7 +232,7 @@ fun Options(
                     icon = {
                         Icon(
                             imageVector = if(isLogIn) Icons.AutoMirrored.Filled.Logout else Icons.AutoMirrored.Filled.Login,
-                            contentDescription = if(isLogIn) "Logout" else "Login",
+                            contentDescription = if(isLogIn) stringResource(R.string.logout) else stringResource(R.string.sign_in),
                             tint = if(isLogIn) Color.Red else Color.Green,
                             modifier = Modifier.padding(start = 5.dp)
                         )

@@ -33,13 +33,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,6 +75,8 @@ fun Settings(
     settingsListState : LazyGridState,
     settingsViewModel : SettingsViewModel
 ){
+    var showLanguageBottomSheet by rememberSaveable { mutableStateOf(false) }
+
     val userData by settingsViewModel.userData.collectAsStateWithLifecycle()
     val isLogin by settingsViewModel.isLogin.collectAsStateWithLifecycle()
 
@@ -97,7 +103,7 @@ fun Settings(
                 MyTopBar(
                     Color.White,
                     modifier = Modifier.fillMaxWidth().height(100.dp),
-                    "Settings",
+                    stringResource(R.string.settings),
                     Color.DeepMatteBlack,
                     {
                         IconButton(
@@ -161,7 +167,12 @@ fun Settings(
             }
         }
     ){ paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues).background(Color.VeryLightGray).padding(horizontal = 10.dp)){
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .background(Color.VeryLightGray)
+                .padding(horizontal = 10.dp)
+        ){
             LazyVerticalGrid(
                 state = settingsListState,
                 modifier = Modifier.fillMaxSize(),
@@ -175,7 +186,15 @@ fun Settings(
                     SettingsOptionsBox(
                         item
                     ){
-                        navigationController.navigate(item.screen)
+                        when(item.screen){
+                            Screens.Favorite.screen -> {
+                                dashboardNavController.navigate(item.screen)
+                            }
+
+                            else -> {
+                                navigationController.navigate(item.screen)
+                            }
+                        }
                     }
                 }
 
@@ -184,7 +203,7 @@ fun Settings(
                 item(span = { GridItemSpan(2) }){
                     Row(modifier = Modifier.padding(start = 5.dp), horizontalArrangement = Arrangement.Start){
                         Text(
-                            text = "Settings",
+                            text = stringResource(R.string.settings),
                             style = MaterialTheme.typography.titleLarge,
                             color = Color.Black,
                             fontSize = 18.sp,
@@ -193,21 +212,61 @@ fun Settings(
                 }
 
                 item(span = { GridItemSpan(2) }){
-                    SettingsBox(settings1()){  }
+                    SettingsBox(settings1()){
+                        when(it){
+                            SettingsScreens.Language -> {
+                                showLanguageBottomSheet = true
+                            }
+
+                            SettingsScreens.AboutApp -> {
+
+                            }
+
+                            else -> {}
+                        }
+                    }
                 }
 
                 item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(5.dp))}
 
                 if(isLogin) item(span = { GridItemSpan(2) }){
-                    SettingsBox(settings2()){ if(it == SettingsScreens.Logout) settingsViewModel.logout() }
+                    SettingsBox(settings2()){
+                        when(it){
+                            SettingsScreens.Logout -> {
+                                settingsViewModel.logout()
+                            }
+
+                            SettingsScreens.DeleteAccount -> {
+
+                            }
+
+                            else -> {}
+                        }
+                    }
                 }
 
                 if(!isLogin) item(span = { GridItemSpan(2) }){
-                    SettingsBox(listOf(Settings("LogIn", Icons.AutoMirrored.Filled.Login, SettingsScreens.LogoIn))){ navigationController.navigate(Screens.LoginScreen.screen) }
+                    SettingsBox(
+                        listOf(
+                            Settings(
+                                title = R.string.sign_in,
+                                Icons.AutoMirrored.Filled.Login,
+                                SettingsScreens.LogoIn
+                            )
+                        )
+                    ){ navigationController.navigate(Screens.LoginScreen.screen) }
                 }
 
                 item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(80.dp))}
             }
+        }
+
+        if(showLanguageBottomSheet){
+            LanguageBottomSheet(
+                currentLanguageCode = settingsViewModel.currentLanguage,
+                onLanguageSelected = { settingsViewModel.setAppLanguage(it.code) },
+                onDismissRequest = { showLanguageBottomSheet = false }
+            )
         }
     }
 }

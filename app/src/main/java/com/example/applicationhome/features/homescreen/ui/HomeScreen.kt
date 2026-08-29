@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -53,6 +54,7 @@ import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.core.ui.theme.DarkOrange
@@ -156,7 +158,7 @@ fun HomeScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "What would you like to eat?",
+                                text = stringResource(R.string.what_would_you_like_to_eat),
                                 fontSize = 22.sp,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = Color.White.copy(alpha = 1f),

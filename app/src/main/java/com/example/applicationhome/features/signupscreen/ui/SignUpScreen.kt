@@ -54,6 +54,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -196,7 +197,7 @@ fun SignUpScreen(
             Column(modifier = Modifier.align(Alignment.TopCenter)){
                 Spacer(modifier = Modifier.height(55.dp))
                 Text(
-                    text = "Sign up",
+                    text = stringResource(R.string.sign_up),
                     color = Color.White,
                     fontSize = 40.sp,
                     fontWeight = FontWeight.Medium
@@ -300,7 +301,7 @@ fun SignUpScreen(
                                             backgroundcolor = if(state) Color.DarkOrange else Color.LightGray,
                                             fontcolor = Color.White,
                                             horizontalPadding = 40.dp,
-                                            title = "Create account"
+                                            title = stringResource(R.string.create_account)
                                         ){ if(state && isNetworkAvailable){ viewModel.onSignUpClicked() } }
 
                                         Spacer(modifier = Modifier.height(25.dp))
@@ -318,7 +319,7 @@ fun SignUpScreen(
                                             )
 
                                             Text(
-                                                text = "OR",
+                                                text = stringResource(R.string.or),
                                                 modifier = Modifier.padding(horizontal = 16.dp),
                                                 style = TextStyle(
                                                     fontSize = 14.sp,
@@ -370,14 +371,14 @@ fun SignUpScreen(
                                             horizontalArrangement = Arrangement.Center
                                         ){
                                             Text(
-                                                text = "Already have an account?",
+                                                text = stringResource(R.string.already_have_an_account),
                                                 style = MaterialTheme.typography.titleLarge,
                                                 color = Color.Black,
                                                 fontSize = 15.sp
                                             )
 
                                             Text(
-                                                text = "Login",
+                                                text = stringResource(R.string.login),
                                                 style = MaterialTheme.typography.titleLarge,
                                                 color = textButtonsColor,
                                                 fontSize = 15.sp,
@@ -404,7 +405,7 @@ fun SignUpScreen(
                                 item {
                                     Spacer(modifier = Modifier.height(50.dp))
                                     Text(
-                                        text = "Complete your profile",
+                                        text = stringResource(R.string.complete_your_profile),
                                         style = MaterialTheme.typography.titleLarge,
                                         color = Color.Black,
                                         fontWeight = FontWeight.Bold,
@@ -422,7 +423,7 @@ fun SignUpScreen(
                                         backgroundcolor = Color.DarkOrange,
                                         fontcolor = Color.White,
                                         horizontalPadding = 40.dp,
-                                        title = "Sign Up"
+                                        title = stringResource(R.string.sign_up)
                                     ){
                                         if(clickState.value){
 

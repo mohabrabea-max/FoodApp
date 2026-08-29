@@ -28,6 +28,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.AccountTextFieldClass
+import com.example.applicationhome.data.data.model.AccountTextFieldEnum
 import com.example.applicationhome.data.data.model.ProfileEditResult
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,19 +47,19 @@ fun EditProfileTextField(
     isButtonClicked : Boolean,
     errorOutput : ProfileEditResult
 ){
-    val noErrors = listOf("Phone number", "Address")
+    val noErrors = listOf(AccountTextFieldEnum.PHONE, AccountTextFieldEnum.ADDRESS)
     val focusRequester = remember { FocusRequester() }
 
     val textColor =
         if (
             isButtonClicked &&
             item.textField.text.isEmpty() &&
-            !noErrors.contains(item.title)
+            !noErrors.contains(item.type)
         ) Color.Red
 
         else if(
             errorOutput == ProfileEditResult.PhoneNumberIncomplete &&
-            item.title == "Phone number"
+            item.type == AccountTextFieldEnum.PHONE
         ) Color.Red
 
         else Color.Gray
@@ -87,13 +89,13 @@ fun EditProfileTextField(
 
             label = {
                 Text(
-                    text = item.title,
+                    text = stringResource(item.title),
                     color = textColor,
                     fontSize = 15.sp
                 )
             },
 
-            leadingIcon = if(item.title == "Phone number") {
+            leadingIcon = if(item.type == AccountTextFieldEnum.PHONE) {
                 {
                     Row(verticalAlignment = Alignment.CenterVertically){
                         Spacer(modifier = Modifier.width(15.dp))
@@ -119,14 +121,14 @@ fun EditProfileTextField(
 
             placeholder = {
                 Text(
-                    text = item.emptyCount,
+                    text = stringResource(item.emptyCount),
                     color = Color.Gray,
                     fontSize = 16.sp
                 )
             },
 
             keyboardOptions = KeyboardOptions(
-                keyboardType = if (item.title == "Phone number") KeyboardType.Phone else KeyboardType.Text,
+                keyboardType = if (item.type == AccountTextFieldEnum.PHONE) KeyboardType.Phone else KeyboardType.Text,
                 imeAction = ImeAction.Done
             ),
 
@@ -148,7 +150,7 @@ fun EditProfileTextField(
                 {
                     Icon(
                         imageVector = item.icon,
-                        contentDescription = item.title,
+                        contentDescription = stringResource(item.title),
                         modifier = Modifier.size(22.dp),
                         tint = if (item.icon == Icons.Default.Add) Color.Blue else Color.Gray
                     )
@@ -158,7 +160,7 @@ fun EditProfileTextField(
 
         if(
             errorOutput == ProfileEditResult.PhoneNumberIncomplete &&
-            item.title == "Phone number"
+            item.type == AccountTextFieldEnum.PHONE
         ){
             Text(
                 text = "Phone number must be 11 digits and start with 010, 011, 012, or 015.",

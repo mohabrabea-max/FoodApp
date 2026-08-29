@@ -42,12 +42,14 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.designsystem.TopBarButtons
 import com.example.applicationhome.core.ui.theme.DeepMatteBlack
 import kotlinx.coroutines.delay
@@ -161,7 +163,7 @@ fun SearchScreenTopBar(
                         ) {
                             if (localSearchString.text.isEmpty()) {
                                 Text(
-                                    text = "Search for food or restaurant",
+                                    text = stringResource(R.string.search_for_food_or_restaurant),
                                     color = Color.Gray,
                                     fontSize = 14.sp
                                 )

@@ -33,10 +33,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -85,7 +85,7 @@ fun NameTextField(item : SignUpFullNameTextFields){
     ){
         if(item.textField.text.isEmpty()){
             Text(
-                text = "First Name",
+                text = stringResource(item.title),
                 color = Color.Gray,
                 fontSize = 18.sp
             )
@@ -131,11 +131,7 @@ fun SignupTextField(
 
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(start = 30.dp)
-                    .onFocusChanged { focusState ->
-                        if (focusState.isFocused) {
-                        }
-                    },
+                    .padding(start = 30.dp),
 
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
 
@@ -178,7 +174,7 @@ fun SignupTextField(
 
                     if(item.textField.text.isEmpty()){
                         Text(
-                            text = item.title,
+                            text = stringResource(item.title),
                             color = if(item.errorMessage == null) Color.Gray else Color.Red,
                             fontSize = 18.sp
                         )
@@ -208,7 +204,7 @@ fun SignupTextField(
         if(item.errorMessage != null){
             Spacer(modifier = Modifier.height(7.dp))
 
-            ErrorMessageTextField(item.errorMessage)
+            ErrorMessageTextField(stringResource(item.errorMessage))
         }
     }
 }

@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.ShoppingCartCheckout
+import com.example.applicationhome.R
 import com.example.applicationhome.data.data.model.Options
 import com.example.applicationhome.data.data.model.ProfileOptions
 import com.example.applicationhome.data.data.model.Screens
@@ -20,54 +21,58 @@ import com.example.applicationhome.data.data.model.SettingsScreens
 object ProfileData {
     fun profileOptions() = listOf(
         ProfileOptions(
-            "Orders",
-            "Manage & track",
+            R.string.my_orders,
+            R.string.manage_track,
             Icons.Default.ShoppingCartCheckout,
             Screens.LastOrdersScreen.screen
         ),
         ProfileOptions(
-            "Notifications",
+            R.string.notifications,
             null,
             Icons.Default.Notifications,
             Screens.Notifications.screen
         ),
         ProfileOptions(
-            "Account Center",
+            R.string.edite_profile,
             null,
             Icons.Default.Person,
             Screens.Profile.screen
         ),
         ProfileOptions(
-            "Wishlist",
-            "saved items",
+            R.string.wishlist,
+            R.string.saved_items,
             Icons.Default.FavoriteBorder,
             Screens.Favorite.screen
         )
     )
 
     fun settings1() = listOf(
-        Settings("Language", Icons.Default.Language, SettingsScreens.Language),
-        Settings("About App", Icons.Default.Info, SettingsScreens.AboutApp),
+        Settings(R.string.language, Icons.Default.Language, SettingsScreens.Language),
+        Settings(R.string.about_app, Icons.Default.Info, SettingsScreens.AboutApp),
     )
 
     fun settings2() = listOf(
-        Settings("Logout", Icons.AutoMirrored.Filled.ExitToApp, SettingsScreens.Logout),
-        Settings("Delete Account", Icons.Default.Delete, SettingsScreens.DeleteAccount)
+        Settings(R.string.logout, Icons.AutoMirrored.Filled.ExitToApp, SettingsScreens.Logout),
+        Settings(R.string.delete_account, Icons.Default.Delete, SettingsScreens.DeleteAccount)
     )
 }
 
 object Drawer {
     fun optionsData1() = listOf(
-        Options("Search", Icons.Default.Search, Screens.Search.screen),
-        Options("Cart", Icons.Default.ShoppingCart, Screens.Cart.screen)
+        Options(R.string.search, Icons.Default.Search, Screens.Search.screen),
+        Options(R.string.cart, Icons.Default.ShoppingCart, Screens.Cart.screen)
     )
 
     fun optionsData2() = listOf(
-        Options("Profile", Icons.Default.Person, Screens.Profile.screen),
-        Options("Notifications", Icons.Default.Notifications, Screens.Notifications.screen),
+        Options(R.string.edite_profile, Icons.Default.Person, Screens.Profile.screen),
+        Options(R.string.notifications, Icons.Default.Notifications, Screens.Notifications.screen),
     )
 }
 
 object TapRowData {
-    val FavoriteTapRow = listOf("Meals", "Snacks", "Restaurants")
+    fun FavoriteTapRow() = listOf(
+        R.string.meals,
+        R.string.snacks,
+        R.string.restaurants
+    )
 }

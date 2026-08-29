@@ -1,7 +1,6 @@
 package com.example.applicationhome.features.search.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -21,9 +20,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Clear
-import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -48,6 +49,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.data.model.Screens
@@ -74,8 +76,6 @@ fun Search(
 
     val cartTotalNumber by searchViewModel.cartTotalNumber.collectAsStateWithLifecycle()
     val categories by searchViewModel.categories.collectAsStateWithLifecycle()
-
-    val interactionSource = remember { MutableInteractionSource() }
 
     val searchHistory by searchViewModel.searchHistory.collectAsStateWithLifecycle()
     val searchHistoryAfterFiltering by searchViewModel.searchHistoryAfterFiltering.collectAsStateWithLifecycle()
@@ -195,10 +195,11 @@ fun Search(
                                     )
                                 }
 
-                                Divider(
-                                    color = Color.LightGray.copy(alpha = 0.6f),
+                                HorizontalDivider(
                                     modifier = Modifier
-                                        .padding(horizontal = 20.dp)
+                                        .padding(horizontal = 20.dp),
+                                    thickness = DividerDefaults.Thickness,
+                                    color = Color.LightGray.copy(alpha = 0.6f)
                                 )
                             }
 
@@ -219,11 +220,14 @@ fun Search(
                                     northWestClickable = { searchViewModel.searchFilter(item) }
                                 )
 
-                                if(item != searchSuggestions.last()) Divider(
-                                    color = Color.LightGray.copy(alpha = 0.6f),
-                                    modifier = Modifier
-                                        .padding(horizontal = 20.dp)
-                                )
+                                if(item != searchSuggestions.last()) {
+                                    HorizontalDivider(
+                                        modifier = Modifier
+                                            .padding(horizontal = 20.dp),
+                                        thickness = DividerDefaults.Thickness,
+                                        color = Color.LightGray.copy(alpha = 0.6f)
+                                    )
+                                }
                             }
                         }
 
@@ -234,8 +238,6 @@ fun Search(
                                 TextInSearchShimmer()
                             }
                         }
-
-                        else -> {}
                     }
 
                 }else if(search.text.isEmpty()){
@@ -263,7 +265,7 @@ fun Search(
                             if(searchHistory.isNotEmpty()){
                                 item{
                                     Text(
-                                        text = "Search History",
+                                        text = stringResource(R.string.search_history),
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp)
@@ -318,8 +320,6 @@ fun Search(
                                 }
                             }
                         }
-
-                        else -> {}
                     }
 
                     //       --------------------------\\ Search Results //--------------------------
@@ -349,26 +349,9 @@ fun Search(
                         HomeUiState.Loading -> {
                             item { SearchResultScreenShimmer() }
                         }
-
-                        else -> {}
                     }
                 }
             }
         }
     }
 }
-
-//combinedClickable
-
-
-// Modifier
-//            .combinedClickable(
-//                onClick = {
-//                    // 👈 الأكشن لما يضغط ضغطة عادية
-//                    onItemClick()
-//                },
-//                onLongClick = {
-//                    // 🚀 الأكشن لما يضغط ضغطة طويلة!
-//                    onItemLongClick()
-//                }
-//            )

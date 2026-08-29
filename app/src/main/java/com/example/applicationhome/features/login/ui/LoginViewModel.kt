@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
+import com.example.applicationhome.R
 import com.example.applicationhome.core.domain.exception.AppDomainException
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.SearchRepository
@@ -62,14 +63,14 @@ class LoginViewModel @Inject constructor(
     private val _loginTextFields = MutableStateFlow(
         listOf(
             LoginTextFields(
-                title = "Email address",
+                title = R.string.email_address,
                 textField = emailTextField,
                 icon = Icons.Default.Email,
                 type = TextFieldsTypes.Basic
             ),
 
             LoginTextFields(
-                title = "Password",
+                title = R.string.password,
                 textField = passwordTextField,
                 icon = Icons.Default.Lock,
                 type = TextFieldsTypes.Password

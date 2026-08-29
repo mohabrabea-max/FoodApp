@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.theme.BrandBlue
 import com.example.applicationhome.core.ui.theme.BrownForFont
 import com.example.applicationhome.data.data.model.OrderStatesEnum
@@ -107,7 +108,7 @@ fun LastOrdersBox(
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
                 Text(
-                    text = "Order",
+                    text = stringResource(R.string.order),
                     fontSize = 15.sp,
                     style = MaterialTheme.typography.labelLarge,
                     color = Color.BrownForFont,
@@ -132,7 +133,7 @@ fun LastOrdersBox(
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
                 Text(
-                    text = "Restaurant",
+                    text = stringResource(R.string.restaurant),
                     fontSize = 15.sp,
                     style = MaterialTheme.typography.labelLarge,
                     color = Color.BrownForFont,
@@ -157,7 +158,7 @@ fun LastOrdersBox(
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
                 Text(
-                    text = "Items",
+                    text = stringResource(R.string.items),
                     fontSize = 15.sp,
                     style = MaterialTheme.typography.labelLarge,
                     color = Color.BrownForFont,
@@ -182,7 +183,7 @@ fun LastOrdersBox(
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
                 Text(
-                    text = "Price",
+                    text = stringResource(R.string.price),
                     fontSize = 15.sp,
                     style = MaterialTheme.typography.labelLarge,
                     color = Color.BrownForFont,
