@@ -1,35 +1,52 @@
 package com.example.applicationhome.features.confirmorder.ui.pageone
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
+import com.example.applicationhome.data.data.model.ConfirmOrderScreenTextFieldEnum
 import com.example.applicationhome.data.data.model.ProfileEditResult
 import com.example.applicationhome.data.data.model.TextFieldClassFromConfirmOrderScreen
 
@@ -39,15 +56,17 @@ fun ConfirmOrderScreenTextField(
     item : TextFieldClassFromConfirmOrderScreen,
     isButtonClicked : Boolean,
     errorOutput : ProfileEditResult,
-    bottonStateChange : () -> Unit
+    isSavePhoneNumberSelected : Boolean,
+    bottonStateChange : () -> Unit,
+    onSavePhoneNumber : () -> Unit
 ){
-    val errors = listOf("Phone number", "House", "Street")
+    val errors = listOf(ConfirmOrderScreenTextFieldEnum.PHONE,  ConfirmOrderScreenTextFieldEnum.HOUSE, ConfirmOrderScreenTextFieldEnum.STREET)
     val focusRequester = remember { FocusRequester() }
 
     val error =
         isButtonClicked &&
         item.textField.text.isEmpty() &&
-        errors.contains(item.title)
+        errors.contains(item.type)
 
     val textColor =
         if (error) Color.Red
@@ -66,7 +85,7 @@ fun ConfirmOrderScreenTextField(
             value = item.textField.text.toString(),
 
             onValueChange = { newText ->
-                if(newText.length <= 11 || item.title != "Phone number"){
+                if(newText.length <= 11 || item.type != ConfirmOrderScreenTextFieldEnum.PHONE){
                     item.textField.edit { replace(0, length, newText) }
                     bottonStateChange()
                 }
@@ -86,13 +105,13 @@ fun ConfirmOrderScreenTextField(
 
             label = {
                 Text(
-                    text = item.title,
+                    text = stringResource(item.title),
                     color = textColor,
                     fontSize = 15.sp
                 )
             },
 
-            leadingIcon = if(item.title == "Phone number") {
+            leadingIcon = if(item.type == ConfirmOrderScreenTextFieldEnum.PHONE) {
                 {
                     Row(verticalAlignment = Alignment.CenterVertically){
                         Spacer(modifier = Modifier.width(15.dp))
@@ -118,14 +137,14 @@ fun ConfirmOrderScreenTextField(
 
             placeholder = {
                 Text(
-                    text = item.title,
+                    text = stringResource(item.title),
                     color = Color.Gray,
                     fontSize = 16.sp
                 )
             },
 
             keyboardOptions = KeyboardOptions(
-                keyboardType = if (item.title == "Phone number") KeyboardType.Phone else KeyboardType.Text,
+                keyboardType = if (item.type == ConfirmOrderScreenTextFieldEnum.PHONE) KeyboardType.Phone else KeyboardType.Text,
                 imeAction = ImeAction.Done
             ),
 
@@ -144,15 +163,79 @@ fun ConfirmOrderScreenTextField(
             shape = RoundedCornerShape(20.dp)
         )
 
+        if(item.type == ConfirmOrderScreenTextFieldEnum.PHONE){
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 5.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ){
+                SquareRadioButton(selected = isSavePhoneNumberSelected){
+                    onSavePhoneNumber()
+                }
+
+                Text(
+                    text = stringResource(R.string.save_this_number),
+                    color = Color.Black,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(horizontal = 7.dp)
+                )
+            }
+        }
+
         if(
             errorOutput == ProfileEditResult.PhoneNumberIncomplete &&
-            item.title == "Phone number"
+            item.type == ConfirmOrderScreenTextFieldEnum.PHONE
         ){
             Text(
-                text = "Phone number must be 11 digits and start with 010, 011, 012, or 015.",
+                text = stringResource(R.string.phone_number_error_message),
                 color = Color.Red,
                 fontSize = 12.sp,
-                modifier = Modifier.padding(horizontal = 5.dp)
+                modifier = Modifier.padding(start = 5.dp, end = 5.dp, top = 10.dp)
+            )
+        }
+    }
+}
+
+
+@Composable
+fun SquareRadioButton(
+    selected : Boolean = false,
+    modifier : Modifier = Modifier,
+    selectedColor : Color = Color.DarkOrange,
+    unselectedColor : Color = Color.Gray,
+    onClick : () -> Unit
+){
+    val interactionSource = remember { MutableInteractionSource() }
+
+    val backgroundColor by animateColorAsState(
+        targetValue = if (selected) selectedColor else Color.Transparent,
+        label = "BgColor"
+    )
+    val borderColor by animateColorAsState(
+        targetValue = if (selected) selectedColor else unselectedColor,
+        label = "BorderColor"
+    )
+
+    Box(
+        modifier = modifier
+            .size(22.dp)
+            .clip(RoundedCornerShape(5.dp))
+            .border(width = 1.dp, color = borderColor, shape = RoundedCornerShape(5.dp))
+            .background(backgroundColor)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ){ onClick() },
+        contentAlignment = Alignment.Center
+    ){
+        if (selected) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(17.dp)
             )
         }
     }

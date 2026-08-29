@@ -30,6 +30,12 @@ interface FoodAppAPIs{
         @Body newData : UserClassFireBase
     ): Response<Unit>
 
+    @PUT("users/{userId}/phonenumber.json")
+    suspend fun editPhoneNumber(
+        @Path("userId") userId : String,
+        @Body newData : String
+    ): Response<Unit>
+
 
     //                              فانكشن بتجيب الوجبات اللي بعد اخر ابديت بس
     @GET("meals.json")

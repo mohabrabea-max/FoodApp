@@ -32,12 +32,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
@@ -55,9 +57,11 @@ fun PageOneConfirmOrder(
     bottonState: Boolean,
     location : String,
     locationImage : String,
+    isSavePhoneNumberSelected : Boolean,
     bottonStateChange : () -> Unit,
     openMaps : () -> Unit,
-    onBottonStateChange : () -> Unit
+    onBottonStateChange : () -> Unit,
+    onSavePhoneNumber : () -> Unit
 ){
     val color = if(bottonState) Color.DarkOrange else Color.VeryLightGray
     val fontcolor = if(bottonState) Color.White else Color.LightGray
@@ -82,7 +86,7 @@ fun PageOneConfirmOrder(
                     color,
                     fontcolor,
                     40.dp,
-                    "Save address"
+                    stringResource(R.string.save_address)
                 ) {
                     if(bottonState) onBottonStateChange()
                 }
@@ -178,10 +182,13 @@ fun PageOneConfirmOrder(
 
             items(textFieldConfirmOrderScreenList) { item ->
                 ConfirmOrderScreenTextField(
-                    item,
-                    isButtonClicked,
-                    confirmOrderError ?: ProfileEditResult.NetworkError,
-                ) { bottonStateChange() }
+                    item = item,
+                    isButtonClicked = isButtonClicked,
+                    errorOutput = confirmOrderError ?: ProfileEditResult.NetworkError,
+                    isSavePhoneNumberSelected = isSavePhoneNumberSelected,
+                    bottonStateChange = { bottonStateChange() },
+                    onSavePhoneNumber = { onSavePhoneNumber() }
+                )
             }
 
             item{Spacer(modifier = Modifier.height(100.dp))}

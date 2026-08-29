@@ -32,4 +32,12 @@
     <string name="done">Done</string>
     <string name="the_order_could_not_be_cancelled_please_try_again_later">The order could not be cancelled, please try again later</string>
     <string name="try_again">Try again</string>
+    <string name="house">House</string>
+    <string name="street">Street</string>
+    <string name="phone_number">Phone number</string>
+    <string name="additional_directions_optional">Additional directions (optional)</string>
+    <string name="address_label_optional">Address label (optional)</string>
+    <string name="phone_number_error_message">Phone number must be 11 digits and start with 010, 011, 012, or 015.</string>
+    <string name="save_address">Save address</string>
+    <string name="save_this_number">Save this number</string>
 </resources>

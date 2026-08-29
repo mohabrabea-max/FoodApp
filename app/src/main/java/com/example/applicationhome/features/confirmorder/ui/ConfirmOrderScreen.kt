@@ -99,6 +99,8 @@ fun ConfirmOrderScreen(
     val streetAndHome by confirmOrderScreenViewModel.streetAndHome.collectAsStateWithLifecycle()
     val phoneNumber by confirmOrderScreenViewModel.phoneNumber.collectAsStateWithLifecycle()
 
+    val isSavePhoneNumberSelected by confirmOrderScreenViewModel.isSavePhoneNumberSelected.collectAsStateWithLifecycle()
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -225,12 +227,14 @@ fun ConfirmOrderScreen(
                         bottonState = bottonState,
                         location = locationState.locationName,
                         locationImage = locationImage,
+                        isSavePhoneNumberSelected = isSavePhoneNumberSelected,
                         bottonStateChange = { confirmOrderScreenViewModel.bottonStateChange() },
                         openMaps = {
                             confirmOrderScreenViewModel.fetchCurrentLocation()
                             confirmOrderScreenViewModel.navigateTo(ConfirmOrderScreens.Map(MapEntryPoint.UserData))
                         },
-                        onBottonStateChange = { confirmOrderScreenViewModel.onBottonStateChange() }
+                        onBottonStateChange = { confirmOrderScreenViewModel.onBottonStateChange() },
+                        onSavePhoneNumber = { confirmOrderScreenViewModel.savePhoneNumber() }
                     )
                 }
 

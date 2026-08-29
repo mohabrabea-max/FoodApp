@@ -1,10 +1,20 @@
 package com.example.applicationhome.data.data.model
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.text.input.TextFieldState
+
+enum class ConfirmOrderScreenTextFieldEnum {
+    HOUSE,
+    STREET,
+    PHONE,
+    ADDITIONAL,
+    ADDRESS
+}
 
 data class TextFieldClassFromConfirmOrderScreen(
     val textField : TextFieldState,
-    val title : String
+    @StringRes val title : Int,
+    val type : ConfirmOrderScreenTextFieldEnum
 )
 
 data class MapUiState(

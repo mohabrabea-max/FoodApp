@@ -16,6 +16,8 @@ interface UserRepository {
     suspend fun signUp(userId : String, userRequest : UserClassFireBase): Result<Unit>
     fun login()
 
+    suspend fun updatePhoneNumber(userId : String, newNumber : String)
+
     suspend fun validateUserOnAppLaunch(): Boolean
     suspend fun observeSessionStatus()
 }

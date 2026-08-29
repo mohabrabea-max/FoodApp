@@ -15,6 +15,7 @@ import com.example.applicationhome.data.remote.FoodAppAPIs
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.gotrue.SessionStatus
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,11 +23,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.milliseconds
 
 class UserRepositoryImpl @Inject constructor(
     private val supabaseRepository : SupabaseRepository,
     private val orderRepository : OrderRepository,
-    private val userdao : UsersDao,
+    private val userDao : UsersDao,
     private val favoriteDao: FavoriteDao,
     private val api : FoodAppAPIs,
     @ApplicationScope externalScope : CoroutineScope
@@ -35,7 +37,7 @@ class UserRepositoryImpl @Inject constructor(
     override val isLogin : StateFlow<Boolean> = _isLogin
 
     override val userData : StateFlow<UserClass> =
-        userdao.getActiveUser()
+        userDao.getActiveUser()
             .map { userInDb ->
                 userInDb ?: UserClass(firstname = "Guest")
             }.stateIn(
@@ -43,6 +45,26 @@ class UserRepositoryImpl @Inject constructor(
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = UserClass(firstname = "Guest")
             )
+
+
+    private suspend fun <T> retryLocally(
+        times : Int = 3,
+        initialDelay : Long = 1500,
+        block : suspend  () -> T
+    ): T {
+        var currentDelay = initialDelay
+
+        repeat(times - 1){
+            try {
+                return block()
+            } catch (e: Exception) {
+                if(e is kotlinx.coroutines.CancellationException) throw e
+                delay(currentDelay.milliseconds)
+                currentDelay *= 2
+            }
+        }
+        return block()
+    }
 
 
     override suspend fun setUserDataToDatabase(emailstate : String): LoginStates {
@@ -67,7 +89,7 @@ class UserRepositoryImpl @Inject constructor(
                     user.address,
                     true
                 )
-                userdao.addUser(data)
+                userDao.addUser(data)
                 LoginStates.Success
 
             } else {
@@ -115,7 +137,7 @@ class UserRepositoryImpl @Inject constructor(
 
 
     override suspend fun logOut(){
-        userdao.deleteUserFromDatabase()
+        userDao.deleteUserFromDatabase()
         orderRepository.resetOrdersHistorySyncTime()
         _isLogin.value = false
     }
@@ -136,7 +158,7 @@ class UserRepositoryImpl @Inject constructor(
                     userRequest.address,
                     true
                 )
-                userdao.addUser(userData)
+                userDao.addUser(userData)
 
                 Result.success(Unit)
             } else {
@@ -158,6 +180,16 @@ class UserRepositoryImpl @Inject constructor(
 
     override fun login(){
         _isLogin.value = true
+    }
+
+    override suspend fun updatePhoneNumber(userId : String, newNumber : String){
+        retryLocally {
+            val response = api.editPhoneNumber(userId, newNumber)
+            if(response.isSuccessful){
+                userDao.updatePhoneNumber(userId, newNumber)
+                LoginStates.Success
+            }
+        }
     }
 
     override suspend fun validateUserOnAppLaunch(): Boolean {
@@ -188,7 +220,7 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     private suspend fun clearLocalData(){
-        userdao.deleteUserFromDatabase()
+        userDao.deleteUserFromDatabase()
         favoriteDao.deleteAllFromFavorite()
     }
 }

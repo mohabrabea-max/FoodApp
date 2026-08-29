@@ -5,6 +5,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.BuildConfig
+import com.example.applicationhome.R
 import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.LocationRepository
 import com.example.applicationhome.core.domain.repository.OrderRepository
@@ -13,6 +14,7 @@ import com.example.applicationhome.core.domain.usecase.CartUseCase
 import com.example.applicationhome.core.domain.usecase.PaymentUseCase
 import com.example.applicationhome.data.data.model.ActionsStates
 import com.example.applicationhome.data.data.model.CheckoutUiState
+import com.example.applicationhome.data.data.model.ConfirmOrderScreenTextFieldEnum
 import com.example.applicationhome.data.data.model.ConfirmOrderScreens
 import com.example.applicationhome.data.data.model.MapEntryPoint
 import com.example.applicationhome.data.data.model.MapUiState
@@ -71,14 +73,31 @@ class ConfirmOrderScreenViewModel @Inject constructor(
     private val addressLabelState = TextFieldState()
 
     val textFieldConfirmOrderScreenList = listOf(
-        TextFieldClassFromConfirmOrderScreen(houseState, "House"),
-        TextFieldClassFromConfirmOrderScreen(streetState, "Street"),
-        TextFieldClassFromConfirmOrderScreen(phoneNumberState, "Phone number"),
+        TextFieldClassFromConfirmOrderScreen(
+            houseState,
+            R.string.house,
+            ConfirmOrderScreenTextFieldEnum.HOUSE
+        ),
+        TextFieldClassFromConfirmOrderScreen(
+            streetState,
+            R.string.street,
+            ConfirmOrderScreenTextFieldEnum.STREET
+        ),
+        TextFieldClassFromConfirmOrderScreen(
+            phoneNumberState,
+            R.string.phone_number,
+            ConfirmOrderScreenTextFieldEnum.PHONE
+        ),
         TextFieldClassFromConfirmOrderScreen(
             additionalDirectionsState,
-            "Additional directions (optional)"
+            R.string.additional_directions_optional,
+            ConfirmOrderScreenTextFieldEnum.ADDITIONAL
         ),
-        TextFieldClassFromConfirmOrderScreen(addressLabelState, "Address label (optional)"),
+        TextFieldClassFromConfirmOrderScreen(
+            addressLabelState,
+            R.string.address_label_optional,
+            ConfirmOrderScreenTextFieldEnum.ADDRESS
+        )
     )
 
     val cartItems = cartRepository.cartItems
@@ -348,6 +367,15 @@ class ConfirmOrderScreenViewModel @Inject constructor(
 
 
     // --------------------------------------------\\ Finish Confirm Order //--------------------------------------------
+    private val _isSavePhoneNumberSelected = MutableStateFlow(true)
+    val isSavePhoneNumberSelected = _isSavePhoneNumberSelected.asStateFlow()
+
+    fun savePhoneNumber(){
+        _isSavePhoneNumberSelected.value = !_isSavePhoneNumberSelected.value
+    }
+
+
+    // --------------------------------------------\\ Finish Confirm Order //--------------------------------------------
     private val _bottonState = MutableStateFlow(false)
     val bottonState = _bottonState.asStateFlow()
 
@@ -411,7 +439,7 @@ class ConfirmOrderScreenViewModel @Inject constructor(
 
     fun uploadOrder(onSuccess : () -> Unit, onField : () -> Unit){
         viewModelScope.launch {
-            val currentUser = userRepository.userData.first()
+            val currentUser = userRepository.userData.value
             val userId = currentUser.id
 
             val orderInformation = cartRepository.getCartData(userId).first()
@@ -469,6 +497,10 @@ class ConfirmOrderScreenViewModel @Inject constructor(
             )
 
             _confirmOrderState.value = ActionsStates.Loading
+
+            if(_isSavePhoneNumberSelected.value){
+                userRepository.updatePhoneNumber(userId, phoneNumberState.text.toString())
+            }
 
             val result = orderRepository.uploadOrderRequest(order, userId)
 

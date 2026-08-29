@@ -1,9 +1,8 @@
 package com.example.applicationhome.data.local.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import com.example.applicationhome.data.local.entity.UserClass
 import kotlinx.coroutines.flow.Flow
 
@@ -15,8 +14,11 @@ interface UsersDao {            // دا الجزء اللي بينفذ عملي�
     @Query("SELECT * FROM users WHERE isActive = 1")
     fun getActiveUser(): Flow<UserClass?>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun addUser(user : UserClass)
+
+    @Query("UPDATE users SET phonenumber = :newNumber WHERE id = :userId")
+    suspend fun updatePhoneNumber(userId : String, newNumber : String)
 
     @Query("DELETE FROM users")
     suspend fun deleteUserFromDatabase()

@@ -33,4 +33,12 @@
     <string name="done">إنهاء</string>
     <string name="the_order_could_not_be_cancelled_please_try_again_later">يتعذر إلغاء الطلب، حاول مرة أخرى لاحقًا</string>
     <string name="try_again">حاول مجددًا</string>
+    <string name="house">المنزل</string>
+    <string name="street">الشارع</string>
+    <string name="phone_number">رقم الهاتف</string>
+    <string name="additional_directions_optional">تفاصيل إضافية (اختياري)</string>
+    <string name="address_label_optional">ملصق العنوان (اختياري)</string>
+    <string name="phone_number_error_message">يجب أن يتكون رقم الهاتف من 11 رقمًا ويبدأ بـ 010 أو 011 أو 012 أو 015.</string>
+    <string name="save_address">حفظ العنوان</string>
+    <string name="save_this_number">حفظ هذا الرقم</string>
 </resources>
