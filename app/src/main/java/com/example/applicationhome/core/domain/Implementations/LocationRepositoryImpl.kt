@@ -3,11 +3,11 @@ package com.example.applicationhome.core.domain.Implementations
 import android.content.Context
 import android.location.Geocoder
 import android.os.Build
+import com.example.applicationhome.BuildConfig
 import com.example.applicationhome.core.domain.repository.LocationRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Locale
 import javax.inject.Inject
-import javax.inject.Singleton
 
 class LocationRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
@@ -39,5 +39,20 @@ class LocationRepositoryImpl @Inject constructor(
                 onAddressFound("تعذر جلب العنوان", "")
             }
         }
+    }
+
+    override fun buildStaticMapUrl(lat: Double, lon: Double): String {
+        val zoom = 16
+        val width = 600
+        val height = 300
+        val apiKey = BuildConfig.GEOAPIFY_MAP_API_KEY
+
+        return "https://maps.geoapify.com/v1/staticmap?" +
+                "style=osm-carto&" +
+                "width=$width&height=$height&" +
+                "center=lonlat:$lon,$lat&" +
+                "zoom=$zoom&" +
+                "marker=lonlat:$lon,$lat;color:%23ff0000;size:medium&" +
+                "apiKey=$apiKey"
     }
 }

@@ -3,6 +3,29 @@ package com.example.applicationhome.data.data.model
 import androidx.annotation.StringRes
 import androidx.compose.foundation.text.input.TextFieldState
 
+
+data class ConfirmOrderUiState(
+    val streetAndHome : Pair<String, String> = Pair("", ""),
+    val confirmOrderError : ProfileEditResult? = null,
+    val locationState : MapUiState = MapUiState(),
+    val locationImage : String = "",
+    val confirmOrderState : ActionsStates = ActionsStates.Idle,
+    val payMethodState : CheckoutUiState = CheckoutUiState(),
+    val paymentState : PaymentState = PaymentState.Idle,
+    val paymentApiState : PaymentApiState = PaymentApiState.Idle,
+    val isSavePhoneNumberSelected : Boolean = true,
+    val  bottonState : Boolean = false,
+    val isButtonClicked : Boolean = false
+)
+
+data class CheckoutFormState(
+    val houseState : TextFieldState = TextFieldState(),
+    val streetState : TextFieldState = TextFieldState(),
+    val phoneNumberState : TextFieldState = TextFieldState(),
+    val additionalDirectionsState : TextFieldState = TextFieldState(),
+    val addressLabelState : TextFieldState = TextFieldState()
+)
+
 enum class ConfirmOrderScreenTextFieldEnum {
     HOUSE,
     STREET,

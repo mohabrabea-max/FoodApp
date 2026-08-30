@@ -6,4 +6,5 @@ interface LocationRepository {
         lng: Double,
         onAddressFound: (areaName: String, fullAddress: String) -> Unit
     )
+    fun buildStaticMapUrl(lat: Double, lon: Double): String
 }

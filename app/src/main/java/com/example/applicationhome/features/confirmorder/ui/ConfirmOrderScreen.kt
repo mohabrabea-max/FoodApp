@@ -51,6 +51,7 @@ import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.data.data.model.ConfirmOrderScreens
+import com.example.applicationhome.data.data.model.ConfirmOrderUiState
 import com.example.applicationhome.data.data.model.MapEntryPoint
 import com.example.applicationhome.data.data.model.PaymentApiState
 import com.example.applicationhome.data.data.model.PaymentState
@@ -65,7 +66,8 @@ import com.example.applicationhome.features.confirmorder.ui.pagetow.PaymobWebVie
 @Composable
 fun ConfirmOrderScreen(
     navigationController : NavHostController,
-    confirmOrderScreenViewModel : ConfirmOrderScreenViewModel
+    confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
+    uiState : ConfirmOrderUiState
 ){
     val currentScreen by confirmOrderScreenViewModel.currentScreen.collectAsStateWithLifecycle()
 
@@ -75,32 +77,15 @@ fun ConfirmOrderScreen(
 
     val isNetworkAvailable by confirmOrderScreenViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
 
-    val payMethodState by confirmOrderScreenViewModel.payMethodState.collectAsStateWithLifecycle()
-    val paymentState by confirmOrderScreenViewModel.paymentState.collectAsStateWithLifecycle()
-    val paymentApiState by confirmOrderScreenViewModel.paymentApiState.collectAsStateWithLifecycle()
-
-    val confirmOrderState by confirmOrderScreenViewModel.confirmOrderState.collectAsStateWithLifecycle()
-    val isButtonClicked by confirmOrderScreenViewModel.isButtonClicked.collectAsStateWithLifecycle()
+    val cart by confirmOrderScreenViewModel.cartItems.collectAsStateWithLifecycle()
 
     val textFieldConfirmOrderScreenList = confirmOrderScreenViewModel.textFieldConfirmOrderScreenList
 
-    val confirmOrderError by confirmOrderScreenViewModel.confirmOrderError.collectAsStateWithLifecycle()
-
-    val cart by confirmOrderScreenViewModel.cartItems.collectAsStateWithLifecycle()
-
     val totalprice by confirmOrderScreenViewModel.totalPrice.collectAsStateWithLifecycle()
-
-    val bottonState by confirmOrderScreenViewModel.bottonState.collectAsStateWithLifecycle()
 
     val clickState = rememberSaveable { mutableStateOf(true) }
 
-    val locationState by confirmOrderScreenViewModel.locationState.collectAsStateWithLifecycle()
-    val locationImage by confirmOrderScreenViewModel.locationImage.collectAsStateWithLifecycle()
-
-    val streetAndHome by confirmOrderScreenViewModel.streetAndHome.collectAsStateWithLifecycle()
     val phoneNumber by confirmOrderScreenViewModel.phoneNumber.collectAsStateWithLifecycle()
-
-    val isSavePhoneNumberSelected by confirmOrderScreenViewModel.isSavePhoneNumberSelected.collectAsStateWithLifecycle()
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -187,7 +172,7 @@ fun ConfirmOrderScreen(
             when(screen){
                 // --------------------------------------------\\ Map Page //--------------------------------------------
                 is ConfirmOrderScreens.Map -> {
-                    if(locationState.isLoading){
+                    if(uiState.locationState.isLoading){
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
@@ -201,8 +186,8 @@ fun ConfirmOrderScreen(
 
                     }else{
                         StreetMapPage(
-                            initialLatitude = locationState.latitude,
-                            initialLongitude = locationState.longitude,
+                            initialLatitude = uiState.locationState.latitude,
+                            initialLongitude = uiState.locationState.longitude,
                             snackBarHostState = snackbarHostState,
                             uiEvent = confirmOrderScreenViewModel.uiEvent,
                             isNetworkAvailable = isNetworkAvailable,
@@ -222,14 +207,14 @@ fun ConfirmOrderScreen(
                 is ConfirmOrderScreens.UserData -> {
                     PageOneConfirmOrder(
                         textFieldConfirmOrderScreenList = textFieldConfirmOrderScreenList,
-                        isButtonClicked = isButtonClicked,
-                        confirmOrderError = confirmOrderError,
-                        confirmOrderState = confirmOrderState,
-                        bottonState = bottonState,
-                        location = locationState.locationName,
-                        locationImage = locationImage,
-                        isSavePhoneNumberSelected = isSavePhoneNumberSelected,
-                        bottonStateChange = { confirmOrderScreenViewModel.bottonStateChange() },
+                        isButtonClicked = uiState.isButtonClicked,
+                        confirmOrderError = uiState.confirmOrderError,
+                        confirmOrderState = uiState.confirmOrderState,
+                        bottonState = uiState.bottonState,
+                        location = uiState.locationState.locationName,
+                        locationImage = uiState.locationImage,
+                        isSavePhoneNumberSelected = uiState.isSavePhoneNumberSelected,
+                        bottonStateChange = { confirmOrderScreenViewModel.buttonStateChange() },
                         openMaps = {
                             confirmOrderScreenViewModel.fetchCurrentLocation()
                             confirmOrderScreenViewModel.navigateTo(ConfirmOrderScreens.Map(MapEntryPoint.UserData))
@@ -242,17 +227,17 @@ fun ConfirmOrderScreen(
                 // --------------------------------------------\\ Page 2 //--------------------------------------------
                 is ConfirmOrderScreens.Checkout -> {
                     PageTowConfirmOrder(
-                        confirmOrderState = confirmOrderState,
+                        confirmOrderState = uiState.confirmOrderState,
                         snackBarHostState = snackbarHostState,
                         cart = cart,
                         totalPrice = totalprice,
-                        locationImage = locationImage,
-                        city = locationState.locationName,
-                        streetAndHome = streetAndHome,
+                        locationImage = uiState.locationImage,
+                        city = uiState.locationState.locationName,
+                        streetAndHome = uiState.streetAndHome,
                         phoneNumber = phoneNumber,
-                        payMethodState = payMethodState.selectedPaymentMethod,
-                        paymentState = paymentState,
-                        paymentApiState = paymentApiState,
+                        payMethodState = uiState.payMethodState.selectedPaymentMethod,
+                        paymentState = uiState.paymentState,
+                        paymentApiState = uiState.paymentApiState,
                         onMethodSelected = { confirmOrderScreenViewModel.onPaymentMethodSelected(it) },
                         openMaps = {
                             confirmOrderScreenViewModel.fetchCurrentLocation()
@@ -271,7 +256,7 @@ fun ConfirmOrderScreen(
                                         }
                                     },
 
-                                    onField = {
+                                    onFailed = {
                                         clickState.value = true
                                     }
                                 )
@@ -282,7 +267,7 @@ fun ConfirmOrderScreen(
 
                 // --------------------------------------------\\ Paymob Web View //--------------------------------------------
                 is ConfirmOrderScreens.PaymentGateway -> {
-                    when(val state = paymentApiState) {
+                    when(val state = uiState.paymentApiState) {
                         is PaymentApiState.Success -> {
                             PaymobWebViewScreen(
                                 paymentToken = state.paymentToken,
