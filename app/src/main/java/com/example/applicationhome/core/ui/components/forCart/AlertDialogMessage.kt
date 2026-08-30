@@ -39,7 +39,7 @@ fun AlertDialogMessage(
     dismissButton : (() -> Unit)? = null,
 ){
     Dialog(
-        onDismissRequest = { if(dismissButton != null) dismissButton() else confirmButton() },
+        onDismissRequest = {  },
         properties = DialogProperties(
             usePlatformDefaultWidth = false // عشان يفرش في الجناب
         )
@@ -55,7 +55,7 @@ fun AlertDialogMessage(
             Column(
                 modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 25.dp, bottom = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
+            ){
                 Text(
                     text = title,
                     fontSize = 20.sp,

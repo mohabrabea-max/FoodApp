@@ -132,4 +132,11 @@
     <string name="didn_t_get_the_code">لم تحصل على الرمز؟</string>
     <string name="reset_password">تغيير كلمة المرور</string>
     <string name="set_s_strong_password_to_secure_access_always_stay_safe">قم بتعيين كلمة مرور قوية لتأمين الوصول. حافظ على سلامتك دائمًا.</string>
+    <string name="are_you_sure_you_want_to_logout">هل أنت متأكد من رغبتك في تسجيل الخروج؟</string>
+    <string name="are_you_sure_you_want_to_delete_your_account">هل أنت متأكد من رغبتك في حذف حسابك؟</string>
+    <string name="hey_there">مرحبًا!</string>
+    <string name="log_in_or_sign_up_for_a_more_personalized_ordering_experience">سجّل الدخول أو اشترك للحصول على تجربة طلب أكثر تخصيصًا</string>
+    <string name="continue_your_order">هل تريد متابعة طلبك؟</string>
+    <string name="you_still_have_items_in_your_cart_would_you_like_to_review_them_and_finish_placing_your_order">لا تزال هناك منتجات في سلة التسوق الخاصة بك. هل ترغب في مراجعتها وإتمام عملية الشراء؟</string>
+    <string name="view_cart">عرض سلة التسوق</string>
 </resources>

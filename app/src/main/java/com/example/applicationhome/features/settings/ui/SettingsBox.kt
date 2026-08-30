@@ -15,7 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.core.ui.theme.BrownForFont
 import com.example.applicationhome.data.data.model.ProfileOptions
 import com.example.applicationhome.data.data.model.Settings
 import com.example.applicationhome.data.data.model.SettingsScreens
@@ -58,20 +58,22 @@ fun SettingsOptionsBox(item : ProfileOptions, navigation : () -> Unit){
                     item.icon,
                     contentDescription = null
                 )
+
                 Spacer(modifier = Modifier.width(10.dp))
+
                 Column(horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center){
                     Text(
                         text = stringResource(item.title),
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.Black,
-                        fontSize = 18.sp,
+                        fontSize = 17.sp,
                     )
                     if(description != null){
                         Text(
                             text = stringResource(description),
                             style = MaterialTheme.typography.titleLarge,
                             color = Color.Gray,
-                            fontSize = 15.sp,
+                            fontSize = 14.sp,
                         )
                     }
                 }
@@ -81,7 +83,11 @@ fun SettingsOptionsBox(item : ProfileOptions, navigation : () -> Unit){
 }
 
 @Composable
-fun SettingsBox(settings : List<Settings>, onClickable : (SettingsScreens) -> Unit){
+fun SettingsBox(
+    settings : List<Settings>,
+    contentColor : Color = Color.Black,
+    onClickable : (SettingsScreens) -> Unit
+){
     val interactionSource = remember { MutableInteractionSource() }
 
     Column(modifier = Modifier.padding(start = 5.dp, end = 5.dp).fillMaxSize().clip(RoundedCornerShape(10.dp)).background(Color.White)){
@@ -97,17 +103,33 @@ fun SettingsBox(settings : List<Settings>, onClickable : (SettingsScreens) -> Un
                     }
                     .padding(start = 17.dp, end = 17.dp)
             ){
-                Spacer(modifier = Modifier.height(25.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically){
-                    Icon(modifier = Modifier.size(20.dp), imageVector = item.icon, contentDescription = stringResource(item.title), tint = Color.Black)
+                    Icon(
+                        modifier = Modifier
+                            .size(19.dp),
+                        imageVector = item.icon,
+                        contentDescription = stringResource(item.title),
+                        tint = contentColor
+                    )
+
                     Spacer(modifier = Modifier.width(15.dp))
-                    Text(text = stringResource(item.title), fontSize = 17.sp, color = Color.BrownForFont)
+
+                    Text(
+                        text = stringResource(item.title),
+                        fontSize = 16.sp,
+                        color = contentColor
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(25.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                if(item != settings.last()) Divider(color = Color.LightGray.copy(alpha = 0.2f))
+                if(item != settings.last()) HorizontalDivider(
+                    Modifier,
+                    DividerDefaults.Thickness,
+                    color = Color.LightGray.copy(alpha = 0.3f)
+                )
             }
         }
     }

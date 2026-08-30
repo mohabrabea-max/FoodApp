@@ -2,7 +2,6 @@ package com.example.applicationhome.features.settings.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,7 +33,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -54,6 +52,7 @@ import com.example.applicationhome.core.domain.model.ProfileData
 import com.example.applicationhome.core.domain.model.ProfileData.settings1
 import com.example.applicationhome.core.domain.model.ProfileData.settings2
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
+import com.example.applicationhome.core.ui.components.forCart.AlertDialogMessage
 import com.example.applicationhome.core.ui.components.profileAndSetting.UserImage
 import com.example.applicationhome.core.ui.theme.BrownForFont
 import com.example.applicationhome.core.ui.theme.DeepMatteBlack
@@ -61,6 +60,7 @@ import com.example.applicationhome.core.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.data.model.Settings
+import com.example.applicationhome.data.data.model.SettingsConfirmDialog
 import com.example.applicationhome.data.data.model.SettingsScreens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -80,9 +80,9 @@ fun Settings(
     val userData by settingsViewModel.userData.collectAsStateWithLifecycle()
     val isLogin by settingsViewModel.isLogin.collectAsStateWithLifecycle()
 
-    val description = userData.phonenumber.ifEmpty { userData.email }
+    val confirmLogoutDialog by settingsViewModel.confirmLogoutDialog.collectAsStateWithLifecycle()
 
-    val interactionSource = remember { MutableInteractionSource() }
+    val description = userData.phonenumber.ifEmpty { userData.email }
 
     val profileoptions = ProfileData.profileOptions()
 
@@ -230,14 +230,17 @@ fun Settings(
                 item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(5.dp))}
 
                 if(isLogin) item(span = { GridItemSpan(2) }){
-                    SettingsBox(settings2()){
+                    SettingsBox(
+                        settings = settings2(),
+                        contentColor = Color.Red
+                    ){
                         when(it){
                             SettingsScreens.Logout -> {
-                                settingsViewModel.logout()
+                                settingsViewModel.confirmLogout()
                             }
 
                             SettingsScreens.DeleteAccount -> {
-
+                                settingsViewModel.confirmDeleteAccount()
                             }
 
                             else -> {}
@@ -247,7 +250,7 @@ fun Settings(
 
                 if(!isLogin) item(span = { GridItemSpan(2) }){
                     SettingsBox(
-                        listOf(
+                        settings = listOf(
                             Settings(
                                 title = R.string.sign_in,
                                 Icons.AutoMirrored.Filled.Login,
@@ -267,6 +270,38 @@ fun Settings(
                 onLanguageSelected = { settingsViewModel.setAppLanguage(it.code) },
                 onDismissRequest = { showLanguageBottomSheet = false }
             )
+        }
+
+        when(val state = confirmLogoutDialog){
+            SettingsConfirmDialog.None -> {}
+
+            is SettingsConfirmDialog.ConfirmLogout -> {
+                AlertDialogMessage(
+                    title = stringResource(R.string.disclaimer),
+                    content = stringResource(state.message),
+                    confirmButtonText = stringResource(R.string.logout),
+                    confirmButton = {
+                        settingsViewModel.closeDialog()
+                        settingsViewModel.logout()
+                    },
+                    dismissButtonText = stringResource(R.string.cancel),
+                    dismissButton = { settingsViewModel.closeDialog() }
+                )
+            }
+
+            is SettingsConfirmDialog.ConfirmDeleteAccount -> {
+                AlertDialogMessage(
+                    title = stringResource(R.string.disclaimer),
+                    content = stringResource(state.message),
+                    confirmButtonText = stringResource(R.string.yes_i_m_sure),
+                    confirmButton = {
+                        settingsViewModel.closeDialog()
+                        //--------------------------------------------------------
+                    },
+                    dismissButtonText = stringResource(R.string.cancel),
+                    dismissButton = { settingsViewModel.closeDialog() }
+                )
+            }
         }
     }
 }

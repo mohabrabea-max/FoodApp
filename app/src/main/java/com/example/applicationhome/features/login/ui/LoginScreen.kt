@@ -98,7 +98,11 @@ fun LoginScreen(
             navigationController.popBackStack()
         }else{
             navigationController.navigate(Screens.DashboardScreen.screen) {
-                popUpTo(0) { inclusive = true }
+                popUpTo(0) {
+                    saveState = true
+                }
+                launchSingleTop = true
+                restoreState = true
             }
         }
     }
@@ -149,7 +153,11 @@ fun LoginScreen(
                                 navigationController.popBackStack()
                             }else{
                                 navigationController.navigate(Screens.DashboardScreen.screen) {
-                                    popUpTo(0) { inclusive = true }
+                                    popUpTo(0) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
                             }
                         },
@@ -312,7 +320,11 @@ fun LoginScreen(
 
                             onSuccess = {
                                 navigationController.navigate(Screens.DashboardScreen.screen) {
-                                    popUpTo(0) { inclusive = true }
+                                    popUpTo(0) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
                             },
 

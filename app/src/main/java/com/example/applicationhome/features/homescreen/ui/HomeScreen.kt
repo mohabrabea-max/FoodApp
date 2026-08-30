@@ -55,6 +55,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.R
+import com.example.applicationhome.core.ui.components.StartingBottomSheet
 import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.core.ui.theme.DarkOrange
@@ -64,6 +65,7 @@ import com.example.applicationhome.data.data.model.HomeScreenActions
 import com.example.applicationhome.data.data.model.HomeScreenParameters
 import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.data.model.Screens
+import com.example.applicationhome.data.data.model.StartBottomSheets
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.features.shimmers.screens.HomeScreenShimmer
 import kotlinx.coroutines.CoroutineScope
@@ -79,6 +81,7 @@ fun HomeScreen(
     parameters : HomeScreenParameters,
     scrollState : LazyListState,
     syncDataUiState : HomeUiState,
+    startBottomSheets : StartBottomSheets,
     isRefreshing : Boolean,
     onRefresh : () -> Unit
 ){
@@ -329,6 +332,36 @@ fun HomeScreen(
                         viewImageState = false
                     }
                 )
+            }
+
+            when(startBottomSheets){
+                StartBottomSheets.None -> {}
+
+                is StartBottomSheets.LoginBottomSheet -> {
+                    StartingBottomSheet(
+                        title = stringResource(startBottomSheets.title),
+                        message = stringResource(startBottomSheets.message),
+                        buttonTitle = stringResource(R.string.login),
+                        onClickable = {
+                            onActions.closeBottomSheet()
+                            navigationController.navigate(Screens.LoginScreen.screen){ launchSingleTop = true }
+                        },
+                        onDismissRequest = { onActions.closeBottomSheet() }
+                    )
+                }
+
+                is StartBottomSheets.OrdersBottomSheet -> {
+                    StartingBottomSheet(
+                        title = stringResource(startBottomSheets.title),
+                        message = stringResource(startBottomSheets.message),
+                        buttonTitle = stringResource(R.string.view_cart),
+                        onClickable = {
+                            onActions.closeBottomSheet()
+                            navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
+                        },
+                        onDismissRequest = { onActions.closeBottomSheet() }
+                    )
+                }
             }
         }
     }

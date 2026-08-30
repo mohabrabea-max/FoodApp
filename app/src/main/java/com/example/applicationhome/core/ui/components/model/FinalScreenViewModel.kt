@@ -3,6 +3,7 @@ package com.example.applicationhome.core.ui.components.model
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.repository.WelcomeScreenRepository
@@ -26,6 +27,7 @@ import javax.inject.Inject
 class FinalScreenViewModel @Inject constructor(
     private val syncAllDataRepository : SyncAllDataRepository,
     private val userRepository : UserRepository,
+    private val cartRepository: CartRepository,
     welcomeScreenRepository : WelcomeScreenRepository,
     networkObserver: NetworkObserver
 ) : ViewModel() {
@@ -48,7 +50,6 @@ class FinalScreenViewModel @Inject constructor(
     val isRefreshing = _isRefreshing.asStateFlow()
 
     private var userId = ""
-
 
     fun refreshData(){
         viewModelScope.launch {

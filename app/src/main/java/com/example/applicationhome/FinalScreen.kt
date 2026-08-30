@@ -29,7 +29,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -37,7 +36,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showNetworkSnackBar
 import com.example.applicationhome.core.ui.components.model.FinalScreenViewModel
-import com.example.applicationhome.core.ui.components.model.UserImageViewModel
 import com.example.applicationhome.core.ui.components.screens.NoInternetScreen
 import com.example.applicationhome.core.ui.theme.MatteBlack
 import com.example.applicationhome.data.data.model.Screens
@@ -79,7 +77,6 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
     val syncUserUiState by finalScreenViewModel.syncUserUiState.collectAsStateWithLifecycle()
     val isRefreshing by finalScreenViewModel.isRefreshing.collectAsStateWithLifecycle()
 
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -118,10 +115,8 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
             composable(
                 Screens.DashboardScreen.screen
             ){
-                val userImageViewModel: UserImageViewModel = viewModel()
                 DashboardScreen(
                     navigationController,
-                    userImageViewModel,
                     syncDataUiState,
                     isRefreshing
                 ){ finalScreenViewModel.refreshData() }

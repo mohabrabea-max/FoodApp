@@ -1,9 +1,6 @@
-package com.example.applicationhome.features.settings.ui
+package com.example.applicationhome.core.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,29 +18,28 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.R
+import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.components.designsystem.TopBarButtons
-import com.example.applicationhome.core.ui.theme.DeepMatteBlack
-import com.example.applicationhome.data.data.model.AppLanguage
+import com.example.applicationhome.core.ui.theme.DarkOrange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LanguageBottomSheet(
-    currentLanguageCode : String,
-    onLanguageSelected : (AppLanguage) -> Unit,
+fun StartingBottomSheet(
+    title : String,
+    message : String,
+    buttonTitle : String,
+    onClickable : () -> Unit,
     onDismissRequest : () -> Unit
 ){
-    val interactionSource = remember { MutableInteractionSource() }
-
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         containerColor = Color.White,
@@ -64,7 +60,8 @@ fun LanguageBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 15.dp)
+                .padding(bottom = 15.dp),
+            horizontalAlignment = Alignment.Start
         ){
             Row(
                 modifier = Modifier
@@ -85,55 +82,41 @@ fun LanguageBottomSheet(
                     elevation = 0.dp,
                     border = 1.dp
                 )
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Text(
-                    text = stringResource(R.string.language),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
             }
 
-            Spacer(modifier = Modifier.height(13.dp))
+            Spacer(modifier = Modifier.height(5.dp))
 
-            AppLanguage.entries.forEach { language ->
-                val isSelected = currentLanguageCode == language.code
+            Text(
+                text = title,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 40.dp).fillMaxWidth()
+            )
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = null
-                        ){
-                            onLanguageSelected(language)
-                            onDismissRequest()
-                        }
-                        .padding(vertical = 10.dp),
+            Spacer(modifier = Modifier.height(20.dp))
 
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ){
-                    Box(
-                        modifier = Modifier
-                            .padding(horizontal = 5.dp)
-                            .height(20.dp)
-                            .width(7.dp)
-                            .clip(shape = RoundedCornerShape(50))
-                            .background(Color.DeepMatteBlack.copy(alpha = if(isSelected) 1f else 0f))
-                    )
+            Text(
+                text = message,
+                fontSize = 17.sp,
+                lineHeight = 25.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 40.dp)
+            )
 
-                    Text(
-                        text = language.titleRes,
-                        fontSize = 18.sp,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                        color = Color.Black,
-                        modifier = Modifier.padding(horizontal = 15.dp)
-                    )
-                }
+            Spacer(modifier = Modifier.height(20.dp))
+
+            MyButton(
+                loading = false,
+                backgroundcolor = Color.DarkOrange,
+                fontcolor = Color.White,
+                horizontalPadding = 40.dp,
+                title = buttonTitle
+            ){
+                onClickable()
             }
         }
     }

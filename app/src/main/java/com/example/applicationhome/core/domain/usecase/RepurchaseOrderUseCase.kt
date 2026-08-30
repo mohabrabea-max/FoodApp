@@ -2,37 +2,18 @@ package com.example.applicationhome.core.domain.usecase
 
 import com.example.applicationhome.core.domain.model.orderItemsClassToCartItemsClass
 import com.example.applicationhome.core.domain.repository.OrderRepository
-import com.example.applicationhome.core.domain.repository.UserRepository
-import com.example.applicationhome.data.data.model.ActionsStates
 import com.example.applicationhome.data.data.model.CategoryEnum
 import com.example.applicationhome.data.data.model.OrderItemsClass
 import com.example.applicationhome.data.data.model.OrderUiClass
 import com.example.applicationhome.data.data.model.RepurchaseOrderStates
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
-class OrdersHistoryUseCase @Inject constructor(
-    private val userRepository : UserRepository,
+class RepurchaseOrderUseCase @Inject constructor(
     private val orderRepository : OrderRepository,
     private val cartUseCase : CartUseCase
 ){
-    suspend fun cancelOrder(orderId : Long): ActionsStates {
-        val userId = userRepository.userData.firstOrNull()?.id
-            ?: return ActionsStates.Failed("Unexpected error")
-
-        return orderRepository.cancelOrder(
-            userId = userId,
-            orderId = orderId,
-            index = 3
-        ).fold(
-            onSuccess = { ActionsStates.Success },
-            onFailure = { ActionsStates.Failed("Unexpected error") }
-        )
-    }
-
-
     suspend fun repurchaseOrder(order : OrderUiClass, orderItems : List<OrderItemsClass>): RepurchaseOrderStates = coroutineScope{
         val isRestaurantExist = orderRepository.isRestaurantExist(order.restaurantId)
         if(!isRestaurantExist){

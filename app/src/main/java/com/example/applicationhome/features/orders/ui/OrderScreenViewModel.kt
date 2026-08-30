@@ -8,18 +8,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.core.domain.repository.OrderRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
-import com.example.applicationhome.core.domain.usecase.OrdersHistoryUseCase
+import com.example.applicationhome.core.domain.usecase.CancelOrderUseCase
+import com.example.applicationhome.core.domain.usecase.RepurchaseOrderUseCase
 import com.example.applicationhome.data.data.model.ActionsStates
+import com.example.applicationhome.data.data.model.ActiveOrderDialog
 import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.data.model.OrderStates
 import com.example.applicationhome.data.data.model.OrderStatesEnum
 import com.example.applicationhome.data.data.model.OrderUiClass
 import com.example.applicationhome.data.data.model.OrdersHistoryScreens
-import com.example.applicationhome.data.data.model.RepurchaseOrderStates
 import com.example.applicationhome.data.data.model.TimelineStep
+import com.example.applicationhome.data.data.model.UiEventOrderCancelled
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +30,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -36,7 +40,8 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrderScreenViewModel @Inject constructor(
     private val orderRepository : OrderRepository,
-    private val ordersHistoryUseCase : OrdersHistoryUseCase,
+    private val repurchaseOrderUseCase : RepurchaseOrderUseCase,
+    private val cancelOrderUseCase : CancelOrderUseCase,
     private val userRepository : UserRepository,
     networkObserver : NetworkObserver
 ): ViewModel(){
@@ -214,27 +219,54 @@ class OrderScreenViewModel @Inject constructor(
         )
 
 
+    // --------------------------------------------\\ Dialogs //--------------------------------------------
+
+    private val _activeDialog = MutableStateFlow<ActiveOrderDialog>(ActiveOrderDialog.None)
+    val activeDialog = _activeDialog.asStateFlow()
+
+
+    fun openCheckRepurchaseAlertDialogMessage(){
+        _activeDialog.value = ActiveOrderDialog.ConfirmRepurchase
+    }
+
+    fun openCheckCancelOrderAlertDialogMessage(){
+        _activeDialog.value = ActiveOrderDialog.ConfirmCancel
+    }
+
+    fun closeAlertDialogMessage(){
+        _activeDialog.value = ActiveOrderDialog.None
+    }
+
+
     // --------------------------------------------\\ Cancel Order //--------------------------------------------
 
     private val _actionState = MutableStateFlow<ActionsStates>(ActionsStates.Idle)
     val actionState = _actionState.asStateFlow()
 
+    private val _uiEventOrderCancelled = Channel<UiEventOrderCancelled>(Channel.BUFFERED)
+    val uiEventOrderCancelled = _uiEventOrderCancelled.receiveAsFlow()
 
-
-
-    fun cancelOrder(orderId : Long, isPageEmpty : () -> Unit){
+    fun cancelOrder(orderId : Long){
         viewModelScope.launch {
             _actionState.value = ActionsStates.Loading
 
-            val result = ordersHistoryUseCase.cancelOrder(orderId)
+            val result = cancelOrderUseCase(orderId)
             _actionState.value = result
 
-            if(result is ActionsStates.Success){
-                getOrdersHistory()
+            when(result){
+                ActionsStates.Success -> {
+                    getOrdersHistory()
 
-                closeOrderScreen()
+                    closeOrderScreen()
 
-                isPageEmpty()
+                    _uiEventOrderCancelled.send(UiEventOrderCancelled.OrderCancelledSuccessfully)
+                }
+
+                is ActionsStates.Failed -> {
+                    _activeDialog.value = ActiveOrderDialog.CancelFailed
+                }
+
+                else -> {}
             }
         }
     }
@@ -243,33 +275,18 @@ class OrderScreenViewModel @Inject constructor(
         _actionState.value = ActionsStates.Idle
     }
 
-    // --------------------------------------------\\ Cancel Order Dialog Message //--------------------------------------------
-
-    private val _showCheckCancelOrderAlertDialogMessage = MutableStateFlow(false)
-    val showCheckCancelOrderAlertDialogMessage = _showCheckCancelOrderAlertDialogMessage.asStateFlow()
-
-    fun openCheckCancelOrderAlertDialogMessage(){
-        _showCheckCancelOrderAlertDialogMessage.value = true
-    }
-
-    fun closeCheckCancelOrderAlertDialogMessage(){
-        _showCheckCancelOrderAlertDialogMessage.value = false
-    }
-
 
     // --------------------------------------------\\ Repurchase Order //--------------------------------------------
-
-    private val _repurchaseOrderStates = MutableStateFlow<RepurchaseOrderStates?>(null)
-    val repurchaseOrderStates = _repurchaseOrderStates.asStateFlow()
 
     fun repurchaseOrder(order : OrderUiClass){
         viewModelScope.launch {
             _actionState.value = ActionsStates.Loading
 
-            val result = ordersHistoryUseCase.repurchaseOrder(order, order.orderItems)
+            val result = repurchaseOrderUseCase.repurchaseOrder(order, order.orderItems)
 
             _actionState.value = ActionsStates.Idle
-            _repurchaseOrderStates.value = result
+
+            _activeDialog.value = ActiveOrderDialog.RepurchaseResult(result)
         }
     }
 
@@ -277,31 +294,13 @@ class OrderScreenViewModel @Inject constructor(
         viewModelScope.launch {
             _actionState.value = ActionsStates.Loading
 
-            val result = ordersHistoryUseCase.filterOrderItems(order)
+            val result = repurchaseOrderUseCase.filterOrderItems(order)
 
             _actionState.value = ActionsStates.Idle
-            _repurchaseOrderStates.value = result
+
+            _activeDialog.value = ActiveOrderDialog.RepurchaseResult(result)
         }
     }
-
-    fun closeRepurchaseOrderStatesDialog(){
-        _repurchaseOrderStates.value = null
-    }
-
-
-    // --------------------------------------------\\ Repurchase Order Dialog Message //--------------------------------------------
-
-    private val _showCheckRepurchaseAlertDialogMessage = MutableStateFlow(false)
-    val showCheckRepurchaseAlertDialogMessage = _showCheckRepurchaseAlertDialogMessage.asStateFlow()
-
-    fun openCheckRepurchaseAlertDialogMessage(){
-        _showCheckRepurchaseAlertDialogMessage.value = true
-    }
-    fun closeCheckRepurchaseAlertDialogMessage(){
-        _showCheckRepurchaseAlertDialogMessage.value = false
-    }
-
-
 
 
 

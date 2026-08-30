@@ -68,10 +68,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.applicationhome.core.ui.components.Options
 import com.example.applicationhome.core.ui.components.bars.MyBottomBar
+import com.example.applicationhome.core.ui.components.model.DashboardScreenViewModel
 import com.example.applicationhome.core.ui.components.profileAndSetting.UserImage
 import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.core.ui.components.model.DashboardScreenViewModel
-import com.example.applicationhome.core.ui.components.model.UserImageViewModel
 import com.example.applicationhome.data.data.model.HomeScreenActions
 import com.example.applicationhome.data.data.model.HomeScreenParameters
 import com.example.applicationhome.data.data.model.HomeUiState
@@ -89,7 +88,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun DashboardScreen(
     navigationController: NavHostController,
-    userImageViewModel : UserImageViewModel,
     syncDataUiState : HomeUiState,
     isRefreshing : Boolean,
     syncData : () -> Unit
@@ -181,9 +179,7 @@ fun DashboardScreen(
                             clip(CircleShape),
                             contentAlignment = Alignment.Center
                         ){
-                            UserImage(
-                                userImageViewModel
-                            )
+                            UserImage()
                         }
                         Spacer(modifier = Modifier.width(10.dp))
                         if(stat){
@@ -301,12 +297,14 @@ fun DashboardScreen(
                     val userData by homeScreenViewModel.userData.collectAsStateWithLifecycle()
                     val restaurants = homeScreenViewModel.filterRestaurants.collectAsLazyPagingItems()
                     val offers by homeScreenViewModel.offers.collectAsStateWithLifecycle()
+                    val startBottomSheets by homeScreenViewModel.startBottomSheets.collectAsStateWithLifecycle()
 
                     val actions = HomeScreenActions(
                         select = homeScreenViewModel::select,
                         unSelected = homeScreenViewModel::unSelected,
                         addRestaurantsFavorite = homeScreenViewModel::addRestaurantsFavorite,
-                        removeRestaurantsFavorite = homeScreenViewModel::removeRestaurantsFavorite
+                        removeRestaurantsFavorite = homeScreenViewModel::removeRestaurantsFavorite,
+                        closeBottomSheet = homeScreenViewModel::closeBottomSheet
                     )
 
                     val parameters = HomeScreenParameters(
@@ -326,6 +324,7 @@ fun DashboardScreen(
                         parameters = parameters,
                         scrollState = homeListState,
                         syncDataUiState = syncDataUiState,
+                        startBottomSheets = startBottomSheets,
                         isRefreshing = isRefreshing
                     ){ syncData() }
                 }

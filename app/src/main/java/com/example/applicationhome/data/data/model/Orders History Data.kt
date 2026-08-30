@@ -74,3 +74,15 @@ sealed class RepurchaseOrderStates(@StringRes val message : Int){
     data object ALLMealsAreDeleted : RepurchaseOrderStates(R.string.all_meals_are_unavailable)
     data object Success : RepurchaseOrderStates(R.string.the_meals_have_been_added_to_the_shopping_cart)
 }
+
+sealed interface ActiveOrderDialog {
+    data object None : ActiveOrderDialog
+    data object ConfirmCancel : ActiveOrderDialog
+    data object CancelFailed : ActiveOrderDialog
+    data object ConfirmRepurchase : ActiveOrderDialog
+    data class RepurchaseResult(val state : RepurchaseOrderStates) : ActiveOrderDialog
+}
+
+sealed interface UiEventOrderCancelled {
+    data object OrderCancelledSuccessfully : UiEventOrderCancelled
+}

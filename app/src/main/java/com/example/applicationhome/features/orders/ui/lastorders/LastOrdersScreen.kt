@@ -48,11 +48,12 @@ import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.components.forCart.AlertDialogMessage
 import com.example.applicationhome.core.ui.components.screens.EmptyScreen
 import com.example.applicationhome.core.ui.theme.DeepMatteBlack
-import com.example.applicationhome.data.data.model.ActionsStates
+import com.example.applicationhome.data.data.model.ActiveOrderDialog
 import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.data.model.OrdersHistoryScreens
 import com.example.applicationhome.data.data.model.RepurchaseOrderStates
 import com.example.applicationhome.data.data.model.Screens
+import com.example.applicationhome.data.data.model.UiEventOrderCancelled
 import com.example.applicationhome.features.orders.ui.OrderScreenViewModel
 import com.example.applicationhome.features.orders.ui.orderscreen.OrderScreen
 import com.example.applicationhome.features.shimmers.screens.OrdersHistoryShimmer
@@ -94,10 +95,23 @@ fun LastOrdersScreen(
         }
     }
 
+    val uiEventOrderCancelled = orderScreenViewModel.uiEventOrderCancelled
+    LaunchedEffect(Unit){
+        uiEventOrderCancelled.collect { eventOrderCancelled ->
+            if(eventOrderCancelled == UiEventOrderCancelled.OrderCancelledSuccessfully){
+                pagerState.animateScrollToPage(
+                    page = initialPage,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioNoBouncy,
+                        stiffness = Spring.StiffnessMediumLow
+                    )
+                )
+            }
+        }
+    }
+
     val actionState by orderScreenViewModel.actionState.collectAsStateWithLifecycle()
-    val repurchaseOrderStates by orderScreenViewModel.repurchaseOrderStates.collectAsStateWithLifecycle()
-    val showCheckRepurchaseAlertDialogMessage by orderScreenViewModel.showCheckRepurchaseAlertDialogMessage.collectAsStateWithLifecycle()
-    val showCheckCancelOrderAlertDialogMessage by orderScreenViewModel.showCheckCancelOrderAlertDialogMessage.collectAsStateWithLifecycle()
+    val activeDialog by orderScreenViewModel.activeDialog.collectAsStateWithLifecycle()
 
     val selectedOrder by orderScreenViewModel.selectedOrder.collectAsStateWithLifecycle()
     val correctTimelineStep by orderScreenViewModel.correctTimelineStep.collectAsStateWithLifecycle()
@@ -269,124 +283,111 @@ fun LastOrdersScreen(
 
     // --------------------------------------------\\ Alert Dialog Messages //--------------------------------------------
 
-    if(showCheckCancelOrderAlertDialogMessage){  // ------------------ Cancel Order ------------------
-        val order = selectedOrder
-        if(order != null) AlertDialogMessage(
-            title = stringResource(R.string.disclaimer),
-            content = stringResource(R.string.are_you_sure_you_want_to_cancel_the_order),
-            confirmButtonText = stringResource(R.string.yes_i_m_sure),
-            confirmButton = {
-                orderScreenViewModel.closeCheckCancelOrderAlertDialogMessage()
-                orderScreenViewModel.cancelOrder(
-                    orderId = order.orderId
-                ){
-                    scope.launch {
-                        pagerState.animateScrollToPage(
-                            page = initialPage,
-                            animationSpec = spring(
-                                dampingRatio = Spring.DampingRatioNoBouncy,
-                                stiffness = Spring.StiffnessMediumLow
-                            )
-                        )
-                    }
+    when(val dialog = activeDialog){
+        ActiveOrderDialog.None -> {}
+
+        // --------------------------------------------------- Cancel Order -------------
+
+        ActiveOrderDialog.ConfirmCancel -> {
+            val order = selectedOrder
+            if(order != null) AlertDialogMessage(
+                title = stringResource(R.string.disclaimer),
+                content = stringResource(R.string.are_you_sure_you_want_to_cancel_the_order),
+                confirmButtonText = stringResource(R.string.yes_i_m_sure),
+                confirmButton = {
+                    orderScreenViewModel.closeAlertDialogMessage()
+                    orderScreenViewModel.cancelOrder(
+                        orderId = order.orderId
+                    )
+                },
+                dismissButtonText = stringResource(R.string.cancel),
+                dismissButton = { orderScreenViewModel.closeAlertDialogMessage() }
+            )
+        }
+
+        ActiveOrderDialog.CancelFailed -> {
+            val order = selectedOrder
+            if(order != null) AlertDialogMessage(
+                title = stringResource(R.string.sorry),
+                content = stringResource(R.string.the_order_could_not_be_cancelled_please_try_again_later),
+                confirmButtonText = stringResource(R.string.try_again),
+                confirmButton = {
+                    orderScreenViewModel.resetActionState()
+                    orderScreenViewModel.cancelOrder(
+                        orderId = order.orderId
+                    )
+                },
+                dismissButtonText = stringResource(R.string.cancel),
+                dismissButton = { orderScreenViewModel.resetActionState() }
+            )
+        }
+
+
+        // --------------------------------------------------- Repurchase -------------
+
+        ActiveOrderDialog.ConfirmRepurchase -> {
+            val order = selectedOrder
+            if(order != null) AlertDialogMessage(
+                title = stringResource(R.string.disclaimer),
+                content = stringResource(R.string.all_previous_meals_will_be_deleted_from_the_shopping_cart),
+                confirmButtonText = stringResource(R.string.add_anyway),
+                confirmButton = {
+                    orderScreenViewModel.closeAlertDialogMessage()
+                    orderScreenViewModel.repurchaseOrder(order)
+                },
+                dismissButtonText = stringResource(R.string.cancel),
+                dismissButton = { orderScreenViewModel.closeAlertDialogMessage() }
+            )
+        }
+
+        is ActiveOrderDialog.RepurchaseResult -> {
+            when(val state = dialog.state){
+                is RepurchaseOrderStates.Success -> {
+                    AlertDialogMessage(
+                        title = stringResource(R.string.success),
+                        content = stringResource(state.message),
+                        confirmButtonText = stringResource(R.string.go_to_cart),
+                        confirmButton = {
+                            orderScreenViewModel.closeAlertDialogMessage()
+                            navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
+                        },
+                        dismissButtonText = stringResource(R.string.cancel),
+                        dismissButton = { orderScreenViewModel.closeAlertDialogMessage() }
+                    )
                 }
-            },
-            dismissButtonText = stringResource(R.string.cancel),
-            dismissButton = { orderScreenViewModel.closeCheckCancelOrderAlertDialogMessage() }
-        )
-    }
 
-    if(actionState is ActionsStates.Failed){
-        val order = selectedOrder
-        if(order != null) AlertDialogMessage(
-            title = stringResource(R.string.sorry),
-            content = stringResource(R.string.the_order_could_not_be_cancelled_please_try_again_later),
-            confirmButtonText = stringResource(R.string.try_again),
-            confirmButton = {
-                orderScreenViewModel.resetActionState()
-                orderScreenViewModel.cancelOrder(
-                    orderId = order.orderId
-                ){
-                    scope.launch {
-                        pagerState.animateScrollToPage(
-                            page = initialPage,
-                            animationSpec = spring(
-                                dampingRatio = Spring.DampingRatioNoBouncy,
-                                stiffness = Spring.StiffnessMediumLow
-                            )
-                        )
-                    }
+                is RepurchaseOrderStates.RestaurantIsDeleted -> {
+                    AlertDialogMessage(
+                        title = stringResource(R.string.sorry),
+                        content = stringResource(state.message),
+                        confirmButtonText = stringResource(R.string.done),
+                        confirmButton = { orderScreenViewModel.closeAlertDialogMessage() }
+                    )
                 }
-            },
-            dismissButtonText = stringResource(R.string.cancel),
-            dismissButton = { orderScreenViewModel.resetActionState() }
-        )
-    }
 
+                is RepurchaseOrderStates.MealsAreDeleted -> {
+                    val order = selectedOrder
+                    if(order != null) AlertDialogMessage(
+                        title = stringResource(R.string.disclaimer),
+                        content = stringResource(state.message),
+                        confirmButtonText = stringResource(R.string.add_anyway),
+                        confirmButton = {
+                            orderScreenViewModel.closeAlertDialogMessage()
+                            orderScreenViewModel.filterOrderItems(order)
+                        },
+                        dismissButtonText = stringResource(R.string.cancel),
+                        dismissButton = { orderScreenViewModel.closeAlertDialogMessage() }
+                    )
+                }
 
-    if(showCheckRepurchaseAlertDialogMessage){  // ------------------ Repurchase ------------------
-        val order = selectedOrder
-        if(order != null) AlertDialogMessage(
-            title = stringResource(R.string.disclaimer),
-            content = stringResource(R.string.all_previous_meals_will_be_deleted_from_the_shopping_cart),
-            confirmButtonText = stringResource(R.string.add_anyway),
-            confirmButton = {
-                orderScreenViewModel.closeCheckRepurchaseAlertDialogMessage()
-                orderScreenViewModel.repurchaseOrder(order)
-            },
-            dismissButtonText = stringResource(R.string.cancel),
-            dismissButton = { orderScreenViewModel.closeCheckRepurchaseAlertDialogMessage() }
-        )
-    }
-
-
-    repurchaseOrderStates?.let { item ->
-        when(item){
-            is RepurchaseOrderStates.Success -> {
-                AlertDialogMessage(
-                    title = stringResource(R.string.success),
-                    content = stringResource(item.message),
-                    confirmButtonText = stringResource(R.string.go_to_cart),
-                    confirmButton = {
-                        orderScreenViewModel.closeRepurchaseOrderStatesDialog()
-                        navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
-                    },
-                    dismissButtonText = stringResource(R.string.cancel),
-                    dismissButton = { orderScreenViewModel.closeRepurchaseOrderStatesDialog() }
-                )
-            }
-
-            is RepurchaseOrderStates.RestaurantIsDeleted -> {
-                AlertDialogMessage(
-                    title = stringResource(R.string.sorry),
-                    content = stringResource(item.message),
-                    confirmButtonText = stringResource(R.string.done),
-                    confirmButton = { orderScreenViewModel.closeRepurchaseOrderStatesDialog() }
-                )
-            }
-
-            is RepurchaseOrderStates.MealsAreDeleted -> {
-                val order = selectedOrder
-                if(order != null) AlertDialogMessage(
-                    title = stringResource(R.string.disclaimer),
-                    content = stringResource(item.message),
-                    confirmButtonText = stringResource(R.string.add_anyway),
-                    confirmButton = {
-                        orderScreenViewModel.closeRepurchaseOrderStatesDialog()
-                        orderScreenViewModel.filterOrderItems(order)
-                    },
-                    dismissButtonText = stringResource(R.string.cancel),
-                    dismissButton = { orderScreenViewModel.closeRepurchaseOrderStatesDialog() }
-                )
-            }
-
-            is RepurchaseOrderStates.ALLMealsAreDeleted -> {
-                AlertDialogMessage(
-                    title = stringResource(R.string.sorry),
-                    content = stringResource(item.message),
-                    confirmButtonText = stringResource(R.string.done),
-                    confirmButton = { orderScreenViewModel.closeRepurchaseOrderStatesDialog() }
-                )
+                is RepurchaseOrderStates.ALLMealsAreDeleted -> {
+                    AlertDialogMessage(
+                        title = stringResource(R.string.sorry),
+                        content = stringResource(state.message),
+                        confirmButtonText = stringResource(R.string.done),
+                        confirmButton = { orderScreenViewModel.closeAlertDialogMessage() }
+                    )
+                }
             }
         }
     }

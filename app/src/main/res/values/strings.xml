@@ -54,7 +54,7 @@
     <string name="settings">Settings</string>
     <string name="language">Language</string>
     <string name="about_app">About App</string>
-    <string name="logout">Logout</string>
+    <string name="logout">Log out</string>
     <string name="delete_account">Delete Account</string>
     <string name="my_orders">My Orders</string>
     <string name="notifications">Notifications</string>
@@ -101,7 +101,7 @@
     <string name="nothing">Nothing</string>
     <string name="delete">Delete</string>
     <string name="search_history">Search History</string>
-    <string name="login">Login</string>
+    <string name="login">Log in</string>
     <string name="forget_your_password">Forget your password</string>
     <string name="or">OR</string>
     <string name="new_user">New user?</string>
@@ -131,4 +131,11 @@
     <string name="didn_t_get_the_code">Didn\'t Get The Code?</string>
     <string name="reset_password">Reset Password</string>
     <string name="set_s_strong_password_to_secure_access_always_stay_safe">Set s Strong password to secure access Always Stay Safe.</string>
+    <string name="are_you_sure_you_want_to_logout">Are you sure you want to logout?</string>
+    <string name="are_you_sure_you_want_to_delete_your_account">Are you sure you want to delete your account?</string>
+    <string name="hey_there">Hey there!</string>
+    <string name="log_in_or_sign_up_for_a_more_personalized_ordering_experience">Log in or sign up for a more personalized ordering experience</string>
+    <string name="continue_your_order">Continue Your Order?</string>
+    <string name="you_still_have_items_in_your_cart_would_you_like_to_review_them_and_finish_placing_your_order">You still have items in your cart. Would you like to review them and finish placing your order?</string>
+    <string name="view_cart">View cart</string>
 </resources>
