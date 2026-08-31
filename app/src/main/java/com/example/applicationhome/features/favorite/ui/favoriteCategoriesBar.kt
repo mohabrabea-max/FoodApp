@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.core.domain.model.TapRowData.FavoriteTapRow
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.core.ui.theme.DeepMatteBlack
 
 @Composable
 fun favoriteCategoriesBar(
@@ -28,8 +27,8 @@ fun favoriteCategoriesBar(
         modifier = Modifier.fillMaxWidth().
         height(50.dp),
         selectedTabIndex = selectedCategoryInFavoriteScreen,
-        containerColor = Color.White,
-        contentColor = Color.DeepMatteBlack,
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface,
         indicator = { tabPositions ->
             if (selectedCategoryInFavoriteScreen < tabPositions.size) {
                 TabRowDefaults.SecondaryIndicator(
@@ -49,7 +48,7 @@ fun favoriteCategoriesBar(
                         text = stringResource(title),
                         fontSize = 15.sp,
                         style = if(isSelected) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodySmall,
-                        color = if(isSelected) Color.Black else Color.Gray,
+                        color = if(isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
                     )
                 },

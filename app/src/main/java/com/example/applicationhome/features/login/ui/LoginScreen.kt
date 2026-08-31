@@ -59,7 +59,6 @@ import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showNetworkSnackBar
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.MatteBlack
-import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.LoginStates
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.data.model.SignUpBasicTextFields
@@ -94,16 +93,8 @@ fun LoginScreen(
 
 
     BackHandler(enabled = true){
-        if (navigationController.previousBackStackEntry != null) {
-            navigationController.popBackStack()
-        }else{
-            navigationController.navigate(Screens.DashboardScreen.screen) {
-                popUpTo(0) {
-                    saveState = true
-                }
-                launchSingleTop = true
-                restoreState = true
-            }
+        navigationController.navigate(Screens.DashboardScreen.screen) {
+            popUpTo(0) { inclusive = true }
         }
     }
 
@@ -112,8 +103,6 @@ fun LoginScreen(
         modifier = Modifier
             .navigationBarsPadding()
             .fillMaxSize(),
-
-        containerColor = Color.VeryLightGray,
 
         snackbarHost = {
             SnackbarHost(
@@ -149,16 +138,8 @@ fun LoginScreen(
                 {
                     IconButton(
                         onClick = {
-                            if (navigationController.previousBackStackEntry != null) {
-                                navigationController.popBackStack()
-                            }else{
-                                navigationController.navigate(Screens.DashboardScreen.screen) {
-                                    popUpTo(0) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
+                            navigationController.navigate(Screens.DashboardScreen.screen) {
+                                popUpTo(0) { inclusive = true }
                             }
                         },
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
@@ -224,7 +205,7 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .height(550.dp)
                     .clip(shape = RoundedCornerShape(topStart = 100.dp))
-                    .background(Color.VeryLightGray),
+                    .background(MaterialTheme.colorScheme.background),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 NetworkErrorTopBar(isNetworkAvailable = isNetworkAvailable, padding = 80.dp)
@@ -234,7 +215,7 @@ fun LoginScreen(
                 Text(
                     text = stringResource(R.string.login),
                     style = MaterialTheme.typography.titleLarge,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     fontSize = 35.sp
                 )
@@ -320,11 +301,7 @@ fun LoginScreen(
 
                             onSuccess = {
                                 navigationController.navigate(Screens.DashboardScreen.screen) {
-                                    popUpTo(0) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
+                                    popUpTo(0) { inclusive = true }
                                 }
                             },
 
@@ -400,7 +377,7 @@ fun LoginScreen(
                     Text(
                         text = stringResource(R.string.new_user),
                         style = MaterialTheme.typography.titleLarge,
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 15.sp
                     )
 

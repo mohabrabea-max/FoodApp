@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,7 +35,7 @@ fun ItemSize(
             .animateContentSize()
             .padding(10.dp)
             .height(40.dp)
-            .background(Color.White),
+            .background(MaterialTheme.colorScheme.surface),
         contentAlignment = Alignment.Center
     ){
         Row(
@@ -61,7 +62,7 @@ fun ItemSize(
                     contentAlignment = Alignment.Center
                 ){
                     val isSelected = (size == item)
-                    val color = if(isSelected) Color.DarkOrange else Color.White
+                    val color = if(isSelected) Color.DarkOrange else MaterialTheme.colorScheme.surface
                     val fontColor = if(isSelected) Color.White else Color.DarkOrange
 
                     Box(modifier = Modifier.fillMaxSize().background(color), contentAlignment = Alignment.Center){

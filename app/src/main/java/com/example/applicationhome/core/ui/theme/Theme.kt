@@ -10,21 +10,34 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.example.applicationhome.data.data.model.ThemeMode
 
 private val DarkColorScheme = darkColorScheme(
     primary = Color.DarkOrange,
-    surfaceContainerHigh = Color.White,
+    background = Color.DarkCharcoal,
+    surface = Color.CharcoalGray,
+    surfaceContainerHigh = Color.DarkOrange,
     surfaceContainerHighest = Color.White,
-    background = Color.VeryLightGray,
-    surface = Color.VeryLightGray
+    onSurface = Color.White,
+    onSurfaceVariant = Color.LightGray,
+    outline = Color.Gray,
+    onSecondary = Color.Gray,
+    onTertiary = Color.DarkGray,
+    onPrimary = Color.DarkOrange
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = Color.DarkOrange,
-    surfaceContainerHigh = Color.White,
-    surfaceContainerHighest = Color.White,
     background = Color.VeryLightGray,
-    surface = Color.VeryLightGray
+    surface = Color.White,
+    surfaceContainerHigh = Color.LightGray,
+    surfaceContainerHighest = Color.White,
+    onSurface = Color.Black,
+    onSurfaceVariant = Color.Gray,
+    outline = Color.Gray,
+    onSecondary = Color.LightGray,
+    onTertiary = Color(0xFFECECEC),
+    onPrimary = Color.DeepMatteBlack
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -39,11 +52,17 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun ApplicationHomeTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themeMode : ThemeMode = ThemeMode.SYSTEM,
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = false,
-    content: @Composable () -> Unit
-) {
+    dynamicColor : Boolean = false,
+    content : @Composable () -> Unit
+){
+    val darkTheme = when(themeMode){
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    }
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current

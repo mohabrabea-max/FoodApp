@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -71,8 +72,6 @@ fun PageOneConfirmOrder(
         modifier = Modifier
             .navigationBarsPadding()
             .fillMaxSize(),
-
-        containerColor = Color.White,
 
         bottomBar = {
             Column(
@@ -128,7 +127,7 @@ fun PageOneConfirmOrder(
                         .fillMaxWidth()
                         .clip(shape = RoundedCornerShape(15.dp))
                         .border(width = 1.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(15.dp))
-                        .background(Color.White)
+                        .background(MaterialTheme.colorScheme.surface)
                         .clickable { openMaps() }
                         .padding(15.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -142,7 +141,7 @@ fun PageOneConfirmOrder(
                         Icon(
                             Icons.Default.LocationOn,
                             contentDescription = null,
-                            tint = Color.Black,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.padding(end = 7.dp)
                         )
 
@@ -154,13 +153,13 @@ fun PageOneConfirmOrder(
 
                             Text(
                                 text = stringResource(R.string.area),
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium
                             )
                             Text(
                                 text = location,
-                                color = Color.Gray,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontSize = 14.sp
                             )
                         }

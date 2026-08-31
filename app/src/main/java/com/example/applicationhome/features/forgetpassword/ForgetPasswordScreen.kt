@@ -59,7 +59,6 @@ import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showNetworkSnackBar
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.MatteBlack
-import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.LoginPages
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.data.model.SignUpErrors
@@ -110,8 +109,6 @@ fun ForgetPasswordScreen(
         modifier = Modifier
             .navigationBarsPadding()
             .fillMaxSize(),
-
-        containerColor = Color.VeryLightGray,
 
         snackbarHost = {
             SnackbarHost(
@@ -202,7 +199,7 @@ fun ForgetPasswordScreen(
                     .fillMaxWidth()
                     .height(650.dp)
                     .clip(shape = RoundedCornerShape(topStart = 100.dp))
-                    .background(Color.VeryLightGray),
+                    .background(MaterialTheme.colorScheme.background),
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
                 NetworkErrorTopBar(isNetworkAvailable = isNetworkAvailable, padding = 80.dp)

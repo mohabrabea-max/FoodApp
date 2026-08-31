@@ -36,6 +36,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -70,7 +71,6 @@ import com.example.applicationhome.core.ui.components.Options
 import com.example.applicationhome.core.ui.components.bars.MyBottomBar
 import com.example.applicationhome.core.ui.components.model.DashboardScreenViewModel
 import com.example.applicationhome.core.ui.components.profileAndSetting.UserImage
-import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.HomeScreenActions
 import com.example.applicationhome.data.data.model.HomeScreenParameters
 import com.example.applicationhome.data.data.model.HomeUiState
@@ -129,7 +129,7 @@ fun DashboardScreen(
                     drawerState.targetValue == DrawerValue.Closed
 
             ModalDrawerSheet(
-                drawerContainerColor = Color.White,
+                drawerContainerColor = MaterialTheme.colorScheme.surface,
                 modifier = Modifier
                     .width(drawerWidth)
                     .graphicsLayer {
@@ -140,7 +140,11 @@ fun DashboardScreen(
                     onClick = {if(stat) dashboardScreenViewModel.stateFalse() else dashboardScreenViewModel.stateTrue()},
                     modifier = Modifier.align(if(stat) Alignment.End else Alignment.CenterHorizontally))
                 {
-                    Icon(if(stat) Icons.AutoMirrored.Filled.KeyboardArrowLeft else Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.Black)
+                    Icon(
+                        if(stat) Icons.AutoMirrored.Filled.KeyboardArrowLeft else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
                 }
                 //Divider(color = Color.LightGray)
                 Box(
@@ -148,7 +152,7 @@ fun DashboardScreen(
                     fillMaxWidth().
                     height(80.dp).
                     clip(RoundedCornerShape(40.dp)).
-                    background(Color.VeryLightGray).
+                    background(MaterialTheme.colorScheme.background).
                     clickable{
                         if(isLogin){
                             coroutineScope.launch{drawerState.close()}
@@ -188,13 +192,13 @@ fun DashboardScreen(
                                     text = userState.firstname + " " + userState.lastname.ifEmpty { "" },
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.Black
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Spacer(modifier = Modifier.height(5.dp))
                                 Text(
                                     text = userState.email.ifEmpty { "Login" },
                                     fontSize = 12.sp,
-                                    color = Color.DarkGray
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -211,9 +215,8 @@ fun DashboardScreen(
         }
     ){
         Scaffold(
-            containerColor = Color.White,
-            modifier = Modifier.
-            fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
+
             bottomBar = {
                 Box(
                     modifier = Modifier

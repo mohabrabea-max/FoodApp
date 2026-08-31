@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -66,62 +67,65 @@ fun ItemScreenTopBar(
 
     Column{
         MyTopBar(
-            Color.DarkOrange.copy(alpha = alpha),
+            color = Color.DarkOrange.copy(alpha = alpha),
             modifier = Modifier.fillMaxWidth().height(100.dp),
-            null,
-            Color.White,
-            {
+            title = null,
+            titleColor = Color.White,
+            startaction = {
                 TopBarButtons(
-                    {
+                    icon = {
                         Icon(
                             Icons.Default.Close,
                             contentDescription = null,
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     },
-                    { backStack() },
+                    onClick = { backStack() },
                     border = 0.dp
                 )
             },
-            {
+            actions = {
                 Box(
                     modifier = Modifier.animateContentSize().padding(5.dp).shadow(
                         elevation = 7.dp,
                         spotColor = Color.VeryLightGray.copy(0.5f),
                         shape = RoundedCornerShape(30.dp)
                     ).width(if (searchSize > 1) 120.dp else 40.dp).height(40.dp)
-                        .background(Color.White).clickable {
-                        navigation()
-                    },
+                        .background(MaterialTheme.colorScheme.surface).clickable {
+                            navigation()
+                        },
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.align(Alignment.CenterStart)
-                    ) {
+                    ){
                         Icon(
                             Icons.Default.Search,
                             contentDescription = null,
-                            tint = Color.Black,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.padding(start = 8.dp)
                         )
                         if (searchSize > 1) Text(
                             text = "Search",
                             softWrap = false,
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontSize = 18.sp,
                             modifier = Modifier.padding(start = 5.dp)
                         )
                     }
                 }
                 Favorite(
-                    isMealInFavorite,
-                    { addMealFavorite() },
-                    { removeMealFavorite() },
-                    modifier = Modifier.padding(5.dp).shadow(
-                        elevation = 7.dp,
-                        spotColor = Color.VeryLightGray.copy(0.5f),
-                        shape = RoundedCornerShape(30.dp)
-                    ).size(40.dp).background(Color.White),
+                    isMealInFavorite = isMealInFavorite,
+                    addMealFavorite = { addMealFavorite() },
+                    removeMealFavorite = { removeMealFavorite() },
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .shadow(
+                            elevation = 7.dp,
+                            spotColor = Color.VeryLightGray.copy(0.5f),
+                            shape = RoundedCornerShape(30.dp)
+                        ).size(40.dp)
+                        .background(MaterialTheme.colorScheme.surface),
                     modifier2 = Modifier.size(25.dp),
                     color = Color.DarkOrange,
                     icon1 = Icons.Default.Favorite,

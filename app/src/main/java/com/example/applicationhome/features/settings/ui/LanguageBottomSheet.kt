@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,21 +33,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.designsystem.TopBarButtons
-import com.example.applicationhome.core.ui.theme.DeepMatteBlack
-import com.example.applicationhome.data.data.model.AppLanguage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LanguageBottomSheet(
-    currentLanguageCode : String,
-    onLanguageSelected : (AppLanguage) -> Unit,
+fun <T> SettingsBottomSheet(
+    title : String,
+    items : List<T>,
+    isSelected : (T) -> Boolean,
+    getItemLabel : @Composable (T) -> String,
+    onItemSelected : (T) -> Unit,
     onDismissRequest : () -> Unit
 ){
     val interactionSource = remember { MutableInteractionSource() }
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
-        containerColor = Color.White,
+        containerColor = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
         dragHandle = {
             Box(
@@ -77,7 +79,7 @@ fun LanguageBottomSheet(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = stringResource(R.string.close),
-                            tint = Color.Black,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(20.dp)
                         )
                     },
@@ -89,17 +91,17 @@ fun LanguageBottomSheet(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Text(
-                    text = stringResource(R.string.language),
+                    text = title,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
             Spacer(modifier = Modifier.height(13.dp))
 
-            AppLanguage.entries.forEach { language ->
-                val isSelected = currentLanguageCode == language.code
+            items.forEach { item ->
+                val selected = isSelected(item)
 
                 Row(
                     modifier = Modifier
@@ -109,7 +111,7 @@ fun LanguageBottomSheet(
                             interactionSource = interactionSource,
                             indication = null
                         ){
-                            onLanguageSelected(language)
+                            onItemSelected(item)
                             onDismissRequest()
                         }
                         .padding(vertical = 10.dp),
@@ -123,14 +125,14 @@ fun LanguageBottomSheet(
                             .height(20.dp)
                             .width(7.dp)
                             .clip(shape = RoundedCornerShape(50))
-                            .background(Color.DeepMatteBlack.copy(alpha = if(isSelected) 1f else 0f))
+                            .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = if(selected) 1f else 0f))
                     )
 
                     Text(
-                        text = language.titleRes,
+                        text = getItemLabel(item),
                         fontSize = 18.sp,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                        color = Color.Black,
+                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(horizontal = 15.dp)
                     )
                 }

@@ -18,13 +18,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -48,7 +48,7 @@ fun SignupTextFieldPage2(
             .height(55.dp)
             .fillMaxWidth()
             .clip(CircleShape)
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(start = 25.dp, end = 25.dp)
     ){
         BasicTextField(
@@ -65,7 +65,7 @@ fun SignupTextFieldPage2(
             },
             textStyle = TextStyle(
                 fontSize = 18.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             ),
             decorator = { innerTextField ->
                 Box(
@@ -84,13 +84,13 @@ fun SignupTextFieldPage2(
             Icon(
                 Icons.Default.Phone,
                 contentDescription = null,
-                tint = Color.Gray,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(end = 7.dp)
             )
             if(phonenumberstate.text.isEmpty()){
                 Text(
                     text = stringResource(R.string.phone_number_optional),
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 18.sp
                 )
             }
@@ -104,7 +104,7 @@ fun SignupTextFieldPage2(
             .height(55.dp)
             .fillMaxWidth()
             .clip(CircleShape)
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(start = 25.dp, end = 25.dp)
     ){
         BasicTextField(
@@ -121,7 +121,7 @@ fun SignupTextFieldPage2(
             },
             textStyle = TextStyle(
                 fontSize = 18.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             ),
             decorator = { innerTextField ->
                 Box(
@@ -140,13 +140,13 @@ fun SignupTextFieldPage2(
             Icon(
                 Icons.Default.LocationOn,
                 contentDescription = null,
-                tint = Color.Gray,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(end = 7.dp)
             )
             if(addressstate.text.isEmpty()){
                 Text(
                     text = stringResource(R.string.address_optional),
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 18.sp
                 )
             }

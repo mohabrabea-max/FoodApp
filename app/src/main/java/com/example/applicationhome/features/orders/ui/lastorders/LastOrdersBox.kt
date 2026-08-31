@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -37,7 +36,6 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.theme.BrandBlue
-import com.example.applicationhome.core.ui.theme.BrownForFont
 import com.example.applicationhome.data.data.model.OrderStatesEnum
 import com.example.applicationhome.data.data.model.OrderUiClass
 
@@ -66,14 +64,14 @@ fun LastOrdersBox(
         modifier = Modifier
             .fillMaxWidth()
             .height(160.dp)
-            .shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(20.dp))
+            .clip(shape = RoundedCornerShape(20.dp))
             .clickable(
                 interactionSource = interactionSource,
                 indication = null
             ){
                 onOpenOrderScreen()
             }
-            .background(Color.White),
+            .background(MaterialTheme.colorScheme.surface),
 
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -83,7 +81,8 @@ fun LastOrdersBox(
                 .padding(horizontal = 10.dp)
                 .size(100.dp)
                 .clip(shape = RoundedCornerShape(15.dp))
-                .border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(15.dp)),
+                .border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(15.dp))
+                .background(Color.White),
             contentAlignment = Alignment.Center
         ){
             AsyncImage(
@@ -111,7 +110,7 @@ fun LastOrdersBox(
                     text = stringResource(R.string.order),
                     fontSize = 15.sp,
                     style = MaterialTheme.typography.labelLarge,
-                    color = Color.BrownForFont,
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 5.dp)
@@ -120,7 +119,7 @@ fun LastOrdersBox(
                     text = "${order.orderId}",
                     fontSize = 12.sp,
                     style = MaterialTheme.typography.labelLarge,
-                    color = Color.BrownForFont,
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 5.dp)
@@ -136,7 +135,7 @@ fun LastOrdersBox(
                     text = stringResource(R.string.restaurant),
                     fontSize = 15.sp,
                     style = MaterialTheme.typography.labelLarge,
-                    color = Color.BrownForFont,
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 2.dp)
@@ -145,7 +144,7 @@ fun LastOrdersBox(
                     text = order.restaurantName,
                     fontSize = 15.sp,
                     style = MaterialTheme.typography.labelLarge,
-                    color = Color.BrownForFont,
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 2.dp)
@@ -161,7 +160,7 @@ fun LastOrdersBox(
                     text = stringResource(R.string.items),
                     fontSize = 15.sp,
                     style = MaterialTheme.typography.labelLarge,
-                    color = Color.BrownForFont,
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 2.dp)
@@ -170,7 +169,7 @@ fun LastOrdersBox(
                     text = "$quantity",
                     fontSize = 15.sp,
                     style = MaterialTheme.typography.labelLarge,
-                    color = Color.Blue,
+                    color = Color.BrandBlue,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 2.dp)
@@ -186,7 +185,7 @@ fun LastOrdersBox(
                     text = stringResource(R.string.price),
                     fontSize = 15.sp,
                     style = MaterialTheme.typography.labelLarge,
-                    color = Color.BrownForFont,
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 2.dp)
@@ -213,7 +212,7 @@ fun LastOrdersBox(
                     text = order.date,
                     fontSize = 13.sp,
                     style = MaterialTheme.typography.labelLarge,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.End,
                     modifier = Modifier.padding(vertical = 2.dp)
                 )

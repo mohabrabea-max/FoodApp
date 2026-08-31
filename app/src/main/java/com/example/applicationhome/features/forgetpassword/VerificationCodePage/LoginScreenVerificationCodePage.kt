@@ -128,7 +128,7 @@ fun LoginScreenVerificationCodePage(
             Text(
                 text = stringResource(R.string.verification_code),
                 style = MaterialTheme.typography.titleLarge,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 28.sp
             )
@@ -138,7 +138,7 @@ fun LoginScreenVerificationCodePage(
             Text(
                 text = stringResource(R.string.enter_the_verification_code_to_confirm_your_identity),
                 style = MaterialTheme.typography.titleLarge,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 15.sp,
                 textAlign = TextAlign.Center
             )
@@ -239,7 +239,7 @@ fun LoginScreenVerificationCodePage(
             Text(
                 text = stringResource(R.string.didn_t_get_the_code),
                 style = MaterialTheme.typography.titleLarge,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 15.sp
             )
 
@@ -274,7 +274,7 @@ fun LoginScreenVerificationCodePage(
                 Text(
                     text = stringResource(R.string.in__time) + " $formattedTime",
                     style = MaterialTheme.typography.titleLarge,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium
                 )

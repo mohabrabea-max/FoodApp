@@ -38,9 +38,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -58,9 +55,7 @@ import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.StartingBottomSheet
 import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.RestaurantImageView
-import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.LightOrange
-import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.HomeScreenActions
 import com.example.applicationhome.data.data.model.HomeScreenParameters
 import com.example.applicationhome.data.data.model.HomeUiState
@@ -104,9 +99,7 @@ fun HomeScreen(
 
         onRefresh = { onRefresh() },
 
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.VeryLightGray),
+        modifier = Modifier.fillMaxSize(),
 
         state = state,
 
@@ -114,8 +107,8 @@ fun HomeScreen(
             Indicator(
                 modifier = Modifier.align(Alignment.TopCenter),
                 isRefreshing = isRefreshing,
-                containerColor = Color.White,
-                color = Color.DarkOrange,
+                containerColor = MaterialTheme.colorScheme.onPrimary,
+                color = MaterialTheme.colorScheme.primary,
                 state = state
             )
         },
@@ -126,8 +119,6 @@ fun HomeScreen(
             modifier = Modifier
                 .navigationBarsPadding()
                 .fillMaxSize(),
-
-            containerColor = Color.White,
 
             topBar = {
                 Column(
@@ -152,46 +143,49 @@ fun HomeScreen(
             ){
                 item {
                     Box(
-                        modifier = Modifier.height(170.dp).fillMaxWidth()
-                            .background(Color.DarkOrange)
-                    ) {
-                        Column(
-                            modifier = Modifier.align(Alignment.BottomCenter),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = stringResource(R.string.what_would_you_like_to_eat),
-                                fontSize = 22.sp,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = Color.White.copy(alpha = 1f),
-                                textAlign = TextAlign.Center,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(bottom = 20.dp)
-                            )
-                        }
+                        modifier = Modifier
+                            .height(170.dp)
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.primary),
+                        contentAlignment = Alignment.BottomCenter
+                    ){
+                        Text(
+                            text = stringResource(R.string.what_would_you_like_to_eat),
+                            fontSize = 22.sp,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Color.White,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 20.dp)
+                        )
                     }
                 }
 
                 item {
                     Box(
-                        modifier = Modifier.fillMaxWidth().height(16.dp)
-                            .background(Color.DarkOrange)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(16.dp)
+                            .background(MaterialTheme.colorScheme.primary)
                     )
                 }
 
                 item {
                     Box(
-                        modifier = Modifier.background(Color.White),
+                        modifier = Modifier.background(MaterialTheme.colorScheme.surface),
                         contentAlignment = Alignment.Center
-                    ) {
+                    ){
                         Box(
-                            modifier = Modifier.fillMaxWidth().height(25.dp).clip(
-                                shape = RoundedCornerShape(
-                                    bottomStart = 40.dp,
-                                    bottomEnd = 40.dp
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(25.dp)
+                                .clip(
+                                    shape = RoundedCornerShape(
+                                        bottomStart = 40.dp,
+                                        bottomEnd = 40.dp
+                                    )
                                 )
-                            ).background(Color.DarkOrange).align(Alignment.TopCenter)
+                                .background(MaterialTheme.colorScheme.primary).align(Alignment.TopCenter)
                         )
                         SearchBox {
                             navigationController.navigate(Screens.Search.screen)
@@ -200,7 +194,7 @@ fun HomeScreen(
                 }
                 item {
                     Box(
-                        modifier = Modifier.fillMaxWidth().height(16.dp).background(Color.White)
+                        modifier = Modifier.fillMaxWidth().height(16.dp).background(MaterialTheme.colorScheme.surface)
                     )
                 }
 
@@ -208,32 +202,10 @@ fun HomeScreen(
                     HomeUiState.Success, HomeUiState.Offline -> {
                         item {
                             CategoriesBar(
-                                parameters.categories,
-                                parameters.categorySelected,
-                                { category -> onActions.select(category) },
-                                { onActions.unSelected() },
-                                {
-                                    // 1. حدد طول الظل اللي إنت عايزه ينزل تحت البوكس
-                                    val shadowHeight = 3.dp.toPx()
-
-                                    // 2. حدد درجة شفافية وغمقان الظل
-                                    val shadowColor = Color.Gray.copy(alpha = 0.2f)
-
-                                    // 3. عملنا فرشة تدرج رأسي تبدأ من نهاية البوكس (size.height) وتنتهي بعد طول الظل
-                                    val shadowBrush = Brush.verticalGradient(
-                                        colors = listOf(shadowColor, Color.Transparent),
-                                        startY = size.height,
-                                        endY = size.height + shadowHeight
-                                    )
-
-                                    // 4. رسمنا مستطيل الظل: بيبدأ من صفر في العرض (x=0) يعني مش هيهرب برا الأطراف
-                                    // وبيبدأ من نهاية ارتفاع البوكس (y = size.height) يعني مستحيل يطلع فوق
-                                    drawRect(
-                                        brush = shadowBrush,
-                                        topLeft = Offset(x = 0f, y = size.height),
-                                        size = Size(width = size.width, height = shadowHeight)
-                                    )
-                                }
+                                categories = parameters.categories,
+                                selected = parameters.categorySelected,
+                                select = { category -> onActions.select(category) },
+                                unSelect = { onActions.unSelected() }
                             )
                         }
 
@@ -250,9 +222,9 @@ fun HomeScreen(
                                     val currentOffer = parameters.offers[page]
                                     Box(
                                         modifier = Modifier.fillMaxSize()
-                                            .clip(RoundedCornerShape(10.dp)).background(Color.White)
+                                            .clip(RoundedCornerShape(10.dp)).background(MaterialTheme.colorScheme.surface)
                                             .clickable { }
-                                    ) {
+                                    ){
                                         AsyncImage(
                                             modifier = Modifier.fillMaxSize(),
                                             model = ImageRequest.Builder(LocalContext.current)
@@ -366,3 +338,55 @@ fun HomeScreen(
         }
     }
 }
+
+//fun Modifier.bottomBorderOnly(
+//    color: Color = Color.DarkOrange,
+//    strokeWidth: Dp = 1.dp,
+//    cornerRadius: Dp = 40.dp
+//) = this.drawBehind {
+//    val strokePx = strokeWidth.toPx()
+//    val radiusPx = cornerRadius.toPx()
+//    val halfStroke = strokePx / 2f
+//    val w = size.width
+//    val h = size.height
+//
+//    val path = Path().apply {
+//        // 1. البداية عند نقطة بداية الدوران من الجنب الشمال (فوق القاع بـ radiusPx)
+//        moveTo(halfStroke, h - radiusPx)
+//
+//        // 2. دوران الزاوية الشمال تحت
+//        arcTo(
+//            rect = Rect(
+//                left = halfStroke,
+//                top = h - (2 * radiusPx) + halfStroke,
+//                right = (2 * radiusPx) - halfStroke,
+//                bottom = h - halfStroke
+//            ),
+//            startAngleDegrees = 180f,
+//            sweepAngleDegrees = -90f,
+//            forceMoveTo = false
+//        )
+//
+//        // 3. الخط المستقيم في قاع البوكس
+//        lineTo(w - radiusPx, h - halfStroke)
+//
+//        // 4. دوران الزاوية اليمين تحت والوقوف تماماً عند نهايتها
+//        arcTo(
+//            rect = Rect(
+//                left = w - (2 * radiusPx) + halfStroke,
+//                top = h - (2 * radiusPx) + halfStroke,
+//                right = w - halfStroke,
+//                bottom = h - halfStroke
+//            ),
+//            startAngleDegrees = 90f,
+//            sweepAngleDegrees = -90f,
+//            forceMoveTo = false
+//        )
+//    }
+//
+//    drawPath(
+//        path = path,
+//        color = color,
+//        style = Stroke(width = strokePx)
+//    )
+//}

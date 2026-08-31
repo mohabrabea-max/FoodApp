@@ -31,6 +31,7 @@ fun Ratings(){
         horizontalAlignment = Alignment.Start
     ){
         Spacer(modifier = Modifier.height(10.dp))
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -39,7 +40,7 @@ fun Ratings(){
             Text(
                 text = "Name",
                 fontSize = 14.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodySmall
             )
             Icon(
@@ -67,19 +68,19 @@ fun Ratings(){
         Text(
             text = "It's very good!",
             fontSize = 15.sp,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.labelLarge
         )
         Text(
             text = "It's very good!",
             fontSize = 15.sp,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.labelLarge
         )
         Text(
             text = "It's very good!",
             fontSize = 15.sp,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.labelLarge
         )
         Spacer(modifier = Modifier.height(10.dp))

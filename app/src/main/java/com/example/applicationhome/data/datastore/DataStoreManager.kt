@@ -7,7 +7,9 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.applicationhome.data.data.model.ThemeMode
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.CATEGORIES_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.IS_FIRST_OPEN
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.MEALS_LAST_SYNC
@@ -15,6 +17,7 @@ import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.ORDERS_HISTORY_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.RESTAURANTS_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.SNACKS_LAST_SYNC
+import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.THEME_MODE
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,6 +41,7 @@ class DataStoreManager @Inject constructor(
         val OFFERS_LAST_SYNC = longPreferencesKey("offers_last_sync")
         val ORDERS_HISTORY_LAST_SYNC = longPreferencesKey("orders_history_last_sync")
         val IS_FIRST_OPEN = booleanPreferencesKey("is_first_open")
+        val THEME_MODE = stringPreferencesKey("theme_mode")
     }
 
 
@@ -72,10 +76,20 @@ class DataStoreManager @Inject constructor(
     }
 
     val isFirstTimeToOpenApp : Flow<Boolean?> = getBoolean(IS_FIRST_OPEN)
-
     suspend fun updateFirstTimeToOpenApp() {
         dataStore.edit { preferences ->
             preferences[IS_FIRST_OPEN] = false
+        }
+    }
+
+    val themeMode : Flow<ThemeMode> = dataStore.data
+        .map{ preferences ->
+            val savedTheme = preferences[THEME_MODE] ?: ThemeMode.SYSTEM.name
+            ThemeMode.valueOf(savedTheme)
+        }
+    suspend fun saveThemeMode(mode : ThemeMode){
+        dataStore.edit { preferences ->
+            preferences[THEME_MODE] = mode.name
         }
     }
 

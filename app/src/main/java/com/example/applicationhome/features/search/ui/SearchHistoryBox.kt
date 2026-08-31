@@ -21,6 +21,7 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,10 +42,10 @@ import com.example.applicationhome.R
 @Composable
 fun SearchHistoryBox(
     text : String,
-    textColor : Color = Color.Black,
+    textColor : Color = MaterialTheme.colorScheme.onSurface,
     containerHeight : Int = 37,
-    containerColor : Color = Color.White,
-    containerBorderColor : Color = Color.LightGray,
+    containerColor : Color = MaterialTheme.colorScheme.surface,
+    containerBorderColor : Color = MaterialTheme.colorScheme.onSurfaceVariant,
     containerBorderWidth : Dp = 1.dp,
     clickable : () -> Unit = {},
     delete : () -> Unit = {}
@@ -77,7 +78,7 @@ fun SearchHistoryBox(
             Icon(
                 imageVector = Icons.Default.History,
                 contentDescription = "History Icon",
-                tint = Color.DarkGray,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp)
             )
 
@@ -97,7 +98,7 @@ fun SearchHistoryBox(
             onDismissRequest = { isMenuExpanded = false },
             shape = RoundedCornerShape(20.dp),
             shadowElevation = 10.dp,
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ){
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.search)) },

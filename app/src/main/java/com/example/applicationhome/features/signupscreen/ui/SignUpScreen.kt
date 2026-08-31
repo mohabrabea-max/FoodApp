@@ -69,7 +69,6 @@ import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showNetworkSnackBar
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.MatteBlack
-import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.data.model.SignUpErrors
 import com.example.applicationhome.data.data.model.SignUpScreens
@@ -181,7 +180,7 @@ fun SignUpScreen(
         }
     ){
         Box(
-            modifier = Modifier.fillMaxSize().background(Color.VeryLightGray).navigationBarsPadding(),
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).navigationBarsPadding(),
             contentAlignment = Alignment.BottomCenter
         ){
             Row(
@@ -209,7 +208,7 @@ fun SignUpScreen(
                     .fillMaxWidth()
                     .height(710.dp)
                     .clip(shape = RoundedCornerShape(topStart = 100.dp))
-                    .background(Color.VeryLightGray),
+                    .background(MaterialTheme.colorScheme.background),
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
                 NetworkErrorTopBar(isNetworkAvailable = isNetworkAvailable, padding = 80.dp)
@@ -272,7 +271,7 @@ fun SignUpScreen(
                                                     .height(55.dp)
                                                     .weight(1f)
                                                     .clip(shape = item.roundedCornerShape)
-                                                    .background(Color.White)
+                                                    .background(MaterialTheme.colorScheme.surface)
                                                     .padding(start = 25.dp, end = 25.dp)
                                             ){
                                                 NameTextField(item = item)
@@ -323,7 +322,7 @@ fun SignUpScreen(
                                                 modifier = Modifier.padding(horizontal = 16.dp),
                                                 style = TextStyle(
                                                     fontSize = 14.sp,
-                                                    color = Color.Gray,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                     fontWeight = FontWeight.Medium
                                                 )
                                             )
@@ -373,7 +372,7 @@ fun SignUpScreen(
                                             Text(
                                                 text = stringResource(R.string.already_have_an_account),
                                                 style = MaterialTheme.typography.titleLarge,
-                                                color = Color.Black,
+                                                color = MaterialTheme.colorScheme.onSurface,
                                                 fontSize = 15.sp
                                             )
 
@@ -407,7 +406,7 @@ fun SignUpScreen(
                                     Text(
                                         text = stringResource(R.string.complete_your_profile),
                                         style = MaterialTheme.typography.titleLarge,
-                                        color = Color.Black,
+                                        color = MaterialTheme.colorScheme.onSurface,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 25.sp
                                     )

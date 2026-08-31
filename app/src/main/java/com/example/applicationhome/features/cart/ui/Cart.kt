@@ -23,10 +23,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -52,9 +53,7 @@ import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
-import com.example.applicationhome.core.ui.theme.BrownForFont
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.core.ui.theme.DeepMatteBlack
 import com.example.applicationhome.data.data.model.Screens
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -73,14 +72,16 @@ fun Cart(
     val totalPrice by cartViewModel.totalPrice.collectAsStateWithLifecycle()
 
     Scaffold(
-        modifier = Modifier.navigationBarsPadding().
-        fillMaxSize(),
+        modifier = Modifier
+            .navigationBarsPadding()
+            .fillMaxSize(),
+
         topBar = {
             MyTopBar(
-                Color.White,
+                MaterialTheme.colorScheme.surface,
                 modifier = Modifier.fillMaxWidth().height(100.dp).shadow(elevation = 5.dp),
                 stringResource(R.string.cart),
-                Color.DeepMatteBlack,
+                MaterialTheme.colorScheme.onSurface,
                 {
                     IconButton(
                         onClick = {
@@ -90,7 +91,7 @@ fun Cart(
                         },
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
                     ) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
                     }
                 },
                 {
@@ -108,15 +109,19 @@ fun Cart(
                         Icon(
                             Icons.Default.Search,
                             contentDescription = null,
-                            tint = Color.DeepMatteBlack
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
             )
-            Divider(color = Color.LightGray.copy(alpha = 0.5f))
+            HorizontalDivider(
+                Modifier,
+                DividerDefaults.Thickness,
+                color = Color.LightGray.copy(alpha = 0.5f)
+            )
         }
     ){
-        Box(modifier = Modifier.background(Color.White)){
+        Box(modifier = Modifier.background(MaterialTheme.colorScheme.background)){
             Box(modifier = Modifier.fillMaxSize()){
                 if(cartItems.isNotEmpty()){
                     LazyColumn(
@@ -153,7 +158,7 @@ fun Cart(
                             text = stringResource(R.string.there_s_nothing_in_your_cart_yet),
                             fontSize = 22.sp,
                             style = MaterialTheme.typography.labelLarge,
-                            color = Color.BrownForFont,
+                            color = MaterialTheme.colorScheme.onSurface,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.Bold
                         )
@@ -162,7 +167,7 @@ fun Cart(
                             text = stringResource(R.string.ready_to_order),
                             fontSize = 14.sp,
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
                         )
                         Spacer(modifier = Modifier.height(40.dp))
@@ -175,14 +180,14 @@ fun Cart(
                                     popUpTo(0) { inclusive = true }
                                 }
                             }.
-                            border(width = 1.dp, color = Color.BrownForFont, shape = RoundedCornerShape(40.dp)).
+                            border(width = 1.dp, color = MaterialTheme.colorScheme.onSurface, shape = RoundedCornerShape(40.dp)).
                             padding(7.dp).align(Alignment.CenterHorizontally)
                         ){
                             Text(
                                 text = stringResource(R.string.add_food),
                                 fontSize = 15.sp,
                                 style = MaterialTheme.typography.labelLarge,
-                                color = Color.BrownForFont,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.align(Alignment.Center)
                             )
                         }

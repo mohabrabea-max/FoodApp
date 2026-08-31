@@ -1,12 +1,15 @@
-package com.example.applicationhome.features.profile.ui
+package com.example.applicationhome.features.search.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -66,26 +69,32 @@ fun SearchResults(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ){
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current).
-                data(item.restaurant.restaurant.image).
-                crossfade(true).
-                precision(Precision.EXACT).
-                build(),
-                contentDescription = null,
+            Box(
                 modifier = Modifier
                     .size(80.dp)
                     .clip(RoundedCornerShape(20.dp))
-                    .border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(20.dp)),
-                contentScale = ContentScale.Crop
-            )
+                    .border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(20.dp))
+                    .background(Color.White)
+            ){
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current).
+                    data(item.restaurant.restaurant.image).
+                    crossfade(true).
+                    precision(Precision.EXACT).
+                    build(),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
+
             Column(
                 modifier = Modifier.padding(start = 13.dp)
             ){
                 Text(
                     text = item.restaurant.restaurant.name,
                     fontSize = 18.sp,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 5.dp)
@@ -105,14 +114,14 @@ fun SearchResults(
                     )
                     Text(
                         text = "${item.restaurant.restaurant.review}",
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 14.sp,
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier
                     )
                     Text(
                         text = "(1k+)",
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 14.sp,
                         style = TextStyle(letterSpacing = (-0.7).sp),
                         modifier = Modifier

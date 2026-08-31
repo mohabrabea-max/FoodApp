@@ -25,6 +25,7 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,8 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.components.model.DashboardScreenViewModel
+import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.data.data.model.Screens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -73,7 +74,7 @@ fun MyBottomBar(
             .width(280.dp)
             .height(60.dp)
             .shadow(elevation = 10.dp, spotColor = Color.Black, shape = RoundedCornerShape(50.dp))
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(4.dp)
             .pointerInput(Unit) {
                 detectTapGestures { }

@@ -19,6 +19,7 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -74,18 +75,18 @@ fun BirthdayDialog(
             onValueChange = {  },
 
             colors = OutlinedTextFieldDefaults.colors(
-                disabledTextColor = Color.Black,
-                disabledLabelColor = Color.Black,
-                disabledTrailingIconColor = Color.Gray,
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurface,
+                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
                 errorBorderColor = Color.Red,
-                disabledBorderColor = Color.LightGray
+                disabledBorderColor = MaterialTheme.colorScheme.onSurface
             ),
 
             label = {
                 Text(
                     stringResource(R.string.birthday),
                     fontSize = 16.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             },
 
@@ -93,14 +94,18 @@ fun BirthdayDialog(
                 Text(
                     stringResource(R.string.birthday),
                     fontSize = 16.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             },
 
             readOnly = true,
 
             trailingIcon = {
-                Icon(imageVector = Icons.Default.DateRange, contentDescription = stringResource(R.string.select_date))
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = stringResource(R.string.select_date),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
             },
 
             modifier = Modifier
@@ -124,46 +129,46 @@ fun BirthdayDialog(
                     .padding(16.dp)
                     .clip(shape = RoundedCornerShape(28.dp))
                     .wrapContentSize()
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
                     .padding(bottom = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 DatePicker(
                     state = datePickerState,
                     colors = DatePickerDefaults.colors(
-                        dividerColor = Color.LightGray,
+                        dividerColor = MaterialTheme.colorScheme.onSecondary,
 
                         // 1. الخلفية العامة والعناوين الرئيسية فوق
-                        containerColor = Color.White,                  // خلفية صندوق النتيجة بالكامل
+                        containerColor = MaterialTheme.colorScheme.surface,                  // خلفية صندوق النتيجة بالكامل
                         titleContentColor = Color.DarkGray,            // لون كلمة "Select date" الصغيرة فوق
                         headlineContentColor = Color.BrownForFont,     // لون التاريخ الكبير المكتوب (مثلاً: Sat, Jul 18)
 
                         subheadContentColor = Color.DarkGray,              // لون اسم الشهر والسنة (مثلاً: July 2026)
                         navigationContentColor = Color.DarkGray,           // لون أسهم التقليب بين الشهور (> و <)
-                        weekdayContentColor = Color.Gray,              // لون حروف أيام الأسبوع (S, M, T, W...)
+                        weekdayContentColor = MaterialTheme.colorScheme.onSurfaceVariant,              // لون حروف أيام الأسبوع (S, M, T, W...)
 
                         // 3. أرقام الأيام (Days)
-                        dayContentColor = Color.Black,                    // لون أرقام الأيام العادية في الشهر
-                        disabledDayContentColor = Color.LightGray,        // لون الأيام المقفولة (لو عامل حدود للتاريخ)
+                        dayContentColor = MaterialTheme.colorScheme.onSurface,                    // لون أرقام الأيام العادية في الشهر
+                        disabledDayContentColor = MaterialTheme.colorScheme.onSecondary,        // لون الأيام المقفولة (لو عامل حدود للتاريخ)
 
                         // 4. اليوم اللي المستخدم ضغط عليه واختاره (Selected Day)
                         selectedDayContainerColor = Color.DarkOrange,     // لون الدائرة اللي بتظهر ورا اليوم المختار
-                        selectedDayContentColor = Color.White,            // لون رقم اليوم نفسه جوه الدائرة المختارة
+                        selectedDayContentColor = MaterialTheme.colorScheme.surface,            // لون رقم اليوم نفسه جوه الدائرة المختارة
 
                         // 5. اليوم الحالي (النهاردة - Today)
                         todayContentColor = Color.DarkOrange,           // لون رقم تاريخ النهاردة لو مش متبت عليه
                         todayDateBorderColor = Color.DarkOrange,        // لون الدائرة الخفيفة المحاوطة تاريخ النهاردة
 
                         // 6. لو المستخدم فتح لستة السنين (Year Picker)
-                        yearContentColor = Color.Black,                    // لون السنين العادية في اللستة
+                        yearContentColor = MaterialTheme.colorScheme.onSurface,                    // لون السنين العادية في اللستة
                         selectedYearContainerColor = Color.DarkOrange,   // خلفية السنة المحددة
-                        selectedYearContentColor = Color.White,            // لون نص السنة المحددة
+                        selectedYearContentColor = MaterialTheme.colorScheme.surface,            // لون نص السنة المحددة
                         currentYearContentColor = Color.BrownForFont,       // لون السنة الحالية في منظومة الوقت
 
                         //7. الجزء الخاص بضغط القلم والكتابة اليدوية
                         dateTextFieldColors = TextFieldDefaults.colors(
-                            focusedTextColor = Color.Black,               // لون الكلام اللي المستخدم بيكتبه وهو واقف جوه الخانة
-                            unfocusedTextColor = Color.Black,             // لون الكلام لو خرج بره الخانة
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,               // لون الكلام اللي المستخدم بيكتبه وهو واقف جوه الخانة
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,             // لون الكلام لو خرج بره الخانة
 
                             focusedContainerColor = Color.Transparent,    // خلفية خانة الكتابة (شفافة أو أبيض حسب ذوقك)
                             unfocusedContainerColor = Color.Transparent,
@@ -172,12 +177,12 @@ fun BirthdayDialog(
 
                             // الخط اللي بيبقى تحت خانة الإدخال (Indicator)
                             focusedIndicatorColor = Color.DarkOrange,      // لون الخط لما المستخدم يضغط ويبدأ يكتب
-                            unfocusedIndicatorColor = Color.LightGray,     // لون الخط في الحالة العادية
+                            unfocusedIndicatorColor = MaterialTheme.colorScheme.onSecondary,     // لون الخط في الحالة العادية
                             errorIndicatorColor = Color.Red,               // لون الخط لو كتب تاريخ غلط (الفايربيز بيطلع إيرور تلقائي لو التاريخ مش منطقي)
 
                             // العنوان الصغير اللي بيبقى مكتوب جوه الخانة (مثال: Date)
-                            focusedLabelColor = Color.Black,            // لونه لما يطير فوق
-                            unfocusedLabelColor = Color.Black           // لونه وهو جوه الخانة
+                            focusedLabelColor = MaterialTheme.colorScheme.onSurface,            // لونه لما يطير فوق
+                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurface           // لونه وهو جوه الخانة
                         )
                     )
                 )
@@ -189,7 +194,7 @@ fun BirthdayDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = { showDatePicker = false }) {
-                        Text(stringResource(R.string.cancel), color = Color.Gray, fontSize = 14.sp)
+                        Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     TextButton(onClick = {

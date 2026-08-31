@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,12 +21,12 @@ import androidx.compose.ui.unit.sp
 fun PaymentSummaryCartScreen(totalprice: Double){
     Column(
         horizontalAlignment = Alignment.Start,
-        modifier = Modifier.fillMaxWidth().background(Color.White).padding(20.dp)
+        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).padding(20.dp)
     ){
         Text(
             text = "Payment summary",
             fontSize = 20.sp,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Bold
         )
@@ -40,13 +39,13 @@ fun PaymentSummaryCartScreen(totalprice: Double){
             Text(
                 text = "Total amount",
                 fontSize = 17.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.labelLarge
             )
             Text(
                 text = "EGP $totalprice",
                 fontSize = 17.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.labelLarge
             )
         }

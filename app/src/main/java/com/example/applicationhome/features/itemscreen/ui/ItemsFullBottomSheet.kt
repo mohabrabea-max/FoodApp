@@ -31,14 +31,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.core.ui.theme.BrownForFont
-import com.example.applicationhome.core.ui.theme.MediumBrownForTitle
-import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.BottomSheetActions
 import com.example.applicationhome.data.data.model.BottomSheetItem
 import com.example.applicationhome.data.data.model.Screens
@@ -86,7 +83,7 @@ fun ItemsFullBottomSheet(
                 modifier = Modifier
                     .navigationBarsPadding()
                     .fillMaxSize(),
-                containerColor = Color.VeryLightGray,
+                containerColor = MaterialTheme.colorScheme.background,
                 topBar = {
                     ItemScreenTopBar(
                         scrollState = scrollState,
@@ -114,17 +111,17 @@ fun ItemsFullBottomSheet(
                     }
                     item {
                         Column(
-                            modifier = Modifier.
-                            shadow(elevation = 10.dp, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(20.dp)).
-                            fillMaxWidth().
-                            background(Color.White).
-                            padding(15.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(MaterialTheme.colorScheme.surface)
+                                .padding(15.dp)
                         ){
                             Text(
                                 text = bottomSheetItem.name,
                                 fontSize = 20.sp,
                                 style = MaterialTheme.typography.labelLarge,
-                                color = Color.BrownForFont,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Bold
                             )
 
@@ -132,7 +129,7 @@ fun ItemsFullBottomSheet(
 
                             Text(
                                 text = bottomSheetItem.details,
-                                color = Color.MediumBrownForTitle
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
 
                             Spacer(modifier = Modifier.height(25.dp))
@@ -141,7 +138,7 @@ fun ItemsFullBottomSheet(
                                 text = "$price L.E",
                                 fontSize = 30.sp,
                                 style = MaterialTheme.typography.labelLarge,
-                                color = Color.BrownForFont,
+                                color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(start = 5.dp, bottom = 15.dp)
                             )
@@ -153,17 +150,17 @@ fun ItemsFullBottomSheet(
                                 Spacer(modifier = Modifier.height(10.dp))
 
                                 Column(
-                                    modifier = Modifier.
-                                    shadow(elevation = 10.dp, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(20.dp)).
-                                    fillMaxWidth().
-                                    background(Color.White)
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(20.dp))
+                                        .background(MaterialTheme.colorScheme.surface)
                                 ){
                                     Spacer(modifier = Modifier.height(15.dp))
 
                                     Text(
                                         text = "Meal snacks",
                                         fontSize = 16.sp,
-                                        color = Color.Black,
+                                        color = MaterialTheme.colorScheme.onSurface,
                                         style = MaterialTheme.typography.labelLarge,
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier.padding(start = 15.dp)
@@ -195,18 +192,18 @@ fun ItemsFullBottomSheet(
                             Spacer(modifier = Modifier.height(10.dp))
 
                             Column(
-                                modifier = Modifier.
-                                shadow(elevation = 10.dp, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(20.dp)).
-                                fillMaxWidth().
-                                background(Color.White).
-                                padding(10.dp)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(MaterialTheme.colorScheme.surface)
+                                    .padding(10.dp)
                             ){
                                 Spacer(modifier = Modifier.height(5.dp))
 
                                 Text(
                                     text = "Sizes",
                                     fontSize = 16.sp,
-                                    color = Color.Black,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     style = MaterialTheme.typography.labelLarge,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier.padding(start = 5.dp)

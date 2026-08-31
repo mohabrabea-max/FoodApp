@@ -20,8 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -47,29 +45,31 @@ fun MealsBoxForFavoriteScreen(
 
     if (foodMenuIsLoading) {
         Box(
-            modifier = Modifier.
-            padding(7.dp).
-            shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
-            background(Color.White).
-            aspectRatio(2f),
+            modifier = Modifier
+                .padding(7.dp)
+                .clip(shape = RoundedCornerShape(30.dp))
+                .background(MaterialTheme.colorScheme.surface)
+                .aspectRatio(2f),
+
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator() // دايرة التحميل الافتراضية في أندرويد
         }
     }else{
         Box(
-            modifier = Modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
-            background(Color.White).
-            aspectRatio(0.65f).
-            clickable(
-                interactionSource = interactionSource,
-                indication = null
-            ){
-                cardNavigationClickable()
-            }.
-            padding(15.dp)
+            modifier = Modifier
+                .padding(7.dp)
+                .clip(shape = RoundedCornerShape(30.dp))
+                .background(MaterialTheme.colorScheme.surface)
+                .aspectRatio(0.65f)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null
+                ){
+                    cardNavigationClickable()
+                }.padding(15.dp)
         ){
-            Column(modifier = Modifier.fillMaxSize().background(Color.White)){
+            Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)){
                 Box(modifier = Modifier.fillMaxWidth().weight(1.5f), contentAlignment = Alignment.Center){
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(0.9f).clip(RoundedCornerShape(10.dp)),
@@ -95,20 +95,20 @@ fun MealsBoxForFavoriteScreen(
                     Text(
                         text = name,
                         fontSize = 14.sp,
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = name,
                         fontSize = 11.sp,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.titleLarge
                     )
                     Text(
                         text = "$price E.G",
                         fontSize = 16.sp,
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold
                     )

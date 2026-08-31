@@ -139,4 +139,11 @@
     <string name="continue_your_order">هل تريد متابعة طلبك؟</string>
     <string name="you_still_have_items_in_your_cart_would_you_like_to_review_them_and_finish_placing_your_order">لا تزال هناك منتجات في سلة التسوق الخاصة بك. هل ترغب في مراجعتها وإتمام عملية الشراء؟</string>
     <string name="view_cart">عرض سلة التسوق</string>
+    <string name="device_settings">إعدادات النظام</string>
+    <string name="on">قيد التشغيل</string>
+    <string name="off">متوقف</string>
+    <string name="dark_mode">الوضع المظلم</string>
+    <string name="skip">تخطي</string>
+    <string name="login_to_an_existing_account">تسجيل الدخول إلى حساب موجود</string>
+    <string name="log_in_or_sign_up_to_save_more_shop_faster_and_get_personalized_perks">سجّل الدخول أو أنشئ حسابًا لتوفير المزيد، والتسوق بشكل أسرع، والحصول على مزايا شخصية</string>
 </resources>

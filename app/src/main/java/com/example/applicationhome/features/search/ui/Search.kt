@@ -25,6 +25,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -54,7 +55,6 @@ import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.features.homescreen.ui.CategoriesBar
-import com.example.applicationhome.features.profile.ui.SearchResults
 import com.example.applicationhome.features.shimmers.boxes.CategoriesShimmer
 import com.example.applicationhome.features.shimmers.boxes.TextInSearchShimmer
 import com.example.applicationhome.features.shimmers.screens.SearchResultScreenShimmer
@@ -91,8 +91,6 @@ fun Search(
         modifier = Modifier
             .navigationBarsPadding().
             fillMaxSize(),
-
-        containerColor = Color.White,
 
         topBar = {
             SearchScreenTopBar(
@@ -133,7 +131,7 @@ fun Search(
                     Indicator(
                         modifier = Modifier.align(Alignment.TopCenter),
                         isRefreshing = if(search.text.isEmpty()) isRefreshing else false,
-                        containerColor = Color.White,
+                        containerColor = MaterialTheme.colorScheme.surface,
                         color = Color.DarkOrange,
                         state = refreshState
                     )
@@ -158,9 +156,9 @@ fun Search(
                                 SearchSuggestions(
                                     text = item,
                                     searchText = search.text,
-                                    textColor = Color.Gray,
+                                    textColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                     startIcon = Icons.Default.History,
-                                    iconsColor = Color.Gray,
+                                    iconsColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                     textClickable = {
                                         keyboardController?.hide()
                                         focusManager.clearFocus()
@@ -177,7 +175,7 @@ fun Search(
                                     offset = DpOffset(x = 25.dp, y = 120.dp),
                                     shape = RoundedCornerShape(20.dp),
                                     shadowElevation = 10.dp,
-                                    containerColor = Color.White
+                                    containerColor = MaterialTheme.colorScheme.surface
                                 ){
                                     DropdownMenuItem(
                                         text = { Text("Delete", color = Color.Red) },
@@ -208,9 +206,9 @@ fun Search(
                                 SearchSuggestions(
                                     text = item,
                                     searchText = search.text,
-                                    textColor = Color.Black,
+                                    textColor = MaterialTheme.colorScheme.onSurface,
                                     startIcon = Icons.Default.Search,
-                                    iconsColor = Color.Black,
+                                    iconsColor = MaterialTheme.colorScheme.onSurface,
                                     textClickable = {
                                         keyboardController?.hide()
                                         focusManager.clearFocus()
@@ -247,15 +245,15 @@ fun Search(
                         HomeUiState.Success, HomeUiState.Offline -> {
                             item{
                                 CategoriesBar(
-                                    categories,
-                                    0,
-                                    {
+                                    categories = categories,
+                                    selected = 0,
+                                    select = {
                                         keyboardController?.hide()
                                         focusManager.clearFocus()
 
                                         searchViewModel.clickSearch(it.name)
                                     },
-                                    {}
+                                    unSelect = {}
                                 )
 
                                 //Divider(color = Color.LightGray.copy(alpha = 0.6f))
@@ -302,7 +300,7 @@ fun Search(
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .shimmer()
-                                        .background(Color.White),
+                                        .background(MaterialTheme.colorScheme.surface),
                                     verticalArrangement = Arrangement.Top,
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ){

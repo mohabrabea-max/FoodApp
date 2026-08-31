@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,8 +44,8 @@ fun TimelineItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ){
-            val circleBg = if (step.isCompleted && !isCancelled) Color.DarkOrange else Color(0xFFF1F3F5)
-            val iconTint = if (step.isCompleted && !isCancelled) Color.White else if(isCancelled) Color.Red else if(step.isCurrent) Color.DarkOrange else Color.Gray
+            val circleBg = if (step.isCompleted && !isCancelled) Color.DarkOrange else MaterialTheme.colorScheme.surface
+            val iconTint = if (step.isCompleted && !isCancelled) Color.White else if(isCancelled) Color.Red else if(step.isCurrent) Color.DarkOrange else MaterialTheme.colorScheme.onSurfaceVariant
 
             Box(
                 modifier = Modifier
@@ -78,7 +79,7 @@ fun TimelineItem(
                     text = step.subtitle,
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -86,7 +87,7 @@ fun TimelineItem(
                 Text(
                     text = step.date,
                     fontSize = 13.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

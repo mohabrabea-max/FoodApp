@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -26,7 +27,7 @@ fun SelectionOutlinedTextField(
     showBottomSheet : () -> Unit,
     isEnabled : Boolean = true,
 ){
-    val colorWhenEmpty = if(isEnabled) Color.Gray else Color.LightGray
+    val colorWhenEmpty = if(isEnabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSecondary
 
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -49,7 +50,7 @@ fun SelectionOutlinedTextField(
                 disabledLabelColor = Color.Black,
                 disabledTrailingIconColor = colorWhenEmpty,
                 errorBorderColor = Color.Red,
-                disabledBorderColor = Color.LightGray
+                disabledBorderColor = colorWhenEmpty
             ),
 
             label = {

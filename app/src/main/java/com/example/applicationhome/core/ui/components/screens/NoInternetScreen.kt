@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -28,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
-import com.example.applicationhome.core.ui.theme.BrownForFont
 
 @Composable
 fun NoInternetScreen(
@@ -37,7 +35,7 @@ fun NoInternetScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
         ,horizontalAlignment = Alignment.CenterHorizontally
     ){
         Spacer(modifier = Modifier.height(300.dp))
@@ -51,7 +49,7 @@ fun NoInternetScreen(
             text = "You seem to be offline",
             fontSize = 20.sp,
             style = MaterialTheme.typography.labelLarge,
-            color = Color.BrownForFont,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold
         )
@@ -59,7 +57,7 @@ fun NoInternetScreen(
         Text(
             text = "Check your internet connection and try again.",
             fontSize = 15.sp,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(30.dp))
@@ -70,14 +68,14 @@ fun NoInternetScreen(
             clickable{
                 if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
             }.
-            border(width = 1.dp, color = Color.BrownForFont, shape = RoundedCornerShape(40.dp)).
+            border(width = 1.dp, color = MaterialTheme.colorScheme.onSurface, shape = RoundedCornerShape(40.dp)).
             padding(7.dp).align(Alignment.CenterHorizontally)
         ){
             Text(
                 text = "Retry",
                 fontSize = 15.sp,
                 style = MaterialTheme.typography.labelLarge,
-                color = Color.BrownForFont,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.align(Alignment.Center)
             )
         }

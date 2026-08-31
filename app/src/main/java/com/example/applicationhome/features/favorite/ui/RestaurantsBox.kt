@@ -21,13 +21,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -54,10 +54,11 @@ fun RestaurantsBox(
 
 
     Box(
-        modifier = Modifier.width(194.dp).
-        height(230.dp).
-        padding(10.dp).
-        shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp))
+        modifier = Modifier
+            .width(194.dp)
+            .height(230.dp)
+            .padding(10.dp)
+            .clip(shape = RoundedCornerShape(30.dp))
     ){
         Box(
             modifier = Modifier.clickable(
@@ -94,7 +95,7 @@ fun RestaurantsBox(
                         { removeRestaurantsFavorite() },
                         modifier = Modifier.clip(CircleShape).size(35.dp)
                             .background(Color.Black.copy(alpha = 0.2f)),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.surface,
                         icon1 = Icons.Default.Bookmark,
                         icon2 = Icons.Default.BookmarkBorder
                     )
@@ -124,12 +125,12 @@ fun RestaurantsBox(
             Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start){
                 Spacer(modifier = Modifier.width(10.dp))
                 Box(
-                    modifier = Modifier.size(50.dp).
-                    clip(CircleShape).
-                    background(Color.White).
-                    clickable { view() }.
-                    shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(40.dp)).
-                    border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(40.dp))
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                        .clickable { view() }
+                        .border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(40.dp))
                 ){
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(),

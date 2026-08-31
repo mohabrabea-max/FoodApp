@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -34,7 +35,6 @@ import androidx.compose.ui.unit.sp
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.designsystem.SquareRadioButton
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.ConfirmOrderScreenTextFieldEnum
 import com.example.applicationhome.data.data.model.ProfileEditResult
 import com.example.applicationhome.data.data.model.TextFieldClassFromConfirmOrderScreen
@@ -59,7 +59,7 @@ fun ConfirmOrderScreenTextField(
 
     val textColor =
         if (error) Color.Red
-        else Color.Gray
+        else MaterialTheme.colorScheme.onSurfaceVariant
 
 
     val focusManager = LocalFocusManager.current
@@ -84,7 +84,7 @@ fun ConfirmOrderScreenTextField(
                 focusedBorderColor = Color.DarkOrange,
                 unfocusedBorderColor = Color.LightGray,
                 errorBorderColor = Color.Red,
-                disabledBorderColor = Color.VeryLightGray
+                disabledBorderColor = MaterialTheme.colorScheme.background
             ),
 
             modifier = Modifier
@@ -108,7 +108,7 @@ fun ConfirmOrderScreenTextField(
                         Text(
                             text = "+20",
                             fontSize = 16.sp,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onSurface
                         )
 
                         Spacer(modifier = Modifier.width(10.dp))
@@ -127,7 +127,7 @@ fun ConfirmOrderScreenTextField(
             placeholder = {
                 Text(
                     text = stringResource(item.title),
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 16.sp
                 )
             },
@@ -146,7 +146,7 @@ fun ConfirmOrderScreenTextField(
 
             textStyle = TextStyle(
                 fontSize = 16.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             ),
 
             shape = RoundedCornerShape(20.dp)
@@ -165,7 +165,7 @@ fun ConfirmOrderScreenTextField(
 
                 Text(
                     text = stringResource(R.string.save_this_number),
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(horizontal = 7.dp)

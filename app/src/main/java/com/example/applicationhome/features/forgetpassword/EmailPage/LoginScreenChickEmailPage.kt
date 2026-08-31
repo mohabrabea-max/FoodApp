@@ -35,7 +35,7 @@ fun LoginScreenChickEmailPage(
         Text(
             text = stringResource(R.string.check_email),
             style = MaterialTheme.typography.titleLarge,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.ExtraBold,
             fontSize = 28.sp
         )
@@ -45,7 +45,7 @@ fun LoginScreenChickEmailPage(
         Text(
             text = stringResource(R.string.enter_your_email_address_to_retrieve),
             style = MaterialTheme.typography.titleLarge,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 15.sp
         )
 

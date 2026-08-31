@@ -5,7 +5,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -47,7 +46,6 @@ import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.components.forCart.AlertDialogMessage
 import com.example.applicationhome.core.ui.components.screens.EmptyScreen
-import com.example.applicationhome.core.ui.theme.DeepMatteBlack
 import com.example.applicationhome.data.data.model.ActiveOrderDialog
 import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.data.model.OrdersHistoryScreens
@@ -135,8 +133,6 @@ fun LastOrdersScreen(
             .navigationBarsPadding()
             .fillMaxSize(),
 
-        containerColor = Color.White,
-
         topBar = {
             Column(
                 modifier = Modifier
@@ -145,10 +141,10 @@ fun LastOrdersScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
                 MyTopBar(
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.surface,
                     modifier = Modifier.fillMaxWidth().height(100.dp).shadow(elevation = 5.dp),
                     title = stringResource(R.string.orders_history),
-                    titleColor = Color.DeepMatteBlack,
+                    titleColor = MaterialTheme.colorScheme.onSurface,
                     startaction = {
                         IconButton(
                             onClick = {
@@ -156,13 +152,15 @@ fun LastOrdersScreen(
                                     navigationController.popBackStack()
                                 }
                             },
-                            modifier = Modifier.padding(5.dp).clip(CircleShape).size(40.dp)
-                                .background(Color.White)
+                            modifier = Modifier
+                                .padding(5.dp)
+                                .clip(CircleShape)
+                                .size(40.dp)
                         ) {
                             Icon(
                                 Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = null,
-                                tint = Color.DeepMatteBlack
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }

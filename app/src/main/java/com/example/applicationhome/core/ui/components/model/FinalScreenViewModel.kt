@@ -3,17 +3,19 @@ package com.example.applicationhome.core.ui.components.model
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.repository.WelcomeScreenRepository
 import com.example.applicationhome.data.data.model.HomeUiState
+import com.example.applicationhome.data.data.model.ThemeMode
 import com.example.applicationhome.data.data.model.UserUiState
 import com.example.applicationhome.data.local.entity.UserClass
+import com.example.applicationhome.data.local.source.ThemeModeManager
 import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -27,10 +29,19 @@ import javax.inject.Inject
 class FinalScreenViewModel @Inject constructor(
     private val syncAllDataRepository : SyncAllDataRepository,
     private val userRepository : UserRepository,
-    private val cartRepository: CartRepository,
     welcomeScreenRepository : WelcomeScreenRepository,
+    themeModeManager : ThemeModeManager,
     networkObserver: NetworkObserver
 ) : ViewModel() {
+    val themeMode : StateFlow<ThemeMode> =
+        themeModeManager.getCurrentThemeMode()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = ThemeMode.SYSTEM
+        )
+
+
     val isFirsTimeToOpenApp = welcomeScreenRepository.isFirsTimeToOpenApp
 
     val isNetworkAvailable = networkObserver.isNetworkAvailable

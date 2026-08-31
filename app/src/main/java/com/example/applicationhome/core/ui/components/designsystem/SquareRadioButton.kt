@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -26,7 +27,7 @@ fun SquareRadioButton(
     selected : Boolean = false,
     modifier : Modifier = Modifier,
     selectedColor : Color = Color.DarkOrange,
-    unselectedColor : Color = Color.Gray,
+    unselectedColor : Color = MaterialTheme.colorScheme.onSurfaceVariant,
     onClick : () -> Unit
 ){
     val interactionSource = remember { MutableInteractionSource() }

@@ -24,11 +24,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -113,18 +114,16 @@ fun ConfirmOrderScreen(
     Scaffold(
         modifier = Modifier.navigationBarsPadding().fillMaxSize(),
 
-        containerColor = Color.White,
-
         topBar = {
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
                 MyTopBar(
-                    Color.White,
+                    MaterialTheme.colorScheme.surface,
                     modifier = Modifier.fillMaxWidth().height(100.dp).shadow(elevation = 5.dp),
                     stringResource(topBatTitle),
-                    Color.Black,
+                    MaterialTheme.colorScheme.onSurface,
                     {
                         IconButton(
                             onClick = {
@@ -136,9 +135,15 @@ fun ConfirmOrderScreen(
                             },
                             modifier = Modifier
                                 .padding(5.dp)
-                                .clip(CircleShape).size(40.dp).background(Color.White)
+                                .clip(CircleShape)
+                                .size(40.dp)
+                                .background(MaterialTheme.colorScheme.surface)
                         ) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.Black)
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     },
                 )

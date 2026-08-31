@@ -22,4 +22,6 @@ val Color.Companion.DeepMatteBlack: Color get() = Color(0xFF1A1A1B)
 val Color.Companion.RedOrange: Color get() = Color(0xFFC04F26)
 val Color.Companion.VeryLightGray: Color get() = Color(0xFFF5F5F5)
 val Color.Companion.BrandBlue : Color get() = Color(0xFF0496FF)
+val Color.Companion.DarkCharcoal : Color get() = Color(0xFF181818)
 
+val Color.Companion.CharcoalGray : Color get() = Color(0xFF303030)

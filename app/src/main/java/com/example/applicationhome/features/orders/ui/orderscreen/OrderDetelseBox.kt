@@ -11,7 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,9 +38,11 @@ fun OrderDetelseBox(
     val size = if(food.size.contains("Pieces") && food.type == "Meal") "" else "(${food.size})"
 
     Box(
-        modifier = Modifier.padding(start = 10.dp, end = 10.dp).
-        fillMaxWidth().height(100.dp).
-        background(Color.White)
+        modifier = Modifier
+            .padding(start = 10.dp, end = 10.dp)
+            .fillMaxWidth()
+            .height(100.dp)
+            .background(MaterialTheme.colorScheme.background)
     ){
         Column(modifier = Modifier.fillMaxSize()){
             Row(
@@ -67,7 +70,7 @@ fun OrderDetelseBox(
                         Text(
                             text = "${food.mealName} $size",
                             fontSize = 18.sp,
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold
                         )
@@ -82,8 +85,14 @@ fun OrderDetelseBox(
                     }
                 }
             }
+
             Spacer(modifier = Modifier.height(15.dp))
-            Divider(color = Color.LightOrange.copy(alpha = 0.5f), modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+
+            HorizontalDivider(
+                modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+                thickness = DividerDefaults.Thickness,
+                color = Color.LightOrange.copy(alpha = 0.5f)
+            )
         }
     }
 }

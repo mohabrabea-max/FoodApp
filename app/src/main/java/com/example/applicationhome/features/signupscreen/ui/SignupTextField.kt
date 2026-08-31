@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -66,7 +67,7 @@ fun NameTextField(item : SignUpFullNameTextFields){
 
         textStyle = TextStyle(
             fontSize = 18.sp,
-            color = if(!item.errorMessage) Color.Black else Color.Red
+            color = if(!item.errorMessage) MaterialTheme.colorScheme.onSurface else Color.Red
         ),
 
         decorator = { innerTextField ->
@@ -116,7 +117,7 @@ fun SignupTextField(
                 .height(55.dp)
                 .fillMaxWidth()
                 .clip(CircleShape)
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(start = 25.dp, end = 25.dp)
         ){
             BasicSecureTextField(
@@ -142,7 +143,7 @@ fun SignupTextField(
 
                 textStyle = TextStyle(
                     fontSize = 18.sp,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 ),
 
                 decorator = { innerTextField ->
@@ -194,7 +195,7 @@ fun SignupTextField(
                         Icon(
                             if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                             contentDescription = null,
-                            tint = Color.DarkGray
+                            tint = Color.Gray
                         )
                     }
                 }

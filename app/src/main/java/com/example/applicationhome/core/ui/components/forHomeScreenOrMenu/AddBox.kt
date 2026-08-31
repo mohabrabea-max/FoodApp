@@ -63,7 +63,7 @@ fun AddBox(
     }
 
     val boxColor by animateColorAsState(
-        targetValue = if (count > 0 && !isExpandedState) Color.DarkOrange else Color.White,
+        targetValue = if (count > 0 && !isExpandedState) Color.DarkOrange else MaterialTheme.colorScheme.surface,
         label = "BoxColorAnimation"
     )
 
@@ -92,7 +92,7 @@ fun AddBox(
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.White),
+                        .background(MaterialTheme.colorScheme.surface),
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
                 ){
                     IconButton(
@@ -104,7 +104,7 @@ fun AddBox(
                         Icon(
                             Icons.Default.Remove,
                             contentDescription = null,
-                            tint = if(count > 0) Color.DarkOrange else Color.Gray,
+                            tint = if(count > 0) Color.DarkOrange else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.fillMaxSize().padding(5.dp)
                         )
                     }
@@ -118,7 +118,7 @@ fun AddBox(
                             text = "$count",
                             fontSize = 20.sp,
                             style = MaterialTheme.typography.labelLarge,
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onSurface,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -131,7 +131,7 @@ fun AddBox(
                         Icon(
                             Icons.Default.Add,
                             contentDescription = null,
-                            tint = if(count < 99) Color.DarkOrange else Color.Gray,
+                            tint = if(count < 99) Color.DarkOrange else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.fillMaxSize().padding(5.dp)
                         )
                     }

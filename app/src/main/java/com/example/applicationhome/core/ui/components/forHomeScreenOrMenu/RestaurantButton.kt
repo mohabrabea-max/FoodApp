@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
@@ -44,8 +43,7 @@ fun RestaurantButton(
     Box(
         modifier = Modifier.fillMaxWidth().
         height(100.dp).
-        shadow(elevation = 7.dp).
-        background(Color.White).
+        background(MaterialTheme.colorScheme.surface).
         pointerInput(Unit) {
             detectTapGestures { }
         }.
@@ -54,17 +52,18 @@ fun RestaurantButton(
         contentAlignment = Alignment.Center
     ){
         Row(
-            modifier = Modifier.navigationBarsPadding().fillMaxWidth().
-            height(55.dp).
-            shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(50.dp)).
-            background(Color.DarkOrange).
-            clickable(
-                interactionSource = interactionSource,
-                indication = null
-            ){
-                navigation()
-            }.
-            padding(9.dp),
+            modifier = Modifier
+                .navigationBarsPadding()
+                .fillMaxWidth()
+                .height(55.dp)
+                .clip(shape = RoundedCornerShape(50.dp))
+                .background(Color.DarkOrange)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null
+                ){
+                    navigation()
+                }.padding(9.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ){

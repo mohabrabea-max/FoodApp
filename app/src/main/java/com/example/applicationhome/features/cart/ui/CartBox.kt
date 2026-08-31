@@ -40,7 +40,7 @@ import com.example.applicationhome.data.local.entity.CartItemsClass
 
 @Composable
 fun CartBox(
-    food: CartItemsClass,
+    food : CartItemsClass,
     plus : () -> Unit,
     minus : () -> Unit,
     delete : () -> Unit
@@ -49,16 +49,16 @@ fun CartBox(
     val sizeInTitle = if(size.contains("Pieces")) "" else " (${size})"
 
     Box(
-        modifier = Modifier.
-        clickable(
-            indication = null,
-            interactionSource = remember { MutableInteractionSource() }
-        ){
-            //itemScreenViewModel.selectItem(item, size)
-        }.
-        padding(start = 10.dp, end = 10.dp).
-        fillMaxWidth().height(100.dp).
-        background(Color.White)
+        modifier = Modifier
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ){
+                //itemScreenViewModel.selectItem(item, size)
+            }.padding(start = 10.dp, end = 10.dp)
+            .fillMaxWidth()
+            .height(100.dp)
+            .background(MaterialTheme.colorScheme.background)
     ){
         Column(modifier = Modifier.fillMaxSize()){
             Row(
@@ -86,7 +86,7 @@ fun CartBox(
                         Text(
                             text = "${food.name}${sizeInTitle}",
                             fontSize = 18.sp,
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold
                         )

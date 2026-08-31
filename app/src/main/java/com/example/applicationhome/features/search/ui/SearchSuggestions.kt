@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.NorthWest
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -30,9 +31,9 @@ import com.example.applicationhome.core.ui.theme.formatSingleWordInSearch
 fun SearchSuggestions(
     text : String,
     searchText : String = "",
-    textColor : Color = Color.Black,
+    textColor : Color = MaterialTheme.colorScheme.onSurface,
     startIcon : ImageVector,
-    iconsColor : Color = Color.Black,
+    iconsColor : Color = MaterialTheme.colorScheme.onSurface,
     textClickable : () -> Unit,
     northWestClickable : () -> Unit,
     longClick : () -> Unit = {}

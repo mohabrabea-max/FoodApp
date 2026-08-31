@@ -15,8 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -37,15 +36,15 @@ fun SnaksBox(
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
     Box(
-        modifier = modifier.
-        padding(7.dp).
-        shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
-        background(Color.White).
-        clickable{
-            cardNavigationClickable()
-        }
+        modifier = modifier
+            .padding(7.dp)
+            .clip(shape = RoundedCornerShape(30.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .clickable{
+                cardNavigationClickable()
+            }
     ){
-        Column(modifier = Modifier.fillMaxSize().background(Color.White)){
+        Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)){
             Box(modifier = Modifier.fillMaxWidth().weight(2f)){
                 AsyncImage(
                     modifier = Modifier.fillMaxSize(),
@@ -72,7 +71,7 @@ fun SnaksBox(
                 Text(
                     text = name,
                     fontSize = 14.sp,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     style = TextStyle(
                         fontWeight = FontWeight.Bold,
                         letterSpacing = (-0.5).sp
@@ -81,7 +80,7 @@ fun SnaksBox(
                 Text(
                     text = "$price E.G",
                     fontSize = 16.sp,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold
                 )

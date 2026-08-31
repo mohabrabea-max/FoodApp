@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -34,7 +35,6 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
-import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.data.data.model.Screens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -75,12 +75,12 @@ fun HomeScreenTopBar(
     Box{
         Column{
             MyTopBar(
-                Color.DarkOrange.copy(alpha = alpha),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = alpha),
                 modifier = Modifier.shadow(elevation = if (alpha == 1f) 5.dp else 0.dp)
                     .fillMaxWidth().height(100.dp),
-                null,
-                Color.White,
-                {
+                title = null,
+                titleColor = Color.White,
+                startaction = {
                     IconButton(
                         onClick = { coroutineScope.launch { drawerState.open() } },
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape).size(35.dp)
@@ -92,7 +92,7 @@ fun HomeScreenTopBar(
                         )
                     }
                 },
-                {
+                actions = {
                     AnimatedVisibility(
                         visible = scal,
                         enter = fadeIn() + scaleIn(),

@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -41,9 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
-import com.example.applicationhome.core.ui.theme.BrownForFont
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.core.ui.theme.MediumBrownForTitle
 import com.example.applicationhome.data.data.model.Screens
 
 @SuppressLint("ContextCastToActivity")
@@ -62,7 +62,7 @@ fun WelcomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
         ) {
             Box(
                 modifier = Modifier
@@ -73,7 +73,7 @@ fun WelcomeScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(CurvedBottomShape())
-                        .background(Color.MediumBrownForTitle),
+                        .background(MaterialTheme.colorScheme.onSurfaceVariant),
                 )
 
                 EmbeddedVideoPlayer(
@@ -93,7 +93,7 @@ fun WelcomeScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Skip",
+                        text = stringResource(R.string.skip),
                         color = Color.White,
                         textDecoration = TextDecoration.Underline,
                         fontWeight = FontWeight.Bold,
@@ -141,12 +141,13 @@ fun WelcomeScreen(
                 Spacer(modifier = Modifier.height(45.dp))
 
                 Text(
-                    text = "Log in or sign up to save more,\nshop faster, and get personalized perks",
+                    text = stringResource(R.string.log_in_or_sign_up_to_save_more_shop_faster_and_get_personalized_perks),
                     textAlign = TextAlign.Center,
                     fontSize = 15.sp,
-                    color = Color.BrownForFont,
+                    color = MaterialTheme.colorScheme.onSurface,
                     lineHeight = 22.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(horizontal = 40.dp)
                 )
 
                 Spacer(modifier = Modifier.height(15.dp))
@@ -156,7 +157,7 @@ fun WelcomeScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     MyOutlinedButton(
-                        title = "Login to an existing account",
+                        title = stringResource(R.string.login_to_an_existing_account),
                         icon = null
                     ){
                         viewModel.updateFirstTimeToOpenApp()
@@ -166,7 +167,7 @@ fun WelcomeScreen(
                     }
 
                     MyOutlinedButton(
-                        title = "Create account",
+                        title = stringResource(R.string.create_account),
                         icon = null
                     ){
                         viewModel.updateFirstTimeToOpenApp()
@@ -222,7 +223,7 @@ fun CurvedBottomShape() = GenericShape { size, _ ->
 fun MyOutlinedButton(
     title : String,
     icon : ImageVector?,
-    contentColor : Color = Color.Black,
+    contentColor : Color = MaterialTheme.colorScheme.onSurface,
     onClick : () -> Unit
 ){
     OutlinedButton(

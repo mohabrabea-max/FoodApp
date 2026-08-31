@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,7 +44,7 @@ fun <T> OrdersHistoryStatesBar(
             .fillMaxWidth()
             .height(48.dp)
             .shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(13.dp))
-            .background(color = Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(4.dp)
     ){
         val tabWidth = maxWidth / items.size
@@ -63,7 +64,7 @@ fun <T> OrdersHistoryStatesBar(
                 .width(tabWidth)
                 .fillMaxHeight()
                 .background(
-                    color = Color(0xFFECECEC),
+                    color = MaterialTheme.colorScheme.onTertiary,
                     shape = RoundedCornerShape(10.dp)
                 )
         )
@@ -76,7 +77,7 @@ fun <T> OrdersHistoryStatesBar(
                 val isSelected = index == selectedIndex
 
                 val textColor by animateColorAsState(
-                    targetValue = if (isSelected) Color.Black else Color.Gray,
+                    targetValue = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                     label = "textColor"
                 )
 

@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
@@ -128,7 +129,7 @@ fun StreetMapPage(
                 modifier = Modifier.fillMaxWidth().
                 height(80.dp).
                 shadow(elevation = 7.dp).
-                background(Color.White).
+                background(MaterialTheme.colorScheme.surface).
                 pointerInput(Unit) {
                     detectTapGestures { }
                 }.

@@ -32,9 +32,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,13 +52,14 @@ import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.forCart.AlertDialogMessage
 import com.example.applicationhome.core.ui.components.profileAndSetting.UserImage
 import com.example.applicationhome.core.ui.theme.BrownForFont
-import com.example.applicationhome.core.ui.theme.DeepMatteBlack
 import com.example.applicationhome.core.ui.theme.MediumBrownForTitle
-import com.example.applicationhome.core.ui.theme.VeryLightGray
+import com.example.applicationhome.data.data.model.AppLanguage
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.data.model.Settings
 import com.example.applicationhome.data.data.model.SettingsConfirmDialog
 import com.example.applicationhome.data.data.model.SettingsScreens
+import com.example.applicationhome.data.data.model.ShowBottomSheets
+import com.example.applicationhome.data.data.model.ThemeMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -75,12 +73,13 @@ fun Settings(
     settingsListState : LazyGridState,
     settingsViewModel : SettingsViewModel
 ){
-    var showLanguageBottomSheet by rememberSaveable { mutableStateOf(false) }
-
     val userData by settingsViewModel.userData.collectAsStateWithLifecycle()
     val isLogin by settingsViewModel.isLogin.collectAsStateWithLifecycle()
 
     val confirmLogoutDialog by settingsViewModel.confirmLogoutDialog.collectAsStateWithLifecycle()
+    val showBottomSheets by settingsViewModel.showBottomSheets.collectAsStateWithLifecycle()
+
+    val currentThemeMode by settingsViewModel.currentThemeMode.collectAsStateWithLifecycle()
 
     val description = userData.phonenumber.ifEmpty { userData.email }
 
@@ -101,10 +100,10 @@ fun Settings(
         topBar = {
             Column(modifier = Modifier.shadow(elevation = 3.dp)){
                 MyTopBar(
-                    Color.White,
+                    MaterialTheme.colorScheme.surface,
                     modifier = Modifier.fillMaxWidth().height(100.dp),
                     stringResource(R.string.settings),
-                    Color.DeepMatteBlack,
+                    MaterialTheme.colorScheme.onSurface,
                     {
                         IconButton(
                             onClick = { coroutineScope.launch { drawerState.open() } },
@@ -113,7 +112,7 @@ fun Settings(
                             Icon(
                                 painterResource(id = R.drawable.custom_menu),
                                 contentDescription = null,
-                                tint = Color.DeepMatteBlack
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     },
@@ -122,7 +121,7 @@ fun Settings(
                             Icon(
                                 Icons.Default.DarkMode,
                                 contentDescription = null,
-                                tint = Color.DeepMatteBlack
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -132,7 +131,6 @@ fun Settings(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(90.dp)
-                        //.clip(RoundedCornerShape(30.dp))
                         .background(Color.LightGray)
                 ){
                     Row(
@@ -170,7 +168,7 @@ fun Settings(
         Column(
             modifier = Modifier
                 .padding(paddingValues)
-                .background(Color.VeryLightGray)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(horizontal = 10.dp)
         ){
             LazyVerticalGrid(
@@ -205,7 +203,7 @@ fun Settings(
                         Text(
                             text = stringResource(R.string.settings),
                             style = MaterialTheme.typography.titleLarge,
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontSize = 18.sp,
                         )
                     }
@@ -214,8 +212,12 @@ fun Settings(
                 item(span = { GridItemSpan(2) }){
                     SettingsBox(settings1()){
                         when(it){
+                            SettingsScreens.DarkMode -> {
+                                settingsViewModel.showDarkModeBottomSheet()
+                            }
+
                             SettingsScreens.Language -> {
-                                showLanguageBottomSheet = true
+                                settingsViewModel.showLanguageBottomSheet()
                             }
 
                             SettingsScreens.AboutApp -> {
@@ -264,12 +266,30 @@ fun Settings(
             }
         }
 
-        if(showLanguageBottomSheet){
-            LanguageBottomSheet(
-                currentLanguageCode = settingsViewModel.currentLanguage,
-                onLanguageSelected = { settingsViewModel.setAppLanguage(it.code) },
-                onDismissRequest = { showLanguageBottomSheet = false }
-            )
+        when(val state = showBottomSheets){
+            ShowBottomSheets.None -> {}
+
+            ShowBottomSheets.Language -> {
+                SettingsBottomSheet(
+                    title = stringResource(R.string.language),
+                    items = AppLanguage.entries,
+                    isSelected = { language -> settingsViewModel.currentLanguage == language.code },
+                    getItemLabel = { language -> language.titleRes },
+                    onItemSelected = { language -> settingsViewModel.setAppLanguage(language.code) },
+                    onDismissRequest = { settingsViewModel.closeBottomSheet() }
+                )
+            }
+
+            ShowBottomSheets.DarkMode -> {
+                SettingsBottomSheet(
+                    title = stringResource(R.string.dark_mode),
+                    items = ThemeMode.entries,
+                    isSelected = { mode -> currentThemeMode == mode },
+                    getItemLabel = { mode -> stringResource(mode.titleRes) },
+                    onItemSelected = { mode -> settingsViewModel.updateAppTheme(mode) },
+                    onDismissRequest = { settingsViewModel.closeBottomSheet() }
+                )
+            }
         }
 
         when(val state = confirmLogoutDialog){

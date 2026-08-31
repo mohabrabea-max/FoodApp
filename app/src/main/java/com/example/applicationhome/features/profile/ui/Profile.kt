@@ -16,10 +16,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,8 +44,6 @@ import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.theme.BrandBlue
-import com.example.applicationhome.core.ui.theme.DeepMatteBlack
-import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.ProfileEditResult
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity",
@@ -82,16 +81,17 @@ fun Profile(
 
 
     Scaffold(
-        containerColor = Color.White,
-        modifier = Modifier.navigationBarsPadding().
-        fillMaxSize(),
+        modifier = Modifier
+            .navigationBarsPadding()
+            .fillMaxSize(),
+
         topBar = {
             Column(modifier = Modifier.shadow(elevation = 3.dp)){
                 MyTopBar(
-                    Color.White,
+                    MaterialTheme.colorScheme.surface,
                     modifier = Modifier.fillMaxWidth().height(100.dp).shadow(elevation = 5.dp),
                     stringResource(R.string.edite_profile),
-                    Color.DeepMatteBlack,
+                    MaterialTheme.colorScheme.onSurface,
                     {
                         IconButton(
                             onClick = {
@@ -102,15 +102,16 @@ fun Profile(
                             modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
                         ) {
                             Icon(
-                                Icons.Default.ArrowBack,
+                                Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = null,
-                                tint = Color.DeepMatteBlack
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
                 )
             }
         },
+
         bottomBar = {
             BottomBarForProfileScreen(
                 loading,
@@ -121,11 +122,11 @@ fun Profile(
             }
         }
     ){ paddingValues ->
-        LazyColumn(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray).padding(paddingValues)){
+        LazyColumn(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(paddingValues)){
             item {
-                Column(modifier = Modifier.padding(15.dp).fillMaxSize().clip(RoundedCornerShape(10.dp)).background(Color.White).padding(17.dp)){
+                Column(modifier = Modifier.padding(15.dp).fillMaxSize().clip(RoundedCornerShape(10.dp)).background(MaterialTheme.colorScheme.surface).padding(17.dp)){
 
-                    Text(text = stringResource(R.string.personal_information), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                    Text(text = stringResource(R.string.personal_information), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
 
                     Spacer(modifier = Modifier.height(15.dp))
 
@@ -156,18 +157,18 @@ fun Profile(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     SelectionOutlinedTextField(
-                        stringResource(R.string.governorate),
-                        selectedGovernorate,
-                        { showGovernorateBottomSheet = true }
+                        title = stringResource(R.string.governorate),
+                        selected = selectedGovernorate,
+                        showBottomSheet = { showGovernorateBottomSheet = true }
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
 
                     SelectionOutlinedTextField(
-                        stringResource(R.string.city),
-                        selectedCity,
-                        { showCityBottomSheet = true },
-                        selectedGovernorate.isNotEmpty()
+                        title = stringResource(R.string.city),
+                        selected = selectedCity,
+                        showBottomSheet = { showCityBottomSheet = true },
+                        isEnabled = selectedGovernorate.isNotEmpty()
                     )
                 }
             }
@@ -229,7 +230,7 @@ fun BottomBarForProfileScreen(
         modifier = Modifier.fillMaxWidth().
         height(80.dp).
         shadow(elevation = 7.dp).
-        background(Color.White).
+        background(MaterialTheme.colorScheme.surface).
         pointerInput(Unit) {
             detectTapGestures { }
         }.
@@ -240,7 +241,7 @@ fun BottomBarForProfileScreen(
         MyButton(
             loading,
             buttonColor,
-            Color.White,
+            MaterialTheme.colorScheme.surface,
             40.dp,
             stringResource(R.string.save_edites)
         ) {

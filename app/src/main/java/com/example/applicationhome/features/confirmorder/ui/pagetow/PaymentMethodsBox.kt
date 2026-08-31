@@ -10,7 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -39,7 +40,7 @@ fun PaymentMethodsBox(
     ){
         Text(
             text = "Pay with",
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onSurface,
             fontSize = 20.sp,
             style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Bold
@@ -71,13 +72,13 @@ fun PaymentMethodsBox(
                         Icon(
                             method.icon,
                             contentDescription = null,
-                            tint = Color.Black,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(22.dp)
                         )
 
                         Text(
                             text = method.title,
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Medium
                         )
@@ -87,13 +88,17 @@ fun PaymentMethodsBox(
                         selected = payMethodState == method,
                         onClick = null,
                         colors = RadioButtonDefaults.colors(
-                            selectedColor = Color.Black,
-                            unselectedColor = Color.LightGray
+                            selectedColor = MaterialTheme.colorScheme.onSurface,
+                            unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
                 }
 
-                if(method != PaymentMethod.CASH) Divider(color = Color.Gray.copy(alpha = 0.2f), modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+                if(method != PaymentMethod.CASH) HorizontalDivider(
+                    modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+                    thickness = DividerDefaults.Thickness,
+                    color = Color.Gray.copy(alpha = 0.2f)
+                )
             }
         }
     }

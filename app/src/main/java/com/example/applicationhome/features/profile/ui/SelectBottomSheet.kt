@@ -34,6 +34,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -80,7 +81,7 @@ fun SelectBottomSheet(
         },
         contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
         sheetState = sheetState,
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.surface
     ){
         Column(
             modifier = Modifier
@@ -105,7 +106,7 @@ fun SelectBottomSheet(
                         modifier = Modifier.padding(5.dp).
                         size(40.dp).
                         clip(shape = RoundedCornerShape(30.dp)).
-                        background(Color.White).
+                        background(MaterialTheme.colorScheme.surface).
                         border(width = 1.dp, color = Color.Gray.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)).
                         clickable(
                             interactionSource = interactionSource,
@@ -137,7 +138,7 @@ fun SelectBottomSheet(
                     placeholder = {
                         Text(
                             text = searchBoxTitle,
-                            color = Color.LightGray,
+                            color = MaterialTheme.colorScheme.onSecondary,
                             fontSize = 15.sp
                         )
                     },

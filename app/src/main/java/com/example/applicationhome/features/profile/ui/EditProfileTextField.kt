@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -62,7 +63,7 @@ fun EditProfileTextField(
             item.type == AccountTextFieldEnum.PHONE
         ) Color.Red
 
-        else Color.Gray
+        else MaterialTheme.colorScheme.onSurfaceVariant
 
 
     val focusManager = LocalFocusManager.current
@@ -103,7 +104,7 @@ fun EditProfileTextField(
                         Text(
                             text = "+20",
                             fontSize = 16.sp,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onSurface
                         )
 
                         Spacer(modifier = Modifier.width(10.dp))
@@ -122,7 +123,7 @@ fun EditProfileTextField(
             placeholder = {
                 Text(
                     text = stringResource(item.emptyCount),
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 16.sp
                 )
             },
@@ -141,7 +142,7 @@ fun EditProfileTextField(
 
             textStyle = TextStyle(
                 fontSize = 16.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             ),
 
             shape = RoundedCornerShape(20.dp),

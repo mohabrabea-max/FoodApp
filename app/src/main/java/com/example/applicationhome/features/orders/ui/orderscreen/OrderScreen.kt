@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.Report
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,7 +48,6 @@ import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.components.designsystem.SquerButton
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.LoadingDialog
 import com.example.applicationhome.core.ui.theme.BrandBlue
-import com.example.applicationhome.core.ui.theme.DeepMatteBlack
 import com.example.applicationhome.data.data.model.ActionsStates
 import com.example.applicationhome.data.data.model.OrderStatesEnum
 import com.example.applicationhome.data.data.model.OrderUiClass
@@ -95,8 +95,6 @@ fun OrderScreen(
                     .navigationBarsPadding()
                     .fillMaxSize(),
 
-                containerColor = Color.White,
-
                 topBar = {
                     Column(
                         modifier = Modifier
@@ -105,33 +103,37 @@ fun OrderScreen(
                         verticalArrangement = Arrangement.Center
                     ){
                         MyTopBar(
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.surface,
                             modifier = Modifier.fillMaxWidth().height(100.dp).shadow(elevation = 5.dp),
                             title = stringResource(R.string.order_details),
-                            titleColor = Color.DeepMatteBlack,
+                            titleColor = MaterialTheme.colorScheme.onSurface,
                             startaction = {
                                 IconButton(
                                     onClick = { onCloseOrderScreen() },
-                                    modifier = Modifier.padding(5.dp).clip(CircleShape).size(40.dp)
-                                        .background(Color.White)
+                                    modifier = Modifier
+                                        .padding(5.dp)
+                                        .clip(CircleShape)
+                                        .size(40.dp)
                                 ) {
                                     Icon(
                                         Icons.AutoMirrored.Filled.ArrowBack,
                                         contentDescription = null,
-                                        tint = Color.DeepMatteBlack
+                                        tint = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             },
                             actions = {
                                 IconButton(
                                     onClick = {  },
-                                    modifier = Modifier.padding(5.dp).clip(CircleShape).size(40.dp)
-                                        .background(Color.White)
+                                    modifier = Modifier
+                                        .padding(5.dp)
+                                        .clip(CircleShape)
+                                        .size(40.dp)
                                 ) {
                                     Icon(
                                         Icons.Default.Report,
                                         contentDescription = null,
-                                        tint = Color.DeepMatteBlack
+                                        tint = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             }

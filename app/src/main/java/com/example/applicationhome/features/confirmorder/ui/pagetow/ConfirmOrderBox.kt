@@ -39,9 +39,11 @@ fun ConfirmOrderBox(
     val sizeInTitle = if(size.contains("Pieces")) "" else " (${size})"
 
     Box(
-        modifier = Modifier.padding(start = 10.dp, end = 10.dp).
-        fillMaxWidth().height(100.dp).
-        background(Color.White)
+        modifier = Modifier
+            .padding(start = 10.dp, end = 10.dp)
+            .fillMaxWidth()
+            .height(100.dp)
+            .background(MaterialTheme.colorScheme.surface)
     ){
         Column(modifier = Modifier.fillMaxSize()){
             Row(
@@ -69,7 +71,7 @@ fun ConfirmOrderBox(
                         Text(
                             text = "${food.name}${sizeInTitle}",
                             fontSize = 18.sp,
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold
                         )

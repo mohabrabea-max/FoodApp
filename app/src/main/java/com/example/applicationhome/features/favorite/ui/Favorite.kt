@@ -3,7 +3,6 @@ package com.example.applicationhome.features.favorite.ui
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -61,9 +60,7 @@ import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favori
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.MealBoxIcon
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.SnaksBox
-import com.example.applicationhome.core.ui.theme.BrownForFont
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.AddToCartStates
 import com.example.applicationhome.data.data.model.Screens
 import kotlinx.coroutines.CoroutineScope
@@ -118,16 +115,17 @@ fun Favorite(
 
     Box(modifier = Modifier.fillMaxSize()){
         Scaffold(
-            modifier = Modifier.navigationBarsPadding().
-            fillMaxSize(),
-            containerColor = Color.White,
+            modifier = Modifier
+                .navigationBarsPadding()
+                .fillMaxSize(),
+
             topBar = {
                 FavoriteScreenTopBar(
-                    drawerState,
-                    coroutineScope,
-                    navigationController,
-                    selectedCategoryInFavoriteScreen,
-                    { item -> favoriteViewModel.selectedFavoriteScreen(item) }
+                    drawerState = drawerState,
+                    coroutineScope = coroutineScope,
+                    selectedCategoryInFavoriteScreen = selectedCategoryInFavoriteScreen,
+                    navigation = { navigationController.navigate(Screens.Search.screen) },
+                    selectedFavoriteScreen = { item -> favoriteViewModel.selectedFavoriteScreen(item) }
                 )
             }
         ){
@@ -144,25 +142,25 @@ fun Favorite(
                             val isRestaurantInFavorite = item.isFavorite
 
                             RestaurantsBox(
-                                item.restaurant,
-                                isRestaurantInFavorite,
-                                {
+                                item = item.restaurant,
+                                isRestaurantInFavorite = isRestaurantInFavorite,
+                                view = {
                                     imageToView = item.restaurant.image
                                     viewImageState = true
                                 },
-                                {
+                                clickable = {
                                     if (networkState) {
                                         navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.restaurant.id))
                                     }else{
                                         navigationController.navigate(Screens.NoInternetScreen.screen)
                                     }
                                 },
-                                {
+                                addRestaurantsFavorite = {
                                     val favRestaurant = item.favoriteInfo
                                     if(favRestaurant!= null)
                                         favoriteViewModel.addRestaurantsFavorite(favRestaurant)
                                 },
-                                { favoriteViewModel.removeRestaurantsFavorite(item.restaurant.id) }
+                                removeRestaurantsFavorite = { favoriteViewModel.removeRestaurantsFavorite(item.restaurant.id) }
                             )
                             }
                     }
@@ -195,11 +193,10 @@ fun Favorite(
                                                 favoriteViewModel.addSnackFavorite(favSnack)
                                         },
                                         { favoriteViewModel.removeSnackFavorite(item.snack.id) },
-                                        modifier = Modifier.padding(5.dp).clip(CircleShape).border(
-                                            width = 0.5.dp,
-                                            color = Color.Gray.copy(alpha = 0.2f),
-                                            shape = RoundedCornerShape(30.dp)
-                                        ).size(35.dp).background(Color.VeryLightGray),
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .clip(CircleShape)
+                                            .size(35.dp),
                                         color = Color.DarkOrange,
                                         icon1 = Icons.Default.Favorite,
                                         icon2 = Icons.Default.FavoriteBorder
@@ -258,7 +255,9 @@ fun Favorite(
                                             favoriteViewModel.addMealFavorite(favMeal)
                                         },
                                         { favoriteViewModel.removeMealFavorite(item.meal.id) },
-                                        modifier = Modifier.padding(5.dp).clip(CircleShape)
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .clip(CircleShape)
                                             .size(35.dp),
                                         color = Color.DarkOrange,
                                         icon1 = Icons.Default.Favorite,
@@ -365,7 +364,7 @@ fun EmptyFavoriteScreen(
             text = stringResource(R.string.there_s_nothing_in_your_wishlist),
             fontSize = 22.sp,
             style = MaterialTheme.typography.labelLarge,
-            color = Color.BrownForFont,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold
         )
@@ -385,14 +384,14 @@ fun EmptyFavoriteScreen(
                     restoreState = true
                 }
             }.
-            border(width = 1.dp, color = Color.BrownForFont, shape = RoundedCornerShape(40.dp)).
+            border(width = 1.dp, color = MaterialTheme.colorScheme.onSurface, shape = RoundedCornerShape(40.dp)).
             padding(7.dp).align(Alignment.CenterHorizontally)
         ){
             Text(
                 text = stringResource(R.string.add_food),
                 fontSize = 15.sp,
                 style = MaterialTheme.typography.labelLarge,
-                color = Color.BrownForFont,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.align(Alignment.Center)
             )
         }

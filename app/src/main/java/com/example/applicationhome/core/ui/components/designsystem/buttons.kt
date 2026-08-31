@@ -49,7 +49,7 @@ fun TopBarButtons(
             .shadow(elevation = elevation, spotColor = Color.VeryLightGray.copy(0.5f), shape = RoundedCornerShape(30.dp))
             .size(40.dp)
             .clip(CircleShape)
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .border(
             width = border,
             color = Color.LightGray.copy(alpha = 0.6f),
@@ -75,7 +75,8 @@ fun MyButton(loading : Boolean, backgroundcolor : Color, fontcolor : Color, hori
                     action()
                 }
             }
-            .shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(50.dp))
+            .clip(shape = RoundedCornerShape(50.dp))
+            //.shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(50.dp))
             .background(backgroundcolor),
 
         contentAlignment = Alignment.Center
@@ -109,7 +110,8 @@ fun SquerButton(modifier : Modifier = Modifier, loading : Boolean, backgroundcol
                     action()
                 }
             }
-            .shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(12.dp))
+            .clip(shape = RoundedCornerShape(12.dp))
+            //.shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(12.dp))
             .background(backgroundcolor),
 
         contentAlignment = Alignment.Center

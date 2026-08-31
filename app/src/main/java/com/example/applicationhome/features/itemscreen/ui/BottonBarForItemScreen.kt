@@ -36,7 +36,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.core.ui.theme.VeryLightGray
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,8 +52,8 @@ fun BottomBarForItemScreen(
     var color : Color
     var fontColor : Color
     if(newCount == 0){
-        color = Color.VeryLightGray
-        fontColor = Color.Gray
+        color = MaterialTheme.colorScheme.background
+        fontColor = MaterialTheme.colorScheme.onSurfaceVariant
     }else{
         color = Color.DarkOrange
         fontColor = Color.White
@@ -64,7 +63,7 @@ fun BottomBarForItemScreen(
         modifier = Modifier.fillMaxWidth().
         height(100.dp).
         shadow(elevation = 7.dp).
-        background(Color.White).
+        background(MaterialTheme.colorScheme.surface).
         pointerInput(Unit) {
             detectTapGestures { }
         }.
@@ -81,7 +80,7 @@ fun BottomBarForItemScreen(
                 modifier = Modifier.weight(1.2f).
                 height(50.dp).
                 clip(RoundedCornerShape(50.dp)).
-                background(Color.White).
+                background(MaterialTheme.colorScheme.surface).
                 border(width = 0.5.dp, color = Color.LightGray, shape = CircleShape).padding(4.dp)
             ){
                 Row(
@@ -113,7 +112,7 @@ fun BottomBarForItemScreen(
                             text = newCount.toString(),
                             fontSize = 15.sp,
                             style = MaterialTheme.typography.labelLarge,
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onSurface,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.Bold
                         )

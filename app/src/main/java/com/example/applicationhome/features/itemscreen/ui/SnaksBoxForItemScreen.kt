@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -32,11 +33,13 @@ fun SnaksBoxForItemScreen(
     item: MealSnacks
 ){
     Card(
-        modifier = modifier.padding(7.dp).shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp)).
-        background(Color.White).
-        clickable{  }
+        modifier = modifier
+            .padding(7.dp)
+            .shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .clickable{  }
     ){
-        Column(modifier = Modifier.fillMaxSize().background(Color.White)){
+        Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)){
             Box(modifier = Modifier.fillMaxWidth().weight(2f)){
                 AsyncImage(
                     modifier = Modifier.fillMaxSize(),
@@ -56,7 +59,7 @@ fun SnaksBoxForItemScreen(
                 Text(
                     text = item.size + " " + item.name,
                     fontSize = 14.sp,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = TextStyle(
                         fontWeight = FontWeight.Bold,
                         letterSpacing = (-0.5).sp

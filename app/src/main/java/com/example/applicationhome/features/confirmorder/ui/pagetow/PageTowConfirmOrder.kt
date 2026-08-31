@@ -72,8 +72,6 @@ fun PageTowConfirmOrder(
             .navigationBarsPadding()
             .fillMaxSize(),
 
-        containerColor = Color.White,
-
         snackbarHost = {
             SnackbarHost(
                 hostState = snackBarHostState,

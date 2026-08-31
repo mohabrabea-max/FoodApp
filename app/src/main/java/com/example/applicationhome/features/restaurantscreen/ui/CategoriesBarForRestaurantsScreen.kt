@@ -27,8 +27,8 @@ fun CategoriesBarForRestaurantsScreen(
         modifier = Modifier.fillMaxWidth().
         height(50.dp),
         selectedTabIndex = selectedTypeIndex,
-        containerColor = Color.White,
-        contentColor = Color.Black,
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface,
         indicator = { tabPositions ->
             if (selectedTypeIndex < tabPositions.size) {
                 TabRowDefaults.SecondaryIndicator(
@@ -48,7 +48,7 @@ fun CategoriesBarForRestaurantsScreen(
                         text = category.title,
                         fontSize = 15.sp,
                         style = if(isSelected) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodySmall,
-                        color = if(isSelected) Color.Black else Color.Gray,
+                        color = if(isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
                     )
                 },

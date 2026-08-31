@@ -19,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -65,7 +64,7 @@ fun CategoriesBox(
             clip(CircleShape).
             border(
                 width = 2.dp,
-                color = Color.Black.copy(alpha = alpha),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha),
                 shape = CircleShape
             ),
             contentAlignment = Alignment.Center
@@ -89,7 +88,7 @@ fun CategoriesBox(
             text = category.name,
             fontSize = 14.sp,
             style = if(selected == category.id) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodySmall,
-            color = if(selected == category.id) Color.Black else Color.Gray,
+            color = if(selected == category.id) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
     }

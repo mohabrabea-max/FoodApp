@@ -2,6 +2,7 @@ package com.example.applicationhome.core.domain.model
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Info
@@ -47,8 +48,9 @@ object ProfileData {
     )
 
     fun settings1() = listOf(
+        Settings(R.string.dark_mode, Icons.Default.DarkMode, SettingsScreens.DarkMode),
         Settings(R.string.language, Icons.Default.Language, SettingsScreens.Language),
-        Settings(R.string.about_app, Icons.Default.Info, SettingsScreens.AboutApp),
+        Settings(R.string.about_app, Icons.Default.Info, SettingsScreens.AboutApp)
     )
 
     fun settings2() = listOf(

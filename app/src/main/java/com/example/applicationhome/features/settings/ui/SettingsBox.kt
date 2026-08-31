@@ -44,7 +44,7 @@ fun SettingsOptionsBox(item : ProfileOptions, navigation : () -> Unit){
             modifier = Modifier.aspectRatio(2.2f).
             padding(start = 5.dp, end = 5.dp).
             clip(RoundedCornerShape(10.dp)).
-            background(Color.White).
+            background(MaterialTheme.colorScheme.surface).
             clickable(
                 interactionSource = interactionSource,
                 indication = null
@@ -56,7 +56,8 @@ fun SettingsOptionsBox(item : ProfileOptions, navigation : () -> Unit){
             ){
                 Icon(
                     item.icon,
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.width(10.dp))
@@ -65,14 +66,14 @@ fun SettingsOptionsBox(item : ProfileOptions, navigation : () -> Unit){
                     Text(
                         text = stringResource(item.title),
                         style = MaterialTheme.typography.titleLarge,
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 17.sp,
                     )
                     if(description != null){
                         Text(
                             text = stringResource(description),
                             style = MaterialTheme.typography.titleLarge,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 14.sp,
                         )
                     }
@@ -85,12 +86,18 @@ fun SettingsOptionsBox(item : ProfileOptions, navigation : () -> Unit){
 @Composable
 fun SettingsBox(
     settings : List<Settings>,
-    contentColor : Color = Color.Black,
+    contentColor : Color = MaterialTheme.colorScheme.onSurface,
     onClickable : (SettingsScreens) -> Unit
 ){
     val interactionSource = remember { MutableInteractionSource() }
 
-    Column(modifier = Modifier.padding(start = 5.dp, end = 5.dp).fillMaxSize().clip(RoundedCornerShape(10.dp)).background(Color.White)){
+    Column(
+        modifier = Modifier
+            .padding(start = 5.dp, end = 5.dp)
+            .fillMaxSize()
+            .clip(RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colorScheme.surface)
+    ){
         settings.forEach{ item ->
             Column(
                 modifier = Modifier

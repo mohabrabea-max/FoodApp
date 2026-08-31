@@ -9,12 +9,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.unit.dp
 import com.example.applicationhome.data.local.entity.CategoriesEntity
 
@@ -24,15 +22,12 @@ fun CategoriesBar(
     categories: List<CategoriesEntity>,
     selected : Int,
     select : (CategoriesEntity) -> Unit,
-    unSelect : () -> Unit,
-    drawBehind : DrawScope.() -> Unit = {}
+    unSelect : () -> Unit
 ){
     Box(
         modifier = Modifier.fillMaxWidth().
         height(120.dp).
-        background(Color.White).drawBehind {
-            drawBehind()
-        },
+        background(MaterialTheme.colorScheme.surface),
         contentAlignment = Alignment.Center
     ){
         LazyRow(

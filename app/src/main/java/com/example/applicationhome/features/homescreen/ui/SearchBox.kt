@@ -14,13 +14,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,16 +33,17 @@ fun SearchBox(
     val interactionSource = remember { MutableInteractionSource() }
 
     Box(
-        modifier = Modifier.width(340.dp).
-        height(45.dp).
-        clip(CircleShape).
-        background(Color.White).
-        border(width = 0.5.dp, color = Color.Gray.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp)).
-        clickable(
-            interactionSource = interactionSource,
-            indication = null
-        ){ action() }.
-        padding(5.dp),
+        modifier = Modifier
+            .width(340.dp)
+            .height(45.dp)
+            .clip(CircleShape)
+            .border(width = 0.5.dp, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ){ action() }
+            .padding(5.dp),
         contentAlignment = Alignment.CenterStart
     ){
         Row(
@@ -51,13 +52,13 @@ fun SearchBox(
             Icon(
                 Icons.Default.Search,
                 contentDescription = null,
-                tint = Color.Gray,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(start = 15.dp)
             )
             Text(
                 text = stringResource(R.string.search_food),
                 softWrap = false,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 15.sp,
                 modifier = Modifier.padding(start = 5.dp)
             )

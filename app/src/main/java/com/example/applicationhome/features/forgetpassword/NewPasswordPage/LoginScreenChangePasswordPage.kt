@@ -40,7 +40,7 @@ fun LoginScreenChangePasswordPage(
             Text(
                 text = stringResource(R.string.reset_password),
                 style = MaterialTheme.typography.titleLarge,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 28.sp
             )
@@ -50,7 +50,7 @@ fun LoginScreenChangePasswordPage(
             Text(
                 text = stringResource(R.string.set_s_strong_password_to_secure_access_always_stay_safe),
                 style = MaterialTheme.typography.titleLarge,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 15.sp,
                 textAlign = TextAlign.Center
             )

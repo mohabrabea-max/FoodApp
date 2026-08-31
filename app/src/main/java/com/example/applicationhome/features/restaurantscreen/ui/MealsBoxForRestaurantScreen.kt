@@ -22,8 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -45,11 +43,12 @@ fun MealsBoxForRestaurantScreen(
 ){
     val interactionSource = remember { MutableInteractionSource() }
 
-    Box(
+    Row(
         modifier = Modifier
             .padding(7.dp)
-            .shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp))
-            .background(Color.White)
+            .fillMaxSize()
+            .clip(shape = RoundedCornerShape(30.dp))
+            .background(MaterialTheme.colorScheme.surface)
             .aspectRatio(aspectRatio)
             .clickable(
                 interactionSource = interactionSource,
@@ -59,69 +58,68 @@ fun MealsBoxForRestaurantScreen(
             }
             .padding(vertical = 15.dp, horizontal = 10.dp)
     ){
-        Row(modifier = Modifier.fillMaxSize().background(Color.White)){
+        Column(
+            modifier = Modifier.
+            padding(7.dp).
+            fillMaxHeight().
+            weight(4f),
+            verticalArrangement = Arrangement.SpaceBetween
+        ){
             Column(
-                modifier = Modifier.
-                padding(7.dp).
-                fillMaxHeight().
-                weight(4f),
-                verticalArrangement = Arrangement.SpaceBetween
+                horizontalAlignment = Alignment.Start
             ){
-                Column(
-                    horizontalAlignment = Alignment.Start
-                ){
-                    Text(
-                        text = name,
-                        fontSize = 15.sp,
-                        color = Color.Black,
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                    if(details != null){
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Text(
-                            text = details.joinToString(separator = " + "),
-                            fontSize = 13.sp,
-                            color = Color.Gray
-                        )
-                    }
-                }
                 Text(
-                    text = "$price E.G",
-                    fontSize = 16.sp,
-                    color = Color.Black,
+                    text = name,
+                    fontSize = 15.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold
                 )
+                if(details != null){
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Text(
+                        text = details.joinToString(separator = " + "),
+                        fontSize = 13.sp,
+                        lineHeight = 18.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
-            Box(
+            Text(
+                text = "$price E.G",
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        Box(
+            modifier = Modifier.
+            fillMaxHeight().
+            weight(2.5f),
+            contentAlignment = Alignment.Center
+        ){
+            AsyncImage(
                 modifier = Modifier.
-                fillMaxHeight().
-                weight(2.5f),
-                contentAlignment = Alignment.Center
-            ){
-                AsyncImage(
-                    modifier = Modifier.
-                    padding(15.dp).
-                    fillMaxSize(0.9f).
-                    clip(RoundedCornerShape(10.dp)).
-                    align(Alignment.CenterEnd),
-                    model = ImageRequest.Builder(LocalContext.current).
-                    data(image).
-                    crossfade(true).
-                    size(400, 400).
-                    precision(Precision.EXACT).
-                    build(),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                )
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    content = actions
-                )
-            }
+                padding(15.dp).
+                fillMaxSize(0.9f).
+                clip(RoundedCornerShape(10.dp)).
+                align(Alignment.CenterEnd),
+                model = ImageRequest.Builder(LocalContext.current).
+                data(image).
+                crossfade(true).
+                size(400, 400).
+                precision(Precision.EXACT).
+                build(),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+            )
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.SpaceBetween,
+                content = actions
+            )
         }
     }
 }

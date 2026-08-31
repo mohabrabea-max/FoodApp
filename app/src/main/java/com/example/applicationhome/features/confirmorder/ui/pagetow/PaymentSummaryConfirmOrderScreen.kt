@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,12 +23,12 @@ fun PaymentSummaryConfirmOrderScreen(totalprice: Double){
     val service = 8.00
     Column(
         horizontalAlignment = Alignment.Start,
-        modifier = Modifier.fillMaxWidth().background(Color.White).padding(20.dp)
+        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(20.dp)
     ){
         Text(
             text = "Payment summary",
             fontSize = 20.sp,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Bold
         )
@@ -42,13 +41,13 @@ fun PaymentSummaryConfirmOrderScreen(totalprice: Double){
             Text(
                 text = "Subtotal",
                 fontSize = 14.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
                 text = "EGP $totalprice",
                 fontSize = 14.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodySmall,
             )
         }
@@ -60,13 +59,13 @@ fun PaymentSummaryConfirmOrderScreen(totalprice: Double){
             Text(
                 text = "Delivery fee",
                 fontSize = 14.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
                 text = "EGP $delivery",
                 fontSize = 14.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodySmall
             )
         }
@@ -78,13 +77,13 @@ fun PaymentSummaryConfirmOrderScreen(totalprice: Double){
             Text(
                 text = "Service fee",
                 fontSize = 14.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
                 text = "EGP $service",
                 fontSize = 14.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodySmall
             )
         }
@@ -96,13 +95,13 @@ fun PaymentSummaryConfirmOrderScreen(totalprice: Double){
             Text(
                 text = "Total amount",
                 fontSize = 17.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.labelLarge
             )
             Text(
                 text = "EGP ${totalprice + service + delivery}",
                 fontSize = 17.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.labelLarge
             )
         }

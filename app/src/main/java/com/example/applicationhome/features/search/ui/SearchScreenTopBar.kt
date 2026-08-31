@@ -26,9 +26,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -51,7 +53,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.designsystem.TopBarButtons
-import com.example.applicationhome.core.ui.theme.DeepMatteBlack
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -82,14 +83,14 @@ fun SearchScreenTopBar(
     }
 
     Column(
-        modifier = Modifier.background(Color.White)
+        modifier = Modifier.background(MaterialTheme.colorScheme.surface)
     ){
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .statusBarsPadding()
                 .height(65.dp)
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -99,7 +100,7 @@ fun SearchScreenTopBar(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.DeepMatteBlack
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 { backClick() },
@@ -125,7 +126,7 @@ fun SearchScreenTopBar(
 
                 textStyle = TextStyle(
                     fontSize = 14.sp,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     platformStyle = PlatformTextStyle(includeFontPadding = false) // حماية إضافية للخط
                 ),
 
@@ -143,7 +144,7 @@ fun SearchScreenTopBar(
                     Row(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(Color(0xFFF5F5F5), CircleShape)
+                            .background(MaterialTheme.colorScheme.onTertiary, CircleShape)
                             .border(1.dp, Color.LightGray.copy(alpha = 0.6f), CircleShape)
                             .padding(horizontal = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -151,7 +152,7 @@ fun SearchScreenTopBar(
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = "Search Icon",
-                            tint = Color.Gray,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
                         )
 
@@ -164,7 +165,7 @@ fun SearchScreenTopBar(
                             if (localSearchString.text.isEmpty()) {
                                 Text(
                                     text = stringResource(R.string.search_for_food_or_restaurant),
-                                    color = Color.Gray,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     fontSize = 14.sp
                                 )
                             }
@@ -182,7 +183,7 @@ fun SearchScreenTopBar(
                                 Icon(
                                     imageVector = Icons.Default.Clear,
                                     contentDescription = "Clear Text",
-                                    tint = Color.DeepMatteBlack,
+                                    tint = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
@@ -198,7 +199,7 @@ fun SearchScreenTopBar(
                             if(totalInCart > 0){
                                 Badge(
                                     containerColor = Color.Red,
-                                    contentColor = Color.White
+                                    contentColor = MaterialTheme.colorScheme.surface
                                 ){
                                     if(totalInCart < 10){
                                         Text(text = "$totalInCart")
@@ -210,7 +211,7 @@ fun SearchScreenTopBar(
                         Icon(
                             imageVector = Icons.Default.ShoppingCart,
                             contentDescription = "Back",
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
@@ -218,6 +219,7 @@ fun SearchScreenTopBar(
                 0.dp
             )
         }
-        Divider(color = Color.LightGray)
+
+        HorizontalDivider(Modifier, DividerDefaults.Thickness, color = Color.LightGray)
     }
 }

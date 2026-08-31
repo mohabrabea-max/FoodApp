@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -72,7 +73,6 @@ import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Restau
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.bottomSnackBarWithAction
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.core.ui.theme.DeepMatteBlack
 import com.example.applicationhome.data.data.model.AddToCartStates
 import com.example.applicationhome.data.data.model.BottomSheetActions
 import com.example.applicationhome.data.data.model.CategoryEnum
@@ -231,7 +231,7 @@ fun RestaurantScreen(
                 snackbar = { data ->
                     Snackbar(
                         modifier = Modifier.padding(12.dp).height(50.dp).clip(RoundedCornerShape(10.dp)),
-                        containerColor = Color.DeepMatteBlack,
+                        containerColor = MaterialTheme.colorScheme.onSurface,
                         contentColor = Color.DarkOrange
                     ){
                         Row(
@@ -239,7 +239,7 @@ fun RestaurantScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ){
-                            Text(text = data.visuals.message, color = Color.White)
+                            Text(text = data.visuals.message, color = MaterialTheme.colorScheme.surface)
 
                             Box(
                                 modifier = Modifier.clickable(
@@ -301,22 +301,25 @@ fun RestaurantScreen(
 
         LazyColumn (
             state = scrollState,
-            modifier = Modifier.fillMaxSize().background(Color.White)
-        ) {
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ){
             item {
                 RestaurantHeader(
                     uiState.restaurantData
-                ) {
+                ){
                     imageToView = uiState.restaurantData.restaurant.image
                     viewImageState = true
                 }
             }
+
             item {
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(120.dp)
-                        .background(Color.White)
+                        .background(MaterialTheme.colorScheme.surface)
                 ) {
                     item { Spacer(modifier = Modifier.width(15.dp)) }
 

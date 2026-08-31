@@ -14,12 +14,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -65,33 +66,33 @@ fun RestaurantTopBar(
 
     Column{
         RestaurantScreenTopBar(
-            Color.DarkOrange.copy(alpha = alpha),
+            color = Color.DarkOrange.copy(alpha = alpha),
             modifier = Modifier.fillMaxWidth().height(100.dp),
-            item.name,
-            Color.White.copy(alpha = alpha),
-            {
+            title = item.name,
+            titleColor = MaterialTheme.colorScheme.surface.copy(alpha = alpha),
+            startaction = {
                 TopBarButtons(
-                    {
+                    icon = {
                         Icon(
-                            Icons.Default.ArrowBack,
+                            Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = null,
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     },
-                    { popBackStack() },
+                    onClick = { popBackStack() },
                     border = 0.dp
                 )
             },
-            {
+            actions = {
                 Box(
                     modifier = Modifier.animateContentSize().padding(5.dp).shadow(
                         elevation = 7.dp,
                         spotColor = Color.VeryLightGray.copy(0.5f),
                         shape = RoundedCornerShape(30.dp)
                     ).width(if (searchSize > 1) 120.dp else 40.dp).height(40.dp)
-                        .background(Color.White).clickable {
+                        .background(MaterialTheme.colorScheme.surface).clickable {
                             navigation()
-                    },
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Row(
@@ -101,13 +102,13 @@ fun RestaurantTopBar(
                         Icon(
                             Icons.Default.Search,
                             contentDescription = null,
-                            tint = Color.Black,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.padding(start = 8.dp)
                         )
                         if (searchSize > 1) Text(
                             text = stringResource(R.string.search),
                             softWrap = false,
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontSize = 18.sp,
                             modifier = Modifier.padding(start = 5.dp)
                         )
@@ -124,9 +125,9 @@ fun RestaurantTopBar(
                         elevation = 7.dp,
                         spotColor = Color.VeryLightGray.copy(0.5f),
                         shape = RoundedCornerShape(30.dp)
-                    ).size(40.dp).background(Color.White),
+                    ).size(40.dp).background(MaterialTheme.colorScheme.surface),
                     modifier2 = Modifier.size(25.dp),
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     icon1 = Icons.Default.Bookmark,
                     icon2 = Icons.Default.BookmarkBorder
                 )

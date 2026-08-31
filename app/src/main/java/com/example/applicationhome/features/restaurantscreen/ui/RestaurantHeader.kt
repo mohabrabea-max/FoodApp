@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
 
 @Composable
@@ -50,7 +49,10 @@ fun RestaurantHeader(
     val logo = item?.restaurant?.image ?: ""
 
     Box(
-        modifier = Modifier.fillMaxWidth().height(270.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(270.dp)
+            .background(MaterialTheme.colorScheme.surface),
         contentAlignment = Alignment.TopCenter
     ){
         AsyncImage(
@@ -70,41 +72,48 @@ fun RestaurantHeader(
             height(120.dp).
             clip(RoundedCornerShape(15.dp)).
             border(width = 0.5.dp, color = Color.LightGray, shape = RoundedCornerShape(15.dp)).
-            background(Color.White).
+            background(MaterialTheme.colorScheme.surface).
             align(Alignment.BottomCenter)
         ){
             Row(
-                modifier = Modifier.fillMaxSize().padding(13.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(13.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ){
                 Row{
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current).
-                        data(logo).
-                        crossfade(true).
-                        precision(Precision.EXACT).
-                        build(),
-                        contentDescription = null,
-
+                    Box(
                         modifier = Modifier
                             .size(70.dp)
                             .clip(RoundedCornerShape(10.dp))
                             .border(width = 0.5.dp, color = Color.LightGray, shape = RoundedCornerShape(10.dp))
+                            .background(Color.White)
                             .clickable(
                                 interactionSource = interactionSource,
                                 indication = null
                             ){ view() },
+                    ){
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current).
+                            data(logo).
+                            crossfade(true).
+                            precision(Precision.EXACT).
+                            build(),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
 
-                        contentScale = ContentScale.Crop
-                    )
                     Column(
                         modifier = Modifier.padding(start = 13.dp)
                     ){
                         Text(
                             text = item?.restaurant?.name ?: "",
                             fontSize = 18.sp,
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(bottom = 5.dp)
@@ -112,14 +121,14 @@ fun RestaurantHeader(
                         Text(
                             text = type?.joinToString(separator = " ", prefix = "", postfix = "") ?: "",
                             fontSize = 10.sp,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(bottom = 10.dp)
                         )
                         Row(
                             modifier = Modifier.width(80.dp).
                             height(20.dp).
                             clip(RoundedCornerShape(5.dp)).
-                            background(Color.VeryLightGray).padding(horizontal = 3.dp),
+                            background(MaterialTheme.colorScheme.background).padding(horizontal = 3.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ){
@@ -131,14 +140,14 @@ fun RestaurantHeader(
                             )
                             Text(
                                 text = "${item?.restaurant?.review ?: 0.0}",
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 14.sp,
                                 style = MaterialTheme.typography.labelLarge,
                                 modifier = Modifier
                             )
                             Text(
                                 text = "(1k+)",
-                                color = Color.Gray,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontSize = 14.sp,
                                 style = TextStyle(letterSpacing = (-0.7).sp),
                                 modifier = Modifier
