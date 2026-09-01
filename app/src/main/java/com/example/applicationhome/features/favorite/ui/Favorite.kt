@@ -2,12 +2,8 @@ package com.example.applicationhome.features.favorite.ui
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,10 +41,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -60,6 +54,7 @@ import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favori
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.MealBoxIcon
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.SnaksBox
+import com.example.applicationhome.core.ui.components.screens.EmptyScreenWhithButton
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.data.data.model.AddToCartStates
 import com.example.applicationhome.data.data.model.Screens
@@ -271,7 +266,21 @@ fun Favorite(
                     item(span = { GridItemSpan(2) }){Spacer(modifier = Modifier.height(100.dp))}
                 }
             }else{
-                EmptyFavoriteScreen(dashboardNavController)
+                EmptyScreenWhithButton(
+                    title = stringResource(R.string.there_s_nothing_in_your_wishlist),
+                    buttonTitle = stringResource(R.string.add_food),
+                    image = painterResource(R.drawable.favoriteemptyimage)
+                ){
+                    dashboardNavController.navigate(Screens.HomeScreen.screen) {
+                        popUpTo(navigationController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+
+                        launchSingleTop = true
+
+                        restoreState = true
+                    }
+                }
             }
         }
         SnackbarHost(
@@ -338,62 +347,6 @@ fun Favorite(
                 imageToView = ""
                 viewImageState = false
             }
-        }
-    }
-}
-
-
-
-
-
-
-
-@Composable
-fun EmptyFavoriteScreen(
-    navigationController : NavHostController
-){
-    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
-        Spacer(modifier = Modifier.height(300.dp))
-        Image(
-            modifier = Modifier.size(120.dp),
-            painter = painterResource(R.drawable.favoriteemptyimage),
-            contentDescription = null
-        )
-        Spacer(modifier = Modifier.height(30.dp))
-        Text(
-            text = stringResource(R.string.there_s_nothing_in_your_wishlist),
-            fontSize = 22.sp,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(40.dp))
-        Box(
-            modifier = Modifier.width(100.dp).
-            height(40.dp).
-            clip(CircleShape).
-            clickable{
-                navigationController.navigate(Screens.HomeScreen.screen) {
-                    popUpTo(navigationController.graph.findStartDestination().id) {
-                        saveState = true
-                    }
-
-                    launchSingleTop = true
-
-                    restoreState = true
-                }
-            }.
-            border(width = 1.dp, color = MaterialTheme.colorScheme.onSurface, shape = RoundedCornerShape(40.dp)).
-            padding(7.dp).align(Alignment.CenterHorizontally)
-        ){
-            Text(
-                text = stringResource(R.string.add_food),
-                fontSize = 15.sp,
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.align(Alignment.Center)
-            )
         }
     }
 }

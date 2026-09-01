@@ -1,6 +1,7 @@
 package com.example.applicationhome.core.ui.components.bars
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -34,6 +35,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
@@ -43,10 +46,16 @@ import androidx.navigation.NavHostController
 import com.example.applicationhome.core.ui.components.model.DashboardScreenViewModel
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.data.data.model.Screens
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
+import dev.chrisbanes.haze.materials.HazeMaterials
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+    ExperimentalHazeMaterialsApi::class
+)
 @Composable
 fun MyBottomBar(
     navigationController : NavHostController,
@@ -57,6 +66,7 @@ fun MyBottomBar(
     favoriteListState : LazyGridState,
     settingsListState : LazyGridState,
     scope : CoroutineScope,
+    hazeState : HazeState,
     profileLongClick : () -> Unit
 ){
     val interactionSource = remember { MutableInteractionSource() }
@@ -73,8 +83,30 @@ fun MyBottomBar(
         modifier = Modifier
             .width(280.dp)
             .height(60.dp)
-            .shadow(elevation = 10.dp, spotColor = Color.Black, shape = RoundedCornerShape(50.dp))
-            .background(MaterialTheme.colorScheme.surface)
+            .shadow(
+                elevation = 10.dp,
+                shape = RoundedCornerShape(30.dp),
+                clip = false,
+                spotColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f)
+            )
+            .clip(shape = RoundedCornerShape(30.dp))
+            .hazeChild(
+                state = hazeState,
+                style = HazeMaterials.ultraThin()
+            )
+            .border(
+                width = 1.dp,
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.20f),
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.05f)
+                    ),
+                    start = Offset(0f, 0f),
+                    end = Offset.Infinite
+                ),
+                shape = RoundedCornerShape(30.dp)
+            )
             .padding(4.dp)
             .pointerInput(Unit) {
                 detectTapGestures { }

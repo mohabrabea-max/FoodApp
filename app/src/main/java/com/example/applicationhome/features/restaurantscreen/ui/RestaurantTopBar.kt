@@ -69,7 +69,7 @@ fun RestaurantTopBar(
             color = Color.DarkOrange.copy(alpha = alpha),
             modifier = Modifier.fillMaxWidth().height(100.dp),
             title = item.name,
-            titleColor = MaterialTheme.colorScheme.surface.copy(alpha = alpha),
+            titleColor = Color.White.copy(alpha = alpha),
             startaction = {
                 TopBarButtons(
                     icon = {

@@ -63,7 +63,7 @@ fun LastOrdersBox(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(160.dp)
+            .height(180.dp)
             .clip(shape = RoundedCornerShape(20.dp))
             .clickable(
                 interactionSource = interactionSource,
@@ -112,8 +112,7 @@ fun LastOrdersBox(
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 5.dp)
+                    fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = "${order.orderId}",
@@ -121,8 +120,7 @@ fun LastOrdersBox(
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 5.dp)
+                    fontWeight = FontWeight.Bold
                 )
             }
 
@@ -137,8 +135,7 @@ fun LastOrdersBox(
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 2.dp)
+                    fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = order.restaurantName,
@@ -146,8 +143,7 @@ fun LastOrdersBox(
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 2.dp)
+                    fontWeight = FontWeight.Bold
                 )
             }
 
@@ -162,8 +158,7 @@ fun LastOrdersBox(
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 2.dp)
+                    fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = "$quantity",
@@ -171,8 +166,7 @@ fun LastOrdersBox(
                     style = MaterialTheme.typography.labelLarge,
                     color = Color.BrandBlue,
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 2.dp)
+                    fontWeight = FontWeight.Bold
                 )
             }
 
@@ -187,8 +181,7 @@ fun LastOrdersBox(
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 2.dp)
+                    fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = "EGP ${order.totalPrice}",
@@ -196,8 +189,7 @@ fun LastOrdersBox(
                     style = MaterialTheme.typography.labelLarge,
                     color = Color.Red,
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 2.dp)
+                    fontWeight = FontWeight.Bold
                 )
             }
 
@@ -213,8 +205,7 @@ fun LastOrdersBox(
                     fontSize = 13.sp,
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier.padding(vertical = 2.dp)
+                    textAlign = TextAlign.End
                 )
                 Box(
                     modifier = Modifier

@@ -2,10 +2,7 @@ package com.example.applicationhome.features.cart.ui
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,11 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
@@ -32,7 +27,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,16 +37,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
+import com.example.applicationhome.core.ui.components.screens.EmptyScreenWhithButton
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.data.data.model.Screens
 
@@ -146,50 +138,14 @@ fun Cart(
                         item{Spacer(modifier = Modifier.height(100.dp))}
                     }
                 }else{
-                    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
-                        Spacer(modifier = Modifier.height(300.dp))
-                        Image(
-                            modifier = Modifier.size(120.dp),
-                            painter = painterResource(R.drawable.cartemptyimage),
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.height(30.dp))
-                        Text(
-                            text = stringResource(R.string.there_s_nothing_in_your_cart_yet),
-                            fontSize = 22.sp,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.height(7.dp))
-                        Text(
-                            text = stringResource(R.string.ready_to_order),
-                            fontSize = 14.sp,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(40.dp))
-                        Box(
-                            modifier = Modifier.width(100.dp).
-                            height(40.dp).
-                            clip(CircleShape).
-                            clickable{
-                                navigationController.navigate(Screens.DashboardScreen.screen) {
-                                    popUpTo(0) { inclusive = true }
-                                }
-                            }.
-                            border(width = 1.dp, color = MaterialTheme.colorScheme.onSurface, shape = RoundedCornerShape(40.dp)).
-                            padding(7.dp).align(Alignment.CenterHorizontally)
-                        ){
-                            Text(
-                                text = stringResource(R.string.add_food),
-                                fontSize = 15.sp,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.align(Alignment.Center)
-                            )
+                    EmptyScreenWhithButton(
+                        title = stringResource(R.string.there_s_nothing_in_your_cart_yet),
+                        subTitle = stringResource(R.string.ready_to_order),
+                        buttonTitle = stringResource(R.string.add_food),
+                        image = painterResource(R.drawable.cartemptyimage)
+                    ){
+                        navigationController.navigate(Screens.DashboardScreen.screen) {
+                            popUpTo(0) { inclusive = true }
                         }
                     }
                 }

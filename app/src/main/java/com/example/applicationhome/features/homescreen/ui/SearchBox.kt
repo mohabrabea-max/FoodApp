@@ -38,7 +38,7 @@ fun SearchBox(
             .height(45.dp)
             .clip(CircleShape)
             .border(width = 0.5.dp, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f), shape = RoundedCornerShape(30.dp))
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.onTertiary)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null

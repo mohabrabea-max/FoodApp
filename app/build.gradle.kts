@@ -186,6 +186,11 @@ dependencies {
 
     // appcompat
     implementation("androidx.appcompat:appcompat:1.7.0")
+
+    // الحزمة الأساسية (تحتوي على haze و hazeChild)
+    implementation("dev.chrisbanes.haze:haze:1.0.0")
+    // حزمة اختيارية لأنماط الأشكال الجاهزة (Materials)
+    implementation("dev.chrisbanes.haze:haze-materials:1.0.0")
 }
 configurations.all {
     resolutionStrategy {

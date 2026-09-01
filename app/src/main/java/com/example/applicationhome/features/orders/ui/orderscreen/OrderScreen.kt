@@ -26,8 +26,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Report
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -169,8 +169,8 @@ fun OrderScreen(
                             horizontalArrangement = Arrangement.Start
                         ){
                             Icon(
-                                Icons.Default.Warning,
-                                contentDescription = "Warning",
+                                Icons.Default.Info,
+                                contentDescription = null,
                                 tint = Color(0xFF4A1211),
                                 modifier = Modifier.padding(start = 15.dp, end = 10.dp).size(18.dp)
                             )

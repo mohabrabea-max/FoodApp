@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -55,6 +56,8 @@ import com.example.applicationhome.data.data.model.UiEventOrderCancelled
 import com.example.applicationhome.features.orders.ui.OrderScreenViewModel
 import com.example.applicationhome.features.orders.ui.orderscreen.OrderScreen
 import com.example.applicationhome.features.shimmers.screens.OrdersHistoryShimmer
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -66,6 +69,8 @@ fun LastOrdersScreen(
     orderScreenViewModel : OrderScreenViewModel
 ){
     val scope = rememberCoroutineScope()
+
+    val hazeState = remember { HazeState() }
 
     val isNetworkAvailable by orderScreenViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
 
@@ -173,6 +178,7 @@ fun LastOrdersScreen(
                 OrdersHistoryStatesBar(
                     items = orderScreenViewModel.statesBar,
                     selectedIndex = pagerState.currentPage,
+                    hazeState = hazeState,
                     onItemSelection = { index ->
                         scope.launch {
                             pagerState.animateScrollToPage(
@@ -192,7 +198,7 @@ fun LastOrdersScreen(
         HorizontalPager(
             state = pagerState,
             beyondViewportPageCount = 2,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().haze(state = hazeState)
         ){ page ->
             LazyColumn(
                 modifier = Modifier
@@ -213,7 +219,12 @@ fun LastOrdersScreen(
                                         }
                                     }
                                 }else{
-                                    item { EmptyScreen(R.string.no_previous_requests) }
+                                    item {
+                                        EmptyScreen(
+                                            title = stringResource(R.string.no_previous_requests),
+                                            image = painterResource(R.drawable.emptyscreenicon)
+                                        )
+                                    }
                                 }
                             }
 
@@ -226,7 +237,12 @@ fun LastOrdersScreen(
                                         }
                                     }
                                 }else{
-                                    item { EmptyScreen(R.string.no_previous_requests) }
+                                    item {
+                                        EmptyScreen(
+                                            title = stringResource(R.string.no_previous_requests),
+                                            image = painterResource(R.drawable.emptyscreenicon)
+                                        )
+                                    }
                                 }
                             }
 
@@ -239,7 +255,12 @@ fun LastOrdersScreen(
                                         }
                                     }
                                 }else{
-                                    item { EmptyScreen(R.string.no_previous_requests) }
+                                    item {
+                                        EmptyScreen(
+                                            title = stringResource(R.string.no_previous_requests),
+                                            image = painterResource(R.drawable.emptyscreenicon)
+                                        )
+                                    }
                                 }
                             }
                         }

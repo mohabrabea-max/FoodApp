@@ -4,7 +4,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -25,16 +25,27 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.HazeTint
+import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
+import dev.chrisbanes.haze.materials.HazeMaterials
 
+@OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable
 fun <T> OrdersHistoryStatesBar(
     items : List<T>,
     selectedIndex : Int,
+    hazeState : HazeState,
     onItemSelection : (Int) -> Unit,
     itemTitle : @Composable (T) -> String
 ){
@@ -43,8 +54,30 @@ fun <T> OrdersHistoryStatesBar(
             .padding(horizontal = 15.dp)
             .fillMaxWidth()
             .height(48.dp)
-            .shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(13.dp))
-            .background(MaterialTheme.colorScheme.surface)
+            .shadow(
+                elevation = 10.dp,
+                shape = RoundedCornerShape(13.dp),
+                clip = false,
+                spotColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f)
+            )
+            .clip(shape = RoundedCornerShape(13.dp))
+            .hazeChild(
+                state = hazeState,
+                style = HazeMaterials.ultraThin()
+            )
+            .border(
+                width = 1.dp,
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.20f),
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.05f)
+                    ),
+                    start = Offset(0f, 0f),
+                    end = Offset.Infinite
+                ),
+                shape = RoundedCornerShape(13.dp)
+            )
             .padding(4.dp)
     ){
         val tabWidth = maxWidth / items.size
@@ -63,14 +96,20 @@ fun <T> OrdersHistoryStatesBar(
                 .offset(x = indicatorOffset)
                 .width(tabWidth)
                 .fillMaxHeight()
-                .background(
-                    color = MaterialTheme.colorScheme.onTertiary,
-                    shape = RoundedCornerShape(10.dp)
+                .clip(shape = RoundedCornerShape(10.dp))
+                .hazeChild(
+                    state = hazeState,
+                    style = HazeStyle(
+                        backgroundColor = MaterialTheme.colorScheme.onTertiary.copy(alpha = 0.5f),
+                        tint = HazeTint(Color.White.copy(alpha = 0.15f)),
+                        blurRadius = 20.dp
+                    )
                 )
         )
 
         Row(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically
         ){
             items.forEachIndexed { index, item ->

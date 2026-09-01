@@ -27,7 +27,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.outlined.AssignmentReturn
+import androidx.compose.material.icons.automirrored.filled.Login
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.ShoppingCartCheckout
 import androidx.compose.material3.DrawerValue
@@ -51,11 +53,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -81,6 +83,8 @@ import com.example.applicationhome.features.homescreen.ui.HomeScreen
 import com.example.applicationhome.features.homescreen.ui.HomeScreenViewModel
 import com.example.applicationhome.features.settings.ui.Settings
 import com.example.applicationhome.features.settings.ui.SettingsViewModel
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -108,6 +112,8 @@ fun DashboardScreen(
 
     val navBackStackEntry by dashboardNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+
+    val hazeState = remember { HazeState() }
 
     val isLogin by dashboardScreenViewModel.isLogin.collectAsStateWithLifecycle()
 
@@ -196,7 +202,7 @@ fun DashboardScreen(
                                 )
                                 Spacer(modifier = Modifier.height(5.dp))
                                 Text(
-                                    text = userState.email.ifEmpty { "Login" },
+                                    text = userState.email.ifEmpty { stringResource(R.string.login) },
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -235,6 +241,7 @@ fun DashboardScreen(
                         favoriteListState = favoriteListState,
                         settingsListState = settingsListState,
                         scope = coroutineScope,
+                        hazeState = hazeState,
                         profileLongClick = { isMenuExpanded = true }
                     )
 
@@ -248,10 +255,10 @@ fun DashboardScreen(
                             onDismissRequest = { isMenuExpanded = false },
                             shape = RoundedCornerShape(20.dp),
                             shadowElevation = 7.dp,
-                            containerColor = Color.White
+                            containerColor = MaterialTheme.colorScheme.surface
                         ){
                             DropdownMenuItem(
-                                text = { Text("Orders History") },
+                                text = { Text(stringResource(R.string.orders_history)) },
                                 leadingIcon = { Icon(Icons.Outlined.ShoppingCartCheckout, contentDescription = null) },
                                 onClick = {
                                     isMenuExpanded = false
@@ -260,100 +267,139 @@ fun DashboardScreen(
                             )
 
                             DropdownMenuItem(
-                                text = { Text("Returns") },
-                                leadingIcon = { Icon(Icons.AutoMirrored.Outlined.AssignmentReturn, contentDescription = null) },
+                                text = { Text(stringResource(R.string.notifications)) },
+                                leadingIcon = { Icon(Icons.Default.Notifications, contentDescription = null) },
                                 onClick = {
                                     isMenuExpanded = false
+                                    navigationController.navigate(Screens.Notifications.screen)
                                 }
                             )
 
+                            if(isLogin){
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.edite_profile)) },
+                                    leadingIcon = {
+                                        Icon(
+                                            Icons.Outlined.Edit,
+                                            contentDescription = null
+                                        )
+                                    },
+                                    onClick = {
+                                        isMenuExpanded = false
+                                        navigationController.navigate(Screens.Profile.screen)
+                                    }
+                                )
+                            }
+
                             DropdownMenuItem(
-                                text = { Text("Edite profile") },
-                                leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = null) },
+                                text = { Text(stringResource(R.string.favorite)) },
+                                leadingIcon = { Icon(Icons.Default.Favorite, contentDescription = null) },
                                 onClick = {
                                     isMenuExpanded = false
-                                    navigationController.navigate(Screens.Profile.screen)
+                                    dashboardNavController.navigate(Screens.Favorite.screen)
                                 }
                             )
+
+                            if(!isLogin){
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.sign_in)) },
+                                    leadingIcon = {
+                                        Icon(
+                                            Icons.AutoMirrored.Filled.Login,
+                                            contentDescription = null
+                                        )
+                                    },
+                                    onClick = {
+                                        isMenuExpanded = false
+                                        navigationController.navigate(Screens.LoginScreen.screen)
+                                    }
+                                )
+                            }
                         }
                     }
                 }
             }
         ){
-            NavHost(
-                navController = dashboardNavController,
-                modifier = Modifier.fillMaxSize(),
-                startDestination = Screens.HomeScreen.screen,
-                enterTransition = { EnterTransition.None },
-                exitTransition = { ExitTransition.None },
-                popEnterTransition = { EnterTransition.None },
-                popExitTransition = { ExitTransition.None }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .haze(state = hazeState)
             ){
-                composable(Screens.HomeScreen.screen){
-                    val homeScreenViewModel : HomeScreenViewModel = hiltViewModel()
+                NavHost(
+                    navController = dashboardNavController,
+                    modifier = Modifier.fillMaxSize(),
+                    startDestination = Screens.HomeScreen.screen,
+                    enterTransition = { EnterTransition.None },
+                    exitTransition = { ExitTransition.None },
+                    popEnterTransition = { EnterTransition.None },
+                    popExitTransition = { ExitTransition.None }
+                ){
+                    composable(Screens.HomeScreen.screen){
+                        val homeScreenViewModel : HomeScreenViewModel = hiltViewModel()
 
-                    val isNetworkAvailable by homeScreenViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
+                        val isNetworkAvailable by homeScreenViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
 
-                    val categories by homeScreenViewModel.categories.collectAsStateWithLifecycle()
-                    val categorySelected by homeScreenViewModel.selected.collectAsStateWithLifecycle()
+                        val categories by homeScreenViewModel.categories.collectAsStateWithLifecycle()
+                        val categorySelected by homeScreenViewModel.selected.collectAsStateWithLifecycle()
 
-                    val userData by homeScreenViewModel.userData.collectAsStateWithLifecycle()
-                    val restaurants = homeScreenViewModel.filterRestaurants.collectAsLazyPagingItems()
-                    val offers by homeScreenViewModel.offers.collectAsStateWithLifecycle()
-                    val startBottomSheets by homeScreenViewModel.startBottomSheets.collectAsStateWithLifecycle()
+                        val userData by homeScreenViewModel.userData.collectAsStateWithLifecycle()
+                        val restaurants = homeScreenViewModel.filterRestaurants.collectAsLazyPagingItems()
+                        val offers by homeScreenViewModel.offers.collectAsStateWithLifecycle()
+                        val startBottomSheets by homeScreenViewModel.startBottomSheets.collectAsStateWithLifecycle()
 
-                    val actions = HomeScreenActions(
-                        select = homeScreenViewModel::select,
-                        unSelected = homeScreenViewModel::unSelected,
-                        addRestaurantsFavorite = homeScreenViewModel::addRestaurantsFavorite,
-                        removeRestaurantsFavorite = homeScreenViewModel::removeRestaurantsFavorite,
-                        closeBottomSheet = homeScreenViewModel::closeBottomSheet
-                    )
+                        val actions = HomeScreenActions(
+                            select = homeScreenViewModel::select,
+                            unSelected = homeScreenViewModel::unSelected,
+                            addRestaurantsFavorite = homeScreenViewModel::addRestaurantsFavorite,
+                            removeRestaurantsFavorite = homeScreenViewModel::removeRestaurantsFavorite,
+                            closeBottomSheet = homeScreenViewModel::closeBottomSheet
+                        )
 
-                    val parameters = HomeScreenParameters(
-                        isNetworkAvailable = isNetworkAvailable,
-                        categories = categories,
-                        categorySelected = categorySelected,
-                        userData = userData,
-                        restaurants = restaurants,
-                        offers = offers
-                    )
+                        val parameters = HomeScreenParameters(
+                            isNetworkAvailable = isNetworkAvailable,
+                            categories = categories,
+                            categorySelected = categorySelected,
+                            userData = userData,
+                            restaurants = restaurants,
+                            offers = offers
+                        )
 
-                    HomeScreen(
-                        drawerState = drawerState,
-                        coroutineScope = coroutineScope,
-                        navigationController = navigationController,
-                        onActions = actions,
-                        parameters = parameters,
-                        scrollState = homeListState,
-                        syncDataUiState = syncDataUiState,
-                        startBottomSheets = startBottomSheets,
-                        isRefreshing = isRefreshing
-                    ){ syncData() }
-                }
+                        HomeScreen(
+                            drawerState = drawerState,
+                            coroutineScope = coroutineScope,
+                            navigationController = navigationController,
+                            onActions = actions,
+                            parameters = parameters,
+                            scrollState = homeListState,
+                            syncDataUiState = syncDataUiState,
+                            startBottomSheets = startBottomSheets,
+                            isRefreshing = isRefreshing
+                        ){ syncData() }
+                    }
 
-                composable(Screens.Favorite.screen){
-                    val favoriteViewModel : FavoriteViewModel = hiltViewModel()
-                    Favorite(
-                        drawerState,
-                        coroutineScope,
-                        navigationController,
-                        dashboardNavController,
-                        favoriteViewModel,
-                        favoriteListState
-                    )
-                }
+                    composable(Screens.Favorite.screen){
+                        val favoriteViewModel : FavoriteViewModel = hiltViewModel()
+                        Favorite(
+                            drawerState = drawerState,
+                            coroutineScope = coroutineScope,
+                            navigationController = navigationController,
+                            dashboardNavController = dashboardNavController,
+                            favoriteViewModel = favoriteViewModel,
+                            favoriteListState = favoriteListState
+                        )
+                    }
 
-                composable(Screens.Settings.screen){
-                    val settingsViewModel : SettingsViewModel = hiltViewModel()
-                    Settings(
-                        drawerState,
-                        coroutineScope,
-                        navigationController,
-                        dashboardNavController,
-                        settingsListState,
-                        settingsViewModel
-                    )
+                    composable(Screens.Settings.screen){
+                        val settingsViewModel : SettingsViewModel = hiltViewModel()
+                        Settings(
+                            drawerState = drawerState,
+                            coroutineScope = coroutineScope,
+                            navigationController = navigationController,
+                            dashboardNavController = dashboardNavController,
+                            settingsListState = settingsListState,
+                            settingsViewModel = settingsViewModel
+                        )
+                    }
                 }
             }
         }
