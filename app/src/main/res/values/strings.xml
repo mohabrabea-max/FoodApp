@@ -145,4 +145,6 @@
     <string name="skip">Skip</string>
     <string name="login_to_an_existing_account">Login to an existing account</string>
     <string name="log_in_or_sign_up_to_save_more_shop_faster_and_get_personalized_perks">Log in or sign up to save more, shop faster, and get personalized perks</string>
+    <string name="sizes">Sizes</string>
+    <string name="meal_snacks">Meal snacks</string>
 </resources>

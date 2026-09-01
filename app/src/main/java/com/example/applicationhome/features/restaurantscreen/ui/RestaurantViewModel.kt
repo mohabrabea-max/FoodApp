@@ -16,6 +16,7 @@ import com.example.applicationhome.data.data.model.CategoriesInWithTitle
 import com.example.applicationhome.data.data.model.CategoryEnum
 import com.example.applicationhome.data.data.model.CategoryInterface
 import com.example.applicationhome.data.data.model.Drink
+import com.example.applicationhome.data.data.model.MealSnacks
 import com.example.applicationhome.data.data.model.RestaurantUiState
 import com.example.applicationhome.data.data.model.ShowSnackBarEvent
 import com.example.applicationhome.data.local.entity.CartItemsClass
@@ -521,5 +522,17 @@ class RestaurantViewModel @Inject constructor(
         viewModelScope.launch {
             favoriteUseCase.removeRestaurantsFavorite(resId)
         }
+    }
+
+
+    private val _snackBottomSheet = MutableStateFlow<MealSnacks?>(null)
+    val snackBottomSheet = _snackBottomSheet.asStateFlow()
+
+    fun openSnackBottomSheet(item : MealSnacks){
+        _snackBottomSheet.value = item
+    }
+
+    fun closeSnackBottomSheet(){
+        _snackBottomSheet.value = null
     }
 }

@@ -9,11 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -30,42 +30,43 @@ import com.example.applicationhome.data.data.model.MealSnacks
 @Composable
 fun SnaksBoxForItemScreen(
     modifier: Modifier = Modifier,
-    item: MealSnacks
+    item: MealSnacks,
+    onClickable : () -> Unit
 ){
-    Card(
+    Column(
         modifier = modifier
             .padding(7.dp)
-            .shadow(elevation = 7.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp))
+            .fillMaxSize()
+            .shadow(elevation = 5.dp, spotColor = Color.LightGray, shape = RoundedCornerShape(30.dp))
+            .clip(shape = RoundedCornerShape(30.dp))
             .background(MaterialTheme.colorScheme.surface)
-            .clickable{  }
+            .clickable{ onClickable() }
     ){
-        Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)){
-            Box(modifier = Modifier.fillMaxWidth().weight(2f)){
-                AsyncImage(
-                    modifier = Modifier.fillMaxSize(),
-                    model = ImageRequest.Builder(LocalContext.current).
-                    data(item.image).
-                    crossfade(true).
-                    precision(Precision.EXACT).
-                    build(),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop
+        Box(modifier = Modifier.fillMaxWidth().weight(2f)){
+            AsyncImage(
+                modifier = Modifier.fillMaxSize(),
+                model = ImageRequest.Builder(LocalContext.current).
+                data(item.image).
+                crossfade(true).
+                precision(Precision.EXACT).
+                build(),
+                contentDescription = null,
+                contentScale = ContentScale.Crop
+            )
+        }
+        Column(
+            modifier = Modifier.fillMaxWidth().weight(1.1f).padding(start = 15.dp, end = 10.dp, top = 5.dp, bottom = 10.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ){
+            Text(
+                text = item.size + " " + item.name,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = TextStyle(
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = (-0.5).sp
                 )
-            }
-            Column(
-                modifier = Modifier.fillMaxWidth().weight(1.1f).padding(start = 15.dp, end = 10.dp, top = 5.dp, bottom = 10.dp),
-                verticalArrangement = Arrangement.SpaceBetween
-            ){
-                Text(
-                    text = item.size + " " + item.name,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = (-0.5).sp
-                    )
-                )
-            }
+            )
         }
     }
 }

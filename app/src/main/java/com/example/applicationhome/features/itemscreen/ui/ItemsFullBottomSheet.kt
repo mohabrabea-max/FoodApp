@@ -33,11 +33,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.R
 import com.example.applicationhome.data.data.model.BottomSheetActions
 import com.example.applicationhome.data.data.model.BottomSheetItem
+import com.example.applicationhome.data.data.model.MealSnacks
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.UserClass
@@ -52,7 +55,8 @@ fun ItemsFullBottomSheet(
     userData : UserClass,
     newCount : Int,
     animDuration : Int,
-    animateIn: MutableTransitionState<Boolean>
+    animateIn: MutableTransitionState<Boolean>,
+    openSnackBottomSheet : (MealSnacks) -> Unit
 ){
     val scrollState = rememberLazyListState()
 
@@ -158,7 +162,7 @@ fun ItemsFullBottomSheet(
                                     Spacer(modifier = Modifier.height(15.dp))
 
                                     Text(
-                                        text = "Meal snacks",
+                                        text = stringResource(R.string.meal_snacks),
                                         fontSize = 16.sp,
                                         color = MaterialTheme.colorScheme.onSurface,
                                         style = MaterialTheme.typography.labelLarge,
@@ -177,8 +181,10 @@ fun ItemsFullBottomSheet(
                                         selectedDetail?.snack?.forEach { (snakeId, value) ->
                                             SnaksBoxForItemScreen(
                                                 modifier = Modifier.size(160.dp),
-                                                value
-                                            )
+                                                item = value
+                                            ){
+                                                openSnackBottomSheet(value)
+                                            }
                                         }
                                     }
                                 }
@@ -201,7 +207,7 @@ fun ItemsFullBottomSheet(
                                 Spacer(modifier = Modifier.height(5.dp))
 
                                 Text(
-                                    text = "Sizes",
+                                    text = stringResource(R.string.sizes),
                                     fontSize = 16.sp,
                                     color = MaterialTheme.colorScheme.onSurface,
                                     style = MaterialTheme.typography.labelLarge,

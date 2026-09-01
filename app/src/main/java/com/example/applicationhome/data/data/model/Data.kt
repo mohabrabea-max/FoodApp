@@ -65,6 +65,7 @@ data class MealSizeDetail(
 data class MealSnacks(
     val size : String = "",
     val name : String = "",
+    val details : String = "",
     val image : String = ""
 )
 

@@ -82,6 +82,7 @@ import com.example.applicationhome.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
 import com.example.applicationhome.features.itemscreen.ui.ItemsFullBottomSheet
+import com.example.applicationhome.features.itemscreen.ui.SnaksBottomSheetForItemScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -131,6 +132,8 @@ fun RestaurantScreen(
     val snacks = restaurantViewModel.snackMenuList.collectAsLazyPagingItems()
     val offers by restaurantViewModel.restaurantOffersMenuList.collectAsStateWithLifecycle()
     val uiState by restaurantViewModel.uiState.collectAsStateWithLifecycle()
+
+    val snackBottomSheet by restaurantViewModel.snackBottomSheet.collectAsStateWithLifecycle()
 
     val totalNumber by restaurantViewModel.totalNumber.collectAsStateWithLifecycle()
     val totalPrice by restaurantViewModel.totalPrice.collectAsStateWithLifecycle()
@@ -630,7 +633,18 @@ fun RestaurantScreen(
             userData = userData,
             newCount = newCount,
             animDuration = animDuration,
-            animateIn = animateIn
+            animateIn = animateIn,
+            openSnackBottomSheet = { item -> restaurantViewModel.openSnackBottomSheet(item) }
         )
+    }
+
+    snackBottomSheet?.let { item ->
+        SnaksBottomSheetForItemScreen(
+            title = item.size + " " + item.name,
+            description = item.details,
+            image = item.image
+        ){
+            restaurantViewModel.closeSnackBottomSheet()
+        }
     }
 }
