@@ -19,7 +19,7 @@ import com.example.applicationhome.core.domain.model.TapRowData.FavoriteTapRow
 import com.example.applicationhome.core.ui.theme.DarkOrange
 
 @Composable
-fun favoriteCategoriesBar(
+fun FavoriteCategoriesBar(
     selectedCategoryInFavoriteScreen : Int,
     selectedFavoriteScreen : (Int) -> Unit
 ){

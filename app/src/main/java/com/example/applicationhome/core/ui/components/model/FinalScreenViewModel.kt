@@ -100,6 +100,7 @@ class FinalScreenViewModel @Inject constructor(
     private suspend fun syncFavorite(user : UserClass, network: Boolean){
         if(user.id.isEmpty()){
             _syncUserUiState.value = UserUiState.GuestMode
+            userId = ""
             return
         }
 
@@ -114,6 +115,7 @@ class FinalScreenViewModel @Inject constructor(
 
         if(!isValid){
             _syncUserUiState.value = UserUiState.GuestMode
+            userId = ""
             return
         }
 

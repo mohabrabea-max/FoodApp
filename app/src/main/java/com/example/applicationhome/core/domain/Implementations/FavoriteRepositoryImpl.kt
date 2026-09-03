@@ -8,6 +8,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.applicationhome.SyncAddToFavoritesWorker
 import com.example.applicationhome.SyncRemoveFromFavoritesWorker
+import com.example.applicationhome.core.domain.module.ApplicationScope
 import com.example.applicationhome.core.domain.module.IODispatcher
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
@@ -18,7 +19,6 @@ import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
 import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.data.local.entity.SnackWithFavoriteStatus
-import com.example.applicationhome.core.domain.module.ApplicationScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,10 +35,10 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class FavoriteRepositoryImpl @Inject constructor(
-    userRepository: UserRepository,
+    userRepository : UserRepository,
     private val favoriteDao : FavoriteDao,
     private val workManager : WorkManager,
-    @ApplicationScope private val externalScope: CoroutineScope,
+    @ApplicationScope private val externalScope : CoroutineScope,
     @IODispatcher private val dispatcher : CoroutineDispatcher
 ): FavoriteRepository {
 
@@ -107,7 +107,7 @@ class FavoriteRepositoryImpl @Inject constructor(
         favoriteFoodCount,
         favoriteSnacksCount,
         favoriteRestaurantsCount
-    ) { (food, snacks, restaurants) ->
+    ){ (food, snacks, restaurants) ->
         food + snacks + restaurants
     }.stateIn(
         scope = externalScope,
@@ -118,22 +118,24 @@ class FavoriteRepositoryImpl @Inject constructor(
 
     // *** ---------------------- \\***  Favorite Functions  ***// ---------------------- ***
 
-    override suspend fun addFoodToFavorite(foodItem : FavoriteMealEntity){
+    override suspend fun addFoodToFavorite(userId : String, foodItem : FavoriteMealEntity){
         favoriteDao.addFoodToFavorite(listOf(foodItem))
-        triggerOfflineSyncWorker()
+        triggerOfflineSyncWorker(userId)
     }
 
-    override suspend fun addSnackToFavorite(snackItem : FavoriteSnackEntity){
+    override suspend fun addSnackToFavorite(userId : String, snackItem : FavoriteSnackEntity){
         favoriteDao.addSnacksToFavorite(listOf(snackItem))
-        triggerOfflineSyncWorker()
+        triggerOfflineSyncWorker(userId)
     }
 
-    override suspend fun addRestaurantToFavorite(restaurantItem : FavoriteRestaurantEntity){
+    override suspend fun addRestaurantToFavorite(userId : String, restaurantItem : FavoriteRestaurantEntity){
         favoriteDao.addRestaurantToFavorite(listOf(restaurantItem))
-        triggerOfflineSyncWorker()
+        triggerOfflineSyncWorker(userId)
     }
 
-    private fun triggerOfflineSyncWorker() {
+    private fun triggerOfflineSyncWorker(userId : String) {
+        if(userId.isEmpty()) return
+
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
@@ -156,20 +158,22 @@ class FavoriteRepositoryImpl @Inject constructor(
 
     override suspend fun deleteFoodFromFavorite(userId : String, mealId : Int){
         favoriteDao.markFoodAsDeletedOffline(userId, mealId)
-        triggerOfflineRemoveWorker()
+        triggerOfflineRemoveWorker(userId)
     }
 
     override suspend fun deleteSnackFromFavorite(userId : String, snackId : Int){
         favoriteDao.markSnacksAsDeletedOffline(userId, snackId)
-        triggerOfflineRemoveWorker()
+        triggerOfflineRemoveWorker(userId)
     }
 
     override suspend fun deleteRestaurantFromFavorite(userId : String, resId : Int){
         favoriteDao.markRestaurantsAsDeletedOffline(userId, resId)
-        triggerOfflineRemoveWorker()
+        triggerOfflineRemoveWorker(userId)
     }
 
-    private fun triggerOfflineRemoveWorker() {
+    private fun triggerOfflineRemoveWorker(userId : String) {
+        if(userId.isEmpty()) return
+
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
@@ -197,6 +201,8 @@ class FavoriteRepositoryImpl @Inject constructor(
             launch { favoriteDao.addGuestSnacksFavoriteToUser(userId) }
             launch { favoriteDao.addGuestRestaurantsFavoriteToUser(userId) }
         }
+        triggerOfflineSyncWorker(userId)
+        triggerOfflineRemoveWorker(userId)
     }
 
 

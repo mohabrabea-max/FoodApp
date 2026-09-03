@@ -13,8 +13,6 @@ import com.example.applicationhome.core.domain.usecase.FavoriteUseCase
 import com.example.applicationhome.data.data.model.AddToCartStates
 import com.example.applicationhome.data.data.model.BottomSheetItem
 import com.example.applicationhome.data.data.model.CategoriesInWithTitle
-import com.example.applicationhome.data.data.model.CategoryEnum
-import com.example.applicationhome.data.data.model.CategoryInterface
 import com.example.applicationhome.data.data.model.Drink
 import com.example.applicationhome.data.data.model.MealSnacks
 import com.example.applicationhome.data.data.model.RestaurantUiState
@@ -71,23 +69,6 @@ class RestaurantViewModel @Inject constructor(
     val selectedTypeIndex : StateFlow<Int> = _selectedTypeIndex.asStateFlow()
     private val _typeInRestaurantScreen = MutableStateFlow(CategoriesInWithTitle())
     val typeInRestaurantScreen = _typeInRestaurantScreen.asStateFlow()
-
-    val screenCategoryInterface = _typeInRestaurantScreen.map {
-        when(it.category){
-            CategoryEnum.BURGER.name -> CategoryInterface.Burgers
-            CategoryEnum.PIZZA.name -> CategoryInterface.Pizza
-            CategoryEnum.CHICKEN.name -> CategoryInterface.Chicken
-            CategoryEnum.KOSHARY.name -> CategoryInterface.Koshary
-            CategoryEnum.GRILL.name -> CategoryInterface.Grill
-            CategoryEnum.SNACKS.name -> CategoryInterface.Snacks
-            CategoryEnum.DRINK.name -> CategoryInterface.Drinks
-            else -> CategoryInterface.Custom
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = CategoryInterface.Custom
-    )
 
     private val _mealSize = MutableStateFlow("")
     val mealSize : StateFlow<String> = _mealSize.asStateFlow()
@@ -249,7 +230,6 @@ class RestaurantViewModel @Inject constructor(
         _mealSize.value = ""
 
         deletenewCount()
-        println(_uiState.value.bottomSheetItem)
     }
 
 

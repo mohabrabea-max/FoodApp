@@ -22,8 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.DividerDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -107,12 +105,6 @@ fun RestaurantsBoxHomeScreen(
                     )
                 }
             }
-
-            HorizontalDivider(
-                Modifier,
-                DividerDefaults.Thickness,
-                color = Color.LightGray.copy(alpha = 0.5f)
-            )
 
             Box(
                 modifier = Modifier.fillMaxWidth().

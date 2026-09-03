@@ -293,7 +293,7 @@ fun LoginScreen(
                     fontcolor = Color.White,
                     horizontalPadding = 40.dp,
                     title = stringResource(R.string.login)
-                ) {
+                ){
                     if(isNetworkAvailable && clickState.value && isButtonEnabled){
                         clickState.value = false
 

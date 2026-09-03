@@ -12,26 +12,44 @@ class FavoriteUseCase @Inject constructor(
     private val favoriteRepository : FavoriteRepository
 ){
     suspend fun addMealFavorite(food : FavoriteMealEntity){
-        favoriteRepository.addFoodToFavorite(food.copy(userId = userRepository.userData.value.id))
+        favoriteRepository.addFoodToFavorite(
+            userId = food.userId,
+            foodItem = food.copy(userId = userRepository.userData.value.id)
+        )
     }
 
     suspend fun addSnackFavorite(snack : FavoriteSnackEntity){
-        favoriteRepository.addSnackToFavorite(snack.copy(userId = userRepository.userData.value.id))
+        favoriteRepository.addSnackToFavorite(
+            userId = snack.userId,
+            snackItem = snack.copy(userId = userRepository.userData.value.id)
+        )
     }
 
-    suspend fun addRestaurantsFavorite(restaurants: FavoriteRestaurantEntity){
-        favoriteRepository.addRestaurantToFavorite(restaurants.copy(userId = userRepository.userData.value.id))
+    suspend fun addRestaurantsFavorite(restaurants : FavoriteRestaurantEntity){
+        favoriteRepository.addRestaurantToFavorite(
+            userId = restaurants.userId,
+            restaurantItem = restaurants.copy(userId = userRepository.userData.value.id)
+        )
     }
 
     suspend fun removeMealFavorite(mealId : Int){
-        favoriteRepository.deleteFoodFromFavorite(userRepository.userData.value.id, mealId)
+        favoriteRepository.deleteFoodFromFavorite(
+            userId = userRepository.userData.value.id,
+            mealId = mealId
+        )
     }
 
     suspend fun removeSnackFavorite(snackId : Int){
-        favoriteRepository.deleteSnackFromFavorite(userRepository.userData.value.id, snackId)
+        favoriteRepository.deleteSnackFromFavorite(
+            userId = userRepository.userData.value.id,
+            snackId = snackId
+        )
     }
 
     suspend fun removeRestaurantsFavorite(resId : Int){
-        favoriteRepository.deleteRestaurantFromFavorite(userRepository.userData.value.id, resId)
+        favoriteRepository.deleteRestaurantFromFavorite(
+            userId = userRepository.userData.value.id,
+            resId = resId
+        )
     }
 }

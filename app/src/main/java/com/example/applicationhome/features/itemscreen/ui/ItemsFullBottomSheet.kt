@@ -50,12 +50,12 @@ import com.example.applicationhome.data.local.entity.UserClass
 @Composable
 fun ItemsFullBottomSheet(
     bottomSheetItem : BottomSheetItem,
-    size: String,
+    size : String,
     actions : BottomSheetActions,
     userData : UserClass,
     newCount : Int,
     animDuration : Int,
-    animateIn: MutableTransitionState<Boolean>,
+    animateIn : MutableTransitionState<Boolean>,
     openSnackBottomSheet : (MealSnacks) -> Unit
 ){
     val scrollState = rememberLazyListState()

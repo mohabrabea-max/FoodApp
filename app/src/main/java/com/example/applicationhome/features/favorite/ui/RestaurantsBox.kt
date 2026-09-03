@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,7 +37,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
-import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.local.entity.RestaurantsEntity
 
 @Composable
@@ -55,10 +53,11 @@ fun RestaurantsBox(
 
     Box(
         modifier = Modifier
+            .padding(10.dp)
             .width(194.dp)
             .height(230.dp)
-            .padding(10.dp)
             .clip(shape = RoundedCornerShape(30.dp))
+            .background(MaterialTheme.colorScheme.surface)
     ){
         Box(
             modifier = Modifier.clickable(
@@ -68,7 +67,10 @@ fun RestaurantsBox(
                 clickable()
             }
         ){
-            Box(modifier = Modifier.fillMaxSize().background(Color.VeryLightGray)){
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ){
                 AsyncImage(
                     modifier = Modifier.fillMaxSize(),
                     model = ImageRequest.Builder(LocalContext.current).
@@ -101,7 +103,7 @@ fun RestaurantsBox(
                     )
                 }
             }
-            Divider(color = Color.LightGray.copy(alpha = 0.5f))
+
             Row(
                 modifier = Modifier.fillMaxWidth().
                 height(70.dp).

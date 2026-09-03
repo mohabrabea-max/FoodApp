@@ -6,6 +6,7 @@ import androidx.paging.PagingData
 import com.example.applicationhome.core.domain.model.foodItemToMealsEntity
 import com.example.applicationhome.core.domain.model.restaurantsToRestaurantsEntity
 import com.example.applicationhome.core.domain.model.snackToSnacksEntity
+import com.example.applicationhome.core.domain.module.ApplicationScope
 import com.example.applicationhome.core.domain.module.IODispatcher
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.data.datastore.DataStoreManager
@@ -19,7 +20,6 @@ import com.example.applicationhome.data.local.entity.OffersEntity
 import com.example.applicationhome.data.local.entity.RestaurantCategoryCrossRef
 import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.data.remote.FoodAppAPIs
-import com.example.applicationhome.core.domain.module.ApplicationScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -254,7 +254,11 @@ class SyncAllDataRepositoryImpl @Inject constructor(
                             }
                     }
                 }
-                favoriteDao.addAllToFavorite(mealsFavorite, snacksFavorite, restaurantsFavorite)
+                favoriteDao.addAllToFavorite(
+                    foodItems = mealsFavorite,
+                    snacksItems = snacksFavorite,
+                    restaurant = restaurantsFavorite
+                )
             }else{
                 throw HttpException(response)
             }

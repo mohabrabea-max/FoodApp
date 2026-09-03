@@ -151,7 +151,7 @@ fun RestaurantScreen(
 
 
     val animDuration = 300
-    val animateIn = remember(uiState.bottomSheetItem) {
+    val animateIn = remember(uiState.bottomSheetItem?.id) {
         MutableTransitionState(false).apply {
             targetState = uiState.bottomSheetItem != null
         }

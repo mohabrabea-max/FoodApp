@@ -65,7 +65,7 @@ fun FavoriteScreenTopBar(
                 }
             }
         )
-        favoriteCategoriesBar(
+        FavoriteCategoriesBar(
             selectedCategoryInFavoriteScreen,
             { item -> selectedFavoriteScreen(item) }
         )

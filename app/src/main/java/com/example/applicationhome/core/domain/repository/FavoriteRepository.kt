@@ -22,9 +22,9 @@ interface FavoriteRepository {
 
 
     // *** ---------------------- \\***  Favorite Functions  ***// ---------------------- ***
-    suspend fun addFoodToFavorite(foodItem : FavoriteMealEntity)
-    suspend fun addSnackToFavorite(snackItem : FavoriteSnackEntity)
-    suspend fun addRestaurantToFavorite(restaurantItem : FavoriteRestaurantEntity)
+    suspend fun addFoodToFavorite(userId : String, foodItem : FavoriteMealEntity)
+    suspend fun addSnackToFavorite(userId : String, snackItem : FavoriteSnackEntity)
+    suspend fun addRestaurantToFavorite(userId : String, restaurantItem : FavoriteRestaurantEntity)
     suspend fun deleteFoodFromFavorite(userId : String, mealId : Int)
     suspend fun deleteSnackFromFavorite(userId : String, snackId : Int)
     suspend fun deleteRestaurantFromFavorite(userId : String, resId : Int)
