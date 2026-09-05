@@ -47,6 +47,8 @@ import com.example.applicationhome.features.confirmorder.ui.ConfirmOrderScreen
 import com.example.applicationhome.features.confirmorder.ui.ConfirmOrderScreenViewModel
 import com.example.applicationhome.features.forgetpassword.ForgetPasswordScreen
 import com.example.applicationhome.features.forgetpassword.ForgetPasswordScreenViewModel
+import com.example.applicationhome.features.locations.ui.Locations
+import com.example.applicationhome.features.locations.ui.LocationsViewModel
 import com.example.applicationhome.features.login.ui.LoginScreen
 import com.example.applicationhome.features.login.ui.LoginViewModel
 import com.example.applicationhome.features.orders.ui.OrderScreenViewModel
@@ -223,6 +225,14 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
                 LastOrdersScreen(
                     navigationController,
                     orderScreenViewModel
+                )
+            }
+
+            composable(Screens.Locations.screen){
+                val locationsViewModel : LocationsViewModel = hiltViewModel()
+                Locations(
+                    navigationController = navigationController,
+                    viewModel = locationsViewModel
                 )
             }
 

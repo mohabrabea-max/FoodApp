@@ -3,15 +3,18 @@ package com.example.applicationhome.core.domain.Implementations
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.example.applicationhome.core.domain.model.addressToAddressesEntity
 import com.example.applicationhome.core.domain.model.foodItemToMealsEntity
 import com.example.applicationhome.core.domain.model.restaurantsToRestaurantsEntity
 import com.example.applicationhome.core.domain.model.snackToSnacksEntity
 import com.example.applicationhome.core.domain.module.ApplicationScope
 import com.example.applicationhome.core.domain.module.IODispatcher
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
+import com.example.applicationhome.data.data.model.HomeUiState
 import com.example.applicationhome.data.datastore.DataStoreManager
 import com.example.applicationhome.data.local.dao.FavoriteDao
 import com.example.applicationhome.data.local.dao.FoodAndRestaurantsDao
+import com.example.applicationhome.data.local.dao.UsersDao
 import com.example.applicationhome.data.local.entity.CategoriesEntity
 import com.example.applicationhome.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
@@ -40,6 +43,7 @@ class SyncAllDataRepositoryImpl @Inject constructor(
     private val api : FoodAppAPIs,
     private val foodAndRestaurantsDao : FoodAndRestaurantsDao,
     private val favoriteDao : FavoriteDao,
+    private val usersDao : UsersDao,
     private val dataStoreManager : DataStoreManager,
     @ApplicationScope externalScope: CoroutineScope,
     @IODispatcher private val dispatcher : CoroutineDispatcher
@@ -117,7 +121,7 @@ class SyncAllDataRepositoryImpl @Inject constructor(
 
                 val categories = restaurantList.flatMap { item ->
                     item.categories.keys.map {
-                        RestaurantCategoryCrossRef(item.id, it)
+                        RestaurantCategoryCrossRef(item.id, it.toInt())
                     }
                 }
 
@@ -265,6 +269,38 @@ class SyncAllDataRepositoryImpl @Inject constructor(
         }
     }
 
+
+
+    override suspend fun syncAddresses(userId : String): HomeUiState {
+        return try {
+            val lastSyncTime = dataStoreManager.addressesLastSyncTimeFlow.firstOrNull()?: 0L
+            val response = api.getAddresses(
+                userId = userId,
+                lastSyncTimestamp = lastSyncTime
+            )
+            val addresses = response.body()
+
+            if(response.isSuccessful && addresses != null){
+                val finalAddressesList = addresses.map { item ->
+                    item.value.addressToAddressesEntity(
+                        userId = userId,
+                        addressId = item.key
+                    )
+                }
+
+                usersDao.addNewAddresses(finalAddressesList)
+
+                val newestTimestamp = addresses.values.maxOfOrNull { it.lastUse }?: lastSyncTime
+                dataStoreManager.updateAddressesSyncTime(newestTimestamp)
+
+                HomeUiState.Success
+            }else{
+                HomeUiState.Offline
+            }
+        } catch (e : Exception) {
+            HomeUiState.Offline
+        }
+    }
 
 
     // *** ---------------------- \\***  Sync Data For ViewModel  ***// ---------------------- ***

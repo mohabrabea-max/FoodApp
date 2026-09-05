@@ -45,11 +45,11 @@ data class Snack(
 
 @Keep
 data class Drink(
-    val id : Int,
-    val name : String,
-    val image : List<String>,
-    val priceANDsize : Map<String, Double>,
-    var restaurantId : Int,
+    val id : Int = 0,
+    val name : String = "",
+    val image : List<String> = emptyList(),
+    val priceANDsize : Map<String, Double> = emptyMap(),
+    var restaurantId : Int = 0,
     val updatedAt : Long = 0L
 )
 
@@ -58,7 +58,7 @@ data class MealSizeDetail(
     val size : String = "",
     val price : Double = 0.0,
     @SerializedName("details")
-    val snack : Map<Int, MealSnacks> = emptyMap()
+    val snack : Map<String, MealSnacks> = emptyMap()
 )
 
 @Keep
@@ -94,7 +94,7 @@ data class Restaurants(
     val id : Int = 0,
     @SerializedName("types")
     val typ : Map<String, CategoriesInWithTitle> = emptyMap(),
-    val categories : Map<Int, String> = emptyMap(),
+    val categories : Map<String, String> = emptyMap(),
     val name : String = "",
     @SerializedName("logo")
     val image : String = "",
@@ -264,6 +264,7 @@ enum class CategoryEnum(val rawValue : String){
     }
 }
 
+@Keep
 data class CategoriesInWithTitle(
     val title : String = "",
     val category : String = "",

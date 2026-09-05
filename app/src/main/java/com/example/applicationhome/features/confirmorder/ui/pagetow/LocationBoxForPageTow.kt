@@ -104,7 +104,7 @@ fun LocationBoxForPageTow(
                 )
 
                 Text(
-                    text = "Phone number: +20 $phoneNumber",
+                    text = "+20 $phoneNumber",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.sp
                 )

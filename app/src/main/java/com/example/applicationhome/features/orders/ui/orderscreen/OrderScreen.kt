@@ -25,7 +25,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Report
 import androidx.compose.material3.Icon
@@ -114,9 +114,9 @@ fun OrderScreen(
                                         .padding(5.dp)
                                         .clip(CircleShape)
                                         .size(40.dp)
-                                ) {
+                                ){
                                     Icon(
-                                        Icons.AutoMirrored.Filled.ArrowBack,
+                                        Icons.Default.Close,
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.onSurface
                                     )

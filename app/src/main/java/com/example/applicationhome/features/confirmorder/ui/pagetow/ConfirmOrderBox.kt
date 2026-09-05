@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,7 +42,7 @@ fun ConfirmOrderBox(
             .padding(start = 10.dp, end = 10.dp)
             .fillMaxWidth()
             .height(100.dp)
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.background)
     ){
         Column(modifier = Modifier.fillMaxSize()){
             Row(
@@ -60,8 +59,7 @@ fun ConfirmOrderBox(
                         size(400, 400).
                         precision(Precision.EXACT).
                         build(),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop
+                        contentDescription = null
                     )
                     Column(
                         modifier = Modifier.fillMaxHeight().weight(3f),
@@ -77,7 +75,7 @@ fun ConfirmOrderBox(
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = "${food.priceOfOne} x ${number}" ,
+                            text = "${food.priceOfOne} x $number" ,
                             fontSize = 15.sp,
                             color = Color.Red,
                             style = MaterialTheme.typography.labelLarge,

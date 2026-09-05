@@ -46,8 +46,8 @@ fun SelectionOutlinedTextField(
             onValueChange = {  },
 
             colors = OutlinedTextFieldDefaults.colors(
-                disabledTextColor = Color.Black,
-                disabledLabelColor = Color.Black,
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurface,
                 disabledTrailingIconColor = colorWhenEmpty,
                 errorBorderColor = Color.Red,
                 disabledBorderColor = colorWhenEmpty

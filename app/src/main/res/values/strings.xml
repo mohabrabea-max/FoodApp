@@ -147,4 +147,18 @@
     <string name="log_in_or_sign_up_to_save_more_shop_faster_and_get_personalized_perks">Log in or sign up to save more, shop faster, and get personalized perks</string>
     <string name="sizes">Sizes</string>
     <string name="meal_snacks">Meal snacks</string>
+    <string name="addresses">Addresses</string>
+    <string name="your_addresses">Your addresses</string>
+    <string name="title">Title</string>
+    <string name="save_this_address">Save this address</string>
+    <string name="new_address">New address</string>
+    <string name="address_details">Address details</string>
+    <string name="edite_address">Edite address</string>
+    <string name="pay_with">Pay with</string>
+    <string name="payment_summary">Payment summary</string>
+    <string name="subtotal">Subtotal</string>
+    <string name="delivery_fee">Delivery fee</string>
+    <string name="service_fee">Service fee</string>
+    <string name="total_amount">Total amount</string>
+    <string name="edit_address">Edit address</string>
 </resources>

@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Login
-import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -100,26 +99,17 @@ fun Settings(
         topBar = {
             Column(modifier = Modifier.shadow(elevation = 3.dp)){
                 MyTopBar(
-                    MaterialTheme.colorScheme.surface,
+                    color = MaterialTheme.colorScheme.surface,
                     modifier = Modifier.fillMaxWidth().height(100.dp),
-                    stringResource(R.string.settings),
-                    MaterialTheme.colorScheme.onSurface,
-                    {
+                    title = stringResource(R.string.settings),
+                    titleColor = MaterialTheme.colorScheme.onSurface,
+                    startaction = {
                         IconButton(
                             onClick = { coroutineScope.launch { drawerState.open() } },
                             modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
-                        ) {
+                        ){
                             Icon(
                                 painterResource(id = R.drawable.custom_menu),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                    },
-                    {
-                        IconButton(onClick = {}) {
-                            Icon(
-                                Icons.Default.DarkMode,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurface
                             )

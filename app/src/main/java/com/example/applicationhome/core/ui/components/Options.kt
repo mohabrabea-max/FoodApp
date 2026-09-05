@@ -47,7 +47,8 @@ fun Options(
     dashboardNavController : NavHostController,
     drawerState : DrawerState,
     coroutineScope : CoroutineScope,
-    dashboardScreenViewModel : DashboardScreenViewModel
+    dashboardScreenViewModel : DashboardScreenViewModel,
+    isLogin : Boolean
 ){
     val density = LocalDensity.current
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} }
@@ -100,16 +101,14 @@ fun Options(
             }
 
             item{
-                Box(modifier = Modifier.fillMaxWidth()){
-                    HorizontalDivider(
-                        modifier = Modifier.fillMaxWidth(0.5f).align(Alignment.Center),
-                        thickness = DividerDefaults.Thickness,
-                        color = Color.LightGray
-                    )
-                }
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(0.5f).align(Alignment.Center),
+                    thickness = DividerDefaults.Thickness,
+                    color = Color.LightGray
+                )
             }
 
-            items(options2){item ->
+            if(isLogin) items(options2){item ->
                 NavigationDrawerItem(
                     label = {
                         if(state) Text(

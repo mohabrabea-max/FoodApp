@@ -51,21 +51,26 @@ import com.example.applicationhome.data.data.model.TextFieldClassFromConfirmOrde
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun PageOneConfirmOrder(
+    isEditEnabled : Boolean = true,
     textFieldConfirmOrderScreenList : List<TextFieldClassFromConfirmOrderScreen>,
+    titleTextField : TextFieldClassFromConfirmOrderScreen? = null,
     isButtonClicked : Boolean,
     confirmOrderError : ProfileEditResult?,
     confirmOrderState : ActionsStates,
-    bottonState: Boolean,
+    bottonState : Boolean,
     location : String,
     locationImage : String,
     isSavePhoneNumberSelected : Boolean,
+    isSaveAddressSelected : Boolean,
     bottonStateChange : () -> Unit,
     openMaps : () -> Unit,
-    onBottonStateChange : () -> Unit,
-    onSavePhoneNumber : () -> Unit
+    onSaveAddress : () -> Unit,
+    onSavePhoneNumber : () -> Unit,
+    onSaveAddressRadioButton : () -> Unit,
+    onEditeMode : () -> Unit = {}
 ){
-    val color = if(bottonState) Color.DarkOrange else Color.VeryLightGray
-    val fontcolor = if(bottonState) Color.White else Color.LightGray
+    val color = if(bottonState || !isEditEnabled) Color.DarkOrange else Color.VeryLightGray
+    val fontcolor = if(bottonState || !isEditEnabled) Color.White else Color.LightGray
 
 
     Scaffold(
@@ -81,13 +86,13 @@ fun PageOneConfirmOrder(
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
                 MyButton(
-                    confirmOrderState == ActionsStates.Loading,
-                    color,
-                    fontcolor,
-                    40.dp,
-                    stringResource(R.string.save_address)
-                ) {
-                    if(bottonState) onBottonStateChange()
+                    loading = confirmOrderState == ActionsStates.Loading,
+                    backgroundcolor = color,
+                    fontcolor = fontcolor,
+                    horizontalPadding = 40.dp,
+                    title = if(isEditEnabled) stringResource(R.string.save_address) else stringResource(R.string.edit_address)
+                ){
+                    if(bottonState && isEditEnabled) onSaveAddress() else if(!isEditEnabled) onEditeMode()
                 }
             }
         }
@@ -123,12 +128,12 @@ fun PageOneConfirmOrder(
             item{
                 Row(
                     modifier = Modifier.padding(start = 15.dp, end = 15.dp)
-                        .height(70.dp)
+                        .height(80.dp)
                         .fillMaxWidth()
                         .clip(shape = RoundedCornerShape(15.dp))
                         .border(width = 1.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(15.dp))
                         .background(MaterialTheme.colorScheme.surface)
-                        .clickable { openMaps() }
+                        .clickable { if(isEditEnabled) openMaps() }
                         .padding(15.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -179,19 +184,37 @@ fun PageOneConfirmOrder(
 
             item{Spacer(modifier = Modifier.height(15.dp))}
 
+            if(isSaveAddressSelected && titleTextField != null) item{
+                ConfirmOrderScreenTextField(
+                    isEditEnabled = isEditEnabled,
+                    item = titleTextField,
+                    isLastTextField = false,
+                    isButtonClicked = isButtonClicked,
+                    errorOutput = confirmOrderError ?: ProfileEditResult.NetworkError,
+                    isSavePhoneNumberSelected = false,
+                    isSaveAddressSelected = false,
+                    bottonStateChange = { bottonStateChange() },
+                    onSavePhoneNumber = {  },
+                    onSaveAddressRadioButton = {  }
+                )
+            }
+
             items(textFieldConfirmOrderScreenList) { item ->
                 ConfirmOrderScreenTextField(
+                    isEditEnabled = isEditEnabled,
                     item = item,
+                    isLastTextField = item == textFieldConfirmOrderScreenList.last() && titleTextField != null,
                     isButtonClicked = isButtonClicked,
                     errorOutput = confirmOrderError ?: ProfileEditResult.NetworkError,
                     isSavePhoneNumberSelected = isSavePhoneNumberSelected,
+                    isSaveAddressSelected = isSaveAddressSelected,
                     bottonStateChange = { bottonStateChange() },
-                    onSavePhoneNumber = { onSavePhoneNumber() }
+                    onSavePhoneNumber = { onSavePhoneNumber() },
+                    onSaveAddressRadioButton = { onSaveAddressRadioButton() }
                 )
             }
 
             item{Spacer(modifier = Modifier.height(100.dp))}
         }
     }
-
 }

@@ -13,9 +13,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.R
 
 @Composable
 fun PaymentSummaryCartScreen(totalprice: Double){
@@ -24,7 +26,7 @@ fun PaymentSummaryCartScreen(totalprice: Double){
         modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).padding(20.dp)
     ){
         Text(
-            text = "Payment summary",
+            text = stringResource(R.string.payment_summary),
             fontSize = 20.sp,
             color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.labelLarge,
@@ -37,7 +39,7 @@ fun PaymentSummaryCartScreen(totalprice: Double){
             verticalAlignment = Alignment.CenterVertically
         ){
             Text(
-                text = "Total amount",
+                text = stringResource(R.string.subtotal),
                 fontSize = 17.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.labelLarge

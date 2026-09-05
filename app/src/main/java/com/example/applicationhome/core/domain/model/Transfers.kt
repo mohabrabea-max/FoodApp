@@ -1,5 +1,6 @@
 package com.example.applicationhome.core.domain.model
 
+import com.example.applicationhome.data.data.model.Address
 import com.example.applicationhome.data.data.model.CategoryEnum
 import com.example.applicationhome.data.data.model.FoodItem
 import com.example.applicationhome.data.data.model.OrderItemsClass
@@ -9,6 +10,7 @@ import com.example.applicationhome.data.data.model.OrderUiClass
 import com.example.applicationhome.data.data.model.Restaurants
 import com.example.applicationhome.data.data.model.Snack
 import com.example.applicationhome.data.data.model.UserClassFireBase
+import com.example.applicationhome.data.local.entity.AddressesEntity
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.MealsEntity
 import com.example.applicationhome.data.local.entity.OrdersDatabaseClass
@@ -117,4 +119,21 @@ fun OrderItemsClass.orderItemsClassToCartItemsClass(userId : String, resId : Int
         totalPrice = this.price * this.quantity,
         image = image,
         restaurantId = resId
+    )
+
+fun Address.addressToAddressesEntity(userId : String, addressId : Long): AddressesEntity =
+    AddressesEntity(
+        addressId = addressId,
+        userId = userId,
+        title = this.title,
+        house = this.house,
+        street = this.street,
+        phoneNumber = this.phoneNumber,
+        additionalDirectionsState = this.additionalDirectionsState,
+        addressLabelState = this.addressLabelState,
+        latLocation = this.latLocation,
+        lngLocation = this.lngLocation,
+        locationName = this.locationName,
+        locationFullName = this.locationFullName,
+        lastUse = this.lastUse
     )

@@ -33,7 +33,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,6 +60,7 @@ import com.example.applicationhome.features.confirmorder.ui.mappage.StreetMapPag
 import com.example.applicationhome.features.confirmorder.ui.pageone.PageOneConfirmOrder
 import com.example.applicationhome.features.confirmorder.ui.pagetow.PageTowConfirmOrder
 import com.example.applicationhome.features.confirmorder.ui.pagetow.PaymobWebViewScreen
+import com.example.applicationhome.features.locations.ui.SelectAddress
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,6 +70,8 @@ fun ConfirmOrderScreen(
     confirmOrderScreenViewModel : ConfirmOrderScreenViewModel,
     uiState : ConfirmOrderUiState
 ){
+    val addresses by confirmOrderScreenViewModel.addresses.collectAsStateWithLifecycle()
+
     val currentScreen by confirmOrderScreenViewModel.currentScreen.collectAsStateWithLifecycle()
 
     val topBatTitle by confirmOrderScreenViewModel.topBatTitle.collectAsStateWithLifecycle()
@@ -81,6 +83,7 @@ fun ConfirmOrderScreen(
     val cart by confirmOrderScreenViewModel.cartItems.collectAsStateWithLifecycle()
 
     val textFieldConfirmOrderScreenList = confirmOrderScreenViewModel.textFieldConfirmOrderScreenList
+    val titleTextField = confirmOrderScreenViewModel.titleTextField
 
     val totalprice by confirmOrderScreenViewModel.totalPrice.collectAsStateWithLifecycle()
 
@@ -95,11 +98,6 @@ fun ConfirmOrderScreen(
             // جلب الموقع
             confirmOrderScreenViewModel.fetchCurrentLocation()
         }
-    }
-
-    // طلب الإذن فور فتح الشاشة
-    LaunchedEffect(Unit) {
-        permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
     BackHandler(enabled = true) {
@@ -151,7 +149,7 @@ fun ConfirmOrderScreen(
                 NetworkErrorTopBar(isNetworkAvailable = isNetworkAvailable)
             }
         }
-    ){
+    ){ paddingValues ->
         AnimatedContent(
             targetState = currentScreen,
 
@@ -175,6 +173,19 @@ fun ConfirmOrderScreen(
             label = "CheckoutNavAnimation"
         ){ screen ->
             when(screen){
+                // --------------------------------------------\\ Select Address //--------------------------------------------
+                ConfirmOrderScreens.SelectAddress -> {
+                    SelectAddress(
+                        addresses = addresses,
+                        paddingValues = paddingValues,
+                        onNewAddressClickable = {
+                            permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                            confirmOrderScreenViewModel.newAddress()
+                        },
+                        onAddressClickable = { confirmOrderScreenViewModel.onSelectAddress(it) }
+                    )
+                }
+
                 // --------------------------------------------\\ Map Page //--------------------------------------------
                 is ConfirmOrderScreens.Map -> {
                     if(uiState.locationState.isLoading){
@@ -202,7 +213,10 @@ fun ConfirmOrderScreen(
                                     longitude
                                 )
                             },
-                            fetchCurrentLocation = { confirmOrderScreenViewModel.fetchCurrentLocation() },
+                            fetchCurrentLocation = {
+                                permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                                confirmOrderScreenViewModel.fetchCurrentLocation()
+                            },
                             retryNetwork = { confirmOrderScreenViewModel.retryNetwork() }
                         )
                     }
@@ -212,6 +226,7 @@ fun ConfirmOrderScreen(
                 is ConfirmOrderScreens.UserData -> {
                     PageOneConfirmOrder(
                         textFieldConfirmOrderScreenList = textFieldConfirmOrderScreenList,
+                        titleTextField = titleTextField,
                         isButtonClicked = uiState.isButtonClicked,
                         confirmOrderError = uiState.confirmOrderError,
                         confirmOrderState = uiState.confirmOrderState,
@@ -219,30 +234,30 @@ fun ConfirmOrderScreen(
                         location = uiState.locationState.locationName,
                         locationImage = uiState.locationImage,
                         isSavePhoneNumberSelected = uiState.isSavePhoneNumberSelected,
+                        isSaveAddressSelected = uiState.isSaveAddressSelected,
                         bottonStateChange = { confirmOrderScreenViewModel.buttonStateChange() },
                         openMaps = {
                             confirmOrderScreenViewModel.fetchCurrentLocation()
-                            confirmOrderScreenViewModel.navigateTo(ConfirmOrderScreens.Map(MapEntryPoint.UserData))
+                            confirmOrderScreenViewModel.navigateTo(
+                                ConfirmOrderScreens.Map(
+                                    MapEntryPoint.UserData
+                                )
+                            )
                         },
-                        onBottonStateChange = { confirmOrderScreenViewModel.onBottonStateChange() },
-                        onSavePhoneNumber = { confirmOrderScreenViewModel.savePhoneNumber() }
+                        onSaveAddress = { confirmOrderScreenViewModel.onBottonStateChange() },
+                        onSavePhoneNumber = { confirmOrderScreenViewModel.savePhoneNumber() },
+                        onSaveAddressRadioButton = { confirmOrderScreenViewModel.saveAddress() }
                     )
                 }
 
                 // --------------------------------------------\\ Page 2 //--------------------------------------------
                 is ConfirmOrderScreens.Checkout -> {
                     PageTowConfirmOrder(
-                        confirmOrderState = uiState.confirmOrderState,
+                        uiState = uiState,
                         snackBarHostState = snackbarHostState,
                         cart = cart,
                         totalPrice = totalprice,
-                        locationImage = uiState.locationImage,
-                        city = uiState.locationState.locationName,
-                        streetAndHome = uiState.streetAndHome,
                         phoneNumber = phoneNumber,
-                        payMethodState = uiState.payMethodState.selectedPaymentMethod,
-                        paymentState = uiState.paymentState,
-                        paymentApiState = uiState.paymentApiState,
                         onMethodSelected = { confirmOrderScreenViewModel.onPaymentMethodSelected(it) },
                         openMaps = {
                             confirmOrderScreenViewModel.fetchCurrentLocation()

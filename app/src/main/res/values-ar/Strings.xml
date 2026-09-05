@@ -148,4 +148,18 @@
     <string name="log_in_or_sign_up_to_save_more_shop_faster_and_get_personalized_perks">سجّل الدخول أو أنشئ حسابًا لتوفير المزيد، والتسوق بشكل أسرع، والحصول على مزايا شخصية</string>
     <string name="sizes">الأحجام</string>
     <string name="meal_snacks">مقبلات الوجبة</string>
+    <string name="addresses">العناوين</string>
+    <string name="your_addresses">عناوينك</string>
+    <string name="title">العنوان</string>
+    <string name="save_this_address">حفظ هذا العنوان</string>
+    <string name="new_address">عنوان جديد</string>
+    <string name="address_details">تفاصيل العنوان</string>
+    <string name="edite_address">تعديل العنوان</string>
+    <string name="pay_with">ادفع باستخدام</string>
+    <string name="payment_summary">ملخص الدفع</string>
+    <string name="subtotal">المجموع الفرعي</string>
+    <string name="delivery_fee">رسوم التوصيل</string>
+    <string name="service_fee">رسوم الخدمة</string>
+    <string name="total_amount">المبلغ الإجمالي</string>
+    <string name="edit_address">تعديل العنوان</string>
 </resources>

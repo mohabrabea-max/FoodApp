@@ -13,9 +13,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.R
 
 @Composable
 fun PaymentSummaryConfirmOrderScreen(totalprice: Double){
@@ -23,23 +25,25 @@ fun PaymentSummaryConfirmOrderScreen(totalprice: Double){
     val service = 8.00
     Column(
         horizontalAlignment = Alignment.Start,
-        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(20.dp)
+        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).padding(20.dp)
     ){
         Text(
-            text = "Payment summary",
+            text = stringResource(R.string.payment_summary),
             fontSize = 20.sp,
             color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Bold
         )
+
         Spacer(modifier = Modifier.height(20.dp))
+
         Row(
             modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
             Text(
-                text = "Subtotal",
+                text = stringResource(R.string.subtotal),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodySmall
@@ -51,13 +55,14 @@ fun PaymentSummaryConfirmOrderScreen(totalprice: Double){
                 style = MaterialTheme.typography.bodySmall,
             )
         }
+
         Row(
             modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
             Text(
-                text = "Delivery fee",
+                text = stringResource(R.string.delivery_fee),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodySmall
@@ -69,13 +74,14 @@ fun PaymentSummaryConfirmOrderScreen(totalprice: Double){
                 style = MaterialTheme.typography.bodySmall
             )
         }
+
         Row(
             modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
             Text(
-                text = "Service fee",
+                text = stringResource(R.string.service_fee),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodySmall
@@ -87,13 +93,14 @@ fun PaymentSummaryConfirmOrderScreen(totalprice: Double){
                 style = MaterialTheme.typography.bodySmall
             )
         }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
             Text(
-                text = "Total amount",
+                text = stringResource(R.string.total_amount),
                 fontSize = 17.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.labelLarge

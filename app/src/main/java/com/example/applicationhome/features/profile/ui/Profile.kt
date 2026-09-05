@@ -239,12 +239,12 @@ fun BottomBarForProfileScreen(
         contentAlignment = Alignment.Center
     ){
         MyButton(
-            loading,
-            buttonColor,
-            MaterialTheme.colorScheme.surface,
-            40.dp,
-            stringResource(R.string.save_edites)
-        ) {
+            loading = loading,
+            backgroundcolor = buttonColor,
+            fontcolor = Color.White,
+            horizontalPadding = 40.dp,
+            title = stringResource(R.string.save_edites)
+        ){
             if (isDataEdited) {
                 action()
             }

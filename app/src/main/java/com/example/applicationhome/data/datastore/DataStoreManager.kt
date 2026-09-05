@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.applicationhome.data.data.model.ThemeMode
+import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.ADDRESSES
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.CATEGORIES_LAST_SYNC
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.IS_FIRST_OPEN
 import com.example.applicationhome.data.datastore.DataStoreManager.DataStoreKeys.MEALS_LAST_SYNC
@@ -40,6 +41,7 @@ class DataStoreManager @Inject constructor(
         val CATEGORIES_LAST_SYNC = longPreferencesKey("categories_last_sync")
         val OFFERS_LAST_SYNC = longPreferencesKey("offers_last_sync")
         val ORDERS_HISTORY_LAST_SYNC = longPreferencesKey("orders_history_last_sync")
+        val ADDRESSES = longPreferencesKey("addresses")
         val IS_FIRST_OPEN = booleanPreferencesKey("is_first_open")
         val THEME_MODE = stringPreferencesKey("theme_mode")
     }
@@ -73,6 +75,11 @@ class DataStoreManager @Inject constructor(
     val ordersHistoryLastSyncTimeFlow : Flow<Long?> = getSyncTime(ORDERS_HISTORY_LAST_SYNC)
     suspend fun updateOrdersHistorySyncTime(timestamp: Long){
         saveLastSyncTime(ORDERS_HISTORY_LAST_SYNC, timestamp)
+    }
+
+    val addressesLastSyncTimeFlow : Flow<Long?> = getSyncTime(ADDRESSES)
+    suspend fun updateAddressesSyncTime(timestamp: Long){
+        saveLastSyncTime(ADDRESSES, timestamp)
     }
 
     val isFirstTimeToOpenApp : Flow<Boolean?> = getBoolean(IS_FIRST_OPEN)

@@ -316,3 +316,25 @@ data class OrdersDatabaseClass(
     val orderHistory : List<OrderHistoryClass> = emptyList(),
     val updatedAt : Long = 0L
 )
+
+
+
+@Entity(
+    tableName = "addresses",
+    primaryKeys = ["addressId", "userId"]
+)
+data class AddressesEntity(
+    val addressId : Long = 0L,
+    val userId : String = "",
+    val title : String = "",
+    val house : String = "",
+    val street : String = "",
+    val phoneNumber : String = "",
+    val additionalDirectionsState : String = "",
+    val addressLabelState : String = "",
+    val latLocation : String = "",
+    val lngLocation : String = "",
+    val locationName : String = "",
+    val locationFullName : String = "",
+    val lastUse : Long = 0L
+)

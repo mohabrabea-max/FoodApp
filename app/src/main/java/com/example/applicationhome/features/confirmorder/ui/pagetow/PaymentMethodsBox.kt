@@ -22,9 +22,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.R
 import com.example.applicationhome.data.data.model.PaymentMethod
 
 @Composable
@@ -39,7 +41,7 @@ fun PaymentMethodsBox(
         horizontalAlignment = Alignment.Start
     ){
         Text(
-            text = "Pay with",
+            text = stringResource(R.string.pay_with),
             color = MaterialTheme.colorScheme.onSurface,
             fontSize = 20.sp,
             style = MaterialTheme.typography.labelLarge,
@@ -52,14 +54,14 @@ fun PaymentMethodsBox(
                 .fillMaxWidth()
                 .clip(shape = RoundedCornerShape(15.dp))
                 .border(width = 1.dp, color = Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(15.dp))
-                .padding(horizontal = 10.dp)
+
         ){
             PaymentMethod.entries.forEach { method ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onMethodSelected(method) }
-                        .padding(vertical = 20.dp, horizontal = 10.dp),
+                        .padding(vertical = 20.dp, horizontal = 20.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ){

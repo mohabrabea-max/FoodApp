@@ -13,12 +13,14 @@ data class ConfirmOrderUiState(
     val payMethodState : CheckoutUiState = CheckoutUiState(),
     val paymentState : PaymentState = PaymentState.Idle,
     val paymentApiState : PaymentApiState = PaymentApiState.Idle,
-    val isSavePhoneNumberSelected : Boolean = true,
-    val  bottonState : Boolean = false,
+    val isSavePhoneNumberSelected : Boolean = false,
+    val isSaveAddressSelected : Boolean = false,
+    val bottonState : Boolean = false,
     val isButtonClicked : Boolean = false
 )
 
 data class CheckoutFormState(
+    val addressTitle : TextFieldState = TextFieldState(),
     val houseState : TextFieldState = TextFieldState(),
     val streetState : TextFieldState = TextFieldState(),
     val phoneNumberState : TextFieldState = TextFieldState(),
@@ -27,9 +29,11 @@ data class CheckoutFormState(
 )
 
 enum class ConfirmOrderScreenTextFieldEnum {
+    TITLE,
     HOUSE,
     STREET,
     PHONE,
+    PHONE_WITHOUT_BUTTON,
     ADDITIONAL,
     ADDRESS
 }
@@ -63,8 +67,10 @@ data class OrderItemsClass(
 data class UserInformationInOrderClass(
     val name : String = "",
     val phonenumber : String = "",
-    val address : String = "",
-    val location : String = "",
+    val additionalDirectionsState : String = "",
+    val addressLabelState : String = "",
+    val latLocation : String = "",
+    val lngLocation : String = "",
     val locationAddress : String = ""
 )
 
@@ -108,13 +114,57 @@ sealed interface MapEntryPoint {
 }
 
 sealed class ConfirmOrderScreens(val index : Int) {
+    data object SelectAddress : ConfirmOrderScreens(0)
     data class Map(val entryPoint : MapEntryPoint = MapEntryPoint.Initial) : ConfirmOrderScreens(
         when(entryPoint){
-            MapEntryPoint.Initial -> { 0 }
-            else -> { 4 }
+            MapEntryPoint.Initial -> { 1 }
+            else -> { 5 }
         }
     )
-    data object UserData : ConfirmOrderScreens(1)
-    data object Checkout : ConfirmOrderScreens(2)
-    data object PaymentGateway : ConfirmOrderScreens(3)
+    data object UserData : ConfirmOrderScreens(2)
+    data object Checkout : ConfirmOrderScreens(3)
+    data object PaymentGateway : ConfirmOrderScreens(4)
 }
+
+
+data class Address(
+    val title : String = "",
+    val house : String = "",
+    val street : String = "",
+    val phoneNumber : String = "",
+    val additionalDirectionsState : String = "",
+    val addressLabelState : String = "",
+    val latLocation : String = "",
+    val lngLocation : String = "",
+    val locationName : String = "",
+    val locationFullName : String = "",
+    val lastUse : Long = 0L
+)
+
+sealed interface EditAddressModeState {
+    data object Edit : EditAddressModeState
+    data object ReadOnly : EditAddressModeState
+}
+
+sealed class LocationsScreens(val index : Int){
+    data object Locations : LocationsScreens(0)
+    data class ViewAddressInformation(
+        val state : EditAddressModeState = EditAddressModeState.ReadOnly
+    ) : LocationsScreens(2)
+    data class Map(val entryPoint : MapEntryPoint = MapEntryPoint.Initial) : LocationsScreens(
+        when(entryPoint){
+            MapEntryPoint.Initial -> { 1 }
+            else -> { 3 }
+        }
+    )
+}
+
+data class AddressesUiState(
+    val streetAndHome : Pair<String, String> = Pair("", ""),
+    val confirmOrderError : ProfileEditResult? = null,
+    val locationState : MapUiState = MapUiState(),
+    val locationImage : String = "",
+    val confirmOrderState : ActionsStates = ActionsStates.Idle,
+    val bottonState : Boolean = false,
+    val isButtonClicked : Boolean = false
+)

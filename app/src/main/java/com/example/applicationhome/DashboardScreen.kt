@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -211,11 +212,12 @@ fun DashboardScreen(
                     }
                 }
                 Options(
-                    navigationController,
-                    dashboardNavController,
-                    drawerState,
-                    coroutineScope,
-                    dashboardScreenViewModel
+                    navigationController = navigationController,
+                    dashboardNavController = dashboardNavController,
+                    drawerState = drawerState,
+                    coroutineScope = coroutineScope,
+                    dashboardScreenViewModel = dashboardScreenViewModel,
+                    isLogin = isLogin
                 )
             }
         }
@@ -296,7 +298,13 @@ fun DashboardScreen(
                                 leadingIcon = { Icon(Icons.Default.Favorite, contentDescription = null) },
                                 onClick = {
                                     isMenuExpanded = false
-                                    dashboardNavController.navigate(Screens.Favorite.screen)
+                                    dashboardNavController.navigate(Screens.Favorite.screen){
+                                        popUpTo(dashboardNavController.graph.findStartDestination().id){
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
                                 }
                             )
 

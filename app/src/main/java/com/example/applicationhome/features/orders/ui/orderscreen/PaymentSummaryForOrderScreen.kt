@@ -13,9 +13,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.R
 import com.example.applicationhome.data.data.model.OrderUiClass
 
 @Composable
@@ -25,7 +27,7 @@ fun PaymentSummaryForOrderScreen(order: OrderUiClass){
         modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).padding(20.dp)
     ){
         Text(
-            text = "Payment summary",
+            text = stringResource(R.string.payment_summary),
             fontSize = 20.sp,
             color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.labelLarge,
@@ -38,7 +40,7 @@ fun PaymentSummaryForOrderScreen(order: OrderUiClass){
             verticalAlignment = Alignment.CenterVertically
         ){
             Text(
-                text = "Subtotal",
+                text = stringResource(R.string.subtotal),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodySmall
@@ -56,7 +58,7 @@ fun PaymentSummaryForOrderScreen(order: OrderUiClass){
             verticalAlignment = Alignment.CenterVertically
         ){
             Text(
-                text = "Delivery fee",
+                text = stringResource(R.string.delivery_fee),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodySmall
@@ -74,7 +76,7 @@ fun PaymentSummaryForOrderScreen(order: OrderUiClass){
             verticalAlignment = Alignment.CenterVertically
         ){
             Text(
-                text = "Service fee",
+                text = stringResource(R.string.service_fee),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodySmall
@@ -92,7 +94,7 @@ fun PaymentSummaryForOrderScreen(order: OrderUiClass){
             verticalAlignment = Alignment.CenterVertically
         ){
             Text(
-                text = "Total amount",
+                text = stringResource(R.string.total_amount),
                 fontSize = 17.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.labelLarge

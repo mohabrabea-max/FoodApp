@@ -42,14 +42,24 @@ import com.example.applicationhome.data.data.model.TextFieldClassFromConfirmOrde
 
 @Composable
 fun ConfirmOrderScreenTextField(
+    isEditEnabled : Boolean = true,
     item : TextFieldClassFromConfirmOrderScreen,
+    isLastTextField : Boolean,
     isButtonClicked : Boolean,
     errorOutput : ProfileEditResult,
     isSavePhoneNumberSelected : Boolean,
+    isSaveAddressSelected : Boolean,
     bottonStateChange : () -> Unit,
-    onSavePhoneNumber : () -> Unit
+    onSavePhoneNumber : () -> Unit,
+    onSaveAddressRadioButton : () -> Unit
 ){
-    val errors = listOf(ConfirmOrderScreenTextFieldEnum.PHONE,  ConfirmOrderScreenTextFieldEnum.HOUSE, ConfirmOrderScreenTextFieldEnum.STREET)
+    val errors = listOf(
+        ConfirmOrderScreenTextFieldEnum.PHONE,
+        ConfirmOrderScreenTextFieldEnum.PHONE_WITHOUT_BUTTON,
+        ConfirmOrderScreenTextFieldEnum.HOUSE,
+        ConfirmOrderScreenTextFieldEnum.STREET,
+        ConfirmOrderScreenTextFieldEnum.TITLE
+    )
     val focusRequester = remember { FocusRequester() }
 
     val error =
@@ -71,6 +81,8 @@ fun ConfirmOrderScreenTextField(
         horizontalAlignment = Alignment.Start
     ){
         OutlinedTextField(
+            enabled = isEditEnabled,
+
             value = item.textField.text.toString(),
 
             onValueChange = { newText ->
@@ -84,7 +96,7 @@ fun ConfirmOrderScreenTextField(
                 focusedBorderColor = Color.DarkOrange,
                 unfocusedBorderColor = Color.LightGray,
                 errorBorderColor = Color.Red,
-                disabledBorderColor = MaterialTheme.colorScheme.background
+                disabledBorderColor = MaterialTheme.colorScheme.onTertiary
             ),
 
             modifier = Modifier
@@ -100,7 +112,7 @@ fun ConfirmOrderScreenTextField(
                 )
             },
 
-            leadingIcon = if(item.type == ConfirmOrderScreenTextFieldEnum.PHONE) {
+            leadingIcon = if(item.type == ConfirmOrderScreenTextFieldEnum.PHONE || item.type == ConfirmOrderScreenTextFieldEnum.PHONE_WITHOUT_BUTTON) {
                 {
                     Row(verticalAlignment = Alignment.CenterVertically){
                         Spacer(modifier = Modifier.width(15.dp))
@@ -133,7 +145,10 @@ fun ConfirmOrderScreenTextField(
             },
 
             keyboardOptions = KeyboardOptions(
-                keyboardType = if (item.type == ConfirmOrderScreenTextFieldEnum.PHONE) KeyboardType.Phone else KeyboardType.Text,
+                keyboardType = if (
+                        item.type == ConfirmOrderScreenTextFieldEnum.PHONE ||
+                        item.type == ConfirmOrderScreenTextFieldEnum.PHONE_WITHOUT_BUTTON
+                    ) KeyboardType.Phone else KeyboardType.Text,
                 imeAction = ImeAction.Done
             ),
 
@@ -183,6 +198,27 @@ fun ConfirmOrderScreenTextField(
                 fontSize = 12.sp,
                 modifier = Modifier.padding(start = 5.dp, end = 5.dp, top = 10.dp)
             )
+        }
+
+        if(isLastTextField){
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 5.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ){
+                SquareRadioButton(selected = isSaveAddressSelected){
+                    onSaveAddressRadioButton()
+                }
+
+                Text(
+                    text = stringResource(R.string.save_this_address),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(horizontal = 7.dp)
+                )
+            }
         }
     }
 }

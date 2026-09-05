@@ -39,6 +39,7 @@ import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.DeepMatteBlack
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 import com.example.applicationhome.data.data.model.ActionsStates
+import com.example.applicationhome.data.data.model.ConfirmOrderUiState
 import com.example.applicationhome.data.data.model.PaymentApiState
 import com.example.applicationhome.data.data.model.PaymentMethod
 import com.example.applicationhome.data.data.model.PaymentState
@@ -47,23 +48,17 @@ import com.example.applicationhome.data.local.entity.CartItemsClass
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun PageTowConfirmOrder(
-    confirmOrderState : ActionsStates,
+    uiState : ConfirmOrderUiState,
     snackBarHostState : SnackbarHostState,
     cart : List<CartItemsClass?>,
     totalPrice : Double,
-    locationImage : String,
-    city : String,
-    streetAndHome : Pair<String, String>,
     phoneNumber : String,
-    payMethodState : PaymentMethod = PaymentMethod.CARD,
-    paymentState : PaymentState,
-    paymentApiState : PaymentApiState,
     onMethodSelected : (PaymentMethod) -> Unit,
     openMaps : () -> Unit,
     startPayment : () -> Unit,
     uploadOrder : (Boolean) -> Unit
 ){
-    val paymentButtonState = (payMethodState == PaymentMethod.CASH || paymentState == PaymentState.Success)
+    val paymentButtonState = (uiState.payMethodState.selectedPaymentMethod == PaymentMethod.CASH || uiState.paymentState == PaymentState.Success)
 
     val payment_failed_please_try_again = stringResource(R.string.payment_failed_please_try_again)
 
@@ -112,7 +107,7 @@ fun PageTowConfirmOrder(
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
                 MyButton(
-                    confirmOrderState == ActionsStates.Loading,
+                    uiState.confirmOrderState == ActionsStates.Loading,
                     if(paymentButtonState) Color.BrandBlue else Color.VeryLightGray,
                     if(paymentButtonState) Color.White else Color.LightGray,
                     40.dp,
@@ -132,9 +127,9 @@ fun PageTowConfirmOrder(
             // --------------------------------------------\\ Location Box //--------------------------------------------
             item{
                 LocationBoxForPageTow(
-                    locationImage = locationImage,
-                    city = city,
-                    streetAndHome = streetAndHome,
+                    locationImage = uiState.locationImage,
+                    city = uiState.locationState.locationName,
+                    streetAndHome = uiState.streetAndHome,
                     phoneNumber = phoneNumber
                 ){
                     openMaps()
@@ -150,27 +145,27 @@ fun PageTowConfirmOrder(
             // --------------------------------------------\\ Pay Methods //--------------------------------------------
             item {
                 PaymentMethodsBox(
-                    payMethodState
+                    uiState.payMethodState.selectedPaymentMethod
                 ){
                     onMethodSelected(it)
                 }
             }
 
-            if(payMethodState != PaymentMethod.CASH) item{
+            if(uiState.payMethodState.selectedPaymentMethod != PaymentMethod.CASH) item{
                 Column(
                     modifier = Modifier.pointerInput(Unit) { detectTapGestures { } },
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
                     MyButton(
-                        loading = paymentApiState == PaymentApiState.Loading,
-                        backgroundcolor = if(paymentState == PaymentState.Success) Color.Green else Color.DarkOrange,
+                        loading = uiState.paymentApiState == PaymentApiState.Loading,
+                        backgroundcolor = if(uiState.paymentState == PaymentState.Success) Color.Green else Color.DarkOrange,
                         fontcolor = Color.White,
                         horizontalPadding = 50.dp,
-                        title = if(paymentState == PaymentState.Success) stringResource(R.string.payment_success) else stringResource(
+                        title = if(uiState.paymentState == PaymentState.Success) stringResource(R.string.payment_success) else stringResource(
                             R.string.pay_now
                         )
                     ){
-                        if(paymentState != PaymentState.Success){
+                        if(uiState.paymentState != PaymentState.Success){
                             startPayment()
                         }
                     }
@@ -187,8 +182,8 @@ fun PageTowConfirmOrder(
         }
     }
 
-    LaunchedEffect(paymentState){
-        if(paymentState is PaymentState.Failed) {
+    LaunchedEffect(uiState.paymentState){
+        if(uiState.paymentState is PaymentState.Failed) {
             snackBarHostState.bottomSnackBar(payment_failed_please_try_again)
         }
     }

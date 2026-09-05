@@ -8,6 +8,7 @@ import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.data.data.model.ChickEmailStates
 import com.example.applicationhome.data.data.model.LoginStates
 import com.example.applicationhome.data.data.model.UserClassFireBase
+import com.example.applicationhome.data.datastore.DataStoreManager
 import com.example.applicationhome.data.local.dao.FavoriteDao
 import com.example.applicationhome.data.local.dao.UsersDao
 import com.example.applicationhome.data.local.entity.UserClass
@@ -30,6 +31,7 @@ class UserRepositoryImpl @Inject constructor(
     private val orderRepository : OrderRepository,
     private val userDao : UsersDao,
     private val favoriteDao: FavoriteDao,
+    private val dataStoreManager : DataStoreManager,
     private val api : FoodAppAPIs,
     @ApplicationScope externalScope : CoroutineScope
 ): UserRepository {
@@ -138,7 +140,8 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun logOut(){
         userDao.deleteUserFromDatabase()
-        orderRepository.resetOrdersHistorySyncTime()
+        dataStoreManager.updateOrdersHistorySyncTime(0L)
+        dataStoreManager.updateAddressesSyncTime(0L)
         _isLogin.value = false
     }
 

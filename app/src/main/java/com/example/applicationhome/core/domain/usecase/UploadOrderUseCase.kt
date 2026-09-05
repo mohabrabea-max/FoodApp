@@ -1,5 +1,6 @@
 package com.example.applicationhome.core.domain.usecase
 
+import com.example.applicationhome.core.domain.repository.AddressesRepository
 import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.OrderRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
@@ -14,14 +15,24 @@ class UploadOrderUseCase @Inject constructor(
     private val userRepository : UserRepository,
     private val cartRepository : CartRepository,
     private val orderRepository: OrderRepository,
+    private val addressesRepository: AddressesRepository,
+    private val addAddressUseCase : AddAddressUseCase,
     private val cartUseCase : CartUseCase
 ){
     operator suspend fun invoke(
+        addressId : Long? = null,
+        title : String,
+        house : String,
+        street : String,
         phoneNumber : String,
-        address : String,
-        location : String,
+        additionalDirectionsState : String,
+        addressLabelState : String,
+        latLocation : String,
+        lngLocation : String,
+        locationName : String,
         locationFullName : String,
-        isSavePhoneNumberSelected : Boolean
+        isSavePhoneNumberSelected : Boolean,
+        isSaveAddressSelected : Boolean
     ): Result<Unit>{
         val currentUser = userRepository.userData.value
         val userId = currentUser.id
@@ -66,8 +77,10 @@ class UploadOrderUseCase @Inject constructor(
             userInformation = UserInformationInOrderClass(
                 name = "$firstname $lastname",
                 phonenumber = phoneNumber,
-                address = address,
-                location = location,
+                additionalDirectionsState = additionalDirectionsState,
+                addressLabelState = addressLabelState,
+                latLocation = latLocation,
+                lngLocation = lngLocation,
                 locationAddress = locationFullName
             ),
             orderItems = orderItems,
@@ -80,11 +93,34 @@ class UploadOrderUseCase @Inject constructor(
         if(isSavePhoneNumberSelected){
             userRepository.updatePhoneNumber(userId, phoneNumber)
         }
+        if(isSaveAddressSelected){
+            addAddressUseCase(
+                userId = userId,
+                title = title,
+                house = house,
+                street = street,
+                phoneNumber = phoneNumber,
+                additionalDirectionsState = additionalDirectionsState,
+                addressLabelState = addressLabelState,
+                latLocation = latLocation,
+                lngLocation = lngLocation,
+                locationName = locationName,
+                locationFullName = locationFullName
+            )
+        }
 
         val result = orderRepository.uploadOrderRequest(order, userId)
 
         return if(result.isSuccess){
             cartUseCase.clearAllCart(userId)
+
+            if(addressId != null){
+                addressesRepository.updateAddressesLastUse(
+                    userId = userId,
+                    addressId = addressId
+                )
+            }
+
             Result.success(Unit)
         }else{
             Result.failure(result.exceptionOrNull() ?: Exception("Failed to upload order"))

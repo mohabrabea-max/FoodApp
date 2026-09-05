@@ -104,8 +104,12 @@ fun SignUpScreen(
         when(signupPages){
             SignUpScreens.BasicDataScreen -> {
                 viewModel.lastPage{
-                    navigationController.navigate(Screens.LoginScreen.screen) {
-                        popUpTo(0) { inclusive = true }
+                    if(navigationController.previousBackStackEntry != null) {
+                        navigationController.popBackStack()
+                    }else{
+                        navigationController.navigate(Screens.DashboardScreen.screen) {
+                            popUpTo(0) { inclusive = true }
+                        }
                     }
                 }
             }
@@ -158,8 +162,12 @@ fun SignUpScreen(
                             when(signupPages){
                                 SignUpScreens.BasicDataScreen -> {
                                     viewModel.lastPage{
-                                        navigationController.navigate(Screens.LoginScreen.screen) {
-                                            popUpTo(0) { inclusive = true }
+                                        if(navigationController.previousBackStackEntry != null) {
+                                            navigationController.popBackStack()
+                                        }else{
+                                            navigationController.navigate(Screens.DashboardScreen.screen) {
+                                                popUpTo(0) { inclusive = true }
+                                            }
                                         }
                                     }
                                 }

@@ -8,6 +8,7 @@ import com.example.applicationhome.data.local.dao.FavoriteDao
 import com.example.applicationhome.data.local.dao.FoodAndRestaurantsDao
 import com.example.applicationhome.data.local.dao.OrdersDao
 import com.example.applicationhome.data.local.dao.UsersDao
+import com.example.applicationhome.data.local.entity.AddressesEntity
 import com.example.applicationhome.data.local.entity.CartClass
 import com.example.applicationhome.data.local.entity.CartItemsClass
 import com.example.applicationhome.data.local.entity.CategoriesEntity
@@ -40,9 +41,10 @@ import com.example.applicationhome.data.local.entity.UserClass
         FavoriteRestaurantEntity::class,
         CategoriesEntity::class,
         OffersEntity::class,
-        RestaurantCategoryCrossRef::class
+        RestaurantCategoryCrossRef::class,
+        AddressesEntity::class
     ],
-    version = 64,
+    version = 65,
     exportSchema = false
 )
 

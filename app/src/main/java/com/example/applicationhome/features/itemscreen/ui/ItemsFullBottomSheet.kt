@@ -240,15 +240,16 @@ fun ItemsFullBottomSheet(
                     val price = bottomSheetItem.sizes[size] ?: 0.0
                     val totalPrice = newCount * price
                     BottomBarForItemScreen(
-                        price,
-                        newCount,
-                        { actions.minusnewCount() },
-                        { actions.plusnewCount() },
-                        {
+                        price = price,
+                        newCount = newCount,
+                        minusnewCount = { actions.minusnewCount() },
+                        plusnewCount = { actions.plusnewCount() },
+                        clickable = {
                             val category = when(bottomSheetItem){
                                 is BottomSheetItem.MealItem -> {
                                     bottomSheetItem.meal?.meal?.category ?: ""
                                 }
+
                                 is BottomSheetItem.SnackItem -> {
                                     "Snack"
                                 }

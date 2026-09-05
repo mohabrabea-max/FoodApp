@@ -1,5 +1,6 @@
 package com.example.applicationhome.data.remote
 
+import com.example.applicationhome.data.data.model.Address
 import com.example.applicationhome.data.data.model.Categories
 import com.example.applicationhome.data.data.model.FavoriteClass
 import com.example.applicationhome.data.data.model.FoodItem
@@ -122,6 +123,35 @@ interface FoodAppAPIs{
     suspend fun getLastOrders(
         @Path("userId") userId : String,
         @Query("orderBy") orderBy : String = "\"updatedAt\"",
-        @Query("startAt") lastSyncTimestamp : Long,
+        @Query("startAt") lastSyncTimestamp : Long
     ): Response<Map<Long, OrdersClass>>
+
+
+
+    @GET("addresses/{userId}.json")
+    suspend fun getAddresses(
+        @Path("userId") userId: String,
+        @Query("orderBy") orderBy : String = "\"lastUse\"",
+        @Query("startAt") lastSyncTimestamp : Long
+    ): Response<Map<Long, Address>>
+
+    @PUT("addresses/{userId}/{addressId}.json")
+    suspend fun putAddresses(
+        @Path("userId") userId: String,
+        @Path("addressId") addressId : Long,
+        @Body address : Address
+    ): Response<Unit>
+
+    @PUT("addresses/{userId}/{addressId}/lastUse.json")
+    suspend fun updateAddressesLastUse(
+        @Path("userId") userId: String,
+        @Path("addressId") addressId : Long,
+        @Body lastUse : Long
+    ): Response<Unit>
+
+    @DELETE("addresses/{userId}/{addressId}.json")
+    suspend fun deleteAddress(
+        @Path("userId") userId: String,
+        @Path("addressId") addressId : Long
+    ): Response<Unit>
 }

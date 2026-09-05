@@ -1,5 +1,6 @@
 package com.example.applicationhome.core.domain.module
 
+import com.example.applicationhome.core.domain.Implementations.AddressesRepositoryImpl
 import com.example.applicationhome.core.domain.Implementations.CartRepositoryImpl
 import com.example.applicationhome.core.domain.Implementations.FavoriteRepositoryImpl
 import com.example.applicationhome.core.domain.Implementations.LocationRepositoryImpl
@@ -12,6 +13,7 @@ import com.example.applicationhome.core.domain.Implementations.SupabaseUserRemot
 import com.example.applicationhome.core.domain.Implementations.SyncAllDataRepositoryImpl
 import com.example.applicationhome.core.domain.Implementations.UserRepositoryImpl
 import com.example.applicationhome.core.domain.Implementations.WelcomeScreenRepositoryImpl
+import com.example.applicationhome.core.domain.repository.AddressesRepository
 import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.LocationRepository
@@ -104,4 +106,10 @@ abstract class RepositoryModule {
     abstract fun bindWelcomeScreenRepository(
         welcomeScreenRepositoryImpl : WelcomeScreenRepositoryImpl
     ): WelcomeScreenRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAddressesRepository(
+        addressesRepositoryImpl : AddressesRepositoryImpl
+    ): AddressesRepository
 }

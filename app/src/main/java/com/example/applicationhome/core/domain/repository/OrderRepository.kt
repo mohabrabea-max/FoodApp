@@ -20,5 +20,4 @@ interface OrderRepository {
     suspend fun getRestaurantImage(resId : Int): String
     suspend fun getMealsImages(ids : List<Int>): Map<Int, String?>
     suspend fun getSnacksImages(ids : List<Int>): Map<Int, String?>
-    suspend fun resetOrdersHistorySyncTime()
 }

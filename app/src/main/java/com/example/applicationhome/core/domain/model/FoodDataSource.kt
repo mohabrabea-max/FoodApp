@@ -4,9 +4,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
@@ -40,10 +40,10 @@ object ProfileData {
             Screens.Profile.screen
         ),
         ProfileOptions(
-            R.string.wishlist,
-            R.string.saved_items,
-            Icons.Default.FavoriteBorder,
-            Screens.Favorite.screen
+            R.string.addresses,
+            R.string.your_addresses,
+            Icons.Default.LocationOn,
+            Screens.Locations.screen
         )
     )
 
