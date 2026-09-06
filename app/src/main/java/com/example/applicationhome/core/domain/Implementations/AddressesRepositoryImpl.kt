@@ -54,7 +54,7 @@ class AddressesRepositoryImpl @Inject constructor(
         throw HttpException(this)
     }
 
-    override suspend fun addAddress(userId : String, address : Address): Result<Unit> {
+    override suspend fun addAddress(userId : String, addressId : Long, address : Address): Result<Unit> {
         return runCatching {
             retryLocally{
                 val newUpdateTime = System.currentTimeMillis()
@@ -62,34 +62,13 @@ class AddressesRepositoryImpl @Inject constructor(
 
                 api.putAddresses(
                     userId = userId,
-                    addressId = newUpdateTime,
+                    addressId = if(addressId == 0L) newUpdateTime else addressId,
                     address = finalAddress
                 ).getOrThrow()
 
                 val daoAddress = finalAddress.addressToAddressesEntity(
                     userId = userId,
                     addressId = newUpdateTime
-                )
-                usersDao.addNewAddresses(listOf(daoAddress))
-            }
-        }
-    }
-
-    override suspend fun updateAddresses(userId : String, addressId : Long, address : Address): Result<Unit> {
-        return runCatching {
-            retryLocally {
-                val newUpdateTime = System.currentTimeMillis()
-                val finalAddress = address.copy(lastUse = newUpdateTime)
-
-                api.putAddresses(
-                    userId = userId,
-                    addressId = addressId,
-                    address = address
-                ).getOrThrow()
-
-                val daoAddress = finalAddress.addressToAddressesEntity(
-                    userId = userId,
-                    addressId = addressId
                 )
                 usersDao.addNewAddresses(listOf(daoAddress))
             }

@@ -162,4 +162,9 @@
     <string name="service_fee">رسوم الخدمة</string>
     <string name="total_amount">المبلغ الإجمالي</string>
     <string name="edit_address">تعديل العنوان</string>
+    <string name="unknown_address">عنوان غير معروف</string>
+    <string name="no_saved_addresses">لا توجد اي عناوين محفوظة</string>
+    <string name="restaurant_is_empty">المطعم فارغ</string>
+    <string name="are_you_sure_you_want_to_delete_this_address">هل أنت متأكد من رغبتك في حذف هذا العنوان؟</string>
+    <string name="select_this_address">اختيار هذا العنوان</string>
 </resources>

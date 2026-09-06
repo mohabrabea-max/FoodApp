@@ -18,10 +18,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
+import com.example.applicationhome.core.ui.components.screens.EmptyScreen
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.data.local.entity.AddressesEntity
 
@@ -32,6 +34,7 @@ fun SelectAddress(
     paddingValues: PaddingValues,
     onNewAddressClickable : () -> Unit,
     onAddressClickable : (AddressesEntity) -> Unit,
+    onOpenDetailsDialog : (AddressesEntity) -> Unit = {},
     onDeleteAddress : ((userId: String, addressId: Long) -> Unit)? = null
 ){
     Scaffold(
@@ -59,25 +62,33 @@ fun SelectAddress(
             }
         }
     ){
-        LazyColumn(
-            modifier = Modifier
-                .padding(horizontal = 15.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ){
-            item{ Spacer(modifier = Modifier.height(15.dp)) }
+        if(addresses.isNotEmpty()){
+            LazyColumn(
+                modifier = Modifier
+                    .padding(horizontal = 15.dp)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ){
+                item{ Spacer(modifier = Modifier.height(15.dp)) }
 
-            items(addresses) { item ->
-                AddressBox(
-                    address = item,
-                    onOpenAddressBox = { onAddressClickable(item) },
-                    onDeleteAddress = onDeleteAddress?.let { callback ->
-                        { callback(item.userId, item.addressId) }
-                    }
-                )
+                items(addresses) { item ->
+                    AddressBox(
+                        address = item,
+                        onOpenAddressBox = { onAddressClickable(item) },
+                        onOpenDetailsDialog = { onOpenDetailsDialog(item) },
+                        onDeleteAddress = onDeleteAddress?.let { callback ->
+                            { callback(item.userId, item.addressId) }
+                        }
+                    )
+                }
+
+                item{Spacer(modifier = Modifier.height(100.dp))}
             }
-
-            item{Spacer(modifier = Modifier.height(100.dp))}
+        }else{
+            EmptyScreen(
+                title = stringResource(R.string.no_saved_addresses),
+                image = painterResource(R.drawable.emptyscreenicon)
+            )
         }
     }
 }

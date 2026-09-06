@@ -2,6 +2,8 @@ package com.example.applicationhome.data.data.model
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.text.input.TextFieldState
+import com.example.applicationhome.R
+import com.example.applicationhome.data.local.entity.AddressesEntity
 
 
 data class ConfirmOrderUiState(
@@ -50,6 +52,13 @@ data class MapUiState(
     val locationName : String = "",
     val locationFullName : String = "",
     val isLoading : Boolean = false,
+)
+
+data class LocationDataClass(
+    val latitude : Double = 30.0444,
+    val longitude : Double = 31.2357,
+    val locationName : String = "",
+    val locationFullName : String = "",
 )
 
 
@@ -168,3 +177,12 @@ data class AddressesUiState(
     val bottonState : Boolean = false,
     val isButtonClicked : Boolean = false
 )
+
+sealed interface LocationsScreenDialogs {
+    data object None : LocationsScreenDialogs
+    data class Delete(
+        @StringRes val title : Int = R.string.disclaimer,
+        @StringRes val message : Int = R.string.are_you_sure_you_want_to_delete_this_address
+        ) : LocationsScreenDialogs
+    data class ShowDetailsDialog(val address : AddressesEntity) : LocationsScreenDialogs
+}

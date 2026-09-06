@@ -50,7 +50,7 @@ fun ConfirmOrderScreenTextField(
     isSavePhoneNumberSelected : Boolean,
     isSaveAddressSelected : Boolean,
     bottonStateChange : () -> Unit,
-    onSavePhoneNumber : () -> Unit,
+    onSavePhoneNumber : (() -> Unit)? = null,
     onSaveAddressRadioButton : () -> Unit
 ){
     val errors = listOf(
@@ -167,7 +167,7 @@ fun ConfirmOrderScreenTextField(
             shape = RoundedCornerShape(20.dp)
         )
 
-        if(item.type == ConfirmOrderScreenTextFieldEnum.PHONE){
+        if(item.type == ConfirmOrderScreenTextFieldEnum.PHONE && onSavePhoneNumber != null){
             Row(
                 modifier = Modifier
                     .padding(horizontal = 5.dp),

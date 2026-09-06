@@ -1,43 +1,71 @@
 package com.example.applicationhome.core.domain.Implementations
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Geocoder
+import android.location.Location
 import android.os.Build
 import com.example.applicationhome.BuildConfig
 import com.example.applicationhome.core.domain.repository.LocationRepository
+import com.example.applicationhome.data.data.model.LocationDataClass
+import com.example.applicationhome.data.local.source.LocationDataSource
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.coroutines.resume
 
 class LocationRepositoryImpl @Inject constructor(
+    private val locationDataSource : LocationDataSource,
     @ApplicationContext private val context: Context
 ): LocationRepository {
-    override fun getAddressFromLocation(
+    override suspend fun getAddressFromLocation(
         lat: Double,
-        lng: Double,
-        onAddressFound: (areaName: String, fullAddress: String) -> Unit
-    ){
+        lng: Double
+    ): Result<LocationDataClass> = withContext(Dispatchers.IO){
         val geocoder = Geocoder(context, Locale("en"))
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-            geocoder.getFromLocation(lat, lng, 1){ addresses ->
-                val address = addresses.firstOrNull()
-                val area = address?.subLocality ?: address?.locality ?: "Undefined area"
-                val full = address?.getAddressLine(0) ?: ""
-                onAddressFound(area, full)
-            }
-        }else{
-            // الإصدارات الأقدم من أندرويد
-            try {
+        return@withContext try {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                suspendCancellableCoroutine { continuation ->
+                    geocoder.getFromLocation(lat, lng, 1){ addresses ->
+                        val address = addresses.firstOrNull()
+                        val area = address?.subLocality ?: address?.locality ?: "Undefined area"
+                        val full = address?.getAddressLine(0) ?: ""
+
+                        if (continuation.isActive) continuation.resume(
+                            Result.success(
+                                LocationDataClass(
+                                    latitude = lat,
+                                    longitude = lng,
+                                    locationName = area,
+                                    locationFullName = full
+                                )
+                            )
+                        )
+                    }
+                }
+            }else{
+                // الإصدارات الأقدم من أندرويد
                 @Suppress("DEPRECATION")
                 val addresses = geocoder.getFromLocation(lat, lng, 1)
                 val address = addresses?.firstOrNull()
                 val area = address?.subLocality ?: address?.locality ?: "Undefined area"
                 val full = address?.getAddressLine(0) ?: ""
-                onAddressFound(area, full)
-            } catch (e: Exception) {
-                onAddressFound("تعذر جلب العنوان", "")
+
+                Result.success(
+                    LocationDataClass(
+                        latitude = lat,
+                        longitude = lng,
+                        locationName = area,
+                        locationFullName = full
+                    )
+                )
             }
+        } catch (e : Exception) {
+            Result.failure(e)
         }
     }
 
@@ -54,5 +82,19 @@ class LocationRepositoryImpl @Inject constructor(
                 "zoom=$zoom&" +
                 "marker=lonlat:$lon,$lat;color:%23ff0000;size:medium&" +
                 "apiKey=$apiKey"
+    }
+
+    @SuppressLint("MissingPermission")
+    override suspend fun fetchCurrentLocation(): Result<Location> {
+        return try {
+            val result = locationDataSource.fetchCurrentLocation()
+            if(result != null){
+                Result.success(result)
+            }else{
+                Result.failure(Exception("Unable to retrieve current location."))
+            }
+        } catch (e : Exception) {
+            Result.failure(e)
+        }
     }
 }

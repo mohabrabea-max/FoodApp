@@ -45,13 +45,16 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
+import com.example.applicationhome.core.ui.components.forCart.AlertDialogMessage
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.LoadingDialog
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.data.data.model.ActionsStates
 import com.example.applicationhome.data.data.model.EditAddressModeState
 import com.example.applicationhome.data.data.model.HomeUiState
+import com.example.applicationhome.data.data.model.LocationsScreenDialogs
 import com.example.applicationhome.data.data.model.LocationsScreens
 import com.example.applicationhome.data.data.model.MapEntryPoint
 import com.example.applicationhome.features.confirmorder.ui.mappage.StreetMapPage
@@ -76,7 +79,9 @@ fun Locations(
     val addresses by viewModel.addresses.collectAsStateWithLifecycle()
     val currentScreen by viewModel.currentScreen.collectAsStateWithLifecycle()
 
-    val textFieldConfirmOrderScreenList = viewModel.textFieldConfirmOrderScreenList
+    val checkoutFormState = viewModel.checkoutFormState
+    val textFieldConfirmOrderScreenList = rememberAddressFields(checkoutFormState)
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -200,14 +205,15 @@ fun Locations(
                                     viewModel.navigateTo(LocationsScreens.Map(MapEntryPoint.Initial))
                                 },
                                 onAddressClickable = { address ->
+                                    viewModel.closeAlertDialogMessage()
                                     viewModel.selectAddress(address)
                                     viewModel.navigateTo(LocationsScreens.ViewAddressInformation(EditAddressModeState.ReadOnly))
                                 },
+                                onOpenDetailsDialog = { address ->
+                                    viewModel.showDetailsDialog(address)
+                                },
                                 onDeleteAddress = { userId, addressId ->
-                                    viewModel.deleteAddress(
-                                        userId = userId,
-                                        orderId = addressId
-                                    )
+                                    viewModel.deleteDialog(userId, addressId)
                                 }
                             )
                         }
@@ -243,11 +249,10 @@ fun Locations(
                                             if(selectedAddress == null){
                                                 viewModel.onSaveAddress()
                                             }else{
-                                                viewModel.onEditAddress()
+                                                viewModel.onSaveAddress()
                                             }
                                             isEditEnabled = false
                                         },
-                                        onSavePhoneNumber = {  },
                                         onSaveAddressRadioButton = {  },
                                         onEditeMode = {
                                             isEditEnabled = true
@@ -294,6 +299,45 @@ fun Locations(
                     }
                 }
             }
+        }
+    }
+
+
+    // --------------------------------------------\\ Alert Dialog Messages //--------------------------------------------
+
+    val dialogs by viewModel.dialogs.collectAsStateWithLifecycle()
+
+    when(val state = dialogs){
+        LocationsScreenDialogs.None -> {}
+
+        is LocationsScreenDialogs.Delete -> {
+            AlertDialogMessage(
+                title = stringResource(state.title),
+                content = stringResource(state.message),
+                confirmButtonText = stringResource(R.string.yes_i_m_sure),
+                confirmButton = {
+                    viewModel.deleteAddress()
+                },
+                dismissButtonText = stringResource(R.string.cancel),
+                dismissButton = { viewModel.closeAlertDialogMessage() }
+            )
+        }
+
+        is LocationsScreenDialogs.ShowDetailsDialog -> {
+            AddressDetailsDialog(
+                title = state.address.title,
+                address = state.address,
+                textFieldConfirmOrderScreenList = textFieldConfirmOrderScreenList,
+                buttonTitle = stringResource(R.string.edit_address),
+                onEditeAddress = { address ->
+                    viewModel.selectAddress(address)
+                    viewModel.closeAlertDialogMessage()
+                    viewModel.navigateTo(LocationsScreens.ViewAddressInformation(EditAddressModeState.ReadOnly))
+                },
+                dismissButton = {
+                    viewModel.closeAlertDialogMessage()
+                }
+            )
         }
     }
 }

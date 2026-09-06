@@ -47,19 +47,24 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.data.data.model.ConfirmOrderScreens
 import com.example.applicationhome.data.data.model.ConfirmOrderUiState
+import com.example.applicationhome.data.data.model.LocationsScreenDialogs
 import com.example.applicationhome.data.data.model.MapEntryPoint
 import com.example.applicationhome.data.data.model.PaymentApiState
 import com.example.applicationhome.data.data.model.PaymentState
 import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.features.confirmorder.ui.mappage.StreetMapPage
 import com.example.applicationhome.features.confirmorder.ui.pageone.PageOneConfirmOrder
+import com.example.applicationhome.features.confirmorder.ui.pageone.rememberConfirmOrderAddressFields
+import com.example.applicationhome.features.confirmorder.ui.pageone.rememberTitleTextField
 import com.example.applicationhome.features.confirmorder.ui.pagetow.PageTowConfirmOrder
 import com.example.applicationhome.features.confirmorder.ui.pagetow.PaymobWebViewScreen
+import com.example.applicationhome.features.locations.ui.AddressDetailsDialog
 import com.example.applicationhome.features.locations.ui.SelectAddress
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -82,8 +87,9 @@ fun ConfirmOrderScreen(
 
     val cart by confirmOrderScreenViewModel.cartItems.collectAsStateWithLifecycle()
 
-    val textFieldConfirmOrderScreenList = confirmOrderScreenViewModel.textFieldConfirmOrderScreenList
-    val titleTextField = confirmOrderScreenViewModel.titleTextField
+    val checkoutFormState = confirmOrderScreenViewModel.checkoutFormState
+    val textFieldConfirmOrderScreenList = rememberConfirmOrderAddressFields(checkoutFormState)
+    val titleTextField = rememberTitleTextField(checkoutFormState)
 
     val totalprice by confirmOrderScreenViewModel.totalPrice.collectAsStateWithLifecycle()
 
@@ -182,7 +188,12 @@ fun ConfirmOrderScreen(
                             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                             confirmOrderScreenViewModel.newAddress()
                         },
-                        onAddressClickable = { confirmOrderScreenViewModel.onSelectAddress(it) }
+                        onOpenDetailsDialog = { address ->
+                            confirmOrderScreenViewModel.showDetailsDialog(address)
+                        },
+                        onAddressClickable = { address ->
+                            confirmOrderScreenViewModel.onSelectAddress(address)
+                        }
                     )
                 }
 
@@ -333,6 +344,32 @@ fun ConfirmOrderScreen(
                     }
                 }
             }
+        }
+    }
+
+    // --------------------------------------------\\ Alert Dialog Messages //--------------------------------------------
+
+    val dialogs by confirmOrderScreenViewModel.dialogs.collectAsStateWithLifecycle()
+
+    when(val state = dialogs){
+        LocationsScreenDialogs.None -> {}
+
+        is LocationsScreenDialogs.Delete -> {}
+
+        is LocationsScreenDialogs.ShowDetailsDialog -> {
+            AddressDetailsDialog(
+                title = state.address.title,
+                address = state.address,
+                textFieldConfirmOrderScreenList = textFieldConfirmOrderScreenList,
+                buttonTitle = stringResource(R.string.select_this_address),
+                onEditeAddress = { address ->
+                    confirmOrderScreenViewModel.closeAlertDialogMessage()
+                    confirmOrderScreenViewModel.onSelectAddress(address)
+                },
+                dismissButton = {
+                    confirmOrderScreenViewModel.closeAlertDialogMessage()
+                }
+            )
         }
     }
 }

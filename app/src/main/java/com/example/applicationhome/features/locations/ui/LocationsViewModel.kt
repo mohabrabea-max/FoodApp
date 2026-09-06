@@ -9,24 +9,18 @@ import com.example.applicationhome.core.domain.repository.LocationRepository
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.AddAddressUseCase
-import com.example.applicationhome.core.domain.usecase.UpdateAddressUseCase
 import com.example.applicationhome.core.domain.usecase.ValidateFormUseCase
-import com.example.applicationhome.data.data.model.ActionsStates
 import com.example.applicationhome.data.data.model.AddressesUiState
 import com.example.applicationhome.data.data.model.CheckoutFormState
-import com.example.applicationhome.data.data.model.ConfirmOrderScreenTextFieldEnum
 import com.example.applicationhome.data.data.model.EditAddressModeState
 import com.example.applicationhome.data.data.model.HomeUiState
+import com.example.applicationhome.data.data.model.LocationsScreenDialogs
 import com.example.applicationhome.data.data.model.LocationsScreens
 import com.example.applicationhome.data.data.model.MapEntryPoint
 import com.example.applicationhome.data.data.model.ProfileEditResult
-import com.example.applicationhome.data.data.model.TextFieldClassFromConfirmOrderScreen
 import com.example.applicationhome.data.data.model.UiEvent
 import com.example.applicationhome.data.local.entity.AddressesEntity
 import com.example.applicationhome.data.remote.NetworkObserver
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.Priority
-import com.google.android.gms.tasks.CancellationTokenSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -47,13 +41,11 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class LocationsViewModel @Inject constructor(
-    private val fusedLocationClient : FusedLocationProviderClient,
     private val locationRepository : LocationRepository,
     private val addressesRepository : AddressesRepository,
     private val syncAllDataRepository: SyncAllDataRepository,
     private val validateFormUseCase : ValidateFormUseCase,
     private val addAddressUseCase : AddAddressUseCase,
-    private val updateAddressUseCase : UpdateAddressUseCase,
     private val userRepository : UserRepository,
     private val networkObserver: NetworkObserver
 ): ViewModel() {
@@ -89,41 +81,8 @@ class LocationsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(AddressesUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val checkoutFormState = CheckoutFormState()
-
-    val textFieldConfirmOrderScreenList = listOf(
-        TextFieldClassFromConfirmOrderScreen(
-            checkoutFormState.addressTitle,
-            R.string.title,
-            ConfirmOrderScreenTextFieldEnum.TITLE
-        ),
-        TextFieldClassFromConfirmOrderScreen(
-            checkoutFormState.houseState,
-            R.string.house,
-            ConfirmOrderScreenTextFieldEnum.HOUSE
-        ),
-        TextFieldClassFromConfirmOrderScreen(
-            checkoutFormState.streetState,
-            R.string.street,
-            ConfirmOrderScreenTextFieldEnum.STREET
-        ),
-        TextFieldClassFromConfirmOrderScreen(
-            checkoutFormState.phoneNumberState,
-            R.string.phone_number,
-            ConfirmOrderScreenTextFieldEnum.PHONE_WITHOUT_BUTTON
-        ),
-        TextFieldClassFromConfirmOrderScreen(
-            checkoutFormState.additionalDirectionsState,
-            R.string.additional_directions_optional,
-            ConfirmOrderScreenTextFieldEnum.ADDITIONAL
-        ),
-        TextFieldClassFromConfirmOrderScreen(
-            checkoutFormState.addressLabelState,
-            R.string.address_label_optional,
-            ConfirmOrderScreenTextFieldEnum.ADDRESS
-        )
-    )
-
+    private val _checkoutFormState = CheckoutFormState()
+    val checkoutFormState = _checkoutFormState
 
 
     // --------------------------------------------\\ Screens //--------------------------------------------
@@ -180,75 +139,7 @@ class LocationsViewModel @Inject constructor(
     }
 
 
-
-    fun onEditAddress(){
-        val result = validateFormUseCase(
-            phoneNumber = checkoutFormState.phoneNumberState.text.toString(),
-            house = checkoutFormState.houseState.text.toString(),
-            street = checkoutFormState.streetState.text.toString()
-        )
-
-        _uiState.update {
-            it.copy(
-                confirmOrderError = result
-            )
-        }
-
-        when(result){
-            ProfileEditResult.Success -> {
-                viewModelScope.launch {
-                    _uiState.update {
-                        it.copy(
-                            isButtonClicked = true,
-                            streetAndHome = Pair(
-                                checkoutFormState.streetState.text.toString(),
-                                checkoutFormState.houseState.text.toString()
-                            ),
-                            confirmOrderState = ActionsStates.Loading
-                        )
-                    }
-
-                    updateAddressUseCase(
-                        userId = userRepository.userData.value.id,
-                        addressId = _selectedAddress.value?.addressId?: 0L,
-                        title = checkoutFormState.addressTitle.text.toString(),
-                        house = checkoutFormState.houseState.text.toString(),
-                        street = checkoutFormState.streetState.text.toString(),
-                        phoneNumber = checkoutFormState.phoneNumberState.text.toString(),
-                        additionalDirectionsState = checkoutFormState.additionalDirectionsState.text.toString(),
-                        addressLabelState = checkoutFormState.addressLabelState.text.toString(),
-                        latLocation = _uiState.value.locationState.latitude.toString(),
-                        lngLocation = _uiState.value.locationState.longitude.toString(),
-                        locationName = _uiState.value.locationState.locationName,
-                        locationFullName = _uiState.value.locationState.locationFullName
-                    )
-
-                    clearTextFields()
-
-                    _backStack.update{ listOf(LocationsScreens.Locations) }
-
-                    _uiState.update {
-                        it.copy(
-                            confirmOrderState = ActionsStates.Idle
-                        )
-                    }
-                }
-            }
-
-            else -> {
-                _uiState.update { it.copy(isButtonClicked = false) }
-            }
-        }
-    }
-
-    fun clearTextFields(){
-        checkoutFormState.addressTitle.clearText()
-        checkoutFormState.houseState.clearText()
-        checkoutFormState.streetState.clearText()
-        checkoutFormState.phoneNumberState.clearText()
-        checkoutFormState.addressLabelState.clearText()
-        checkoutFormState.additionalDirectionsState.clearText()
-    }
+    // --------------------------------------------\\ Addresses //--------------------------------------------
 
     private val _selectedAddress = MutableStateFlow<AddressesEntity?>(null)
     val selectedAddress = _selectedAddress.asStateFlow()
@@ -268,6 +159,101 @@ class LocationsViewModel @Inject constructor(
         }
     }
 
+    fun clearTextFields(){
+        _checkoutFormState.addressTitle.clearText()
+        _checkoutFormState.houseState.clearText()
+        _checkoutFormState.streetState.clearText()
+        _checkoutFormState.phoneNumberState.clearText()
+        _checkoutFormState.addressLabelState.clearText()
+        _checkoutFormState.additionalDirectionsState.clearText()
+    }
+
+    fun selectAddress(address : AddressesEntity){
+        _selectedAddress.value = address
+    }
+
+    private fun unSelectAddress(){
+        _selectedAddress.value = null
+    }
+
+    fun buttonStateChange(){
+        _uiState.update {
+            it.copy(
+                bottonState =
+                    _checkoutFormState.houseState.text.isNotEmpty() &&
+                            _checkoutFormState.streetState.text.isNotEmpty() &&
+                            _checkoutFormState.phoneNumberState.text.isNotEmpty()
+            )
+        }
+    }
+
+    fun onSaveAddress(){
+        val result = validateFormUseCase(
+            phoneNumber = _checkoutFormState.phoneNumberState.text.toString(),
+            house = _checkoutFormState.houseState.text.toString(),
+            street = _checkoutFormState.streetState.text.toString()
+        )
+
+        _uiState.update {
+            it.copy(
+                confirmOrderError = result
+            )
+        }
+
+        when(result){
+            ProfileEditResult.Success -> {
+                viewModelScope.launch {
+                    _uiState.update {
+                        it.copy(
+                            isButtonClicked = true,
+                            streetAndHome = Pair(
+                                _checkoutFormState.streetState.text.toString(),
+                                _checkoutFormState.houseState.text.toString()
+                            )
+                        )
+                    }
+
+                    addAddressUseCase(
+                        userId = userRepository.userData.value.id,
+                        addressId = _selectedAddress.value?.addressId?: 0L,
+                        title = _checkoutFormState.addressTitle.text.toString(),
+                        house = _checkoutFormState.houseState.text.toString(),
+                        street = _checkoutFormState.streetState.text.toString(),
+                        phoneNumber = _checkoutFormState.phoneNumberState.text.toString(),
+                        additionalDirectionsState = _checkoutFormState.additionalDirectionsState.text.toString(),
+                        addressLabelState = _checkoutFormState.addressLabelState.text.toString(),
+                        latLocation = _uiState.value.locationState.latitude.toString(),
+                        lngLocation = _uiState.value.locationState.longitude.toString(),
+                        locationName = _uiState.value.locationState.locationName,
+                        locationFullName = _uiState.value.locationState.locationFullName
+                    )
+
+                    clearTextFields()
+
+                    _backStack.update{ listOf(LocationsScreens.Locations) }
+                }
+            }
+
+            else -> {
+                _uiState.update { it.copy(isButtonClicked = false) }
+            }
+        }
+    }
+
+
+    private val _addressToDelete = MutableStateFlow<Pair<String, Long>?>(null)
+    fun deleteAddress(){
+        viewModelScope.launch {
+            val address = _addressToDelete.value
+            if(address != null) addressesRepository.deleteAddress(
+                userId = address.first,
+                addressId = address.second
+            )
+
+            closeAlertDialogMessage()
+        }
+    }
+
     init {
         viewModelScope.launch {
             isNetworkAvailable.collect { available ->
@@ -284,22 +270,22 @@ class LocationsViewModel @Inject constructor(
                 if(address != null){
                     clearTextFields()
 
-                    checkoutFormState.addressTitle.edit {
+                    _checkoutFormState.addressTitle.edit {
                         replace(0, length, address.title)
                     }
-                    checkoutFormState.houseState.edit {
+                    _checkoutFormState.houseState.edit {
                         replace(0, length, address.house)
                     }
-                    checkoutFormState.streetState.edit {
+                    _checkoutFormState.streetState.edit {
                         replace(0, length, address.street)
                     }
-                    checkoutFormState.phoneNumberState.edit {
+                    _checkoutFormState.phoneNumberState.edit {
                         replace(0, length, address.phoneNumber)
                     }
-                    checkoutFormState.addressLabelState.edit {
+                    _checkoutFormState.addressLabelState.edit {
                         replace(0, length, address.addressLabelState)
                     }
-                    checkoutFormState.additionalDirectionsState.edit {
+                    _checkoutFormState.additionalDirectionsState.edit {
                         replace(0, length, address.additionalDirectionsState)
                     }
 
@@ -312,75 +298,12 @@ class LocationsViewModel @Inject constructor(
                 }
             }
         }
-    }
 
-    fun selectAddress(address : AddressesEntity){
-        _selectedAddress.value = address
-    }
-
-    fun unSelectAddress(){
-        _selectedAddress.value = null
-    }
-
-    fun buttonStateChange(){
-        _uiState.update {
-            it.copy(
-                bottonState =
-                    checkoutFormState.houseState.text.isNotEmpty() &&
-                            checkoutFormState.streetState.text.isNotEmpty() &&
-                            checkoutFormState.phoneNumberState.text.isNotEmpty()
-            )
-        }
-    }
-
-    fun onSaveAddress(){
-        val result = validateFormUseCase(
-            phoneNumber = checkoutFormState.phoneNumberState.text.toString(),
-            house = checkoutFormState.houseState.text.toString(),
-            street = checkoutFormState.streetState.text.toString()
-        )
-
-        _uiState.update {
-            it.copy(
-                confirmOrderError = result
-            )
-        }
-
-        when(result){
-            ProfileEditResult.Success -> {
-                viewModelScope.launch {
-                    _uiState.update {
-                        it.copy(
-                            isButtonClicked = true,
-                            streetAndHome = Pair(
-                                checkoutFormState.streetState.text.toString(),
-                                checkoutFormState.houseState.text.toString()
-                            )
-                        )
-                    }
-
-                    addAddressUseCase(
-                        userId = userRepository.userData.value.id,
-                        title = checkoutFormState.addressTitle.text.toString(),
-                        house = checkoutFormState.houseState.text.toString(),
-                        street = checkoutFormState.streetState.text.toString(),
-                        phoneNumber = checkoutFormState.phoneNumberState.text.toString(),
-                        additionalDirectionsState = checkoutFormState.additionalDirectionsState.text.toString(),
-                        addressLabelState = checkoutFormState.addressLabelState.text.toString(),
-                        latLocation = _uiState.value.locationState.latitude.toString(),
-                        lngLocation = _uiState.value.locationState.longitude.toString(),
-                        locationName = _uiState.value.locationState.locationName,
-                        locationFullName = _uiState.value.locationState.locationFullName
-                    )
-
-                    clearTextFields()
-
-                    _backStack.update{ listOf(LocationsScreens.Locations) }
+        viewModelScope.launch {
+            currentScreen.collect { screen ->
+                if(screen == LocationsScreens.Locations){
+                    unSelectAddress()
                 }
-            }
-
-            else -> {
-                _uiState.update { it.copy(isButtonClicked = false) }
             }
         }
     }
@@ -415,20 +338,17 @@ class LocationsViewModel @Inject constructor(
     }
 
     fun fetchCurrentLocation(){
-        _uiState.update {
-            it.copy(
-                locationState = it.locationState.copy(
-                    isLoading = true
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    locationState = it.locationState.copy(
+                        isLoading = true
+                    )
                 )
-            )
-        }
+            }
 
-        try{
-            fusedLocationClient.getCurrentLocation(
-                Priority.PRIORITY_HIGH_ACCURACY,
-                CancellationTokenSource().token
-            ).addOnSuccessListener { location ->
-                if(location != null){
+            locationRepository.fetchCurrentLocation()
+                .onSuccess { location ->
                     _uiState.update {
                         it.copy(
                             locationState = it.locationState.copy(
@@ -438,27 +358,13 @@ class LocationsViewModel @Inject constructor(
                             )
                         )
                     }
-
-                }else{
+                }.onFailure {
                     _uiState.update {
                         it.copy(
                             locationState =  it.locationState.copy(isLoading = false)
                         )
                     }
                 }
-            }.addOnFailureListener {
-                _uiState.update {
-                    it.copy(
-                        locationState =  it.locationState.copy(isLoading = false)
-                    )
-                }
-            }
-        }catch (e : SecurityException){
-            _uiState.update {
-                it.copy(
-                    locationState =  it.locationState.copy(isLoading = false)
-                )
-            }
         }
     }
 
@@ -470,29 +376,53 @@ class LocationsViewModel @Inject constructor(
                 )
             }
 
-            locationRepository.getAddressFromLocation(lat, lng){ areaName, fullAddress ->
-                _uiState.update {
-                    it.copy(
-                        locationState =  it.locationState.copy(
-                            latitude = lat,
-                            longitude = lng,
-                            locationName = areaName,
-                            locationFullName = fullAddress
+            locationRepository.getAddressFromLocation(lat, lng)
+                .onSuccess { location ->
+                    _uiState.update {
+                        it.copy(
+                            locationState =  it.locationState.copy(
+                                latitude = lat,
+                                longitude = lng,
+                                locationName = location.locationName,
+                                locationFullName = location.locationFullName
+                            )
                         )
-                    )
+                    }
+                }.onFailure {
+                    _uiState.update {
+                        it.copy(
+                            locationState = it.locationState.copy(
+                                latitude = lat,
+                                longitude = lng,
+                                locationName = "Unknown address",
+                                locationFullName = ""
+                            )
+                        )
+                    }
                 }
-            }
 
             onLocationSelected()
         }
     }
 
-    fun deleteAddress(userId : String, orderId : Long){
-        viewModelScope.launch {
-            addressesRepository.deleteAddress(
-                userId = userId,
-                addressId = orderId
-            )
-        }
+
+    // --------------------------------------------\\ Dialogs //--------------------------------------------
+
+    private val _dialogs = MutableStateFlow<LocationsScreenDialogs>(LocationsScreenDialogs.None)
+    val dialogs = _dialogs.asStateFlow()
+
+    fun deleteDialog(userId : String, orderId : Long){
+        _addressToDelete.value = Pair(userId, orderId)
+        _dialogs.value = LocationsScreenDialogs.Delete()
+    }
+
+    fun showDetailsDialog(address : AddressesEntity){
+        selectAddress(address)
+        _dialogs.value = LocationsScreenDialogs.ShowDetailsDialog(address)
+    }
+
+    fun closeAlertDialogMessage(){
+        _addressToDelete.value = null
+        _dialogs.value = LocationsScreenDialogs.None
     }
 }

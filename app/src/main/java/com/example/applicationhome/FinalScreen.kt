@@ -237,7 +237,9 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
             }
 
             composable(Screens.NoInternetScreen.screen){
-                NoInternetScreen(navigationController)
+                NoInternetScreen{
+                    if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
+                }
             }
         }
 

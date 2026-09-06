@@ -27,13 +27,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.R
-import com.example.applicationhome.core.ui.components.designsystem.bounceClick
+import com.example.applicationhome.core.ui.components.designsystem.bounceLongClick
 import com.example.applicationhome.data.local.entity.AddressesEntity
 
 @Composable
 fun AddressBox(
     address : AddressesEntity,
     onOpenAddressBox : () -> Unit,
+    onOpenDetailsDialog : () -> Unit,
     onDeleteAddress : (() -> Unit)? = null
 ){
     Column(
@@ -47,9 +48,10 @@ fun AddressBox(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(180.dp)
-                .bounceClick{
-                    onOpenAddressBox()
-                }
+                .bounceLongClick(
+                    onClick = { onOpenAddressBox() },
+                    onLongClick = { onOpenDetailsDialog() }
+                )
                 .clip(shape = RoundedCornerShape(20.dp))
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(vertical = 15.dp),

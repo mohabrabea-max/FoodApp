@@ -25,12 +25,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 
 @Composable
 fun NoInternetScreen(
-    navigationController : NavHostController
+    navigation : () -> Unit
 ){
     Column(
         modifier = Modifier
@@ -66,7 +65,7 @@ fun NoInternetScreen(
             height(40.dp).
             clip(CircleShape).
             clickable{
-                if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
+                navigation()
             }.
             border(width = 1.dp, color = MaterialTheme.colorScheme.onSurface, shape = RoundedCornerShape(40.dp)).
             padding(7.dp).align(Alignment.CenterHorizontally)

@@ -14,22 +14,18 @@ import com.example.applicationhome.core.domain.usecase.UploadOrderUseCase
 import com.example.applicationhome.core.domain.usecase.ValidateFormUseCase
 import com.example.applicationhome.data.data.model.ActionsStates
 import com.example.applicationhome.data.data.model.CheckoutFormState
-import com.example.applicationhome.data.data.model.ConfirmOrderScreenTextFieldEnum
 import com.example.applicationhome.data.data.model.ConfirmOrderScreens
 import com.example.applicationhome.data.data.model.ConfirmOrderUiState
+import com.example.applicationhome.data.data.model.LocationsScreenDialogs
 import com.example.applicationhome.data.data.model.MapEntryPoint
 import com.example.applicationhome.data.data.model.PaymentApiState
 import com.example.applicationhome.data.data.model.PaymentMethod
 import com.example.applicationhome.data.data.model.PaymentState
 import com.example.applicationhome.data.data.model.PaymobBillingData
 import com.example.applicationhome.data.data.model.ProfileEditResult
-import com.example.applicationhome.data.data.model.TextFieldClassFromConfirmOrderScreen
 import com.example.applicationhome.data.data.model.UiEvent
 import com.example.applicationhome.data.local.entity.AddressesEntity
 import com.example.applicationhome.data.remote.NetworkObserver
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.Priority
-import com.google.android.gms.tasks.CancellationTokenSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -50,7 +46,6 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ConfirmOrderScreenViewModel @Inject constructor(
-    private val fusedLocationClient : FusedLocationProviderClient,
     userRepository : UserRepository,
     cartRepository : CartRepository,
     private val locationRepository : LocationRepository,
@@ -76,48 +71,15 @@ class ConfirmOrderScreenViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ConfirmOrderUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val checkoutFormState = CheckoutFormState()
+    private val _checkoutFormState = CheckoutFormState()
+    val checkoutFormState = _checkoutFormState
 
-    val phoneNumber : StateFlow<String> = snapshotFlow { checkoutFormState.phoneNumberState.text.toString() }
+    val phoneNumber : StateFlow<String> = snapshotFlow { _checkoutFormState.phoneNumberState.text.toString() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = ""
         )
-
-    val titleTextField = TextFieldClassFromConfirmOrderScreen(
-        checkoutFormState.addressTitle,
-        R.string.title,
-        ConfirmOrderScreenTextFieldEnum.TITLE
-    )
-
-    val textFieldConfirmOrderScreenList = listOf(
-        TextFieldClassFromConfirmOrderScreen(
-            checkoutFormState.houseState,
-            R.string.house,
-            ConfirmOrderScreenTextFieldEnum.HOUSE
-        ),
-        TextFieldClassFromConfirmOrderScreen(
-            checkoutFormState.streetState,
-            R.string.street,
-            ConfirmOrderScreenTextFieldEnum.STREET
-        ),
-        TextFieldClassFromConfirmOrderScreen(
-            checkoutFormState.phoneNumberState,
-            R.string.phone_number,
-            ConfirmOrderScreenTextFieldEnum.PHONE
-        ),
-        TextFieldClassFromConfirmOrderScreen(
-            checkoutFormState.additionalDirectionsState,
-            R.string.additional_directions_optional,
-            ConfirmOrderScreenTextFieldEnum.ADDITIONAL
-        ),
-        TextFieldClassFromConfirmOrderScreen(
-            checkoutFormState.addressLabelState,
-            R.string.address_label_optional,
-            ConfirmOrderScreenTextFieldEnum.ADDRESS
-        )
-    )
 
     val cartItems = cartRepository.cartItems
 
@@ -138,25 +100,6 @@ class ConfirmOrderScreenViewModel @Inject constructor(
 
     private val _uiEvent = Channel<UiEvent>(Channel.BUFFERED)
     val uiEvent = _uiEvent.receiveAsFlow()
-
-
-    init {
-        viewModelScope.launch {
-
-            checkoutFormState.phoneNumberState.edit {
-                replace(0, length, userData.value.phonenumber)
-            }
-
-            checkoutFormState.addressLabelState.edit {
-                replace(
-                    0, length,
-                    if(userData.value.city.isNotEmpty()) userData.value.city + " - " + userData.value.governorate
-                    else userData.value.governorate
-                )
-            }
-        }
-    }
-
 
 
     // --------------------------------------------\\ Screens //--------------------------------------------
@@ -238,20 +181,17 @@ class ConfirmOrderScreenViewModel @Inject constructor(
     }
 
     fun fetchCurrentLocation(){
-        _uiState.update {
-            it.copy(
-                locationState = it.locationState.copy(
-                    isLoading = true
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    locationState = it.locationState.copy(
+                        isLoading = true
+                    )
                 )
-            )
-        }
+            }
 
-        try{
-            fusedLocationClient.getCurrentLocation(
-                Priority.PRIORITY_HIGH_ACCURACY,
-                CancellationTokenSource().token
-            ).addOnSuccessListener { location ->
-                if(location != null){
+            locationRepository.fetchCurrentLocation()
+                .onSuccess { location ->
                     _uiState.update {
                         it.copy(
                             locationState = it.locationState.copy(
@@ -261,27 +201,13 @@ class ConfirmOrderScreenViewModel @Inject constructor(
                             )
                         )
                     }
-
-                }else{
+                }.onFailure {
                     _uiState.update {
                         it.copy(
                             locationState =  it.locationState.copy(isLoading = false)
                         )
                     }
                 }
-            }.addOnFailureListener {
-                _uiState.update {
-                    it.copy(
-                        locationState =  it.locationState.copy(isLoading = false)
-                    )
-                }
-            }
-        }catch (e : SecurityException){
-            _uiState.update {
-                it.copy(
-                    locationState =  it.locationState.copy(isLoading = false)
-                )
-            }
         }
     }
 
@@ -293,18 +219,30 @@ class ConfirmOrderScreenViewModel @Inject constructor(
                 )
             }
 
-            locationRepository.getAddressFromLocation(lat, lng){ areaName, fullAddress ->
-                _uiState.update {
-                    it.copy(
-                        locationState =  it.locationState.copy(
-                            latitude = lat,
-                            longitude = lng,
-                            locationName = areaName,
-                            locationFullName = fullAddress
+            locationRepository.getAddressFromLocation(lat, lng)
+                .onSuccess { location ->
+                    _uiState.update {
+                        it.copy(
+                            locationState =  it.locationState.copy(
+                                latitude = lat,
+                                longitude = lng,
+                                locationName = location.locationName,
+                                locationFullName = location.locationFullName
+                            )
                         )
-                    )
+                    }
+                }.onFailure {
+                    _uiState.update {
+                        it.copy(
+                            locationState = it.locationState.copy(
+                                latitude = lat,
+                                longitude = lng,
+                                locationName = "Unknown address",
+                                locationFullName = ""
+                            )
+                        )
+                    }
                 }
-            }
 
             onLocationSelected()
         }
@@ -352,7 +290,7 @@ class ConfirmOrderScreenViewModel @Inject constructor(
                 firstName = userData.value.firstname,
                 lastName = userData.value.lastname,
                 email = userData.value.email,
-                phoneNumber = checkoutFormState.phoneNumberState.text.toString()
+                phoneNumber = _checkoutFormState.phoneNumberState.text.toString()
             )
 
             val result = paymentUseCase(
@@ -411,18 +349,18 @@ class ConfirmOrderScreenViewModel @Inject constructor(
     private val _addressId = MutableStateFlow<Long?>(null)
 
     fun newAddress(){
-        checkoutFormState.addressTitle.clearText()
-        checkoutFormState.houseState.clearText()
-        checkoutFormState.streetState.clearText()
-        checkoutFormState.phoneNumberState.clearText()
-        checkoutFormState.addressLabelState.clearText()
-        checkoutFormState.additionalDirectionsState.clearText()
+        _checkoutFormState.addressTitle.clearText()
+        _checkoutFormState.houseState.clearText()
+        _checkoutFormState.streetState.clearText()
+        _checkoutFormState.phoneNumberState.clearText()
+        _checkoutFormState.addressLabelState.clearText()
+        _checkoutFormState.additionalDirectionsState.clearText()
 
-        checkoutFormState.phoneNumberState.edit {
+        _checkoutFormState.phoneNumberState.edit {
             replace(0, length, userData.value.phonenumber)
         }
 
-        checkoutFormState.addressLabelState.edit {
+        _checkoutFormState.addressLabelState.edit {
             replace(
                 0, length,
                 if(userData.value.city.isNotEmpty()) userData.value.city + " - " + userData.value.governorate
@@ -441,9 +379,9 @@ class ConfirmOrderScreenViewModel @Inject constructor(
             lng = address.lngLocation.toDouble()
         )
 
-        checkoutFormState.houseState.edit {  replace(0, length, address.house) }
-        checkoutFormState.streetState.edit {  replace(0, length, address.street) }
-        checkoutFormState.phoneNumberState.edit {  replace(0, length, address.phoneNumber) }
+        _checkoutFormState.houseState.edit {  replace(0, length, address.house) }
+        _checkoutFormState.streetState.edit {  replace(0, length, address.street) }
+        _checkoutFormState.phoneNumberState.edit {  replace(0, length, address.phoneNumber) }
 
         onBottonStateChange()
     }
@@ -452,18 +390,18 @@ class ConfirmOrderScreenViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 bottonState =
-                    checkoutFormState.houseState.text.isNotEmpty() &&
-                    checkoutFormState.streetState.text.isNotEmpty() &&
-                    checkoutFormState.phoneNumberState.text.isNotEmpty()
+                    _checkoutFormState.houseState.text.isNotEmpty() &&
+                            _checkoutFormState.streetState.text.isNotEmpty() &&
+                            _checkoutFormState.phoneNumberState.text.isNotEmpty()
             )
         }
     }
 
     fun onBottonStateChange(){
         val result = validateFormUseCase(
-            phoneNumber = checkoutFormState.phoneNumberState.text.toString(),
-            house = checkoutFormState.houseState.text.toString(),
-            street = checkoutFormState.streetState.text.toString()
+            phoneNumber = _checkoutFormState.phoneNumberState.text.toString(),
+            house = _checkoutFormState.houseState.text.toString(),
+            street = _checkoutFormState.streetState.text.toString()
         )
 
         _uiState.update {
@@ -478,8 +416,8 @@ class ConfirmOrderScreenViewModel @Inject constructor(
                     it.copy(
                         isButtonClicked = true,
                         streetAndHome = Pair(
-                            checkoutFormState.streetState.text.toString(),
-                            checkoutFormState.houseState.text.toString()
+                            _checkoutFormState.streetState.text.toString(),
+                            _checkoutFormState.houseState.text.toString()
                         )
                     )
                 }
@@ -503,12 +441,12 @@ class ConfirmOrderScreenViewModel @Inject constructor(
 
             uploadOrderUseCase(
                 addressId = _addressId.value,
-                title = checkoutFormState.addressTitle.text.toString(),
-                house = checkoutFormState.houseState.text.toString(),
-                street = checkoutFormState.streetState.text.toString(),
-                phoneNumber = checkoutFormState.phoneNumberState.text.toString(),
-                additionalDirectionsState = checkoutFormState.additionalDirectionsState.text.toString(),
-                addressLabelState = checkoutFormState.addressLabelState.text.toString(),
+                title = _checkoutFormState.addressTitle.text.toString(),
+                house = _checkoutFormState.houseState.text.toString(),
+                street = _checkoutFormState.streetState.text.toString(),
+                phoneNumber = _checkoutFormState.phoneNumberState.text.toString(),
+                additionalDirectionsState = _checkoutFormState.additionalDirectionsState.text.toString(),
+                addressLabelState = _checkoutFormState.addressLabelState.text.toString(),
                 latLocation = _uiState.value.locationState.latitude.toString(),
                 lngLocation = _uiState.value.locationState.longitude.toString(),
                 locationName = _uiState.value.locationState.locationName,
@@ -528,6 +466,85 @@ class ConfirmOrderScreenViewModel @Inject constructor(
                     it.copy(
                         confirmOrderState = ActionsStates.Failed("Network error")
                     )
+                }
+            }
+        }
+    }
+
+
+    // --------------------------------------------\\ Dialogs //--------------------------------------------
+
+    private val _dialogs = MutableStateFlow<LocationsScreenDialogs>(LocationsScreenDialogs.None)
+    val dialogs = _dialogs.asStateFlow()
+
+    private val _selectedAddress = MutableStateFlow<AddressesEntity?>(null)
+    val selectedAddress = _selectedAddress.asStateFlow()
+
+
+    fun showDetailsDialog(address : AddressesEntity){
+        _selectedAddress.value = address
+        _dialogs.value = LocationsScreenDialogs.ShowDetailsDialog(address)
+    }
+
+    fun closeAlertDialogMessage(){
+        _dialogs.value = LocationsScreenDialogs.None
+        _selectedAddress.value = null
+    }
+
+
+    fun clearTextFields(){
+        _checkoutFormState.addressTitle.clearText()
+        _checkoutFormState.houseState.clearText()
+        _checkoutFormState.streetState.clearText()
+        _checkoutFormState.phoneNumberState.clearText()
+        _checkoutFormState.addressLabelState.clearText()
+        _checkoutFormState.additionalDirectionsState.clearText()
+    }
+
+    init {
+        viewModelScope.launch {
+
+            _checkoutFormState.phoneNumberState.edit {
+                replace(0, length, userData.value.phonenumber)
+            }
+
+            _checkoutFormState.addressLabelState.edit {
+                replace(
+                    0, length,
+                    if(userData.value.city.isNotEmpty()) userData.value.city + " - " + userData.value.governorate
+                    else userData.value.governorate
+                )
+            }
+        }
+
+        viewModelScope.launch {
+            _selectedAddress.collect { address ->
+                if(address != null){
+                    _checkoutFormState.addressTitle.edit {
+                        replace(0, length, address.title)
+                    }
+                    _checkoutFormState.houseState.edit {
+                        replace(0, length, address.house)
+                    }
+                    _checkoutFormState.streetState.edit {
+                        replace(0, length, address.street)
+                    }
+                    _checkoutFormState.phoneNumberState.edit {
+                        replace(0, length, address.phoneNumber)
+                    }
+                    _checkoutFormState.addressLabelState.edit {
+                        replace(0, length, address.addressLabelState)
+                    }
+                    _checkoutFormState.additionalDirectionsState.edit {
+                        replace(0, length, address.additionalDirectionsState)
+                    }
+
+                    updateSelectedLocation(
+                        lat = address.latLocation.toDouble(),
+                        lng = address.lngLocation.toDouble()
+                    )
+                }else{
+                    clearTextFields()
                 }
             }
         }

@@ -9,6 +9,7 @@ class AddAddressUseCase @Inject constructor(
 ){
     operator suspend fun invoke(
         userId : String,
+        addressId : Long,
         title : String,
         house : String,
         street : String,
@@ -22,6 +23,7 @@ class AddAddressUseCase @Inject constructor(
     ){
         addressesRepository.addAddress(
             userId = userId,
+            addressId = addressId,
             address = Address(
                 title = title,
                 house = house,

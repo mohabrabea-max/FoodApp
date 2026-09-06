@@ -65,12 +65,12 @@ fun PageOneConfirmOrder(
     bottonStateChange : () -> Unit,
     openMaps : () -> Unit,
     onSaveAddress : () -> Unit,
-    onSavePhoneNumber : () -> Unit,
+    onSavePhoneNumber : (() -> Unit)? = null,
     onSaveAddressRadioButton : () -> Unit,
     onEditeMode : () -> Unit = {}
 ){
     val color = if(bottonState || !isEditEnabled) Color.DarkOrange else Color.VeryLightGray
-    val fontcolor = if(bottonState || !isEditEnabled) Color.White else Color.LightGray
+    val fontColor = if(bottonState || !isEditEnabled) Color.White else Color.LightGray
 
 
     Scaffold(
@@ -88,7 +88,7 @@ fun PageOneConfirmOrder(
                 MyButton(
                     loading = confirmOrderState == ActionsStates.Loading,
                     backgroundcolor = color,
-                    fontcolor = fontcolor,
+                    fontcolor = fontColor,
                     horizontalPadding = 40.dp,
                     title = if(isEditEnabled) stringResource(R.string.save_address) else stringResource(R.string.edit_address)
                 ){
@@ -209,7 +209,7 @@ fun PageOneConfirmOrder(
                     isSavePhoneNumberSelected = isSavePhoneNumberSelected,
                     isSaveAddressSelected = isSaveAddressSelected,
                     bottonStateChange = { bottonStateChange() },
-                    onSavePhoneNumber = { onSavePhoneNumber() },
+                    onSavePhoneNumber = onSavePhoneNumber,
                     onSaveAddressRadioButton = { onSaveAddressRadioButton() }
                 )
             }

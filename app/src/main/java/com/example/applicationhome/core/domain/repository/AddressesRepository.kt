@@ -6,8 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AddressesRepository {
     fun getAddresses(userId : String): Flow<List<AddressesEntity>>
-    suspend fun addAddress(userId : String, address : Address): Result<Unit>
-    suspend fun updateAddresses(userId : String, addressId : Long, address : Address): Result<Unit>
+    suspend fun addAddress(userId : String, addressId : Long, address : Address): Result<Unit>
     suspend fun updateAddressesLastUse(userId : String, addressId : Long): Result<Unit>
     suspend fun deleteAddress(userId : String, addressId : Long): Result<Unit>
 }
