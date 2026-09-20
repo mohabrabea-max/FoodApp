@@ -1,9 +1,9 @@
 package com.example.applicationhome.core.domain.repository
 
 import androidx.paging.PagingData
-import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
-import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
-import com.example.applicationhome.data.local.entity.SearchHistory
+import com.example.applicationhome.core.data.local.entity.MealWithFavoriteStatus
+import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
+import com.example.applicationhome.core.data.local.entity.SearchHistory
 import kotlinx.coroutines.flow.Flow
 
 interface SearchRepository {

@@ -4,8 +4,9 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import app.cash.turbine.test
 import com.example.applicationhome.core.domain.repository.UserRepository
-import com.example.applicationhome.data.local.dao.FavoriteDao
-import com.example.applicationhome.data.local.entity.UserClass
+import com.example.applicationhome.core.data.repository.FavoriteRepositoryImpl
+import com.example.applicationhome.core.data.local.dao.FavoriteDao
+import com.example.applicationhome.core.data.local.entity.UserClass
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coVerify
 import io.mockk.every

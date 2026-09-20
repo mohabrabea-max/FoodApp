@@ -10,7 +10,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import com.example.applicationhome.data.data.model.ThemeMode
+import com.example.applicationhome.core.domain.model.ThemeMode
 
 private val DarkColorScheme = darkColorScheme(
     primary = Color.DarkOrange,

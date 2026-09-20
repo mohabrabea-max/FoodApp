@@ -13,11 +13,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.ShoppingCartCheckout
 import com.example.applicationhome.R
-import com.example.applicationhome.data.data.model.Options
-import com.example.applicationhome.data.data.model.ProfileOptions
-import com.example.applicationhome.data.data.model.Screens
-import com.example.applicationhome.data.data.model.Settings
-import com.example.applicationhome.data.data.model.SettingsScreens
 
 object ProfileData {
     fun profileOptions() = listOf(

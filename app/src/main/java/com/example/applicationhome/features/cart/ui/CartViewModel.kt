@@ -2,12 +2,18 @@ package com.example.applicationhome.features.cart.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.core.domain.model.CategoryEnum
 import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
-import com.example.applicationhome.data.local.entity.CartItemsClass
+import com.example.applicationhome.core.ui.mapper.cartItemsDomainClassToCartItemsUiClass
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,22 +24,39 @@ class CartViewModel @Inject constructor(
     cartRepository: CartRepository,
     private val userRepository: UserRepository
 ): ViewModel(){
-    val cartItems = cartRepository.cartItems
+    val cartItems = userRepository.userData
+        .flatMapLatest { user ->
+            val id = user.id
+            if (id.isNotEmpty()) {
+                cartRepository.getCartItems(id).map { items ->
+                    items.mapNotNull {
+                        it?.cartItemsDomainClassToCartItemsUiClass()
+                    }
+                }
+            } else {
+                flowOf(emptyList())
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
 
     val totalPrice = cartRepository.totalPrice
 
 
-    fun plus(food: CartItemsClass, size : String){
+    fun plus(mealId : Int, size : String, type : CategoryEnum){
         viewModelScope.launch {
             val userId = userRepository.userData.value.id
-            cartUseCase.plus(userId, food, size)
+            cartUseCase.plus(userId, mealId, size, type)
         }
     }
 
-    fun minus(food: CartItemsClass, size : String){
+    fun minus(mealId : Int, size : String){
         viewModelScope.launch {
             val userId = userRepository.userData.value.id
-            cartUseCase.minus(userId, food, size)
+            cartUseCase.minus(userId, mealId, size)
         }
     }
 

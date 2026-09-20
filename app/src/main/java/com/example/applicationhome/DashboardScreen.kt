@@ -74,10 +74,10 @@ import com.example.applicationhome.core.ui.components.Options
 import com.example.applicationhome.core.ui.components.bars.MyBottomBar
 import com.example.applicationhome.core.ui.components.model.DashboardScreenViewModel
 import com.example.applicationhome.core.ui.components.profileAndSetting.UserImage
-import com.example.applicationhome.data.data.model.HomeScreenActions
-import com.example.applicationhome.data.data.model.HomeScreenParameters
-import com.example.applicationhome.data.data.model.HomeUiState
-import com.example.applicationhome.data.data.model.Screens
+import com.example.applicationhome.features.homescreen.model.HomeScreenActions
+import com.example.applicationhome.features.homescreen.model.HomeScreenParameters
+import com.example.applicationhome.core.ui.model.UiStates
+import com.example.applicationhome.core.domain.model.Screens
 import com.example.applicationhome.features.favorite.ui.Favorite
 import com.example.applicationhome.features.favorite.ui.FavoriteViewModel
 import com.example.applicationhome.features.homescreen.ui.HomeScreen
@@ -93,7 +93,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DashboardScreen(
     navigationController: NavHostController,
-    syncDataUiState : HomeUiState,
+    syncDataUiState : UiStates,
     isRefreshing : Boolean,
     syncData : () -> Unit
 ){

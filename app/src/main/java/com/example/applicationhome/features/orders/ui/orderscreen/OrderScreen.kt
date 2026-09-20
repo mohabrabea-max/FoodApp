@@ -48,10 +48,10 @@ import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.components.designsystem.SquerButton
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.LoadingDialog
 import com.example.applicationhome.core.ui.theme.BrandBlue
-import com.example.applicationhome.data.data.model.ActionsStates
-import com.example.applicationhome.data.data.model.OrderStatesEnum
-import com.example.applicationhome.data.data.model.OrderUiClass
-import com.example.applicationhome.data.data.model.TimelineStep
+import com.example.applicationhome.core.domain.model.ActionsStates
+import com.example.applicationhome.core.domain.model.OrderStatesEnum
+import com.example.applicationhome.core.domain.model.OrderUiClass
+import com.example.applicationhome.core.domain.model.TimelineStep
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

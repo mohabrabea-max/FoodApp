@@ -29,9 +29,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.data.model.ProfileOptions
-import com.example.applicationhome.data.data.model.Settings
-import com.example.applicationhome.data.data.model.SettingsScreens
+import com.example.applicationhome.core.domain.model.ProfileOptions
+import com.example.applicationhome.core.domain.model.Settings
+import com.example.applicationhome.core.domain.model.SettingsScreens
 
 @Composable
 fun SettingsOptionsBox(item : ProfileOptions, navigation : () -> Unit){

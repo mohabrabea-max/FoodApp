@@ -39,7 +39,7 @@ import com.example.applicationhome.core.ui.components.designsystem.TopBarButtons
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.data.local.entity.RestaurantsEntity
+import com.example.applicationhome.core.data.local.entity.RestaurantsEntity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

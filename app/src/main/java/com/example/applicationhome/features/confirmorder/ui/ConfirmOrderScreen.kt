@@ -48,16 +48,18 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
+import com.example.applicationhome.core.domain.model.ConfirmOrderScreens
+import com.example.applicationhome.core.domain.model.ConfirmOrderUiState
+import com.example.applicationhome.core.domain.model.LocationsScreenDialogs
+import com.example.applicationhome.core.domain.model.MapEntryPoint
+import com.example.applicationhome.core.domain.model.PaymentApiState
+import com.example.applicationhome.core.domain.model.PaymentState
+import com.example.applicationhome.core.domain.model.Screens
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
+import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.LoadingDialog
+import com.example.applicationhome.core.ui.model.UiStates
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.data.data.model.ConfirmOrderScreens
-import com.example.applicationhome.data.data.model.ConfirmOrderUiState
-import com.example.applicationhome.data.data.model.LocationsScreenDialogs
-import com.example.applicationhome.data.data.model.MapEntryPoint
-import com.example.applicationhome.data.data.model.PaymentApiState
-import com.example.applicationhome.data.data.model.PaymentState
-import com.example.applicationhome.data.data.model.Screens
 import com.example.applicationhome.features.confirmorder.ui.mappage.StreetMapPage
 import com.example.applicationhome.features.confirmorder.ui.pageone.PageOneConfirmOrder
 import com.example.applicationhome.features.confirmorder.ui.pageone.rememberConfirmOrderAddressFields
@@ -76,6 +78,7 @@ fun ConfirmOrderScreen(
     uiState : ConfirmOrderUiState
 ){
     val addresses by confirmOrderScreenViewModel.addresses.collectAsStateWithLifecycle()
+    val selectAddressState by confirmOrderScreenViewModel.selectAddressState.collectAsStateWithLifecycle()
 
     val currentScreen by confirmOrderScreenViewModel.currentScreen.collectAsStateWithLifecycle()
 
@@ -181,20 +184,32 @@ fun ConfirmOrderScreen(
             when(screen){
                 // --------------------------------------------\\ Select Address //--------------------------------------------
                 ConfirmOrderScreens.SelectAddress -> {
-                    SelectAddress(
-                        addresses = addresses,
-                        paddingValues = paddingValues,
-                        onNewAddressClickable = {
-                            permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                            confirmOrderScreenViewModel.newAddress()
-                        },
-                        onOpenDetailsDialog = { address ->
-                            confirmOrderScreenViewModel.showDetailsDialog(address)
-                        },
-                        onAddressClickable = { address ->
-                            confirmOrderScreenViewModel.onSelectAddress(address)
+                    when(val state = selectAddressState){
+                        UiStates.Loading -> {
+                            LoadingDialog(true)
                         }
-                    )
+
+                        UiStates.Success -> {
+                            SelectAddress(
+                                addresses = addresses,
+                                paddingValues = paddingValues,
+                                onNewAddressClickable = {
+                                    permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                                    confirmOrderScreenViewModel.newAddress()
+                                },
+                                onOpenDetailsDialog = { address ->
+                                    confirmOrderScreenViewModel.showDetailsDialog(address)
+                                },
+                                onAddressClickable = { address ->
+                                    confirmOrderScreenViewModel.onSelectAddress(address)
+                                }
+                            )
+                        }
+
+                        UiStates.Offline -> {
+                            //Error Message
+                        }
+                    }
                 }
 
                 // --------------------------------------------\\ Map Page //--------------------------------------------
@@ -210,7 +225,6 @@ fun ConfirmOrderScreen(
                                 strokeWidth = 4.dp
                             )
                         }
-
                     }else{
                         StreetMapPage(
                             initialLatitude = uiState.locationState.latitude,

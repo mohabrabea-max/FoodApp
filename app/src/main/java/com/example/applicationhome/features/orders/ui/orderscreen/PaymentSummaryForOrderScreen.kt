@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.R
-import com.example.applicationhome.data.data.model.OrderUiClass
+import com.example.applicationhome.core.domain.model.OrderUiClass
 
 @Composable
 fun PaymentSummaryForOrderScreen(order: OrderUiClass){

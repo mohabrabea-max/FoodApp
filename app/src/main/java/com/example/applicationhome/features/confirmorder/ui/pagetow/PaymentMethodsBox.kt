@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.R
-import com.example.applicationhome.data.data.model.PaymentMethod
+import com.example.applicationhome.core.domain.model.PaymentMethod
 
 @Composable
 fun PaymentMethodsBox(

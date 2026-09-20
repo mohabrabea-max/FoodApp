@@ -1,8 +1,8 @@
 package com.example.applicationhome.fakes
 
-import com.example.applicationhome.data.data.model.CategoriesInWithTitle
-import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
-import com.example.applicationhome.data.local.entity.RestaurantsEntity
+import com.example.applicationhome.core.domain.model.CategoriesInWithTitle
+import com.example.applicationhome.core.data.local.entity.FavoriteRestaurantEntity
+import com.example.applicationhome.core.data.local.entity.RestaurantsEntity
 
 object FakeRestaurants {
     fun restaurantsEntityFakes() = listOf(

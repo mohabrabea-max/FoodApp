@@ -37,12 +37,14 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.core.ui.components.designsystem.bounceClick
+import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.DiscountsOutlookBox
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
-import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
 
 @Composable
 fun RestaurantsBoxHomeScreen(
+    discount : Int?,
     item : RestaurantWithFavoriteStatus,
     isRestaurantInFavorite : Boolean,
     view : () -> Unit,
@@ -172,6 +174,8 @@ fun RestaurantsBoxHomeScreen(
                 fontSize = 13.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+
+            if(discount != null) DiscountsOutlookBox(discount)
         }
     }
 }

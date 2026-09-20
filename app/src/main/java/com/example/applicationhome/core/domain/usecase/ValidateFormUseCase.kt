@@ -1,6 +1,6 @@
 package com.example.applicationhome.core.domain.usecase
 
-import com.example.applicationhome.data.data.model.ProfileEditResult
+import com.example.applicationhome.core.domain.model.ProfileEditResult
 import javax.inject.Inject
 
 class ValidateFormUseCase @Inject constructor() {
@@ -8,7 +8,7 @@ class ValidateFormUseCase @Inject constructor() {
         phoneNumber : String,
         house : String,
         street : String
-    ): ProfileEditResult{
+    ): ProfileEditResult {
         val validPrefixes = listOf("010", "011", "012", "015")
 
         if(

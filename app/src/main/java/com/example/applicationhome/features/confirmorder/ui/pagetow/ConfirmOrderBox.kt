@@ -11,7 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,17 +21,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import com.example.applicationhome.core.ui.model.CartItemsUiClass
 import com.example.applicationhome.core.ui.theme.LightOrange
-import com.example.applicationhome.data.local.entity.CartItemsClass
 
 @Composable
 fun ConfirmOrderBox(
-    food: CartItemsClass
+    food : CartItemsUiClass
 ){
     val number = food.quantity
     val size = food.size
@@ -74,18 +76,41 @@ fun ConfirmOrderBox(
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.height(10.dp))
-                        Text(
-                            text = "${food.priceOfOne} x $number" ,
-                            fontSize = 15.sp,
-                            color = Color.Red,
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold
-                        )
+                        if(food.priceOfOne == food.finalPrice){
+                            Text(
+                                text = "EGP ${food.priceOfOne} x $number" ,
+                                fontSize = 15.sp,
+                                color = Color.Red,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }else{
+                            Text(
+                                text = "EGP ${food.priceOfOne}",
+                                fontSize = 13.sp,
+                                textDecoration = TextDecoration.LineThrough,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                            Text(
+                                text = "EGP ${food.finalPrice} x $number" ,
+                                fontSize = 15.sp,
+                                color = Color.Red,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
             }
+
             Spacer(modifier = Modifier.height(15.dp))
-            Divider(color = Color.LightOrange.copy(alpha = 0.5f), modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+
+            HorizontalDivider(
+                modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+                thickness = DividerDefaults.Thickness,
+                color = Color.LightOrange.copy(alpha = 0.5f)
+            )
         }
     }
 }

@@ -52,8 +52,8 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.data.data.model.HomeUiState
-import com.example.applicationhome.data.data.model.Screens
+import com.example.applicationhome.core.ui.model.UiStates
+import com.example.applicationhome.core.domain.model.Screens
 import com.example.applicationhome.features.homescreen.ui.CategoriesBar
 import com.example.applicationhome.features.shimmers.boxes.CategoriesShimmer
 import com.example.applicationhome.features.shimmers.boxes.TextInSearchShimmer
@@ -65,7 +65,7 @@ import com.valentinilk.shimmer.shimmer
 fun Search(
     navigationController : NavHostController,
     searchViewModel : SearchViewModel,
-    syncDataUiState : HomeUiState,
+    syncDataUiState : UiStates,
     isRefreshing : Boolean,
     onRefresh : () -> Unit
 ){
@@ -149,7 +149,7 @@ fun Search(
 
                     //       --------------------------\\ Last Search //--------------------------
                     when(syncDataUiState){
-                        HomeUiState.Success, HomeUiState.Offline -> {
+                        UiStates.Success, UiStates.Offline -> {
                             if(searchHistoryAfterFiltering.isNotEmpty()) items(searchHistoryAfterFiltering){ item ->
                                 var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -229,7 +229,7 @@ fun Search(
                             }
                         }
 
-                        HomeUiState.Loading -> {
+                        UiStates.Loading -> {
                             items(5) {
                                 Spacer(modifier = Modifier.height(15.dp))
 
@@ -242,7 +242,7 @@ fun Search(
 
                     //       --------------------------\\ Categories Bar //--------------------------
                     when(syncDataUiState){
-                        HomeUiState.Success, HomeUiState.Offline -> {
+                        UiStates.Success, UiStates.Offline -> {
                             item{
                                 CategoriesBar(
                                     categories = categories,
@@ -294,7 +294,7 @@ fun Search(
                             }
                         }
 
-                        HomeUiState.Loading -> {
+                        UiStates.Loading -> {
                             item {
                                 Column(
                                     modifier = Modifier
@@ -323,7 +323,7 @@ fun Search(
                     //       --------------------------\\ Search Results //--------------------------
                 }else if(search.text.isNotEmpty() && searchClickable){
                     when(syncDataUiState){
-                        HomeUiState.Success, HomeUiState.Offline -> {
+                        UiStates.Success, UiStates.Offline -> {
                             items(
                                 count = searchResults.itemCount,
                                 key = searchResults.itemKey { it.restaurant.restaurant.id }
@@ -344,7 +344,7 @@ fun Search(
                             }
                         }
 
-                        HomeUiState.Loading -> {
+                        UiStates.Loading -> {
                             item { SearchResultScreenShimmer() }
                         }
                     }

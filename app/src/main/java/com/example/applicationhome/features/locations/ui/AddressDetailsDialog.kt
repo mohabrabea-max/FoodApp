@@ -45,9 +45,9 @@ import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.components.designsystem.TopBarButtons
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.data.data.model.ProfileEditResult
-import com.example.applicationhome.data.data.model.TextFieldClassFromConfirmOrderScreen
-import com.example.applicationhome.data.local.entity.AddressesEntity
+import com.example.applicationhome.core.data.local.entity.AddressesEntity
+import com.example.applicationhome.core.domain.model.ProfileEditResult
+import com.example.applicationhome.core.domain.model.TextFieldClassFromConfirmOrderScreen
 import com.example.applicationhome.features.confirmorder.ui.pageone.ConfirmOrderScreenTextField
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

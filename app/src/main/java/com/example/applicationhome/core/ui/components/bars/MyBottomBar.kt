@@ -45,7 +45,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.core.ui.components.model.DashboardScreenViewModel
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.data.data.model.Screens
+import com.example.applicationhome.core.domain.model.Screens
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeChild
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi

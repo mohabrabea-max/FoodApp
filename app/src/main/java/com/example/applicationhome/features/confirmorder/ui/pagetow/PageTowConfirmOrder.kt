@@ -32,25 +32,25 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.applicationhome.R
+import com.example.applicationhome.core.domain.model.ActionsStates
+import com.example.applicationhome.core.domain.model.ConfirmOrderUiState
+import com.example.applicationhome.core.domain.model.PaymentApiState
+import com.example.applicationhome.core.domain.model.PaymentMethod
+import com.example.applicationhome.core.domain.model.PaymentState
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.bottomSnackBar
+import com.example.applicationhome.core.ui.model.CartItemsUiClass
 import com.example.applicationhome.core.ui.theme.BrandBlue
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.DeepMatteBlack
 import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.data.data.model.ActionsStates
-import com.example.applicationhome.data.data.model.ConfirmOrderUiState
-import com.example.applicationhome.data.data.model.PaymentApiState
-import com.example.applicationhome.data.data.model.PaymentMethod
-import com.example.applicationhome.data.data.model.PaymentState
-import com.example.applicationhome.data.local.entity.CartItemsClass
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun PageTowConfirmOrder(
     uiState : ConfirmOrderUiState,
     snackBarHostState : SnackbarHostState,
-    cart : List<CartItemsClass?>,
+    cart : List<CartItemsUiClass?>,
     totalPrice : Double,
     phoneNumber : String,
     onMethodSelected : (PaymentMethod) -> Unit,
@@ -135,6 +135,8 @@ fun PageTowConfirmOrder(
                     openMaps()
                 }
             }
+
+            // --------------------------------------------\\ Cart Items //--------------------------------------------
 
             items(cart) { item ->
                 if(item != null) ConfirmOrderBox(

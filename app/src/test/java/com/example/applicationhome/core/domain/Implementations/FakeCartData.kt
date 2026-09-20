@@ -1,7 +1,7 @@
 package com.example.applicationhome.core.domain.Implementations
 
-import com.example.applicationhome.data.local.entity.CartClass
-import com.example.applicationhome.data.local.entity.CartItemsClass
+import com.example.applicationhome.core.data.local.entity.CartClass
+import com.example.applicationhome.core.data.local.entity.CartItemsClassEntity
 
 object FakeCartData {
     fun fakeCartRestaurant() =
@@ -12,7 +12,7 @@ object FakeCartData {
 
 
     fun fakeItems() =
-        CartItemsClass(
+        CartItemsClassEntity(
             mealKey = "1_",
             mealId = 1,
             quantity = 5,

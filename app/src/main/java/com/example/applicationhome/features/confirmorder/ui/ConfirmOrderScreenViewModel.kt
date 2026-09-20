@@ -5,27 +5,30 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.R
+import com.example.applicationhome.core.data.local.entity.AddressesEntity
+import com.example.applicationhome.core.data.remote.NetworkObserver
+import com.example.applicationhome.core.domain.model.ActionsStates
+import com.example.applicationhome.core.domain.model.CheckoutFormState
+import com.example.applicationhome.core.domain.model.ConfirmOrderScreens
+import com.example.applicationhome.core.domain.model.ConfirmOrderUiState
+import com.example.applicationhome.core.domain.model.LocationsScreenDialogs
+import com.example.applicationhome.core.domain.model.MapEntryPoint
+import com.example.applicationhome.core.domain.model.PaymentApiState
+import com.example.applicationhome.core.domain.model.PaymentMethod
+import com.example.applicationhome.core.domain.model.PaymentState
+import com.example.applicationhome.core.domain.model.PaymobBillingData
+import com.example.applicationhome.core.domain.model.ProfileEditResult
+import com.example.applicationhome.core.domain.model.UiEvent
 import com.example.applicationhome.core.domain.repository.AddressesRepository
 import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.LocationRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.PaymentUseCase
+import com.example.applicationhome.core.domain.usecase.SyncAddressesUseCase
 import com.example.applicationhome.core.domain.usecase.UploadOrderUseCase
 import com.example.applicationhome.core.domain.usecase.ValidateFormUseCase
-import com.example.applicationhome.data.data.model.ActionsStates
-import com.example.applicationhome.data.data.model.CheckoutFormState
-import com.example.applicationhome.data.data.model.ConfirmOrderScreens
-import com.example.applicationhome.data.data.model.ConfirmOrderUiState
-import com.example.applicationhome.data.data.model.LocationsScreenDialogs
-import com.example.applicationhome.data.data.model.MapEntryPoint
-import com.example.applicationhome.data.data.model.PaymentApiState
-import com.example.applicationhome.data.data.model.PaymentMethod
-import com.example.applicationhome.data.data.model.PaymentState
-import com.example.applicationhome.data.data.model.PaymobBillingData
-import com.example.applicationhome.data.data.model.ProfileEditResult
-import com.example.applicationhome.data.data.model.UiEvent
-import com.example.applicationhome.data.local.entity.AddressesEntity
-import com.example.applicationhome.data.remote.NetworkObserver
+import com.example.applicationhome.core.ui.mapper.cartItemsDomainClassToCartItemsUiClass
+import com.example.applicationhome.core.ui.model.UiStates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -53,6 +56,7 @@ class ConfirmOrderScreenViewModel @Inject constructor(
     private val uploadOrderUseCase : UploadOrderUseCase,
     private val validateFormUseCase : ValidateFormUseCase,
     private val paymentUseCase : PaymentUseCase,
+    private val syncAddressesUseCase : SyncAddressesUseCase,
     private val networkObserver: NetworkObserver
 ) : ViewModel() {
     val addresses = userRepository.userData.flatMapLatest {
@@ -81,7 +85,23 @@ class ConfirmOrderScreenViewModel @Inject constructor(
             initialValue = ""
         )
 
-    val cartItems = cartRepository.cartItems
+    val cartItems = userRepository.userData
+        .flatMapLatest { user ->
+            val id = user.id
+            if (id.isNotEmpty()) {
+                cartRepository.getCartItems(id).map { items ->
+                    items.mapNotNull {
+                        it?.cartItemsDomainClassToCartItemsUiClass()
+                    }
+                }
+            } else {
+                flowOf(emptyList())
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     val userData = userRepository.userData
 
@@ -168,6 +188,17 @@ class ConfirmOrderScreenViewModel @Inject constructor(
 
 
     // --------------------------------------------\\ Location //--------------------------------------------
+
+    private val _selectAddressState = MutableStateFlow<UiStates>(UiStates.Loading)
+    val selectAddressState = _selectAddressState.asStateFlow()
+
+    private fun syncAddresses(){
+        viewModelScope.launch {
+            _selectAddressState.value = UiStates.Loading
+            _selectAddressState.value = syncAddressesUseCase()
+        }
+    }
+
     fun retryNetwork(){
         viewModelScope.launch {
             val isConnected = networkObserver.isCurrentlyConnected()
@@ -502,6 +533,19 @@ class ConfirmOrderScreenViewModel @Inject constructor(
     }
 
     init {
+        viewModelScope.launch {
+            isNetworkAvailable.collect { available ->
+                if(available){
+                    if(_selectAddressState.value != UiStates.Success) syncAddresses()
+                }else{
+                    if(_selectAddressState.value != UiStates.Success) _selectAddressState.value = UiStates.Offline
+                }
+            }
+            if(currentScreen == ConfirmOrderScreens.SelectAddress){
+                if(_selectAddressState.value != UiStates.Success) syncAddresses()
+            }
+        }
+
         viewModelScope.launch {
 
             _checkoutFormState.phoneNumberState.edit {

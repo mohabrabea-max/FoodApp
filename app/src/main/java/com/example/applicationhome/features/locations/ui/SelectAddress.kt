@@ -25,7 +25,7 @@ import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.components.screens.EmptyScreen
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.data.local.entity.AddressesEntity
+import com.example.applicationhome.core.data.local.entity.AddressesEntity
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

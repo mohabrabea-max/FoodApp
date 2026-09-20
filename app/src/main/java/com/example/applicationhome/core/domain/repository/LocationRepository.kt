@@ -1,7 +1,7 @@
 package com.example.applicationhome.core.domain.repository
 
 import android.location.Location
-import com.example.applicationhome.data.data.model.LocationDataClass
+import com.example.applicationhome.core.domain.model.LocationDataClass
 
 interface LocationRepository {
     suspend fun getAddressFromLocation(

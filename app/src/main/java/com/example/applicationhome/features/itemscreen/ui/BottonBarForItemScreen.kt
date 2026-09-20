@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,23 +32,31 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.theme.DarkOrange
+import java.util.Locale
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomBarForItemScreen(
     price : Double,
+    discountPrice : Double? = null,
     newCount : Int,
     minusnewCount : () -> Unit = {},
     plusnewCount : () -> Unit = {},
     clickable : () -> Unit = {}
 ){
     val totalPrice = newCount * price
+
+    val discountTotalPrice = if(discountPrice != null) newCount * discountPrice else null
+    val formattedPrice = String.format(Locale.US, "%.2f", discountTotalPrice)
 
     var color : Color
     var fontColor : Color
@@ -78,7 +87,7 @@ fun BottomBarForItemScreen(
         ){
             Box(
                 modifier = Modifier.weight(1.2f).
-                height(50.dp).
+                height(55.dp).
                 clip(RoundedCornerShape(50.dp)).
                 background(MaterialTheme.colorScheme.surface).
                 border(width = 0.5.dp, color = Color.LightGray, shape = CircleShape).padding(4.dp)
@@ -114,7 +123,7 @@ fun BottomBarForItemScreen(
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.onSurface,
                             textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Medium
                         )
                     }
                     IconButton(
@@ -134,35 +143,63 @@ fun BottomBarForItemScreen(
                 }
             }
             Row(
-                modifier = Modifier.weight(2f).
-                height(50.dp).
-                clip(RoundedCornerShape(50.dp)).
-                background(color).
-                clickable {
-                    if(newCount > 0){
+                modifier = Modifier
+                    .weight(2f)
+                    .height(55.dp)
+                    .clip(RoundedCornerShape(50.dp))
+                    .background(color)
+                    .clickable(enabled = newCount > 0){
                         clickable()
-                    }
-                }.
-                padding(15.dp),
+                    }.padding(vertical = 10.dp, horizontal = 17.dp),
+
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ){
                 Text(
-                    text = "Add item",
+                    text = stringResource(R.string.add_item),
                     fontSize = 15.sp,
                     style = MaterialTheme.typography.labelLarge,
                     color = fontColor,
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Medium
                 )
-                Text(
-                    text = "EGP $totalPrice",
-                    fontSize = 15.sp,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = fontColor,
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold
-                )
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ){
+                    when(discountTotalPrice){
+                        null -> {
+                            Text(
+                                text = "EGP $totalPrice",
+                                fontSize = 15.sp,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = fontColor,
+                                textAlign = TextAlign.Center,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+
+                        else -> {
+                            Text(
+                                text = "EGP $totalPrice",
+                                fontSize = 11.sp,
+                                textDecoration = TextDecoration.LineThrough,
+                                color = fontColor,
+                                style = MaterialTheme.typography.labelLarge
+                            )
+
+                            Text(
+                                text = "EGP $formattedPrice",
+                                fontSize = 13.sp,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = fontColor,
+                                textAlign = TextAlign.Center,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
             }
         }
     }

@@ -15,8 +15,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.core.domain.model.TapRowData.FavoriteTapRow
 import com.example.applicationhome.core.ui.theme.DarkOrange
+import com.example.applicationhome.core.domain.model.TapRowData.FavoriteTapRow
 
 @Composable
 fun FavoriteCategoriesBar(

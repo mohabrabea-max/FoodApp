@@ -35,9 +35,9 @@ import androidx.compose.ui.unit.sp
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.designsystem.SquareRadioButton
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.data.data.model.ConfirmOrderScreenTextFieldEnum
-import com.example.applicationhome.data.data.model.ProfileEditResult
-import com.example.applicationhome.data.data.model.TextFieldClassFromConfirmOrderScreen
+import com.example.applicationhome.core.domain.model.ConfirmOrderScreenTextFieldEnum
+import com.example.applicationhome.core.domain.model.ProfileEditResult
+import com.example.applicationhome.core.domain.model.TextFieldClassFromConfirmOrderScreen
 
 
 @Composable

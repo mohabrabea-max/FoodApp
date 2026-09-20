@@ -47,7 +47,7 @@ import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.bottom
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.DeepMatteBlack
 import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.data.data.model.UiEvent
+import com.example.applicationhome.core.domain.model.UiEvent
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)

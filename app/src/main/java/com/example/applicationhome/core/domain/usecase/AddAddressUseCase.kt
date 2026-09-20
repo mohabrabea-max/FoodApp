@@ -1,7 +1,7 @@
 package com.example.applicationhome.core.domain.usecase
 
+import com.example.applicationhome.core.domain.model.Address
 import com.example.applicationhome.core.domain.repository.AddressesRepository
-import com.example.applicationhome.data.data.model.Address
 import javax.inject.Inject
 
 class AddAddressUseCase @Inject constructor(

@@ -5,26 +5,29 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.map
+import com.example.applicationhome.core.data.local.entity.FavoriteMealEntity
+import com.example.applicationhome.core.data.local.entity.FavoriteRestaurantEntity
+import com.example.applicationhome.core.data.local.entity.FavoriteSnackEntity
+import com.example.applicationhome.core.data.local.entity.OffersEntity
+import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
+import com.example.applicationhome.core.data.remote.NetworkObserver
+import com.example.applicationhome.core.data.remote.dto.Drink
+import com.example.applicationhome.core.domain.model.AddToCartStates
+import com.example.applicationhome.core.domain.model.CartItemsDomainClass
+import com.example.applicationhome.core.domain.model.CategoriesInWithTitle
+import com.example.applicationhome.core.domain.model.CategoryEnum
+import com.example.applicationhome.core.domain.model.MealSnacks
+import com.example.applicationhome.core.domain.model.RestaurantUiState
+import com.example.applicationhome.core.domain.model.ShowSnackBarEvent
 import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.RestaurantRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
 import com.example.applicationhome.core.domain.usecase.FavoriteUseCase
-import com.example.applicationhome.data.data.model.AddToCartStates
-import com.example.applicationhome.data.data.model.BottomSheetItem
-import com.example.applicationhome.data.data.model.CategoriesInWithTitle
-import com.example.applicationhome.data.data.model.Drink
-import com.example.applicationhome.data.data.model.MealSnacks
-import com.example.applicationhome.data.data.model.RestaurantUiState
-import com.example.applicationhome.data.data.model.ShowSnackBarEvent
-import com.example.applicationhome.data.local.entity.CartItemsClass
-import com.example.applicationhome.data.local.entity.FavoriteMealEntity
-import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
-import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
-import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
-import com.example.applicationhome.data.local.entity.OffersEntity
-import com.example.applicationhome.data.local.entity.SnackWithFavoriteStatus
-import com.example.applicationhome.data.remote.NetworkObserver
+import com.example.applicationhome.core.ui.mapper.mealDomainToUiModel
+import com.example.applicationhome.core.ui.mapper.snackDomainToUiModel
+import com.example.applicationhome.core.ui.model.FoodItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,10 +38,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -73,18 +73,26 @@ class RestaurantViewModel @Inject constructor(
     private val _mealSize = MutableStateFlow("")
     val mealSize : StateFlow<String> = _mealSize.asStateFlow()
 
-    val foodMenuList : Flow<PagingData<MealWithFavoriteStatus>> = combine(
+    val foodMenuList : Flow<PagingData<FoodItem.MealItem>> = combine(
         _resId,
         _typeInRestaurantScreen
     ) { resId, type ->
         Pair(resId, type)
     }.flatMapLatest { (resId, type) ->
-        restaurantRepository.getMealsFromDatabase(resId, type.category)
+        restaurantRepository.getMealsFromDatabase(resId, type.category).map { pagingData ->
+            pagingData.map {
+                it.mealDomainToUiModel()
+            }
+        }
     }.cachedIn(viewModelScope)
 
-    val snackMenuList : Flow<PagingData<SnackWithFavoriteStatus>> =
+    val snackMenuList : Flow<PagingData<FoodItem.SnackItem>> =
         _resId.flatMapLatest { resId ->
-            restaurantRepository.getSnacksFromDatabase(resId)
+            restaurantRepository.getSnacksFromDatabase(resId).map { pagingData ->
+                pagingData.map {
+                    it.snackDomainToUiModel()
+                }
+            }
         }.cachedIn(viewModelScope)
 
     private val _drinkMenuMap = MutableStateFlow<Map<String, Drink>>(emptyMap())
@@ -138,17 +146,15 @@ class RestaurantViewModel @Inject constructor(
         viewModelScope.launch {
             combine(_mealId, _snackId) { meal, snack ->
                 Pair(meal, snack)
-            }.flatMapLatest { (meal, snack) ->
+            }.map { (meal, snack) ->
                 when {
                     meal != null -> {
-                        restaurantRepository.getMealByIdFromDatabase(meal)
-                            .map {  BottomSheetItem.MealItem(it) }
+                        restaurantRepository.getMealByIdFromDatabase(meal)?.mealDomainToUiModel()
                     }
                     snack != null -> {
-                        restaurantRepository.getSnackByIdFromDatabase(snack)
-                            .map {  BottomSheetItem.SnackItem(it) }
+                        restaurantRepository.getSnackByIdFromDatabase(snack)?.snackDomainToUiModel()
                     }
-                    else -> flowOf(null)
+                    else -> null
                 }
             }.collect { item ->
                 _uiState.update {
@@ -163,38 +169,31 @@ class RestaurantViewModel @Inject constructor(
 
     private fun loadRestaurantDetails(restaurantId : Int, mealId : Int?, snackId : Int?){
         viewModelScope.launch {
-            val foodFlow : Flow<BottomSheetItem?> =
+            val food : FoodItem? =
                 when{
                     mealId != null -> {
-                        restaurantRepository.getMealByIdFromDatabase(mealId)
-                            .map { BottomSheetItem.MealItem(it) }
+                        restaurantRepository.getMealByIdFromDatabase(mealId)?.mealDomainToUiModel()
                     }
                     snackId != null -> {
-                        restaurantRepository.getSnackByIdFromDatabase(snackId)
-                            .map { BottomSheetItem.SnackItem(it) }
+                        restaurantRepository.getSnackByIdFromDatabase(snackId)?.snackDomainToUiModel()
                     }
-                    else -> flowOf(null)
+                    else -> null
                 }
 
-            val restaurantFlow = restaurantRepository.getRestaurantByIdFromDatabase(restaurantId)
-                .filterNotNull()
+            val restaurant = restaurantRepository.getRestaurantByIdFromDatabase(restaurantId)?: RestaurantWithFavoriteStatus()
 
             launch {
-                selectedtype(0, restaurantFlow.first().restaurant.typ.minByOrNull { it.index }!!)
+                selectedtype(0, restaurant.restaurant.typ.minByOrNull { it.index }!!)
             }
 
-            combine(foodFlow, restaurantFlow) { food, res ->
-                Pair(food, res)
-            }.collect { (meal, restaurant) ->
-                _uiState.update {
-                    it.copy(
-                        restaurantData = restaurant,
-                        bottomSheetItem = meal
-                    )
-                }
-
-                selectSize(meal?.sizes?.keys?.last() ?: "")
+            _uiState.update {
+                it.copy(
+                    restaurantData = restaurant,
+                    bottomSheetItem = food
+                )
             }
+
+            selectSize(food?.sizes?.keys?.last() ?: "")
         }
     }
 
@@ -249,17 +248,18 @@ class RestaurantViewModel @Inject constructor(
 
     val totalPrice = cartRepository.totalPrice
 
-    private val newFoodInCart = MutableStateFlow<CartItemsClass?>(null)
+    private val newFoodInCart = MutableStateFlow<CartItemsDomainClass?>(null)
     private val newFoodInCartSize = MutableStateFlow<String?>(null)
 
     private val _newCount = MutableStateFlow(0)
     val newCount = _newCount.asStateFlow()
 
 
-    fun plus(food: CartItemsClass, size : String, cartNavigation : () -> Unit){
+    fun plus(mealId : Int, size : String, type: CategoryEnum, cartNavigation : () -> Unit){
         viewModelScope.launch {
             val userId = userRepository.userData.value.id
-            val state = cartUseCase.plus(userId, food, size)
+
+            val state = cartUseCase.plus(userId, mealId, size, type)
 
             when(state){
                 AddToCartStates.Success -> {
@@ -290,10 +290,17 @@ class RestaurantViewModel @Inject constructor(
         }
     }
 
-    fun updateCount(food : CartItemsClass, size : String, newCount : Int, cartNavigation : () -> Unit, onCloseItemScreen : () -> Unit) {
+    fun updateCount(mealId : Int, size : String, type: CategoryEnum, newCount : Int, cartNavigation : () -> Unit, onCloseItemScreen : () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val userId = userRepository.userData.value.id
-            val state = cartUseCase.plus(userId, food, size, newCount)
+
+            val state = cartUseCase.plus(
+                userId = userId,
+                mealId = mealId,
+                size = size,
+                type = type,
+                quantityToAdd = newCount
+            )
 
             when(state){
                 AddToCartStates.Success -> {
@@ -326,10 +333,11 @@ class RestaurantViewModel @Inject constructor(
         }
     }
 
-    fun minus(food: CartItemsClass, size : String){
+    fun minus(mealId : Int, size : String){
         viewModelScope.launch {
             val userId = userRepository.userData.value.id
-            cartUseCase.minus(userId, food, size)
+
+            cartUseCase.minus(userId, mealId, size)
         }
     }
 
@@ -341,7 +349,7 @@ class RestaurantViewModel @Inject constructor(
             cartUseCase.clearAllCart(userId)
 
             if(newFood != null && newSize != null){
-                cartUseCase.plus(userId, newFood, newSize, count)
+                cartUseCase.plus(userId, newFood.mealId, newSize, CategoryEnum.fromString(newFood.type), count)
 
                 sendAddedToCartChannel{ cartNavigation() }
 
@@ -427,7 +435,7 @@ class RestaurantViewModel @Inject constructor(
     fun addItemInBottomSheetToFavorite(){
         viewModelScope.launch {
             when(_uiState.value.bottomSheetItem){
-                is BottomSheetItem.MealItem -> {
+                is FoodItem.MealItem -> {
                     val favoriteMealEntity = FavoriteMealEntity(
                         _uiState.value.bottomSheetItem?.id ?: 0,
                         userData.value.id,
@@ -438,7 +446,7 @@ class RestaurantViewModel @Inject constructor(
                     addMealFavorite(favoriteMealEntity)
                 }
 
-                is BottomSheetItem.SnackItem -> {
+                is FoodItem.SnackItem -> {
                     val favoriteSnackEntity = FavoriteSnackEntity(
                         _uiState.value.bottomSheetItem?.id ?: 0,
                         userData.value.id,
@@ -457,11 +465,11 @@ class RestaurantViewModel @Inject constructor(
     fun removeItemInBottomSheetToFavorite(){
         viewModelScope.launch {
             when(_uiState.value.bottomSheetItem){
-                is BottomSheetItem.MealItem -> {
+                is FoodItem.MealItem -> {
                     removeMealFavorite(_uiState.value.bottomSheetItem?.id ?: 0)
                 }
 
-                is BottomSheetItem.SnackItem -> {
+                is FoodItem.SnackItem -> {
                     removeSnackFavorite(_uiState.value.bottomSheetItem?.id ?: 0)
                 }
 

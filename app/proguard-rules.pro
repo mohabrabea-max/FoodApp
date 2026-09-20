@@ -41,7 +41,8 @@
 # =====================================================================
 # 3. Models & Entities (حماية طبقة البيانات بالكامل)
 # =====================================================================
--keep class com.example.applicationhome.data.** { *; }
+-keep class com.example.applicationhome.domain.model.** { *; }
+-keep class com.example.applicationhome.data.remote.dto.** { *; }
 
 # =====================================================================
 # 4. Retrofit & Firebase Database

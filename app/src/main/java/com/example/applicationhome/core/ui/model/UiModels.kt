@@ -1,0 +1,78 @@
+package com.example.applicationhome.core.ui.model
+
+import androidx.annotation.Keep
+import com.example.applicationhome.core.domain.model.MealSizeDetail
+
+sealed interface UiStates {
+    data object Loading : UiStates
+    data object Success : UiStates
+    data object Offline : UiStates
+}
+
+sealed interface UserUiState {
+    data object Starting : UserUiState
+    data object GuestMode : UserUiState
+    data object Success : UserUiState
+    data object Offline : UserUiState
+}
+
+@Keep
+data class DiscountsUi(
+    val discount : Int = 0,
+    val endDiscount : String = ""
+)
+
+sealed interface FoodItem {
+    val id : Int
+    val name : String
+    val details : String
+    val image : String
+    val sizes : Map<String, Double>
+    val restaurantId : Int
+    val review : Double
+    val discount : DiscountsUi?
+    val isFavorite : Boolean
+
+    data class MealItem(
+        override val id : Int = 0,
+        override val name : String = "",
+        override val details : String = "",
+        override val image : String = "",
+        override val sizes : Map<String, Double> = mapOf("" to 0.0),
+        override val restaurantId : Int = 0,
+        override val review : Double = 0.0,
+        override val discount : DiscountsUi? = null,
+        override val isFavorite : Boolean = false,
+        val category : String = "ALL",
+        val sizeOptions : List<MealSizeDetail>
+    ) : FoodItem
+
+    data class SnackItem(
+        override val id : Int = 0,
+        override val name : String = "",
+        override val details : String = "",
+        override val image : String = "",
+        override val sizes : Map<String, Double> = mapOf("" to 0.0),
+        override val restaurantId : Int = 0,
+        override val review : Double = 0.0,
+        override val discount : DiscountsUi? = null,
+        override val isFavorite : Boolean = false
+    ) : FoodItem
+}
+
+
+data class CartItemsUiClass(
+    val userId : String = "",
+    val mealKey : String = "",
+    val mealId : Int = 0,
+    val name : String = "",
+    val type : String = "",
+    val size : String = "",
+    val quantity: Int = 0,
+    val priceOfOne : Double = 0.0,
+    val totalPrice : Double = 0.0,
+    val image : String = "",
+    val restaurantId : Int = 0,
+    val discount : DiscountsUi? = null,
+    val finalPrice : Double = 0.0
+)

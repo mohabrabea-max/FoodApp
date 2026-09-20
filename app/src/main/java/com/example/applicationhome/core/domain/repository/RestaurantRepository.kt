@@ -1,17 +1,17 @@
 package com.example.applicationhome.core.domain.repository
 
 import androidx.paging.PagingData
-import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
-import com.example.applicationhome.data.local.entity.OffersEntity
-import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
-import com.example.applicationhome.data.local.entity.SnackWithFavoriteStatus
+import com.example.applicationhome.core.data.local.entity.OffersEntity
+import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
+import com.example.applicationhome.core.domain.model.MealDomain
+import com.example.applicationhome.core.domain.model.SnackDomain
 import kotlinx.coroutines.flow.Flow
 
 interface RestaurantRepository {
-    fun getRestaurantByIdFromDatabase(resId : Int): Flow<RestaurantWithFavoriteStatus?>
-    fun getMealByIdFromDatabase(mealId : Int): Flow<MealWithFavoriteStatus?>
-    fun getSnackByIdFromDatabase(snackId : Int): Flow<SnackWithFavoriteStatus?>
-    fun getMealsFromDatabase(resId : Int, type : String): Flow<PagingData<MealWithFavoriteStatus>>
-    fun getSnacksFromDatabase(resId : Int): Flow<PagingData<SnackWithFavoriteStatus>>
+    suspend fun getRestaurantByIdFromDatabase(resId : Int): RestaurantWithFavoriteStatus?
+    suspend fun getMealByIdFromDatabase(mealId : Int): MealDomain?
+    suspend fun getSnackByIdFromDatabase(snackId : Int): SnackDomain?
+    fun getMealsFromDatabase(resId : Int, type : String): Flow<PagingData<MealDomain>>
+    fun getSnacksFromDatabase(resId : Int): Flow<PagingData<SnackDomain>>
     fun getRestaurantOffersFromDatabase(resId : Int): Flow<List<OffersEntity>>
 }

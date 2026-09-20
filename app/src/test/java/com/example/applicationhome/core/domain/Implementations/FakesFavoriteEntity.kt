@@ -1,14 +1,14 @@
 package com.example.applicationhome.core.domain.Implementations
 
-import com.example.applicationhome.data.local.entity.FavoriteMealEntity
-import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
-import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
-import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
-import com.example.applicationhome.data.local.entity.MealsEntity
-import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
-import com.example.applicationhome.data.local.entity.RestaurantsEntity
-import com.example.applicationhome.data.local.entity.SnackWithFavoriteStatus
-import com.example.applicationhome.data.local.entity.SnacksEntity
+import com.example.applicationhome.core.data.local.entity.FavoriteMealEntity
+import com.example.applicationhome.core.data.local.entity.FavoriteRestaurantEntity
+import com.example.applicationhome.core.data.local.entity.FavoriteSnackEntity
+import com.example.applicationhome.core.data.local.entity.MealWithFavoriteStatus
+import com.example.applicationhome.core.data.local.entity.MealsEntity
+import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
+import com.example.applicationhome.core.data.local.entity.RestaurantsEntity
+import com.example.applicationhome.core.data.local.entity.SnackWithFavoriteStatus
+import com.example.applicationhome.core.data.local.entity.SnacksEntity
 
 object FakesFavoriteEntity {
     fun fakesMealsFavoriteEntity() =

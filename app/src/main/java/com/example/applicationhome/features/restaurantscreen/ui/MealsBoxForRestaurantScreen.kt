@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,15 +26,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.DiscountsOutlookBox
+import java.util.Locale
 
 @Composable
 fun MealsBoxForRestaurantScreen(
     price : Double,
+    discount : Int?,
     details : List<String>?,
     name : String,
     image : String,
@@ -66,6 +71,7 @@ fun MealsBoxForRestaurantScreen(
             verticalArrangement = Arrangement.SpaceBetween
         ){
             Column(
+                modifier = Modifier.weight(5f),
                 horizontalAlignment = Alignment.Start
             ){
                 Text(
@@ -79,19 +85,56 @@ fun MealsBoxForRestaurantScreen(
                     Spacer(modifier = Modifier.height(5.dp))
                     Text(
                         text = details.joinToString(separator = " + "),
-                        fontSize = 13.sp,
+                        fontSize = 12.sp,
                         lineHeight = 18.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
-            Text(
-                text = "$price E.G",
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold
-            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth().weight(2f),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom
+            ){
+                Column(
+                    horizontalAlignment = Alignment.Start
+                ){
+                    when(discount){
+                        null -> {
+                            Text(
+                                text = "EGP $price",
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        else -> {
+                            val newPrice = price * (1.0 - (discount.toDouble() / 100.00))
+                            val formattedPrice = String.format(Locale.US, "%.2f", newPrice)
+
+                            Text(
+                                text = "EGP $price",
+                                fontSize = 14.sp,
+                                textDecoration = TextDecoration.LineThrough,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.labelLarge
+                            )
+
+                            Text(
+                                text = "EGP $formattedPrice",
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+
+                if(discount != null) DiscountsOutlookBox(discount)
+            }
         }
         Box(
             modifier = Modifier.

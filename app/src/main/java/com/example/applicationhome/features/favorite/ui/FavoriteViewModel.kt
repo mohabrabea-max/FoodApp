@@ -2,24 +2,28 @@ package com.example.applicationhome.features.favorite.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.core.data.remote.NetworkObserver
+import com.example.applicationhome.core.domain.model.AddToCartStates
+import com.example.applicationhome.core.domain.model.CartItemsDomainClass
+import com.example.applicationhome.core.domain.model.CategoryEnum
+import com.example.applicationhome.core.domain.model.ShowSnackBarEvent
 import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
 import com.example.applicationhome.core.domain.usecase.FavoriteUseCase
-import com.example.applicationhome.data.data.model.AddToCartStates
-import com.example.applicationhome.data.data.model.ShowSnackBarEvent
-import com.example.applicationhome.data.local.entity.CartItemsClass
-import com.example.applicationhome.data.local.entity.FavoriteMealEntity
-import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
-import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
-import com.example.applicationhome.data.remote.NetworkObserver
+import com.example.applicationhome.core.ui.mapper.mealDomainToUiModel
+import com.example.applicationhome.core.ui.mapper.snackDomainToUiModel
+import com.example.applicationhome.core.ui.model.FoodItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -44,17 +48,73 @@ class FavoriteViewModel @Inject constructor(
     private val _selectedCategorieInFavoriteScreen = MutableStateFlow(0)
     val selectedCategorieInFavoriteScreen = _selectedCategorieInFavoriteScreen.asStateFlow()
 
-    val favoriteMeals = favoriteRepository.favoriteMeals
+    val favoriteMeals : StateFlow<List<FoodItem.MealItem>> =
+        userRepository.userData.flatMapLatest { user ->
+            val id = user.id
+            favoriteRepository.getFavoriteMeals(id).map { meals ->
+                meals.map {
+                    it.mealDomainToUiModel()
+                }
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
-    val favoriteSnacks = favoriteRepository.favoriteSnacks
+    val favoriteSnacks : StateFlow<List<FoodItem.SnackItem>> =
+        userRepository.userData.flatMapLatest { user ->
+            val id = user.id
+            favoriteRepository.getFavoriteSnacks(id).map { meals ->
+                meals.map {
+                    it.snackDomainToUiModel()
+                }
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
-    val favoriteRestaurantsFromDatabase = favoriteRepository.favoriteRestaurantsFromDatabase
+    val favoriteRestaurantsFromDatabase =
+        userRepository.userData.flatMapLatest { user ->
+            val id = user.id
+            favoriteRepository.favoriteRestaurantsFromDatabase(id)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
-    val favoriteFoodCount = favoriteRepository.favoriteFoodCount
+    val favoriteFoodCount =
+        userRepository.userData.flatMapLatest { user ->
+            val id = user.id
+            favoriteRepository.favoriteFoodCount(id)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
+        )
 
-    val favoriteSnacksCount = favoriteRepository.favoriteSnacksCount
+    val favoriteSnacksCount =
+        userRepository.userData.flatMapLatest { user ->
+            val id = user.id
+            favoriteRepository.favoriteSnacksCount(id)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
+        )
 
-    val favoriteRestaurantsCount = favoriteRepository.favoriteRestaurantsCount
+    val favoriteRestaurantsCount =
+        userRepository.userData.flatMapLatest { user ->
+            val id = user.id
+            favoriteRepository.favoriteRestaurantsCount(id)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
+        )
 
     val isNetworkAvailable = networkObserver.isNetworkAvailable
         .stateIn(
@@ -62,23 +122,6 @@ class FavoriteViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = true
         )
-
-
-    fun addMealFavorite(food : FavoriteMealEntity){
-        viewModelScope.launch {
-            favoriteUseCase.addMealFavorite(food)
-        }
-    }
-    fun addSnackFavorite(snack : FavoriteSnackEntity){
-        viewModelScope.launch {
-            favoriteUseCase.addSnackFavorite(snack)
-        }
-    }
-    fun addRestaurantsFavorite(restaurants: FavoriteRestaurantEntity){
-        viewModelScope.launch {
-            favoriteUseCase.addRestaurantsFavorite(restaurants)
-        }
-    }
 
 
     fun removeMealFavorite(mealId : Int){
@@ -117,15 +160,16 @@ class FavoriteViewModel @Inject constructor(
 
     val totalPrice = cartRepository.totalPrice
 
-    private val newFoodInCart = MutableStateFlow<CartItemsClass?>(null)
+    private val newFoodInCart = MutableStateFlow<CartItemsDomainClass?>(null)
     private val newFoodInCartSize = MutableStateFlow<String?>(null)
 
 
 
-    fun plus(food: CartItemsClass, size : String, cartNavigation : () -> Unit){
+    fun plus(foodId : Int, size : String, type : CategoryEnum, cartNavigation : () -> Unit){
         viewModelScope.launch {
             val userId = userRepository.userData.value.id
-            val state = cartUseCase.plus(userId, food, size)
+
+            val state = cartUseCase.plus(userId, foodId, size, type)
 
             when(state){
                 AddToCartStates.Success -> {
@@ -156,10 +200,11 @@ class FavoriteViewModel @Inject constructor(
         }
     }
 
-    fun minus(food: CartItemsClass, size : String){
+    fun minus(mealId : Int, size : String){
         viewModelScope.launch {
             val userId = userRepository.userData.value.id
-            cartUseCase.minus(userId, food, size)
+
+            cartUseCase.minus(userId, mealId, size)
         }
     }
 
@@ -171,7 +216,13 @@ class FavoriteViewModel @Inject constructor(
             cartUseCase.clearAllCart(userId)
 
             if(newFood != null && newSize != null){
-                cartUseCase.plus(userId, newFood, newSize, count)
+                cartUseCase.plus(
+                    userId = userId,
+                    mealId = newFood.mealId,
+                    size = newSize,
+                    type = CategoryEnum.fromString(newFood.type),
+                    quantityToAdd = count
+                )
 
                 sendAddedToCartChannel{ cartNavigation() }
 

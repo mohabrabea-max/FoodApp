@@ -15,8 +15,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.components.model.FinalScreenViewModel
-import com.example.applicationhome.data.data.model.Screens
-import com.example.applicationhome.data.data.model.UserUiState
+import com.example.applicationhome.core.domain.model.Screens
+import com.example.applicationhome.core.ui.model.UserUiState
 
 @Composable
 fun MySplashScreen(

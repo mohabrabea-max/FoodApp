@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.applicationhome.BuildConfig
-import com.example.applicationhome.data.data.model.PaymentState
+import com.example.applicationhome.core.domain.model.PaymentState
 
 @Keep
 class PaymobJSBridge(private val onResult: (Boolean) -> Unit) {

@@ -1,21 +1,50 @@
 package com.example.applicationhome.core.domain.usecase
 
+import com.example.applicationhome.core.data.mapper.mealDomainToCartItemsDomainClass
+import com.example.applicationhome.core.data.mapper.snackDomainToCartItemsDomainClass
+import com.example.applicationhome.core.domain.model.AddToCartStates
+import com.example.applicationhome.core.domain.model.CartItemsDomainClass
+import com.example.applicationhome.core.domain.model.CategoryEnum
 import com.example.applicationhome.core.domain.repository.CartRepository
-import com.example.applicationhome.data.data.model.AddToCartStates
-import com.example.applicationhome.data.local.entity.CartItemsClass
+import com.example.applicationhome.core.domain.repository.RestaurantRepository
 import javax.inject.Inject
 
 class CartUseCase @Inject constructor(
-    private val cartRepository : CartRepository
+    private val cartRepository : CartRepository,
+    private val restaurantRepository : RestaurantRepository
 ){
-    suspend fun plus(userId : String, food : CartItemsClass, size : String, quantityToAdd : Int = 1): AddToCartStates {
+    suspend fun plus(userId : String, mealId : Int, size : String, type : CategoryEnum, quantityToAdd : Int = 1): AddToCartStates {
         if(userId.isEmpty()) return AddToCartStates.ErrorInLoginState()
 
+        val mealKey = "${mealId}_${size}"
         val cartItems = cartRepository.cartItems.value
 
+        val domainFood = when(type){
+            CategoryEnum.SNACKS -> {
+                restaurantRepository.getSnackByIdFromDatabase(mealId)
+                    ?.snackDomainToCartItemsDomainClass(userId, size, quantityToAdd)
+            }
+
+            else -> {
+                restaurantRepository.getMealByIdFromDatabase(mealId)
+                    ?.mealDomainToCartItemsDomainClass(userId, size, quantityToAdd)
+            }
+        }
+        if(domainFood == null){
+            return AddToCartStates.ErrorInCartRestaurant(food = CartItemsDomainClass(), size = size)
+        }
+
         if(cartItems.isEmpty()){
-            val cartRestaurant = cartRepository.getCartRestaurantData(food)
-            cartRepository.createNewCart(userId, food, size, food.type, food.priceOfOne, cartRestaurant, quantityToAdd)
+            val cartRestaurant = cartRepository.getCartRestaurantData(domainFood.restaurantId)
+            cartRepository.createNewCart(
+                userId = userId,
+                food = domainFood,
+                size = size,
+                type = domainFood.type,
+                priceOfOne = domainFood.priceOfOne,
+                res = cartRestaurant,
+                number = quantityToAdd
+            )
 
             return AddToCartStates.Success
         }
@@ -23,23 +52,28 @@ class CartUseCase @Inject constructor(
 
         val currentCart = cartRepository.cartInformation.value
 
-        if(food.restaurantId != currentCart?.restaurantId){
-            return AddToCartStates.ErrorInCartRestaurant(food = food, size = size)
+        if(domainFood.restaurantId != currentCart?.restaurantId){
+            return AddToCartStates.ErrorInCartRestaurant(food = domainFood, size = size)
         }
 
-
-        val mealKey = "${food.mealId}_${size}"
         val cartItem = cartItems.find { it.mealKey == mealKey }
 
         if(cartItem == null){
-            cartRepository.addMealToCart(userId, food, size, food.type, food.priceOfOne, quantityToAdd)
+            cartRepository.addMealToCart(
+                userId,
+                domainFood,
+                size,
+                domainFood.type,
+                domainFood.priceOfOne,
+                quantityToAdd
+            )
             return AddToCartStates.Success
         }
 
         if(cartItem.quantity >= 99) return AddToCartStates.Success
 
         val finalNumber = (cartItem.quantity + quantityToAdd).coerceAtMost(99)
-        cartRepository.updateQuantity(userId, food, size, food.priceOfOne, finalNumber)
+        cartRepository.updateQuantity(userId, mealKey, size, domainFood.priceOfOne, finalNumber)
 
         return AddToCartStates.Success
     }
@@ -47,7 +81,7 @@ class CartUseCase @Inject constructor(
 
     suspend fun addMoreThanOneItem(
         userId : String,
-        foods : List<CartItemsClass>,
+        foods : List<CartItemsDomainClass>,
         resId : Int,
         resName : String,
         resImage : String
@@ -66,16 +100,17 @@ class CartUseCase @Inject constructor(
     }
 
 
-    suspend fun minus(userId : String, food : CartItemsClass, size : String){
+    suspend fun minus(userId : String, mealId : Int, size : String){
         val cartItems = cartRepository.cartItems.value
-        val mealKey = "${food.mealId}_${size}"
+
+        val mealKey = "${mealId}_${size}"
         val cartItem = cartItems.find { it.mealKey == mealKey } ?: return
 
         if(cartItem.quantity <= 1){
-            cartRepository.deleteFromCart(userId, food.mealId, size)
+            cartRepository.deleteFromCart(userId, mealId, size)
         }else{
             val finalNumber = cartItem.quantity - 1
-            cartRepository.updateQuantity(userId, food, size, food.priceOfOne, finalNumber)
+            cartRepository.updateQuantity(userId, mealKey, size, cartItem.priceOfOne, finalNumber)
         }
     }
 

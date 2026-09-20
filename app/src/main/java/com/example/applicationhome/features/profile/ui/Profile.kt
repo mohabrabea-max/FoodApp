@@ -44,7 +44,7 @@ import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.theme.BrandBlue
-import com.example.applicationhome.data.data.model.ProfileEditResult
+import com.example.applicationhome.core.domain.model.ProfileEditResult
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity",
     "UnrememberedMutableState"

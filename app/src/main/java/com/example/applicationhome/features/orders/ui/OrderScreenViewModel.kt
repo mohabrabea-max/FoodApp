@@ -6,20 +6,20 @@ import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Schedule
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.core.domain.model.ActionsStates
+import com.example.applicationhome.core.domain.model.ActiveOrderDialog
+import com.example.applicationhome.core.ui.model.UiStates
+import com.example.applicationhome.core.domain.model.OrderStates
+import com.example.applicationhome.core.domain.model.OrderStatesEnum
+import com.example.applicationhome.core.domain.model.OrderUiClass
+import com.example.applicationhome.core.domain.model.OrdersHistoryScreens
+import com.example.applicationhome.core.domain.model.TimelineStep
+import com.example.applicationhome.core.domain.model.UiEventOrderCancelled
+import com.example.applicationhome.core.data.remote.NetworkObserver
 import com.example.applicationhome.core.domain.repository.OrderRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CancelOrderUseCase
 import com.example.applicationhome.core.domain.usecase.RepurchaseOrderUseCase
-import com.example.applicationhome.data.data.model.ActionsStates
-import com.example.applicationhome.data.data.model.ActiveOrderDialog
-import com.example.applicationhome.data.data.model.HomeUiState
-import com.example.applicationhome.data.data.model.OrderStates
-import com.example.applicationhome.data.data.model.OrderStatesEnum
-import com.example.applicationhome.data.data.model.OrderUiClass
-import com.example.applicationhome.data.data.model.OrdersHistoryScreens
-import com.example.applicationhome.data.data.model.TimelineStep
-import com.example.applicationhome.data.data.model.UiEventOrderCancelled
-import com.example.applicationhome.data.remote.NetworkObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -145,7 +145,7 @@ class OrderScreenViewModel @Inject constructor(
     private val _selectedOrder = MutableStateFlow<OrderUiClass?>(null)
     val selectedOrder = _selectedOrder.asStateFlow()
 
-    private val _screenState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
+    private val _screenState = MutableStateFlow<UiStates>(UiStates.Loading)
     val screenState = _screenState.asStateFlow()
 
 
@@ -186,14 +186,14 @@ class OrderScreenViewModel @Inject constructor(
     }
 
     private suspend fun getOrdersHistory(){
-        _screenState.value = HomeUiState.Loading
+        _screenState.value = UiStates.Loading
 
         val id = userRepository.userData.value.id
         if(id.isNotEmpty()){
             val result = orderRepository.getOrders(id)
             _screenState.value = result
         }else{
-            _screenState.value = HomeUiState.Success
+            _screenState.value = UiStates.Success
         }
     }
 
@@ -308,9 +308,9 @@ class OrderScreenViewModel @Inject constructor(
         viewModelScope.launch {
             isNetworkAvailable.collect { available ->
                 if(available){
-                    if(_screenState.value != HomeUiState.Success) getOrdersHistory()
+                    if(_screenState.value != UiStates.Success) getOrdersHistory()
                 }else{
-                    if(_screenState.value != HomeUiState.Success) _screenState.value = HomeUiState.Offline
+                    if(_screenState.value != UiStates.Success) _screenState.value = UiStates.Offline
                 }
             }
         }

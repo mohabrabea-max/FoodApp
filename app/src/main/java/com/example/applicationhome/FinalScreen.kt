@@ -37,7 +37,7 @@ import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showNe
 import com.example.applicationhome.core.ui.components.model.FinalScreenViewModel
 import com.example.applicationhome.core.ui.components.screens.NoInternetScreen
 import com.example.applicationhome.core.ui.theme.MatteBlack
-import com.example.applicationhome.data.data.model.Screens
+import com.example.applicationhome.core.domain.model.Screens
 import com.example.applicationhome.features.Notifications.Notifications
 import com.example.applicationhome.features.WelcomeScreen.Ui.WelcomeScreen
 import com.example.applicationhome.features.WelcomeScreen.Ui.WelcomeScreenViewModel

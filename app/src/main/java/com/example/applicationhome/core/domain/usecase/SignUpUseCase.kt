@@ -1,12 +1,12 @@
 package com.example.applicationhome.core.domain.usecase
 
 import com.example.applicationhome.core.domain.exception.AuthException
+import com.example.applicationhome.core.domain.model.AuthError
+import com.example.applicationhome.core.domain.model.UserClassFireBase
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.SearchRepository
 import com.example.applicationhome.core.domain.repository.SupabaseRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
-import com.example.applicationhome.data.data.model.AuthError
-import com.example.applicationhome.data.data.model.UserClassFireBase
 import javax.inject.Inject
 
 class SignUpUseCase @Inject constructor(

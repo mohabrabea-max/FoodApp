@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.data.data.model.SignUpBasicTextFields
+import com.example.applicationhome.core.domain.model.SignUpBasicTextFields
 import com.example.applicationhome.features.signupscreen.ui.SignupTextField
 
 @Composable

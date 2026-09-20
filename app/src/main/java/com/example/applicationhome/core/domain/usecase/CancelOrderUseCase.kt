@@ -1,8 +1,8 @@
 package com.example.applicationhome.core.domain.usecase
 
+import com.example.applicationhome.core.domain.model.ActionsStates
 import com.example.applicationhome.core.domain.repository.OrderRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
-import com.example.applicationhome.data.data.model.ActionsStates
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 

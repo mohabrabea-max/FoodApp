@@ -52,16 +52,16 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.R
+import com.example.applicationhome.core.data.local.entity.FavoriteRestaurantEntity
+import com.example.applicationhome.core.domain.model.Screens
 import com.example.applicationhome.core.ui.components.StartingBottomSheet
 import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.RestaurantImageView
+import com.example.applicationhome.core.ui.model.UiStates
 import com.example.applicationhome.core.ui.theme.LightOrange
-import com.example.applicationhome.data.data.model.HomeScreenActions
-import com.example.applicationhome.data.data.model.HomeScreenParameters
-import com.example.applicationhome.data.data.model.HomeUiState
-import com.example.applicationhome.data.data.model.Screens
-import com.example.applicationhome.data.data.model.StartBottomSheets
-import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
+import com.example.applicationhome.features.homescreen.model.HomeScreenActions
+import com.example.applicationhome.features.homescreen.model.HomeScreenParameters
+import com.example.applicationhome.features.itemscreen.model.StartBottomSheets
 import com.example.applicationhome.features.shimmers.screens.HomeScreenShimmer
 import kotlinx.coroutines.CoroutineScope
 
@@ -75,14 +75,14 @@ fun HomeScreen(
     onActions : HomeScreenActions,
     parameters : HomeScreenParameters,
     scrollState : LazyListState,
-    syncDataUiState : HomeUiState,
+    syncDataUiState : UiStates,
     startBottomSheets : StartBottomSheets,
     isRefreshing : Boolean,
     onRefresh : () -> Unit
 ){
     val state = rememberPullToRefreshState()
 
-    val isOnline = parameters.isNetworkAvailable || syncDataUiState != HomeUiState.Offline
+    val isOnline = parameters.isNetworkAvailable || syncDataUiState != UiStates.Offline
 
     val pagerState = rememberPagerState(pageCount = {parameters.offers.size})
 
@@ -199,7 +199,7 @@ fun HomeScreen(
                 }
 
                 when (syncDataUiState) {
-                    HomeUiState.Success, HomeUiState.Offline -> {
+                    UiStates.Success, UiStates.Offline -> {
                         item {
                             CategoriesBar(
                                 categories = parameters.categories,
@@ -258,18 +258,19 @@ fun HomeScreen(
 
                             item?.let {
                                 RestaurantsBoxHomeScreen(
-                                    item,
-                                    item.isFavorite,
-                                    {
+                                    discount = item.maxDiscount,
+                                    item = item,
+                                    isRestaurantInFavorite = item.isFavorite,
+                                    view = {
                                         imageToView = item.restaurant.image
                                         viewImageState = true
                                     },
-                                    {
+                                    clickable = {
                                         navigationController.navigate(
                                             Screens.RestaurantScreen.createRoute(restaurantId = item.restaurant.id)
                                         )
                                     },
-                                    {
+                                    addRestaurantsFavorite = {
                                         val favoriteRestaurantDatabase = FavoriteRestaurantEntity(
                                             item.restaurant.id,
                                             parameters.userData.id,
@@ -280,7 +281,7 @@ fun HomeScreen(
                                             favoriteRestaurantDatabase
                                         )
                                     },
-                                    { onActions.removeRestaurantsFavorite(item.restaurant.id) }
+                                    removeRestaurantsFavorite = { onActions.removeRestaurantsFavorite(item.restaurant.id) }
                                 )
                             }
                         }
@@ -288,7 +289,7 @@ fun HomeScreen(
                         item { Spacer(modifier = Modifier.height(95.dp)) }
                     }
 
-                    HomeUiState.Loading -> {
+                    UiStates.Loading -> {
                         item { HomeScreenShimmer() }
 
                         item { Spacer(modifier = Modifier.height(95.dp)) }

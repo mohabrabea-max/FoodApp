@@ -1,10 +1,10 @@
 package com.example.applicationhome.core.domain.usecase
 
+import com.example.applicationhome.core.data.local.entity.FavoriteMealEntity
+import com.example.applicationhome.core.data.local.entity.FavoriteRestaurantEntity
+import com.example.applicationhome.core.data.local.entity.FavoriteSnackEntity
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
-import com.example.applicationhome.data.local.entity.FavoriteMealEntity
-import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
-import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
 import javax.inject.Inject
 
 class FavoriteUseCase @Inject constructor(

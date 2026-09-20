@@ -37,7 +37,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
-import com.example.applicationhome.data.local.entity.RestaurantsEntity
+import com.example.applicationhome.core.data.local.entity.RestaurantsEntity
 
 @Composable
 fun RestaurantsBox(

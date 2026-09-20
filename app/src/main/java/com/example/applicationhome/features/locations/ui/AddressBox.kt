@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.designsystem.bounceLongClick
-import com.example.applicationhome.data.local.entity.AddressesEntity
+import com.example.applicationhome.core.data.local.entity.AddressesEntity
 
 @Composable
 fun AddressBox(

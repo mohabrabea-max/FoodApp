@@ -1,7 +1,7 @@
 package com.example.applicationhome.core.domain.usecase
 
+import com.example.applicationhome.core.domain.model.PaymobBillingData
 import com.example.applicationhome.core.domain.repository.PaymobRepository
-import com.example.applicationhome.data.data.model.PaymobBillingData
 import javax.inject.Inject
 
 class PaymentUseCase @Inject constructor(

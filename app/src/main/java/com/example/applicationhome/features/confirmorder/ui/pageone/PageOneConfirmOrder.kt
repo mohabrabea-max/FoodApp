@@ -44,9 +44,9 @@ import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.data.data.model.ActionsStates
-import com.example.applicationhome.data.data.model.ProfileEditResult
-import com.example.applicationhome.data.data.model.TextFieldClassFromConfirmOrderScreen
+import com.example.applicationhome.core.domain.model.ActionsStates
+import com.example.applicationhome.core.domain.model.ProfileEditResult
+import com.example.applicationhome.core.domain.model.TextFieldClassFromConfirmOrderScreen
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

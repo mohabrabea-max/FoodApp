@@ -1,6 +1,6 @@
 package com.example.applicationhome.core.domain.repository
 
-import com.example.applicationhome.data.data.model.PaymobBillingData
+import com.example.applicationhome.core.domain.model.PaymobBillingData
 
 interface PaymobRepository {
     suspend fun getAuthToken(): Result<String>

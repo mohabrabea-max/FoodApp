@@ -9,9 +9,9 @@ import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.navigation.compose.rememberNavController
-import com.example.applicationhome.data.data.model.HomeScreenActions
-import com.example.applicationhome.data.data.model.HomeScreenParameters
-import com.example.applicationhome.data.data.model.HomeUiState
+import com.example.applicationhome.features.homescreen.model.HomeScreenActions
+import com.example.applicationhome.features.homescreen.model.HomeScreenParameters
+import com.example.applicationhome.core.ui.model.UiStates
 import org.junit.Rule
 import org.junit.Test
 
@@ -29,7 +29,7 @@ class HomeScreenTest {
                 onActions = HomeScreenActions(),
                 parameters = HomeScreenParameters(),
                 scrollState = rememberLazyListState(),
-                syncDataUiState = HomeUiState.Loading,
+                syncDataUiState = UiStates.Loading,
                 isRefreshing = false,
                 onRefresh = {  }
             )

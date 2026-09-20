@@ -2,13 +2,13 @@ package com.example.applicationhome.features.settings.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.core.data.local.source.LanguageManager
+import com.example.applicationhome.core.data.local.source.ThemeModeManager
+import com.example.applicationhome.core.domain.model.SettingsConfirmDialog
+import com.example.applicationhome.core.domain.model.ShowBottomSheets
+import com.example.applicationhome.core.domain.model.ThemeMode
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
-import com.example.applicationhome.data.data.model.SettingsConfirmDialog
-import com.example.applicationhome.data.data.model.ShowBottomSheets
-import com.example.applicationhome.data.data.model.ThemeMode
-import com.example.applicationhome.data.local.source.LanguageManager
-import com.example.applicationhome.data.local.source.ThemeModeManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

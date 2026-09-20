@@ -3,15 +3,15 @@ package com.example.applicationhome.core.ui.components.model
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.applicationhome.core.data.local.entity.UserClass
+import com.example.applicationhome.core.data.local.source.ThemeModeManager
+import com.example.applicationhome.core.data.remote.NetworkObserver
+import com.example.applicationhome.core.domain.model.ThemeMode
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.repository.WelcomeScreenRepository
-import com.example.applicationhome.data.data.model.HomeUiState
-import com.example.applicationhome.data.data.model.ThemeMode
-import com.example.applicationhome.data.data.model.UserUiState
-import com.example.applicationhome.data.local.entity.UserClass
-import com.example.applicationhome.data.local.source.ThemeModeManager
-import com.example.applicationhome.data.remote.NetworkObserver
+import com.example.applicationhome.core.ui.model.UiStates
+import com.example.applicationhome.core.ui.model.UserUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -51,7 +51,7 @@ class FinalScreenViewModel @Inject constructor(
             initialValue = true
         )
 
-    private val _syncDataUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
+    private val _syncDataUiState = MutableStateFlow<UiStates>(UiStates.Loading)
     val syncDataUiState = _syncDataUiState.asStateFlow()
 
     private val _syncUserUiState = MutableStateFlow<UserUiState>(UserUiState.Starting)
@@ -82,17 +82,17 @@ class FinalScreenViewModel @Inject constructor(
         isForceRefresh : Boolean = false
     ){
         if(!network){
-            _syncDataUiState.value = HomeUiState.Offline
+            _syncDataUiState.value = UiStates.Offline
             return
         }
 
-        if (isForceRefresh || _syncDataUiState.value != HomeUiState.Success){
+        if (isForceRefresh || _syncDataUiState.value != UiStates.Success){
             try {
-                _syncDataUiState.value = HomeUiState.Loading
+                _syncDataUiState.value = UiStates.Loading
                 syncAllDataRepository.syncDataParallel()
-                _syncDataUiState.value = HomeUiState.Success
+                _syncDataUiState.value = UiStates.Success
             } catch (e: Exception) {
-                _syncDataUiState.value = HomeUiState.Offline
+                _syncDataUiState.value = UiStates.Offline
             }
         }
     }
@@ -147,7 +147,7 @@ class FinalScreenViewModel @Inject constructor(
 
         viewModelScope.launch {
             isNetworkAvailable.collect { network ->
-                if(_syncDataUiState.value == HomeUiState.Success) return@collect
+                if(_syncDataUiState.value == UiStates.Success) return@collect
 
                 executeSync(network)
             }

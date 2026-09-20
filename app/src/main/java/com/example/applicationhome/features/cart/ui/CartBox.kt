@@ -27,20 +27,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import com.example.applicationhome.core.ui.model.CartItemsUiClass
 import com.example.applicationhome.core.ui.theme.LightOrange
-import com.example.applicationhome.data.local.entity.CartItemsClass
+import java.util.Locale
 
 @Composable
 fun CartBox(
-    food : CartItemsClass,
+    food : CartItemsUiClass,
     plus : () -> Unit,
     minus : () -> Unit,
     delete : () -> Unit
@@ -57,7 +58,7 @@ fun CartBox(
                 //itemScreenViewModel.selectItem(item, size)
             }.padding(start = 10.dp, end = 10.dp)
             .fillMaxWidth()
-            .height(100.dp)
+            .height(120.dp)
             .background(MaterialTheme.colorScheme.background)
     ){
         Column(modifier = Modifier.fillMaxSize()){
@@ -75,8 +76,7 @@ fun CartBox(
                         size(400, 400).
                         precision(Precision.EXACT).
                         build(),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop
+                        contentDescription = null
                     )
                     Column(
                         modifier = Modifier.fillMaxHeight().weight(2f),
@@ -91,13 +91,37 @@ fun CartBox(
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.height(10.dp))
-                        Text(
-                            text = food.priceOfOne.toString(),
-                            fontSize = 15.sp,
-                            color = Color.Red,
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold
-                        )
+
+                        when(food.discount){
+                            null -> {
+                                Text(
+                                    text = "EGP ${food.priceOfOne}",
+                                    fontSize = 15.sp,
+                                    color = Color.Red,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            else -> {
+                                val formattedPrice = String.format(Locale.US, "%.2f", food.finalPrice)
+
+                                Text(
+                                    text = "EGP ${food.priceOfOne}",
+                                    fontSize = 13.sp,
+                                    textDecoration = TextDecoration.LineThrough,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+
+                                Text(
+                                    text = "EGP $formattedPrice",
+                                    fontSize = 15.sp,
+                                    color = Color.Red,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
                     }
                 }
                 Row(

@@ -35,7 +35,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
-import com.example.applicationhome.data.data.model.Screens
+import com.example.applicationhome.core.domain.model.Screens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

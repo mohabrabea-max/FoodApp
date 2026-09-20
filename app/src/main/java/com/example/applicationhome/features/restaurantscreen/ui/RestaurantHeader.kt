@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
+import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
 
 @Composable
 fun RestaurantHeader(

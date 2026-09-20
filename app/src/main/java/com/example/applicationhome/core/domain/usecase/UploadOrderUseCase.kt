@@ -1,13 +1,13 @@
 package com.example.applicationhome.core.domain.usecase
 
+import com.example.applicationhome.core.domain.model.OrderItemsClass
+import com.example.applicationhome.core.domain.model.OrderStatesEnum
+import com.example.applicationhome.core.domain.model.OrdersClass
+import com.example.applicationhome.core.domain.model.UserInformationInOrderClass
 import com.example.applicationhome.core.domain.repository.AddressesRepository
 import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.OrderRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
-import com.example.applicationhome.data.data.model.OrderItemsClass
-import com.example.applicationhome.data.data.model.OrderStatesEnum
-import com.example.applicationhome.data.data.model.OrdersClass
-import com.example.applicationhome.data.data.model.UserInformationInOrderClass
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
@@ -47,7 +47,7 @@ class UploadOrderUseCase @Inject constructor(
 
         val currentCartItems = cartRepository.getCartItems(userId).first()
 
-        val subtotal = currentCartItems.sumOf { it?.totalPrice ?: 0.0 }
+        val subtotal = currentCartItems.sumOf { (it?.finalPriceOfOne ?: 0.0) * (it?.quantity?: 0) }
         val delivery = 55.0
         val service = 8.0
         val totalPrice = subtotal + delivery + service
@@ -58,13 +58,12 @@ class UploadOrderUseCase @Inject constructor(
                     mealId = it.mealId,
                     mealName = it.name,
                     size = it.size,
-                    price = it.priceOfOne,
+                    price = it.finalPriceOfOne,
                     quantity = it.quantity,
                     image = it.image,
                     type = it.type
                 )
             }
-
         }
 
         val order = OrdersClass(

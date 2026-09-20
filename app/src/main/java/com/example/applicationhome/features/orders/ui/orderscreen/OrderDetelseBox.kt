@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,8 +26,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import com.example.applicationhome.core.domain.model.OrderItemsClass
 import com.example.applicationhome.core.ui.theme.LightOrange
-import com.example.applicationhome.data.data.model.OrderItemsClass
 
 @Composable
 fun OrderDetelseBox(
@@ -59,9 +58,9 @@ fun OrderDetelseBox(
                         size(400, 400).
                         precision(Precision.EXACT).
                         build(),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop
+                        contentDescription = null
                     )
+
                     Column(
                         modifier = Modifier.fillMaxHeight().weight(3f),
                         horizontalAlignment = Alignment.Start,

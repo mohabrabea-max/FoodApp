@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,24 +36,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.R
-import com.example.applicationhome.data.data.model.BottomSheetActions
-import com.example.applicationhome.data.data.model.BottomSheetItem
-import com.example.applicationhome.data.data.model.MealSnacks
-import com.example.applicationhome.data.data.model.Screens
-import com.example.applicationhome.data.local.entity.CartItemsClass
-import com.example.applicationhome.data.local.entity.UserClass
+import com.example.applicationhome.core.domain.model.BottomSheetActions
+import com.example.applicationhome.core.domain.model.MealSnacks
+import com.example.applicationhome.core.domain.model.Screens
+import com.example.applicationhome.core.ui.model.FoodItem
+import java.util.Locale
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemsFullBottomSheet(
-    bottomSheetItem : BottomSheetItem,
+    bottomSheetItem : FoodItem,
     size : String,
     actions : BottomSheetActions,
-    userData : UserClass,
     newCount : Int,
     animDuration : Int,
     animateIn : MutableTransitionState<Boolean>,
@@ -60,7 +60,8 @@ fun ItemsFullBottomSheet(
 ){
     val scrollState = rememberLazyListState()
 
-    val price = bottomSheetItem.sizes[size]
+    val price = bottomSheetItem.sizes[size]?: 0.0
+    val discount = bottomSheetItem.discount
 
     BackHandler(enabled = true){
         actions.closeBottomSheet()
@@ -113,43 +114,97 @@ fun ItemsFullBottomSheet(
                             )
                         }
                     }
+
                     item {
-                        Column(
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(20.dp))
-                                .background(MaterialTheme.colorScheme.surface)
-                                .padding(15.dp)
                         ){
-                            Text(
-                                text = bottomSheetItem.name,
-                                fontSize = 20.sp,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.Bold
-                            )
+                            if(discount != null) Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(55.dp)
+                                    .background(Color(0xFFD2F84A))
+                                    .align(Alignment.TopCenter)
+                                    .padding(horizontal = 15.dp)
+                                    .padding(top = 10.dp),
+                                horizontalArrangement = Arrangement.Start,
+                                verticalAlignment = Alignment.Top
+                            ){
+                                Text(
+                                    text = "${discount.discount}% " + stringResource(R.string.discount_until) + " " + discount.endDiscount,
+                                    fontSize = 16.sp,
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
 
-                            Spacer(modifier = Modifier.height(10.dp))
+                            Column(
+                                modifier = Modifier
+                                    .padding(top = if(discount != null) 37.dp else 0.dp )
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(MaterialTheme.colorScheme.surface)
+                                    .padding(15.dp)
+                            ){
+                                Text(
+                                    text = bottomSheetItem.name,
+                                    fontSize = 20.sp,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontWeight = FontWeight.Bold
+                                )
 
-                            Text(
-                                text = bottomSheetItem.details,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                                Spacer(modifier = Modifier.height(10.dp))
 
-                            Spacer(modifier = Modifier.height(25.dp))
+                                Text(
+                                    text = bottomSheetItem.details,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
 
-                            Text(
-                                text = "$price L.E",
-                                fontSize = 30.sp,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(start = 5.dp, bottom = 15.dp)
-                            )
+                                Spacer(modifier = Modifier.height(25.dp))
+
+                                when(discount){
+                                    null -> {
+                                        Text(
+                                            text = "EGP $price",
+                                            fontSize = 30.sp,
+                                            style = MaterialTheme.typography.labelLarge,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.padding(start = 5.dp, bottom = 15.dp)
+                                        )
+                                    }
+                                    else -> {
+                                        val dis = discount.discount
+                                        val newPrice = price * (1.0 - (dis.toDouble() / 100.00))
+                                        val formattedPrice = String.format(Locale.US, "%.2f", newPrice)
+
+                                        Text(
+                                            text = "EGP $price",
+                                            fontSize = 18.sp,
+                                            textDecoration = TextDecoration.LineThrough,
+                                            style = MaterialTheme.typography.labelLarge,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier.padding(start = 5.dp, bottom = 5.dp)
+                                        )
+
+                                        Text(
+                                            text = "EGP $formattedPrice",
+                                            fontSize = 30.sp,
+                                            style = MaterialTheme.typography.labelLarge,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.padding(start = 5.dp, bottom = 15.dp)
+                                        )
+                                    }
+                                }
+                            }
                         }
 
                         when(bottomSheetItem){
-                            is BottomSheetItem.MealItem -> {
+                            is FoodItem.MealItem -> {
 
                                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -177,7 +232,7 @@ fun ItemsFullBottomSheet(
                                         horizontalArrangement = Arrangement.spacedBy(5.dp),
                                         verticalArrangement = Arrangement.spacedBy(10.dp)
                                     ){
-                                        val selectedDetail = bottomSheetItem.meal?.meal?.sizeOptions?.find { it.size == size }
+                                        val selectedDetail = bottomSheetItem.sizeOptions.find { it.size == size }
                                         selectedDetail?.snack?.forEach { (snakeId, value) ->
                                             SnaksBoxForItemScreen(
                                                 modifier = Modifier.size(160.dp),
@@ -190,7 +245,7 @@ fun ItemsFullBottomSheet(
                                 }
                             }
 
-                            is BottomSheetItem.SnackItem -> {}
+                            is FoodItem.SnackItem -> {}
                         }
 
                         if(bottomSheetItem.sizes.size > 1){
@@ -237,40 +292,18 @@ fun ItemsFullBottomSheet(
 
 
                 Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom){
-                    val price = bottomSheetItem.sizes[size] ?: 0.0
-                    val totalPrice = newCount * price
+                    val dis = discount?.discount?: 0
+                    val newPrice = if(discount != null) price * (1.0 - (dis.toDouble() / 100.00)) else null
+
                     BottomBarForItemScreen(
                         price = price,
+                        discountPrice = newPrice,
                         newCount = newCount,
                         minusnewCount = { actions.minusnewCount() },
                         plusnewCount = { actions.plusnewCount() },
                         clickable = {
-                            val category = when(bottomSheetItem){
-                                is BottomSheetItem.MealItem -> {
-                                    bottomSheetItem.meal?.meal?.category ?: ""
-                                }
-
-                                is BottomSheetItem.SnackItem -> {
-                                    "Snack"
-                                }
-                            }
-
-                            val meal = CartItemsClass(
-                                userData.id,
-                                "${bottomSheetItem.id}_${size}",
-                                bottomSheetItem.id,
-                                bottomSheetItem.name,
-                                category,
-                                size,
-                                newCount,
-                                price,
-                                totalPrice,
-                                bottomSheetItem.image,
-                                bottomSheetItem.restaurantId
-                            )
-
                             actions.updateCount(
-                                meal,
+                                bottomSheetItem,
                                 size,
                                 newCount
                             )

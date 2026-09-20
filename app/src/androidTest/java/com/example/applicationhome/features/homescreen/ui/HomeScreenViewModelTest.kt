@@ -3,8 +3,8 @@ package com.example.applicationhome.features.homescreen.ui
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.FavoriteUseCase
-import com.example.applicationhome.data.local.entity.CategoriesEntity
-import com.example.applicationhome.data.remote.NetworkObserver
+import com.example.applicationhome.core.data.local.entity.CategoriesEntity
+import com.example.applicationhome.core.data.remote.NetworkObserver
 import com.example.applicationhome.fakes.FakeRestaurants
 import io.mockk.coVerify
 import io.mockk.mockk

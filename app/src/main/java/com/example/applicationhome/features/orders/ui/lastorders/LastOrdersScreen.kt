@@ -47,12 +47,12 @@ import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.components.forCart.AlertDialogMessage
 import com.example.applicationhome.core.ui.components.screens.EmptyScreen
-import com.example.applicationhome.data.data.model.ActiveOrderDialog
-import com.example.applicationhome.data.data.model.HomeUiState
-import com.example.applicationhome.data.data.model.OrdersHistoryScreens
-import com.example.applicationhome.data.data.model.RepurchaseOrderStates
-import com.example.applicationhome.data.data.model.Screens
-import com.example.applicationhome.data.data.model.UiEventOrderCancelled
+import com.example.applicationhome.core.domain.model.ActiveOrderDialog
+import com.example.applicationhome.core.ui.model.UiStates
+import com.example.applicationhome.core.domain.model.OrdersHistoryScreens
+import com.example.applicationhome.core.domain.model.RepurchaseOrderStates
+import com.example.applicationhome.core.domain.model.Screens
+import com.example.applicationhome.core.domain.model.UiEventOrderCancelled
 import com.example.applicationhome.features.orders.ui.OrderScreenViewModel
 import com.example.applicationhome.features.orders.ui.orderscreen.OrderScreen
 import com.example.applicationhome.features.shimmers.screens.OrdersHistoryShimmer
@@ -86,7 +86,7 @@ fun LastOrdersScreen(
     val pagerState = rememberPagerState(initialPage = initialPage,pageCount = { screens.size })
 
     LaunchedEffect(screenState){
-        if(screenState != HomeUiState.Loading && !hasHandled){
+        if(screenState != UiStates.Loading && !hasHandled){
             pagerState.animateScrollToPage(
                 page = initialPage,
                 animationSpec = spring(
@@ -208,7 +208,7 @@ fun LastOrdersScreen(
                 item{Spacer(modifier = Modifier.height(160.dp))}
 
                 when(screenState){
-                    HomeUiState.Success, HomeUiState.Offline -> {
+                    UiStates.Success, UiStates.Offline -> {
                         when(screens[page]){
                             OrdersHistoryScreens.Preparing -> {
                                 if(preparingOrdersHistory.isNotEmpty()){
@@ -266,7 +266,7 @@ fun LastOrdersScreen(
                         }
                     }
 
-                    HomeUiState.Loading -> {
+                    UiStates.Loading -> {
                         item { OrdersHistoryShimmer() }
                     }
                 }

@@ -1,11 +1,11 @@
 package com.example.applicationhome.core.domain.usecase
 
-import com.example.applicationhome.core.domain.model.orderItemsClassToCartItemsClass
+import com.example.applicationhome.core.data.mapper.orderItemsClassToCartItemsDomainClass
+import com.example.applicationhome.core.domain.model.CategoryEnum
+import com.example.applicationhome.core.domain.model.OrderItemsClass
+import com.example.applicationhome.core.domain.model.OrderUiClass
+import com.example.applicationhome.core.domain.model.RepurchaseOrderStates
 import com.example.applicationhome.core.domain.repository.OrderRepository
-import com.example.applicationhome.data.data.model.CategoryEnum
-import com.example.applicationhome.data.data.model.OrderItemsClass
-import com.example.applicationhome.data.data.model.OrderUiClass
-import com.example.applicationhome.data.data.model.RepurchaseOrderStates
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
@@ -38,7 +38,7 @@ class RepurchaseOrderUseCase @Inject constructor(
         val snacksImages = snacksImagesDeferred.await()
 
         val items = orderItems.map {
-            it.orderItemsClassToCartItemsClass(
+            it.orderItemsClassToCartItemsDomainClass(
                 userId = order.userId,
                 resId = order.restaurantId,
                 image = when{

@@ -1,7 +1,7 @@
 package com.example.applicationhome.core.domain.repository
 
-import com.example.applicationhome.data.data.model.Address
-import com.example.applicationhome.data.local.entity.AddressesEntity
+import com.example.applicationhome.core.domain.model.Address
+import com.example.applicationhome.core.data.local.entity.AddressesEntity
 import kotlinx.coroutines.flow.Flow
 
 interface AddressesRepository {

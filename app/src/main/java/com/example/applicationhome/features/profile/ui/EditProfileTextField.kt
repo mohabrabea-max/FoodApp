@@ -37,9 +37,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.data.data.model.AccountTextFieldClass
-import com.example.applicationhome.data.data.model.AccountTextFieldEnum
-import com.example.applicationhome.data.data.model.ProfileEditResult
+import com.example.applicationhome.core.domain.model.AccountTextFieldClass
+import com.example.applicationhome.core.domain.model.AccountTextFieldEnum
+import com.example.applicationhome.core.domain.model.ProfileEditResult
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

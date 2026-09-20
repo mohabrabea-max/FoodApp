@@ -3,9 +3,9 @@ package com.example.applicationhome.features.locations.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.example.applicationhome.R
-import com.example.applicationhome.data.data.model.CheckoutFormState
-import com.example.applicationhome.data.data.model.ConfirmOrderScreenTextFieldEnum
-import com.example.applicationhome.data.data.model.TextFieldClassFromConfirmOrderScreen
+import com.example.applicationhome.core.domain.model.CheckoutFormState
+import com.example.applicationhome.core.domain.model.ConfirmOrderScreenTextFieldEnum
+import com.example.applicationhome.core.domain.model.TextFieldClassFromConfirmOrderScreen
 
 @Composable
 fun rememberAddressFields(formState: CheckoutFormState): List<TextFieldClassFromConfirmOrderScreen> {

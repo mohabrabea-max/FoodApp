@@ -166,4 +166,7 @@
     <string name="restaurant_is_empty">Restaurant is empty</string>
     <string name="are_you_sure_you_want_to_delete_this_address">Are you sure you want to delete this address?</string>
     <string name="select_this_address">Select this address</string>
+    <string name="discount_until">Discount until</string>
+    <string name="add_item">Add item</string>
+    <string name="off_select_items">off select items</string>
 </resources>

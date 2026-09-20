@@ -47,7 +47,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
-import com.example.applicationhome.core.domain.model.snacksEntityToCartItemsClass
+import com.example.applicationhome.core.domain.model.AddToCartStates
+import com.example.applicationhome.core.domain.model.CategoryEnum
+import com.example.applicationhome.core.domain.model.Screens
 import com.example.applicationhome.core.ui.components.forCart.AlertDialogMessage
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.AddBox
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
@@ -56,8 +58,6 @@ import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Restau
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.SnaksBox
 import com.example.applicationhome.core.ui.components.screens.EmptyScreenWhithButton
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.data.data.model.AddToCartStates
-import com.example.applicationhome.data.data.model.Screens
 import kotlinx.coroutines.CoroutineScope
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity")
@@ -150,44 +150,34 @@ fun Favorite(
                                         navigationController.navigate(Screens.NoInternetScreen.screen)
                                     }
                                 },
-                                addRestaurantsFavorite = {
-                                    val favRestaurant = item.favoriteInfo
-                                    if(favRestaurant!= null)
-                                        favoriteViewModel.addRestaurantsFavorite(favRestaurant)
-                                },
+                                addRestaurantsFavorite = {},
                                 removeRestaurantsFavorite = { favoriteViewModel.removeRestaurantsFavorite(item.restaurant.id) }
                             )
-                            }
+                        }
                     }
                     if(selectedCategorieInFavoriteScreen == 1) {
                         item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.height(15.dp)) }
                         items(favoriteSnacks) { item ->
                             val isSnackInFavorite = item.isFavorite
-
-                            val size = item.snack.priceANDsize.keys.last()
-                            val price = item.snack.priceANDsize.values.last()
+                            val size = item.sizes.keys.last()
 
                             SnaksBox(
                                 modifier = Modifier.size(200.dp),
-                                item.snack.name,
-                                item.snack.image,
-                                item.snack.priceANDsize[size],
-                                {
+                                name = item.name,
+                                image = item.image,
+                                price = item.sizes[size],
+                                cardNavigationClickable = {
                                     if (networkState) {
-                                        navigationController.navigate(Screens.RestaurantScreen.createRouteWithSnack(restaurantId = item.snack.restaurantId, snackId = item.snack.id))
+                                        navigationController.navigate(Screens.RestaurantScreen.createRouteWithSnack(restaurantId = item.restaurantId, snackId = item.id))
                                     } else {
                                         navigationController.navigate(Screens.NoInternetScreen.screen)
                                     }
                                 },
-                                {
+                                actions = {
                                     Favorite(
-                                        isSnackInFavorite,
-                                        {
-                                            val favSnack = item.favoriteInfo
-                                            if(favSnack!= null)
-                                                favoriteViewModel.addSnackFavorite(favSnack)
-                                        },
-                                        { favoriteViewModel.removeSnackFavorite(item.snack.id) },
+                                        isMealInFavorite = isSnackInFavorite,
+                                        addMealFavorite = {},
+                                        removeMealFavorite = { favoriteViewModel.removeSnackFavorite(item.id) },
                                         modifier = Modifier
                                             .padding(5.dp)
                                             .clip(CircleShape)
@@ -197,26 +187,18 @@ fun Favorite(
                                         icon2 = Icons.Default.FavoriteBorder
                                     )
                                     AddBox(
-                                        item.snack.id,
-                                        {
-                                            val quantity = cartItems.find { it?.mealKey == "${item.snack.id}_${size}" }?.quantity ?: 0
-
-                                            val snack = item.snack.snacksEntityToCartItemsClass(userData.id, quantity)
-
-                                            favoriteViewModel.plus(snack, size){
+                                        foodId = item.id,
+                                        plus = {
+                                            favoriteViewModel.plus(item.id, size, CategoryEnum.SNACKS){
                                                 navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
                                             }
                                         },
-                                        {
-                                            val quantity = cartItems.find { it?.mealKey == "${item.snack.id}_${size}" }?.quantity ?: 0
-
-                                            val snack = item.snack.snacksEntityToCartItemsClass(userData.id, quantity)
-
-                                            favoriteViewModel.minus(snack, size)
+                                        minus = {
+                                            favoriteViewModel.minus(item.id, size)
                                         },
-                                        { activeId = item.snack.id },
-                                        activeId,
-                                        cartItems.find { it?.mealKey == "${item.snack.id}_${size}" }?.quantity ?: 0
+                                        active = { activeId = item.id },
+                                        activeId = activeId,
+                                        count = cartItems.find { it.mealKey == "${item.id}_${size}" }?.quantity ?: 0
                                     )
                                 }
                             )
@@ -227,29 +209,23 @@ fun Favorite(
                         items(favoriteMeals) { item ->
                             val isMealInFavorite = item.isFavorite
 
-                            val size = item.meal.sizeOptions.last().size
-
                             MealsBoxForFavoriteScreen(
-                                false,
-                                item.meal.name,
-                                item.meal.image,
-                                item.meal.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") },
-                                {
+                                foodMenuIsLoading = false,
+                                name = item.name,
+                                image = item.image,
+                                sizeOptions = item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") },
+                                cardNavigationClickable = {
                                     if (networkState) {
-                                        navigationController.navigate(Screens.RestaurantScreen.createRouteWithMeal(restaurantId = item.meal.restaurantId, mealId = item.meal.id))
+                                        navigationController.navigate(Screens.RestaurantScreen.createRouteWithMeal(restaurantId = item.restaurantId, mealId = item.id))
                                     }else{
                                         navigationController.navigate(Screens.NoInternetScreen.screen)
                                     }
                                 },
-                                {
+                                actions = {
                                     Favorite(
-                                        isMealInFavorite,
-                                        {
-                                            val favMeal = item.favoriteInfo
-                                            if(favMeal!= null)
-                                            favoriteViewModel.addMealFavorite(favMeal)
-                                        },
-                                        { favoriteViewModel.removeMealFavorite(item.meal.id) },
+                                        isMealInFavorite = isMealInFavorite,
+                                        addMealFavorite = {},
+                                        removeMealFavorite = { favoriteViewModel.removeMealFavorite(item.id) },
                                         modifier = Modifier
                                             .padding(5.dp)
                                             .clip(CircleShape)

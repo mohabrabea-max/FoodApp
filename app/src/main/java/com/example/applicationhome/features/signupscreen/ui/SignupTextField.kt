@@ -43,9 +43,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationhome.data.data.model.SignUpBasicTextFields
-import com.example.applicationhome.data.data.model.SignUpFullNameTextFields
-import com.example.applicationhome.data.data.model.TextFieldsTypes
+import com.example.applicationhome.core.domain.model.SignUpBasicTextFields
+import com.example.applicationhome.core.domain.model.SignUpFullNameTextFields
+import com.example.applicationhome.core.domain.model.TextFieldsTypes
 
 
 @Composable

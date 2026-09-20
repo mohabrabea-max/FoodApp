@@ -59,10 +59,10 @@ import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showNetworkSnackBar
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.MatteBlack
-import com.example.applicationhome.data.data.model.LoginStates
-import com.example.applicationhome.data.data.model.Screens
-import com.example.applicationhome.data.data.model.SignUpBasicTextFields
-import com.example.applicationhome.data.data.model.SignUpErrors
+import com.example.applicationhome.core.domain.model.LoginStates
+import com.example.applicationhome.core.domain.model.Screens
+import com.example.applicationhome.core.domain.model.SignUpBasicTextFields
+import com.example.applicationhome.core.domain.model.SignUpErrors
 import com.example.applicationhome.features.signupscreen.ui.SignupTextField
 import kotlinx.coroutines.launch
 

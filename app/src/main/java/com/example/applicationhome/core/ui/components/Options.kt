@@ -33,10 +33,10 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.applicationhome.R
-import com.example.applicationhome.core.domain.model.Drawer
 import com.example.applicationhome.core.ui.components.model.DashboardScreenViewModel
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.data.data.model.Screens
+import com.example.applicationhome.core.domain.model.Drawer
+import com.example.applicationhome.core.domain.model.Screens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

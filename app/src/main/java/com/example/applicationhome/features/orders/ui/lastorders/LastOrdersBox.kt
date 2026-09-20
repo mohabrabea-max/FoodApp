@@ -34,8 +34,8 @@ import coil.size.Precision
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.designsystem.bounceClick
 import com.example.applicationhome.core.ui.theme.BrandBlue
-import com.example.applicationhome.data.data.model.OrderStatesEnum
-import com.example.applicationhome.data.data.model.OrderUiClass
+import com.example.applicationhome.core.domain.model.OrderStatesEnum
+import com.example.applicationhome.core.domain.model.OrderUiClass
 
 @Composable
 fun LastOrdersBox(

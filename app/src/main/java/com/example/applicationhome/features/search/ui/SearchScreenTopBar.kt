@@ -199,7 +199,7 @@ fun SearchScreenTopBar(
                             if(totalInCart > 0){
                                 Badge(
                                     containerColor = Color.Red,
-                                    contentColor = MaterialTheme.colorScheme.surface
+                                    contentColor = Color.White
                                 ){
                                     if(totalInCart < 10){
                                         Text(text = "$totalInCart")

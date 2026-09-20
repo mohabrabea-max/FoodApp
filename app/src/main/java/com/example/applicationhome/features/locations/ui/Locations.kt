@@ -51,12 +51,12 @@ import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.components.forCart.AlertDialogMessage
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.LoadingDialog
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.data.data.model.ActionsStates
-import com.example.applicationhome.data.data.model.EditAddressModeState
-import com.example.applicationhome.data.data.model.HomeUiState
-import com.example.applicationhome.data.data.model.LocationsScreenDialogs
-import com.example.applicationhome.data.data.model.LocationsScreens
-import com.example.applicationhome.data.data.model.MapEntryPoint
+import com.example.applicationhome.core.domain.model.ActionsStates
+import com.example.applicationhome.core.domain.model.EditAddressModeState
+import com.example.applicationhome.core.ui.model.UiStates
+import com.example.applicationhome.core.domain.model.LocationsScreenDialogs
+import com.example.applicationhome.core.domain.model.LocationsScreens
+import com.example.applicationhome.core.domain.model.MapEntryPoint
 import com.example.applicationhome.features.confirmorder.ui.mappage.StreetMapPage
 import com.example.applicationhome.features.confirmorder.ui.pageone.PageOneConfirmOrder
 
@@ -169,7 +169,7 @@ fun Locations(
         }
     ){ paddingValues ->
         when(screenState){
-            HomeUiState.Loading -> {
+            UiStates.Loading -> {
                 LoadingDialog(true)
             }
 

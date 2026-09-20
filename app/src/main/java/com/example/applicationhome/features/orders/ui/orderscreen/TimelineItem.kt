@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.data.data.model.TimelineStep
+import com.example.applicationhome.core.domain.model.TimelineStep
 
 @Composable
 fun TimelineItem(

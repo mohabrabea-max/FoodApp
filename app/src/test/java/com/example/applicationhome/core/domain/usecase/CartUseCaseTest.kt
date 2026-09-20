@@ -2,10 +2,10 @@ package com.example.applicationhome.core.domain.usecase
 
 import com.example.applicationhome.core.domain.Implementations.FakeCartData
 import com.example.applicationhome.core.domain.repository.CartRepository
-import com.example.applicationhome.data.data.model.AddToCartStates
+import com.example.applicationhome.core.domain.model.AddToCartStates
 import com.example.applicationhome.data.data.model.Restaurants
-import com.example.applicationhome.data.local.entity.CartClass
-import com.example.applicationhome.data.local.entity.CartItemsClass
+import com.example.applicationhome.core.data.local.entity.CartClass
+import com.example.applicationhome.core.data.local.entity.CartItemsClassEntity
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -134,9 +134,9 @@ class CartUseCaseTest {
 
     // *** ---------------------- \\***  Helper Setup  ***// ---------------------- ***
     private fun getCartUseCase(
-        item : CartItemsClass,
+        item : CartItemsClassEntity,
         cartInformation : CartClass = FakeCartData.fakeCartRestaurant(),
-        cartItems : List<CartItemsClass> = listOf(item),
+        cartItems : List<CartItemsClassEntity> = listOf(item),
         cartRestaurantData : Restaurants = Restaurants(id = item.restaurantId)
     ): CartUseCase {
         every { cartRepository.cartInformation } returns MutableStateFlow(cartInformation)

@@ -39,8 +39,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
-import com.example.applicationhome.data.local.entity.RestaurantWithFeaturedMeals
+import com.example.applicationhome.core.data.local.entity.MealWithFavoriteStatus
+import com.example.applicationhome.core.data.local.entity.RestaurantWithFeaturedMeals
 import com.example.applicationhome.features.favorite.ui.MealsBoxForFavoriteScreen
 
 //@Preview(showBackground = true)

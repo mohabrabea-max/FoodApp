@@ -1,24 +1,24 @@
 package com.example.applicationhome.core.domain.repository
 
-import com.example.applicationhome.data.local.entity.FavoriteMealEntity
-import com.example.applicationhome.data.local.entity.FavoriteRestaurantEntity
-import com.example.applicationhome.data.local.entity.FavoriteSnackEntity
-import com.example.applicationhome.data.local.entity.MealWithFavoriteStatus
-import com.example.applicationhome.data.local.entity.RestaurantWithFavoriteStatus
-import com.example.applicationhome.data.local.entity.SnackWithFavoriteStatus
-import kotlinx.coroutines.flow.StateFlow
+import com.example.applicationhome.core.data.local.entity.FavoriteMealEntity
+import com.example.applicationhome.core.data.local.entity.FavoriteRestaurantEntity
+import com.example.applicationhome.core.data.local.entity.FavoriteSnackEntity
+import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
+import com.example.applicationhome.core.domain.model.MealDomain
+import com.example.applicationhome.core.domain.model.SnackDomain
+import kotlinx.coroutines.flow.Flow
 
 interface FavoriteRepository {
     // *** ---------------------- \\***  Favorite Items  ***// ---------------------- ***
-    val favoriteMeals : StateFlow<List<MealWithFavoriteStatus>>
-    val favoriteSnacks : StateFlow<List<SnackWithFavoriteStatus>>
-    val favoriteRestaurantsFromDatabase : StateFlow<List<RestaurantWithFavoriteStatus>>
+    fun getFavoriteMeals(userId : String) : Flow<List<MealDomain>>
+    fun getFavoriteSnacks(userId : String) : Flow<List<SnackDomain>>
+    fun favoriteRestaurantsFromDatabase(userId : String) : Flow<List<RestaurantWithFavoriteStatus>>
 
     // *** ---------------------- \\***  Favorite Count  ***// ---------------------- ***
-    val favoriteFoodCount : StateFlow<Int>
-    val favoriteSnacksCount : StateFlow<Int>
-    val favoriteRestaurantsCount : StateFlow<Int>
-    val totalCountInFavorite : StateFlow<Int>
+    fun favoriteFoodCount(userId : String) : Flow<Int>
+    fun favoriteSnacksCount(userId : String) : Flow<Int>
+    fun favoriteRestaurantsCount(userId : String) : Flow<Int>
+    fun totalCountInFavorite(userId : String) : Flow<Int>
 
 
     // *** ---------------------- \\***  Favorite Functions  ***// ---------------------- ***

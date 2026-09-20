@@ -4,23 +4,24 @@ import androidx.compose.foundation.text.input.clearText
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.applicationhome.R
+import com.example.applicationhome.core.data.local.entity.AddressesEntity
+import com.example.applicationhome.core.data.remote.NetworkObserver
+import com.example.applicationhome.core.domain.model.AddressesUiState
+import com.example.applicationhome.core.domain.model.CheckoutFormState
+import com.example.applicationhome.core.domain.model.EditAddressModeState
+import com.example.applicationhome.core.domain.model.LocationsScreenDialogs
+import com.example.applicationhome.core.domain.model.LocationsScreens
+import com.example.applicationhome.core.domain.model.MapEntryPoint
+import com.example.applicationhome.core.domain.model.ProfileEditResult
+import com.example.applicationhome.core.domain.model.UiEvent
 import com.example.applicationhome.core.domain.repository.AddressesRepository
 import com.example.applicationhome.core.domain.repository.LocationRepository
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.AddAddressUseCase
+import com.example.applicationhome.core.domain.usecase.SyncAddressesUseCase
 import com.example.applicationhome.core.domain.usecase.ValidateFormUseCase
-import com.example.applicationhome.data.data.model.AddressesUiState
-import com.example.applicationhome.data.data.model.CheckoutFormState
-import com.example.applicationhome.data.data.model.EditAddressModeState
-import com.example.applicationhome.data.data.model.HomeUiState
-import com.example.applicationhome.data.data.model.LocationsScreenDialogs
-import com.example.applicationhome.data.data.model.LocationsScreens
-import com.example.applicationhome.data.data.model.MapEntryPoint
-import com.example.applicationhome.data.data.model.ProfileEditResult
-import com.example.applicationhome.data.data.model.UiEvent
-import com.example.applicationhome.data.local.entity.AddressesEntity
-import com.example.applicationhome.data.remote.NetworkObserver
+import com.example.applicationhome.core.ui.model.UiStates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -46,6 +47,7 @@ class LocationsViewModel @Inject constructor(
     private val syncAllDataRepository: SyncAllDataRepository,
     private val validateFormUseCase : ValidateFormUseCase,
     private val addAddressUseCase : AddAddressUseCase,
+    private val syncAddressesUseCase : SyncAddressesUseCase,
     private val userRepository : UserRepository,
     private val networkObserver: NetworkObserver
 ): ViewModel() {
@@ -144,18 +146,13 @@ class LocationsViewModel @Inject constructor(
     private val _selectedAddress = MutableStateFlow<AddressesEntity?>(null)
     val selectedAddress = _selectedAddress.asStateFlow()
 
-    private val _screenState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
+    private val _screenState = MutableStateFlow<UiStates>(UiStates.Loading)
     val screenState = _screenState.asStateFlow()
 
-    private suspend fun syncAddresses(){
-        _screenState.value = HomeUiState.Loading
-
-        val id = userRepository.userData.value.id
-        if(id.isNotEmpty()){
-            val result = syncAllDataRepository.syncAddresses(id)
-            _screenState.value = result
-        }else{
-            _screenState.value = HomeUiState.Success
+    private fun syncAddresses(){
+        viewModelScope.launch {
+            _screenState.value = UiStates.Loading
+            _screenState.value = syncAddressesUseCase()
         }
     }
 
@@ -258,9 +255,9 @@ class LocationsViewModel @Inject constructor(
         viewModelScope.launch {
             isNetworkAvailable.collect { available ->
                 if(available){
-                    if(_screenState.value != HomeUiState.Success) syncAddresses()
+                    if(_screenState.value != UiStates.Success) syncAddresses()
                 }else{
-                    if(_screenState.value != HomeUiState.Success) _screenState.value = HomeUiState.Offline
+                    if(_screenState.value != UiStates.Success) _screenState.value = UiStates.Offline
                 }
             }
         }

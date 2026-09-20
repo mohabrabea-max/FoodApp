@@ -1,0 +1,192 @@
+package com.example.applicationhome.core.data.local.dao
+
+import androidx.paging.PagingSource
+import androidx.room.Dao
+import androidx.room.MapColumn
+import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Upsert
+import com.example.applicationhome.core.data.local.entity.CategoriesEntity
+import com.example.applicationhome.core.data.local.entity.DiscountsEntity
+import com.example.applicationhome.core.data.local.entity.MealWithFavoriteStatus
+import com.example.applicationhome.core.data.local.entity.MealsEntity
+import com.example.applicationhome.core.data.local.entity.OffersEntity
+import com.example.applicationhome.core.data.local.entity.RestaurantCategoryCrossRef
+import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
+import com.example.applicationhome.core.data.local.entity.RestaurantsEntity
+import com.example.applicationhome.core.data.local.entity.SearchHistory
+import com.example.applicationhome.core.data.local.entity.SnackWithFavoriteStatus
+import com.example.applicationhome.core.data.local.entity.SnacksEntity
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface FoodAndRestaurantsDao {
+
+    //----------------------------------------------------------------\\ Sync Data //----------------------------------------------------------------
+
+    @Upsert
+    suspend fun syncMealsToDatabase(meals : List<MealsEntity>)
+
+    @Upsert
+    suspend fun syncSnacksToDatabase(snacks : List<SnacksEntity>)
+
+    @Upsert
+    suspend fun syncRestaurantsToDatabase(restaurants : List<RestaurantsEntity>)
+
+    @Upsert
+    suspend fun syncRestaurantCategoryCrossRef(categories : List<RestaurantCategoryCrossRef>)
+
+    @Transaction
+    suspend fun syncRestaurantsAndCategoriesTransaction(
+        restaurants: List<RestaurantsEntity>,
+        categories: List<RestaurantCategoryCrossRef>
+    ) {
+        syncRestaurantsToDatabase(restaurants)
+        syncRestaurantCategoryCrossRef(categories)
+    }
+
+    @Upsert
+    suspend fun syncCategoriesToDatabase(categories : List<CategoriesEntity>)
+
+    @Upsert
+    suspend fun syncOffersToDatabase(offers : List<OffersEntity>)
+
+    @Upsert
+    suspend fun syncDiscounts(discounts : List<DiscountsEntity>)
+
+    @Query("DELETE FROM discounts_entity WHERE mealId IN (:ids)")
+    suspend fun deleteDiscountsWasEnd(ids : List<Int>)
+
+
+    //----------------------------------------------------------------\\ Get Data //----------------------------------------------------------------
+
+    @Query("SELECT id FROM meals_entity")
+    suspend fun getMealsIdsFromDatabase(): List<Int>
+
+    @Query("SELECT id FROM snacks_entity")
+    suspend fun getSnacksIdsFromDatabase(): List<Int>
+
+    @Query("SELECT id FROM restaurants_entity")
+    suspend fun getRestaurantsIdsFromDatabase(): List<Int>
+
+
+    @Transaction
+    @Query("SELECT * FROM meals_entity WHERE restaurantId = :restaurantId AND category =:type")
+    fun getMealsFromDatabase(restaurantId : Int, type : String): PagingSource<Int, MealWithFavoriteStatus>
+
+    @Transaction
+    @Query("SELECT * FROM meals_entity WHERE id = :mealId")
+    suspend fun getOneMealFromDatabase(mealId : Int) : MealWithFavoriteStatus?
+
+    @Transaction
+    @Query("SELECT * FROM snacks_entity WHERE restaurantId = :restaurantId")
+    fun getSnacksFromDatabase(restaurantId : Int): PagingSource<Int, SnackWithFavoriteStatus>
+
+    @Transaction
+    @Query("SELECT * FROM snacks_entity WHERE id = :snackId")
+    suspend fun getOneSnackFromDatabase(snackId : Int) : SnackWithFavoriteStatus?
+
+    @Transaction
+    @Query("""
+            SELECT r.*, MAX(d.discount) AS maxDiscount
+            
+            FROM restaurants_entity AS r
+            LEFT JOIN restaurant_category_cross_ref ON r.id = restaurant_category_cross_ref.restaurantId
+            LEFT JOIN categories_entity AS c ON c.id = restaurant_category_cross_ref.categoryId
+            LEFT JOIN discounts_entity AS d ON r.id = d.restaurantId
+            WHERE :type = 'All' OR c.type =:type
+            GROUP BY r.id
+            """)
+    fun getRestaurantsFromDatabaseByCategories(type: String): PagingSource<Int, RestaurantWithFavoriteStatus>
+
+    @Transaction
+    @Query("SELECT * FROM restaurants_entity WHERE id IN (:resIds)")
+    fun getRestaurantsFromDatabaseByIds(resIds : List<Int>): PagingSource<Int, RestaurantWithFavoriteStatus>
+
+    @Transaction
+    @Query("SELECT * FROM restaurants_entity WHERE id = :restaurantId")
+    suspend fun getOneRestaurantFromDatabase(restaurantId : Int): RestaurantWithFavoriteStatus?
+
+    @Query("SELECT * FROM categories_entity")
+    fun getAllCategoriesFromDatabase(): Flow<List<CategoriesEntity>>
+
+    @Query("SELECT * FROM offers_entity")
+    fun getAllOffersFromDatabase(): Flow<List<OffersEntity>>
+
+    @Query("SELECT * FROM offers_entity WHERE restaurantId = :resId")
+    fun getRestaurantOffersFromDatabase(resId : Int): Flow<List<OffersEntity>>
+
+
+    @Query("SELECT image FROM restaurants_entity WHERE id = :resId")
+    suspend fun getRestaurantImage(resId : Int): String
+
+    @Query("SELECT id,image FROM meals_entity WHERE id IN (:ids)")
+    suspend fun getMealsImages(ids : List<Int>): Map<@MapColumn(columnName = "id")Int, @MapColumn(columnName = "image")String?>
+
+    @Query("SELECT id,image FROM snacks_entity WHERE id IN (:ids)")
+    suspend fun getSnacksImages(ids : List<Int>): Map<@MapColumn(columnName = "id")Int, @MapColumn(columnName = "image")String?>
+
+
+
+//    @Query("SELECT * FROM discounts_entity WHERE mealId IN (:foodIds)")
+//    suspend fun getDiscountByFoodId(foodIds : List<Int>): List<DiscountsEntity>
+
+    //----------------------------------------------------------------\\ Search //----------------------------------------------------------------
+
+    @Query("""
+            SELECT r.searchKeywords FROM restaurants_entity r
+            INNER JOIN search_fts fts ON r.id = fts.rowid
+            WHERE search_fts MATCH :searchText LIMIT 10
+            """)
+    fun getSearchSuggestions(searchText: String): Flow<List<String>>
+
+    @Transaction
+    @Query("""
+        SELECT restaurants_entity.* FROM restaurants_entity 
+        INNER JOIN search_fts ON restaurants_entity.id = search_fts.rowid 
+        WHERE search_fts MATCH :searchText || '*'
+    """)
+    fun getRestaurantSearchResults(searchText: String): PagingSource<Int, RestaurantWithFavoriteStatus>
+
+    @Transaction
+    @Query("SELECT * FROM meals_entity WHERE id IN (:mealIds)")
+    suspend fun getTopFiveMealsToView(mealIds: List<Int>): List<MealWithFavoriteStatus>
+
+
+    //----------------------------------------------------------------\\ Search History //----------------------------------------------------------------
+
+    @Query("SELECT * FROM search_history WHERE userId = :userid")
+    fun getSearchHistory(userid : String): Flow<List<SearchHistory>>
+
+    @Upsert
+    suspend fun addSearchTextToHistory(searchHistory : SearchHistory)
+
+    @Query("UPDATE OR REPLACE search_history SET userId = :userId WHERE userId = ''")
+    suspend fun addGuestSearchHistoryToUser(userId: String)
+
+    @Query("DELETE FROM search_history WHERE title = :searchTitle")
+    suspend fun deleteFromSearchHistory(searchTitle : String)
+
+
+    //----------------------------------------------------------------\\ Checking //----------------------------------------------------------------
+
+    @Query("SELECT id FROM meals_entity WHERE id IN (:ids)")
+    suspend fun checkAreMealsDeleted(ids : List<Int>): List<Int>
+
+    @Query("SELECT id FROM snacks_entity WHERE id IN (:ids)")
+    suspend fun checkAreSnacksDeleted(ids : List<Int>): List<Int>
+
+    @Query("SELECT EXISTS(SELECT 1 FROM restaurants_entity WHERE id = :resId)")
+    suspend fun isRestaurantExist(resId : Int): Boolean
+
+    @Transaction
+    suspend fun checkAll(
+        mealsIds : List<Int>,
+        snacksIds : List<Int>
+    ): Pair<List<Int>, List<Int>> {
+        val meals = checkAreMealsDeleted(mealsIds)
+        val snacks = checkAreSnacksDeleted(snacksIds)
+
+        return Pair(meals, snacks)
+    }
+}

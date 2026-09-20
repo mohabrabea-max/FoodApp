@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.applicationhome.data.data.model.FavoriteClass
-import com.example.applicationhome.data.local.dao.FavoriteDao
-import com.example.applicationhome.data.remote.FoodAppAPIs
+import com.example.applicationhome.core.data.local.dao.FavoriteDao
+import com.example.applicationhome.core.data.remote.FoodAppAPIs
+import com.example.applicationhome.core.data.remote.dto.FavoriteClass
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.async
