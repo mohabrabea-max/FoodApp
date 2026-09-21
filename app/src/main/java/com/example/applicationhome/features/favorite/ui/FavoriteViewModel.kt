@@ -13,8 +13,10 @@ import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
 import com.example.applicationhome.core.domain.usecase.FavoriteUseCase
 import com.example.applicationhome.core.ui.mapper.mealDomainToUiModel
+import com.example.applicationhome.core.ui.mapper.restaurantDomainClassToRestaurantsUiClass
 import com.example.applicationhome.core.ui.mapper.snackDomainToUiModel
 import com.example.applicationhome.core.ui.model.FoodItem
+import com.example.applicationhome.core.ui.model.RestaurantsUiClass
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -76,10 +78,15 @@ class FavoriteViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    val favoriteRestaurantsFromDatabase =
+    val favoriteRestaurantsFromDatabase : StateFlow<List<RestaurantsUiClass>> =
         userRepository.userData.flatMapLatest { user ->
             val id = user.id
             favoriteRepository.favoriteRestaurantsFromDatabase(id)
+                .map { item ->
+                    item.map {
+                        it.restaurantDomainClassToRestaurantsUiClass()
+                    }
+                }
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),

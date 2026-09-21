@@ -88,12 +88,10 @@ interface FoodAndRestaurantsDao {
 
     @Transaction
     @Query("""
-            SELECT r.*, MAX(d.discount) AS maxDiscount
-            
+            SELECT DISTINCT r.*
             FROM restaurants_entity AS r
             LEFT JOIN restaurant_category_cross_ref ON r.id = restaurant_category_cross_ref.restaurantId
             LEFT JOIN categories_entity AS c ON c.id = restaurant_category_cross_ref.categoryId
-            LEFT JOIN discounts_entity AS d ON r.id = d.restaurantId
             WHERE :type = 'All' OR c.type =:type
             GROUP BY r.id
             """)
@@ -125,6 +123,15 @@ interface FoodAndRestaurantsDao {
 
     @Query("SELECT id,image FROM snacks_entity WHERE id IN (:ids)")
     suspend fun getSnacksImages(ids : List<Int>): Map<@MapColumn(columnName = "id")Int, @MapColumn(columnName = "image")String?>
+
+
+    @Transaction
+    @Query("SELECT * FROM meals_entity WHERE restaurantId = :resId AND id IN (SELECT mealId FROM discounts_entity)")
+    fun getDiscountMeals(resId : Int): Flow<List<MealWithFavoriteStatus>>
+
+    @Transaction
+    @Query("SELECT * FROM snacks_entity WHERE restaurantId = :resId AND id IN (SELECT mealId FROM discounts_entity)")
+    fun getDiscountSnacks(resId : Int): Flow<List<SnackWithFavoriteStatus>>
 
 
 

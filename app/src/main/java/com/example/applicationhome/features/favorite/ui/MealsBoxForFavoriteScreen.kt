@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -22,25 +24,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.core.domain.model.MealSizeDetail
+import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.DiscountsOutlookBox
+import java.util.Locale
 
 @Composable
 fun MealsBoxForFavoriteScreen(
     foodMenuIsLoading : Boolean,
+    discount : Int?,
     name : String,
     image : String,
-    sizeOptions: MealSizeDetail?,
+    price : Double,
     cardNavigationClickable : () -> Unit = {},
     actions : @Composable ColumnScope.() -> Unit = {}
 ){
     val interactionSource = remember { MutableInteractionSource() }
-
-    val price = sizeOptions?.price ?: 0.0
 
     if (foodMenuIsLoading) {
         Box(
@@ -69,7 +72,7 @@ fun MealsBoxForFavoriteScreen(
                 }.padding(15.dp)
         ){
             Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)){
-                Box(modifier = Modifier.fillMaxWidth().weight(1.5f), contentAlignment = Alignment.Center){
+                Box(modifier = Modifier.fillMaxWidth().weight(3f), contentAlignment = Alignment.Center){
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(0.9f).clip(RoundedCornerShape(10.dp)),
                         model = ImageRequest.Builder(LocalContext.current).
@@ -88,8 +91,12 @@ fun MealsBoxForFavoriteScreen(
                     )
                 }
 
-                Column(modifier = Modifier.fillMaxWidth().weight(1f),
-                    verticalArrangement = Arrangement.SpaceBetween){
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ){
                     Text(
                         text = name,
                         fontSize = 14.sp,
@@ -97,19 +104,50 @@ fun MealsBoxForFavoriteScreen(
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(
-                        text = name,
-                        fontSize = 11.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    Text(
-                        text = "$price E.G",
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold
-                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1.5f),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Bottom
+                ){
+                    when(discount){
+                        null -> {
+                            Text(
+                                text = "EGP $price",
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        else -> {
+                            val newPrice = price * (1.0 - (discount.toDouble() / 100.00))
+                            val formattedPrice = String.format(Locale.US, "%.2f", newPrice)
+
+                            DiscountsOutlookBox(discount)
+
+                            Spacer(modifier = Modifier.height(7.dp))
+
+                            Text(
+                                text = "EGP $price",
+                                fontSize = 14.sp,
+                                textDecoration = TextDecoration.LineThrough,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.labelLarge
+                            )
+
+                            Text(
+                                text = "EGP $formattedPrice",
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
                 }
             }
         }

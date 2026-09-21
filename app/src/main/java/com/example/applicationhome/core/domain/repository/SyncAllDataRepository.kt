@@ -1,10 +1,10 @@
 package com.example.applicationhome.core.domain.repository
 
 import androidx.paging.PagingData
-import com.example.applicationhome.core.ui.model.UiStates
 import com.example.applicationhome.core.data.local.entity.CategoriesEntity
 import com.example.applicationhome.core.data.local.entity.OffersEntity
-import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
+import com.example.applicationhome.core.domain.model.RestaurantDomainClass
+import com.example.applicationhome.core.ui.model.UiStates
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -18,6 +18,6 @@ interface SyncAllDataRepository {
     // *** ---------------------- \\***  Sync Data For ViewModel  ***// ---------------------- ***
     val categoriesFromDatabase : StateFlow<List<CategoriesEntity>>
 
-    fun getRestaurantsFromDatabase(type: String): Flow<PagingData<RestaurantWithFavoriteStatus>>
+    fun getRestaurantsFromDatabase(type: String): Flow<PagingData<RestaurantDomainClass>>
     fun getAllOffersFromDatabase(): Flow<List<OffersEntity>>
 }

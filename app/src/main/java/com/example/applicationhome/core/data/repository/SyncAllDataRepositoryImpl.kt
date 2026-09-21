@@ -3,6 +3,7 @@ package com.example.applicationhome.core.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.map
 import com.example.applicationhome.core.data.datastore.DataStoreManager
 import com.example.applicationhome.core.data.local.dao.FavoriteDao
 import com.example.applicationhome.core.data.local.dao.FoodAndRestaurantsDao
@@ -13,13 +14,14 @@ import com.example.applicationhome.core.data.local.entity.FavoriteRestaurantEnti
 import com.example.applicationhome.core.data.local.entity.FavoriteSnackEntity
 import com.example.applicationhome.core.data.local.entity.OffersEntity
 import com.example.applicationhome.core.data.local.entity.RestaurantCategoryCrossRef
-import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.core.data.mapper.addressToAddressesEntity
 import com.example.applicationhome.core.data.mapper.discountsToDiscountsEntity
 import com.example.applicationhome.core.data.mapper.foodItemToMealsEntity
+import com.example.applicationhome.core.data.mapper.restaurantWithFavoriteStatusToRestaurantDomainClass
 import com.example.applicationhome.core.data.mapper.restaurantsToRestaurantsEntity
 import com.example.applicationhome.core.data.mapper.snackToSnacksEntity
 import com.example.applicationhome.core.data.remote.FoodAppAPIs
+import com.example.applicationhome.core.domain.model.RestaurantDomainClass
 import com.example.applicationhome.core.domain.module.ApplicationScope
 import com.example.applicationhome.core.domain.module.IODispatcher
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
@@ -33,6 +35,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
@@ -363,7 +366,7 @@ class SyncAllDataRepositoryImpl @Inject constructor(
             )
 
 
-    override fun getRestaurantsFromDatabase(type: String): Flow<PagingData<RestaurantWithFavoriteStatus>> =
+    override fun getRestaurantsFromDatabase(type: String): Flow<PagingData<RestaurantDomainClass>> =
         Pager(
             config = PagingConfig(
                 pageSize = 10,
@@ -373,7 +376,11 @@ class SyncAllDataRepositoryImpl @Inject constructor(
             pagingSourceFactory = {
                 foodAndRestaurantsDao.getRestaurantsFromDatabaseByCategories(type)
             }
-        ).flow
+        ).flow.map { pagingData ->
+            pagingData.map {
+                it.restaurantWithFavoriteStatusToRestaurantDomainClass()
+            }
+        }
 
     private fun getAllCategoriesFromDatabase() : Flow<List<CategoriesEntity>> =
         foodAndRestaurantsDao.getAllCategoriesFromDatabase()

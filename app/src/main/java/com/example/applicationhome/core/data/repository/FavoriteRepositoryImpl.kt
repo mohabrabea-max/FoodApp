@@ -12,10 +12,11 @@ import com.example.applicationhome.core.data.local.dao.FavoriteDao
 import com.example.applicationhome.core.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.core.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.core.data.local.entity.FavoriteSnackEntity
-import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.core.data.mapper.mealWithFavoriteStatusToMealDomain
+import com.example.applicationhome.core.data.mapper.restaurantWithFavoriteStatusToRestaurantDomainClass
 import com.example.applicationhome.core.data.mapper.snackWithFavoriteStatusToSnackDomain
 import com.example.applicationhome.core.domain.model.MealDomain
+import com.example.applicationhome.core.domain.model.RestaurantDomainClass
 import com.example.applicationhome.core.domain.model.SnackDomain
 import com.example.applicationhome.core.domain.module.ApplicationScope
 import com.example.applicationhome.core.domain.module.IODispatcher
@@ -61,8 +62,10 @@ class FavoriteRepositoryImpl @Inject constructor(
         }
 
 
-    override fun favoriteRestaurantsFromDatabase(userId : String) : Flow<List<RestaurantWithFavoriteStatus>> =
-        favoriteDao.getRestaurantsFromDatabase(userId)
+    override fun favoriteRestaurantsFromDatabase(userId : String) : Flow<List<RestaurantDomainClass>> =
+        favoriteDao.getRestaurantsFromDatabase(userId).map { item ->
+            item.map { it.restaurantWithFavoriteStatusToRestaurantDomainClass() }
+        }
 
 // *** ---------------------- \\***  Favorite Count  ***// ---------------------- ***
 

@@ -16,6 +16,8 @@ import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.SearchRepository
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
+import com.example.applicationhome.core.ui.mapper.mealDomainToUiModel
+import com.example.applicationhome.core.ui.mapper.restaurantDomainClassToRestaurantsUiClass
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -102,16 +104,17 @@ class SearchViewModel @Inject constructor(
             searchRepository.getRestaurantSearchResults(searchText.text)
         }.map { pagingData ->
             pagingData.map { restaurant ->
-                val mealIds = restaurant.restaurant.topFiveMeals
+                val mealIds = restaurant.topFiveMeals
                     .split(",")
                     .mapNotNull { it.trim().toIntOrNull() }
                 val topFiveMeals = if (mealIds.isNotEmpty()){
                     searchRepository.getTopFiveMealsToView(mealIds)
+                        .map { it.mealDomainToUiModel() }
                 }else{
                     emptyList()
                 }
                 RestaurantWithFeaturedMeals(
-                    restaurant,
+                    restaurant.restaurantDomainClassToRestaurantsUiClass(),
                     topFiveMeals
                 )
             }

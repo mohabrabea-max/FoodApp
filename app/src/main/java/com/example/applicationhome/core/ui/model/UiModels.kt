@@ -1,6 +1,7 @@
 package com.example.applicationhome.core.ui.model
 
 import androidx.annotation.Keep
+import com.example.applicationhome.core.domain.model.CategoriesInWithTitle
 import com.example.applicationhome.core.domain.model.MealSizeDetail
 
 sealed interface UiStates {
@@ -75,4 +76,20 @@ data class CartItemsUiClass(
     val restaurantId : Int = 0,
     val discount : DiscountsUi? = null,
     val finalPrice : Double = 0.0
+)
+
+
+data class RestaurantsUiClass(
+    val id : Int = 0,
+    val typ : List<CategoriesInWithTitle> = emptyList(),
+    val categories : List<String> = emptyList(),
+    val name : String = "",
+    val image : String = "",
+    val image2 : String = "",
+    val review : Double = 0.0,
+    val background : String = "",
+    val searchKeywords: String = "",
+    val topFiveMeals : String = "",
+    val isFavorite : Boolean = false,
+    val discounts : List<DiscountsUi?>? = null
 )

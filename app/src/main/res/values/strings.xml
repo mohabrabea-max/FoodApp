@@ -169,4 +169,9 @@
     <string name="discount_until">Discount until</string>
     <string name="add_item">Add item</string>
     <string name="off_select_items">off select items</string>
+    <string name="off_discount">off</string>
+    <string name="select_items">select items</string>
+    <string name="view_items">View items</string>
+    <string name="discount_items">Discount items</string>
+    <string name="discounts">Discounts</string>
 </resources>

@@ -37,15 +37,15 @@ import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.bars.RestaurantScreenTopBar
 import com.example.applicationhome.core.ui.components.designsystem.TopBarButtons
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
+import com.example.applicationhome.core.ui.model.RestaurantsUiClass
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
-import com.example.applicationhome.core.data.local.entity.RestaurantsEntity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RestaurantTopBar(
     searchSize : Float,
-    item : RestaurantsEntity,
+    item : RestaurantsUiClass,
     isRestaurantInFavorite : Boolean,
     scrollState : LazyListState,
     addToFavorite : () -> Unit,

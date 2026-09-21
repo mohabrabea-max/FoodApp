@@ -252,27 +252,27 @@ fun HomeScreen(
 
                         if(parameters.restaurants != null) items(
                             count = parameters.restaurants.itemCount,
-                            key = parameters.restaurants.itemKey { it.restaurant.id }
+                            key = parameters.restaurants.itemKey { it.id }
                         ) { index ->
                             val item = parameters.restaurants[index]
 
                             item?.let {
                                 RestaurantsBoxHomeScreen(
-                                    discount = item.maxDiscount,
+                                    discount = item.discounts?.maxOfOrNull { it?.discount?: 0 },
                                     item = item,
                                     isRestaurantInFavorite = item.isFavorite,
                                     view = {
-                                        imageToView = item.restaurant.image
+                                        imageToView = item.image
                                         viewImageState = true
                                     },
                                     clickable = {
                                         navigationController.navigate(
-                                            Screens.RestaurantScreen.createRoute(restaurantId = item.restaurant.id)
+                                            Screens.RestaurantScreen.createRoute(restaurantId = item.id)
                                         )
                                     },
                                     addRestaurantsFavorite = {
                                         val favoriteRestaurantDatabase = FavoriteRestaurantEntity(
-                                            item.restaurant.id,
+                                            item.id,
                                             parameters.userData.id,
                                             false,
                                             false
@@ -281,7 +281,7 @@ fun HomeScreen(
                                             favoriteRestaurantDatabase
                                         )
                                     },
-                                    removeRestaurantsFavorite = { onActions.removeRestaurantsFavorite(item.restaurant.id) }
+                                    removeRestaurantsFavorite = { onActions.removeRestaurantsFavorite(item.id) }
                                 )
                             }
                         }

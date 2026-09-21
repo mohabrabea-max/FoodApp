@@ -37,15 +37,15 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.core.ui.components.designsystem.bounceClick
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.DiscountsOutlookBox
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
+import com.example.applicationhome.core.ui.model.RestaurantsUiClass
 
 @Composable
 fun RestaurantsBoxHomeScreen(
     discount : Int?,
-    item : RestaurantWithFavoriteStatus,
+    item : RestaurantsUiClass,
     isRestaurantInFavorite : Boolean,
     view : () -> Unit,
     clickable : () -> Unit,
@@ -74,12 +74,12 @@ fun RestaurantsBoxHomeScreen(
                 AsyncImage(
                     modifier = Modifier.fillMaxSize(),
                     model = ImageRequest.Builder(LocalContext.current).
-                    data(item.restaurant.image2).
+                    data(item.image2).
                     crossfade(true).
                     size(400, 400).
                     precision(Precision.EXACT).
                     build(),
-                    contentDescription = item.restaurant.name,
+                    contentDescription = item.name,
                     contentScale = ContentScale.Crop
                 )
                 Row(
@@ -128,12 +128,12 @@ fun RestaurantsBoxHomeScreen(
                         AsyncImage(
                             modifier = Modifier.fillMaxSize(),
                             model = ImageRequest.Builder(LocalContext.current).
-                            data(item.restaurant.image).
+                            data(item.image).
                             crossfade(true).
                             size(400, 400).
                             precision(Precision.EXACT).
                             build(),
-                            contentDescription = item.restaurant.name,
+                            contentDescription = item.name,
                             contentScale = ContentScale.Crop
                         )
                     }
@@ -146,7 +146,7 @@ fun RestaurantsBoxHomeScreen(
             horizontalAlignment = Alignment.Start
         ){
             Text(
-                text = item.restaurant.name,
+                text = item.name,
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold
@@ -163,14 +163,14 @@ fun RestaurantsBoxHomeScreen(
                 )
 
                 Text(
-                    text = item.restaurant.review.toString(),
+                    text = item.review.toString(),
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 15.sp,
                     modifier = Modifier
                 )
             }
             Text(
-                text = item.categories.joinToString(separator = " - ") { it.name },
+                text = item.categories.joinToString(separator = " & ") { it },
                 fontSize = 13.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

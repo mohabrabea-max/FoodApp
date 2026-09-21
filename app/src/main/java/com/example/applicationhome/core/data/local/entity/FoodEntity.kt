@@ -14,6 +14,8 @@ import com.example.applicationhome.core.domain.model.MealSizeDetail
 import com.example.applicationhome.core.domain.model.OrderHistoryClass
 import com.example.applicationhome.core.domain.model.OrderItemsClass
 import com.example.applicationhome.core.domain.model.UserInformationInOrderClass
+import com.example.applicationhome.core.ui.model.FoodItem
+import com.example.applicationhome.core.ui.model.RestaurantsUiClass
 
 @Entity(
     tableName = "categories_entity",
@@ -123,8 +125,8 @@ data class RestaurantCategoryCrossRef(
 )
 
 data class RestaurantWithFeaturedMeals(
-    val restaurant: RestaurantWithFavoriteStatus,
-    val topMeals: List<MealWithFavoriteStatus>
+    val restaurant : RestaurantsUiClass,
+    val topMeals: List<FoodItem.MealItem>
 )
 
 @Entity(tableName = "search_fts")
@@ -304,7 +306,11 @@ data class FavoriteRestaurantEntity(
 data class RestaurantWithFavoriteStatus(
     @Embedded val restaurant : RestaurantsEntity = RestaurantsEntity(),
 
-    val maxDiscount : Int? = null,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "restaurantId"
+    )
+    val discounts : List<DiscountsEntity>?,
 
     @Relation(
         parentColumn = "id",
@@ -322,9 +328,7 @@ data class RestaurantWithFavoriteStatus(
         )
     )
     val categories : List<CategoriesEntity> = emptyList() // هنا مش محتاجين نكتب emptyList() لأن Room تلقائيا لو ملقتش حاجة في categories هترجع emptyList() لوحدها
-){
-    val isFavorite : Boolean get() = favoriteInfo != null && !favoriteInfo.isDeletedOffline
-}
+)
 
 
 

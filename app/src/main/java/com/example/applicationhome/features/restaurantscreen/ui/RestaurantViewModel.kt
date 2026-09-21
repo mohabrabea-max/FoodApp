@@ -5,12 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.filter
 import androidx.paging.map
 import com.example.applicationhome.core.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.core.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.core.data.local.entity.FavoriteSnackEntity
 import com.example.applicationhome.core.data.local.entity.OffersEntity
-import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.core.data.remote.NetworkObserver
 import com.example.applicationhome.core.data.remote.dto.Drink
 import com.example.applicationhome.core.domain.model.AddToCartStates
@@ -26,8 +26,10 @@ import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.CartUseCase
 import com.example.applicationhome.core.domain.usecase.FavoriteUseCase
 import com.example.applicationhome.core.ui.mapper.mealDomainToUiModel
+import com.example.applicationhome.core.ui.mapper.restaurantDomainClassToRestaurantsUiClass
 import com.example.applicationhome.core.ui.mapper.snackDomainToUiModel
 import com.example.applicationhome.core.ui.model.FoodItem
+import com.example.applicationhome.core.ui.model.RestaurantsUiClass
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -73,18 +75,19 @@ class RestaurantViewModel @Inject constructor(
     private val _mealSize = MutableStateFlow("")
     val mealSize : StateFlow<String> = _mealSize.asStateFlow()
 
-    val foodMenuList : Flow<PagingData<FoodItem.MealItem>> = combine(
-        _resId,
-        _typeInRestaurantScreen
-    ) { resId, type ->
-        Pair(resId, type)
-    }.flatMapLatest { (resId, type) ->
-        restaurantRepository.getMealsFromDatabase(resId, type.category).map { pagingData ->
-            pagingData.map {
-                it.mealDomainToUiModel()
+    val mealMenuList : Flow<PagingData<FoodItem.MealItem>> =
+        combine(
+            _resId,
+            _typeInRestaurantScreen
+        ) { resId, type ->
+            Pair(resId, type)
+        }.flatMapLatest { (resId, type) ->
+            restaurantRepository.getMealsFromDatabase(resId, type.category).map { pagingData ->
+                pagingData.map {
+                    it.mealDomainToUiModel()
+                }
             }
-        }
-    }.cachedIn(viewModelScope)
+        }.cachedIn(viewModelScope)
 
     val snackMenuList : Flow<PagingData<FoodItem.SnackItem>> =
         _resId.flatMapLatest { resId ->
@@ -180,10 +183,11 @@ class RestaurantViewModel @Inject constructor(
                     else -> null
                 }
 
-            val restaurant = restaurantRepository.getRestaurantByIdFromDatabase(restaurantId)?: RestaurantWithFavoriteStatus()
+            val restaurant = restaurantRepository.getRestaurantByIdFromDatabase(restaurantId)
+                ?.restaurantDomainClassToRestaurantsUiClass() ?: RestaurantsUiClass()
 
             launch {
-                selectedtype(0, restaurant.restaurant.typ.minByOrNull { it.index }!!)
+                selectedtype(0, restaurant.typ.minByOrNull { it.index }!!)
             }
 
             _uiState.update {
@@ -216,6 +220,19 @@ class RestaurantViewModel @Inject constructor(
         _mealSize.value = size
     }
 
+    fun viewAnyFood(food : FoodItem){
+        val size = food.sizes.keys.last()
+
+        when(food){
+            is FoodItem.MealItem -> {
+                selectMeal(food.id, size)
+            }
+            is FoodItem.SnackItem -> {
+                selectSnack(food.id, size)
+            }
+        }
+    }
+
     fun closeItemScreen(){
         _mealId.value = null
         _snackId.value = null
@@ -232,7 +249,26 @@ class RestaurantViewModel @Inject constructor(
     }
 
 
-//       *** ---------------------------- \\***  Cart  ***// ---------------------------- ***
+    //       *** ---------------------------- \\***  Discount Meals  ***// ---------------------------- ***
+
+    private val _viewDiscountsMeals = MutableStateFlow(false)
+    val viewDiscountsMeals = _viewDiscountsMeals.asStateFlow()
+
+
+    val discountMeals =
+        mealMenuList.map { item -> item.filter { it.discount != null } }
+    val discountSnacks =
+        snackMenuList.map { item -> item.filter { it.discount != null } }
+
+    fun onViewDiscountMealsDialog(){
+        _viewDiscountsMeals.value = true
+    }
+    fun onCloseDiscountMealsDialog(){
+        _viewDiscountsMeals.value = false
+    }
+
+
+    //       *** ---------------------------- \\***  Cart  ***// ---------------------------- ***
 
     private val _errorInCart = MutableStateFlow<AddToCartStates>(AddToCartStates.Idle)
     val errorInCart = _errorInCart.asStateFlow()

@@ -55,7 +55,6 @@ import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.AddBox
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.MealBoxIcon
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.RestaurantImageView
-import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.SnaksBox
 import com.example.applicationhome.core.ui.components.screens.EmptyScreenWhithButton
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import kotlinx.coroutines.CoroutineScope
@@ -79,8 +78,6 @@ fun Favorite(
     val networkState by favoriteViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
 
     var activeId by remember { mutableStateOf(0) }
-
-    val userData by favoriteViewModel.userData.collectAsStateWithLifecycle()
 
     val selectedCategorieInFavoriteScreen by favoriteViewModel.selectedCategorieInFavoriteScreen.collectAsStateWithLifecycle()
 
@@ -137,21 +134,21 @@ fun Favorite(
                             val isRestaurantInFavorite = item.isFavorite
 
                             RestaurantsBox(
-                                item = item.restaurant,
+                                item = item,
                                 isRestaurantInFavorite = isRestaurantInFavorite,
                                 view = {
-                                    imageToView = item.restaurant.image
+                                    imageToView = item.image
                                     viewImageState = true
                                 },
                                 clickable = {
                                     if (networkState) {
-                                        navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.restaurant.id))
+                                        navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.id))
                                     }else{
                                         navigationController.navigate(Screens.NoInternetScreen.screen)
                                     }
                                 },
                                 addRestaurantsFavorite = {},
-                                removeRestaurantsFavorite = { favoriteViewModel.removeRestaurantsFavorite(item.restaurant.id) }
+                                removeRestaurantsFavorite = { favoriteViewModel.removeRestaurantsFavorite(item.id) }
                             )
                         }
                     }
@@ -161,15 +158,16 @@ fun Favorite(
                             val isSnackInFavorite = item.isFavorite
                             val size = item.sizes.keys.last()
 
-                            SnaksBox(
-                                modifier = Modifier.size(200.dp),
+                            MealsBoxForFavoriteScreen(
+                                foodMenuIsLoading = false,
+                                discount = item.discount?.discount,
                                 name = item.name,
                                 image = item.image,
-                                price = item.sizes[size],
+                                price = item.sizes[size]?: 0.0,
                                 cardNavigationClickable = {
                                     if (networkState) {
-                                        navigationController.navigate(Screens.RestaurantScreen.createRouteWithSnack(restaurantId = item.restaurantId, snackId = item.id))
-                                    } else {
+                                        navigationController.navigate(Screens.RestaurantScreen.createRouteWithMeal(restaurantId = item.restaurantId, mealId = item.id))
+                                    }else{
                                         navigationController.navigate(Screens.NoInternetScreen.screen)
                                     }
                                 },
@@ -186,6 +184,7 @@ fun Favorite(
                                         icon1 = Icons.Default.Favorite,
                                         icon2 = Icons.Default.FavoriteBorder
                                     )
+
                                     AddBox(
                                         foodId = item.id,
                                         plus = {
@@ -211,9 +210,10 @@ fun Favorite(
 
                             MealsBoxForFavoriteScreen(
                                 foodMenuIsLoading = false,
+                                discount = item.discount?.discount,
                                 name = item.name,
                                 image = item.image,
-                                sizeOptions = item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") },
+                                price = item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }?.price?: 0.0,
                                 cardNavigationClickable = {
                                     if (networkState) {
                                         navigationController.navigate(Screens.RestaurantScreen.createRouteWithMeal(restaurantId = item.restaurantId, mealId = item.id))

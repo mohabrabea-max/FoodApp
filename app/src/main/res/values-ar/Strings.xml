@@ -170,4 +170,9 @@
     <string name="discount_until">خصم حتى</string>
     <string name="add_item">أضف للسلة</string>
     <string name="off_select_items">خصم على منتجات مختارة</string>
+    <string name="off_discount">خصم</string>
+    <string name="select_items">على المنتجات المختارة</string>
+    <string name="view_items">عرض العناصر</string>
+    <string name="discount_items">السلع المخفضة</string>
+    <string name="discounts">التخفيضات</string>
 </resources>

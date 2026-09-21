@@ -39,15 +39,15 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.core.data.local.entity.MealWithFavoriteStatus
 import com.example.applicationhome.core.data.local.entity.RestaurantWithFeaturedMeals
+import com.example.applicationhome.core.ui.model.FoodItem
 import com.example.applicationhome.features.favorite.ui.MealsBoxForFavoriteScreen
 
 //@Preview(showBackground = true)
 @Composable
 fun SearchResults(
     item : RestaurantWithFeaturedMeals,
-    mealClickable : (MealWithFavoriteStatus) -> Unit = {},
+    mealClickable : (FoodItem.MealItem) -> Unit = {},
     restaurantClickable : () -> Unit = {}
 ){
     val interactionSource = remember { MutableInteractionSource() }
@@ -78,7 +78,7 @@ fun SearchResults(
             ){
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current).
-                    data(item.restaurant.restaurant.image).
+                    data(item.restaurant.image).
                     crossfade(true).
                     precision(Precision.EXACT).
                     build(),
@@ -92,7 +92,7 @@ fun SearchResults(
                 modifier = Modifier.padding(start = 13.dp)
             ){
                 Text(
-                    text = item.restaurant.restaurant.name,
+                    text = item.restaurant.name,
                     fontSize = 18.sp,
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.labelLarge,
@@ -113,7 +113,7 @@ fun SearchResults(
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
-                        text = "${item.restaurant.restaurant.review}",
+                        text = "${item.restaurant.review}",
                         color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 14.sp,
                         style = MaterialTheme.typography.labelLarge,
@@ -139,11 +139,12 @@ fun SearchResults(
 
             items(item.topMeals){ item ->
                 MealsBoxForFavoriteScreen(
-                    false,
-                    item.meal.name,
-                    item.meal.image,
-                    item.meal.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") },
-                    { mealClickable(item) }
+                    foodMenuIsLoading = false,
+                    discount = item.discount?.discount,
+                    name = item.name,
+                    image = item.image,
+                    price = item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }?.price?: 0.0,
+                    cardNavigationClickable = { mealClickable(item) }
                 )
             }
         }

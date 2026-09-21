@@ -3,15 +3,13 @@ package com.example.applicationhome.core.data.mapper
 import com.example.applicationhome.core.data.local.entity.CartItemsClassEntity
 import com.example.applicationhome.core.data.local.entity.DiscountsEntity
 import com.example.applicationhome.core.data.local.entity.MealWithFavoriteStatus
+import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.core.data.local.entity.SnackWithFavoriteStatus
 import com.example.applicationhome.core.domain.model.CartItemsDomainClass
 import com.example.applicationhome.core.domain.model.DiscountsDomainClass
 import com.example.applicationhome.core.domain.model.MealDomain
+import com.example.applicationhome.core.domain.model.RestaurantDomainClass
 import com.example.applicationhome.core.domain.model.SnackDomain
-import com.example.applicationhome.core.ui.model.DiscountsUi
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 fun MealWithFavoriteStatus.mealWithFavoriteStatusToMealDomain(): MealDomain =
     MealDomain(
@@ -24,7 +22,7 @@ fun MealWithFavoriteStatus.mealWithFavoriteStatusToMealDomain(): MealDomain =
         restaurantId = this.meal.restaurantId,
         review = this.meal.review,
         discount = this.discount?.discountsEntityToDiscountsDomainClass(),
-        isFavorite = this.favoriteInfo != null
+        isFavorite = this.favoriteInfo != null && !this.favoriteInfo.isDeletedOffline
     )
 
 fun SnackWithFavoriteStatus.snackWithFavoriteStatusToSnackDomain(): SnackDomain =
@@ -37,27 +35,24 @@ fun SnackWithFavoriteStatus.snackWithFavoriteStatusToSnackDomain(): SnackDomain 
         restaurantId = this.snack.restaurantId,
         review = this.snack.review,
         discount = this.discount?.discountsEntityToDiscountsDomainClass(),
-        isFavorite = this.favoriteInfo != null
+        isFavorite = this.favoriteInfo != null && !this.favoriteInfo.isDeletedOffline
     )
 
-fun DiscountsDomainClass.discountsDomainClassToDiscountsUi(): DiscountsUi? {
-    val isDiscountExpired = System.currentTimeMillis() < this.endDiscount
-
-    return if(isDiscountExpired){
-        DiscountsUi(
-            discount = this.discount,
-            endDiscount = formatDate(this.endDiscount)
-        )
-    }else{
-        null
-    }
-}
-
-private fun formatDate(timestamp: Long): String {
-    val date = Date(timestamp)
-    val formatter = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
-    return formatter.format(date)
-}
+fun RestaurantWithFavoriteStatus.restaurantWithFavoriteStatusToRestaurantDomainClass(): RestaurantDomainClass =
+    RestaurantDomainClass(
+        id = this.restaurant.id,
+        typ = this.restaurant.typ,
+        categories = this.categories.map { it.name },
+        name = this.restaurant.name,
+        image = this.restaurant.image,
+        image2 = this.restaurant.image2,
+        review = this.restaurant.review,
+        background = this.restaurant.background,
+        searchKeywords = this.restaurant.searchKeywords,
+        topFiveMeals = this.restaurant.topFiveMeals,
+        isFavorite = this.favoriteInfo != null && !this.favoriteInfo.isDeletedOffline,
+        discounts = this.discounts?.map { it.discountsEntityToDiscountsDomainClass() }
+    )
 
 fun DiscountsEntity.discountsEntityToDiscountsDomainClass(): DiscountsDomainClass =
     DiscountsDomainClass(

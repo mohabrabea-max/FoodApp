@@ -3,8 +3,8 @@ package com.example.applicationhome.core.domain.repository
 import com.example.applicationhome.core.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.core.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.core.data.local.entity.FavoriteSnackEntity
-import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.core.domain.model.MealDomain
+import com.example.applicationhome.core.domain.model.RestaurantDomainClass
 import com.example.applicationhome.core.domain.model.SnackDomain
 import kotlinx.coroutines.flow.Flow
 
@@ -12,7 +12,7 @@ interface FavoriteRepository {
     // *** ---------------------- \\***  Favorite Items  ***// ---------------------- ***
     fun getFavoriteMeals(userId : String) : Flow<List<MealDomain>>
     fun getFavoriteSnacks(userId : String) : Flow<List<SnackDomain>>
-    fun favoriteRestaurantsFromDatabase(userId : String) : Flow<List<RestaurantWithFavoriteStatus>>
+    fun favoriteRestaurantsFromDatabase(userId : String) : Flow<List<RestaurantDomainClass>>
 
     // *** ---------------------- \\***  Favorite Count  ***// ---------------------- ***
     fun favoriteFoodCount(userId : String) : Flow<Int>

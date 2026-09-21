@@ -2,8 +2,8 @@ package com.example.applicationhome.core.domain.model
 
 import androidx.annotation.StringRes
 import com.example.applicationhome.R
-import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.core.ui.model.FoodItem
+import com.example.applicationhome.core.ui.model.RestaurantsUiClass
 
 
 data class MealDomain(
@@ -52,8 +52,24 @@ data class MealSnacks(
     val image : String = ""
 )
 
+data class RestaurantDomainClass(
+    val id : Int = 0,
+    val typ : List<CategoriesInWithTitle> = emptyList(),
+    val categories : List<String> = emptyList(),
+    val name : String = "",
+    val image : String = "",
+    val image2 : String = "",
+    val review : Double = 0.0,
+    val background : String = "",
+    val searchKeywords: String = "",
+    val topFiveMeals : String = "",
+    val isFavorite : Boolean = false,
+    val discounts : List<DiscountsDomainClass?>? = null
+)
+
+
 data class RestaurantUiState(
-    val restaurantData : RestaurantWithFavoriteStatus = RestaurantWithFavoriteStatus(),
+    val restaurantData : RestaurantsUiClass = RestaurantsUiClass(),
     val bottomSheetItem : FoodItem? = null
 
 )

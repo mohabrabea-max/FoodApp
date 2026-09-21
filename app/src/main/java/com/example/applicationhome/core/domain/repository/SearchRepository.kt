@@ -1,15 +1,15 @@
 package com.example.applicationhome.core.domain.repository
 
 import androidx.paging.PagingData
-import com.example.applicationhome.core.data.local.entity.MealWithFavoriteStatus
-import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.core.data.local.entity.SearchHistory
+import com.example.applicationhome.core.domain.model.MealDomain
+import com.example.applicationhome.core.domain.model.RestaurantDomainClass
 import kotlinx.coroutines.flow.Flow
 
 interface SearchRepository {
     fun getSearchSuggestions(searchText: String): Flow<List<String>>
-    fun getRestaurantSearchResults(searchText: String): Flow<PagingData<RestaurantWithFavoriteStatus>>
-    suspend fun getTopFiveMealsToView(mealIds: List<Int>): List<MealWithFavoriteStatus>
+    fun getRestaurantSearchResults(searchText: String): Flow<PagingData<RestaurantDomainClass>>
+    suspend fun getTopFiveMealsToView(mealIds: List<Int>): List<MealDomain>
     fun getSearchHistory(userid : String): Flow<List<SearchHistory>>
     suspend fun addSearchTextToHistory(searchHistory : SearchHistory)
     suspend fun addGuestSearchHistoryToUser(userId: String)

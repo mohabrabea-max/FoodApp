@@ -35,18 +35,18 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
+import com.example.applicationhome.core.ui.model.RestaurantsUiClass
 
 @Composable
 fun RestaurantHeader(
-    item : RestaurantWithFavoriteStatus?,
-    view: () -> Unit
+    item : RestaurantsUiClass?,
+    view : () -> Unit
 ){
     val interactionSource = remember { MutableInteractionSource() }
 
-    val background = item?.restaurant?.image2 ?:""
-    val type = item?.categories?.map { it.name }?.toList()
-    val logo = item?.restaurant?.image ?: ""
+    val background = item?.image2 ?:""
+    val type = item?.categories
+    val logo = item?.image ?: ""
 
     Box(
         modifier = Modifier
@@ -66,94 +66,95 @@ fun RestaurantHeader(
             height(230.dp),
             contentScale = ContentScale.Crop
         )
-        Box(
-            modifier = Modifier.padding(horizontal = 15.dp).
-            fillMaxWidth().
-            height(120.dp).
-            clip(RoundedCornerShape(15.dp)).
-            border(width = 0.5.dp, color = Color.LightGray, shape = RoundedCornerShape(15.dp)).
-            background(MaterialTheme.colorScheme.surface).
-            align(Alignment.BottomCenter)
-        ){
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(13.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Row{
-                    Box(
-                        modifier = Modifier
-                            .size(70.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .border(width = 0.5.dp, color = Color.LightGray, shape = RoundedCornerShape(10.dp))
-                            .background(Color.White)
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = null
-                            ){ view() },
-                    ){
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current).
-                            data(logo).
-                            crossfade(true).
-                            precision(Precision.EXACT).
-                            build(),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 15.dp)
+                .fillMaxWidth()
+                .height(120.dp)
+                .clip(RoundedCornerShape(15.dp))
+                .border(width = 0.5.dp, color = Color.LightGray, shape = RoundedCornerShape(15.dp))
+                .background(MaterialTheme.colorScheme.surface)
+                .align(Alignment.BottomCenter)
+                .padding(15.dp),
 
-                    Column(
-                        modifier = Modifier.padding(start = 13.dp)
-                    ){
-                        Text(
-                            text = item?.restaurant?.name ?: "",
-                            fontSize = 18.sp,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = 5.dp)
-                        )
-                        Text(
-                            text = type?.joinToString(separator = " ", prefix = "", postfix = "") ?: "",
-                            fontSize = 10.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(bottom = 10.dp)
-                        )
-                        Row(
-                            modifier = Modifier.width(80.dp).
-                            height(20.dp).
-                            clip(RoundedCornerShape(5.dp)).
-                            background(MaterialTheme.colorScheme.background).padding(horizontal = 3.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ){
-                            Icon(
-                                Icons.Default.Star,
-                                contentDescription = null,
-                                tint = Color(0xFFFFD700) ,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Text(
-                                text = "${item?.restaurant?.review ?: 0.0}",
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = 14.sp,
-                                style = MaterialTheme.typography.labelLarge,
-                                modifier = Modifier
-                            )
-                            Text(
-                                text = "(1k+)",
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                fontSize = 14.sp,
-                                style = TextStyle(letterSpacing = (-0.7).sp),
-                                modifier = Modifier
-                            )
-                        }
-                    }
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Box(
+                modifier = Modifier
+                    .size(70.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .border(width = 0.5.dp, color = Color.LightGray, shape = RoundedCornerShape(10.dp))
+                    .background(Color.White)
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ){ view() },
+            ){
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current).
+                    data(logo).
+                    crossfade(true).
+                    precision(Precision.EXACT).
+                    build(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .height(70.dp)
+                    .padding(start = 13.dp),
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.Start
+            ){
+                Text(
+                    text = item?.name ?: "",
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Text(
+                    text = type?.joinToString(separator = " & ") ?: "",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Row(
+                    modifier = Modifier
+                        .width(80.dp)
+                        .height(20.dp)
+                        .clip(RoundedCornerShape(5.dp))
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(horizontal = 3.dp),
+
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Icon(
+                        Icons.Default.Star,
+                        contentDescription = null,
+                        tint = Color(0xFFFFD700) ,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Text(
+                        text = "${item?.review ?: 0.0}",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 14.sp,
+                        style = MaterialTheme.typography.labelLarge,
+                        modifier = Modifier
+                    )
+                    Text(
+                        text = "(1k+)",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 14.sp,
+                        style = TextStyle(letterSpacing = (-0.7).sp),
+                        modifier = Modifier
+                    )
                 }
             }
         }

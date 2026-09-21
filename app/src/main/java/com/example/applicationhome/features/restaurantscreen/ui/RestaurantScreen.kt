@@ -131,7 +131,7 @@ fun RestaurantScreen(
 
     val userData by restaurantViewModel.userData.collectAsStateWithLifecycle()
 
-    val menu = restaurantViewModel.foodMenuList.collectAsLazyPagingItems()
+    val menu = restaurantViewModel.mealMenuList.collectAsLazyPagingItems()
     val snacks = restaurantViewModel.snackMenuList.collectAsLazyPagingItems()
     val offers by restaurantViewModel.restaurantOffersMenuList.collectAsStateWithLifecycle()
     val uiState by restaurantViewModel.uiState.collectAsStateWithLifecycle()
@@ -152,6 +152,9 @@ fun RestaurantScreen(
 
     val mealSize by restaurantViewModel.mealSize.collectAsStateWithLifecycle()
 
+    val viewDiscountsMeals by restaurantViewModel.viewDiscountsMeals.collectAsStateWithLifecycle()
+    val discountMeals = restaurantViewModel.discountMeals.collectAsLazyPagingItems()
+    val discountSnacks = restaurantViewModel.discountSnacks.collectAsLazyPagingItems()
 
     val animDuration = 300
     val animateIn = remember(uiState.bottomSheetItem?.id) {
@@ -274,19 +277,19 @@ fun RestaurantScreen(
         topBar = {
             RestaurantTopBar(
                 searchSize = searchSize,
-                item = uiState.restaurantData.restaurant,
+                item = uiState.restaurantData,
                 isRestaurantInFavorite = uiState.restaurantData.isFavorite,
                 scrollState = scrollState,
                 addToFavorite = {
                     val restaurantsEntity = FavoriteRestaurantEntity(
-                        uiState.restaurantData.restaurant.id,
+                        uiState.restaurantData.id,
                         userData.id,
                         false,
                         false
                     )
                     restaurantViewModel.addRestaurantsFavorite(restaurantsEntity)
                 },
-                removeFromFavorite = { restaurantViewModel.removeRestaurantsFavorite(uiState.restaurantData.restaurant.id) },
+                removeFromFavorite = { restaurantViewModel.removeRestaurantsFavorite(uiState.restaurantData.id) },
                 popBackStack = {
                     if (navigationController.previousBackStackEntry != null) {
                         navigationController.popBackStack()
@@ -302,7 +305,7 @@ fun RestaurantScreen(
         },
 
         bottomBar = {
-            if(restaurantId == uiState.restaurantData.restaurant.id && cartItems.isNotEmpty()){
+            if(restaurantId == uiState.restaurantData.id && cartItems.isNotEmpty()){
                 RestaurantButton(
                     totalNumber,
                     totalPrice
@@ -323,7 +326,7 @@ fun RestaurantScreen(
                     RestaurantHeader(
                         uiState.restaurantData
                     ){
-                        imageToView = uiState.restaurantData.restaurant.image
+                        imageToView = uiState.restaurantData.image
                         viewImageState = true
                     }
                 }
@@ -332,21 +335,37 @@ fun RestaurantScreen(
                     LazyRow(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(120.dp)
-                            .background(MaterialTheme.colorScheme.surface)
-                    ) {
+                            .background(MaterialTheme.colorScheme.surface),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ){
                         item { Spacer(modifier = Modifier.width(15.dp)) }
+
+                        val discount = uiState.restaurantData.discounts?.maxOfOrNull { it?.discount?: 0 }
+                        if(discount != null) item{
+                            DiscountsBoxForRestaurantScreen(
+                                discountText = "${discount}%",
+                                onViewItemsClick = {
+                                    restaurantViewModel.onViewDiscountMealsDialog()
+                                }
+                            )
+                        }
 
                         items(offers) { item ->
                             AsyncImage(
-                                modifier = Modifier.width(300.dp).padding(vertical = 10.dp)
-                                    .clip(RoundedCornerShape(10.dp)).clickable { },
+                                modifier = Modifier
+                                    .padding(vertical = 10.dp)
+                                    .width(300.dp)
+                                    .height(100.dp)
+                                    .clip(RoundedCornerShape(15.dp))
+                                    .clickable { },
                                 model = ImageRequest.Builder(LocalContext.current).data(item.image)
                                     .crossfade(true).size(400, 400).precision(Precision.EXACT).build(),
                                 contentDescription = null,
                                 contentScale = ContentScale.Crop
                             )
                         }
+
+                        item { Spacer(modifier = Modifier.width(15.dp)) }
                     }
                 }
 
@@ -369,7 +388,7 @@ fun RestaurantScreen(
                         )
                     ) {
                         CategoriesBarForRestaurantsScreen(
-                            uiState.restaurantData.restaurant.typ.sortedBy { it.index },
+                            uiState.restaurantData.typ.sortedBy { it.index },
                             selectedTypeIndex
                         ) { index, category ->
                             restaurantViewModel.selectedtype(index, category)
@@ -405,7 +424,7 @@ fun RestaurantScreen(
                                     details = null,
                                     name = item.name,
                                     image = item.image,
-                                    aspectRatio = 2.5f,
+                                    aspectRatio = 2.2f,
                                     cardNavigationClickable = {
                                         restaurantViewModel.selectSnack(item.id, size)
                                     },
@@ -646,6 +665,19 @@ fun RestaurantScreen(
         }
     }
 
+
+    if(viewDiscountsMeals) DiscountMealsDialog(
+        title = stringResource(R.string.discounts),
+        meals = discountMeals,
+        snacks = discountSnacks,
+        onMealClickable = {
+            restaurantViewModel.viewAnyFood(it)
+            restaurantViewModel.onCloseDiscountMealsDialog()
+        },
+        dismissButton = { restaurantViewModel.onCloseDiscountMealsDialog() }
+    )
+
+
     uiState.bottomSheetItem?.let { item ->
         ItemsFullBottomSheet(
             bottomSheetItem = item,
@@ -657,6 +689,7 @@ fun RestaurantScreen(
             openSnackBottomSheet = { item -> restaurantViewModel.openSnackBottomSheet(item) }
         )
     }
+
 
     snackBottomSheet?.let { item ->
         SnaksBottomSheetForItemScreen(

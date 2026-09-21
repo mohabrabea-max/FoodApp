@@ -51,9 +51,9 @@ import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.example.applicationhome.R
-import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.core.ui.model.UiStates
 import com.example.applicationhome.core.domain.model.Screens
+import com.example.applicationhome.core.ui.model.UiStates
+import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.features.homescreen.ui.CategoriesBar
 import com.example.applicationhome.features.shimmers.boxes.CategoriesShimmer
 import com.example.applicationhome.features.shimmers.boxes.TextInSearchShimmer
@@ -326,7 +326,7 @@ fun Search(
                         UiStates.Success, UiStates.Offline -> {
                             items(
                                 count = searchResults.itemCount,
-                                key = searchResults.itemKey { it.restaurant.restaurant.id }
+                                key = searchResults.itemKey { it.restaurant.id }
                             ){ index ->
                                 val item = searchResults[index]
 
@@ -334,10 +334,10 @@ fun Search(
                                     SearchResults(
                                         item,
                                         mealClickable = { item ->
-                                            navigationController.navigate(Screens.RestaurantScreen.createRouteWithMeal(restaurantId = item.meal.restaurantId, mealId = item.meal.id))
+                                            navigationController.navigate(Screens.RestaurantScreen.createRouteWithMeal(restaurantId = item.restaurantId, mealId = item.id))
                                         },
                                         restaurantClickable = {
-                                            navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.restaurant.restaurant.id))
+                                            navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.restaurant.id))
                                         }
                                     )
                                 }

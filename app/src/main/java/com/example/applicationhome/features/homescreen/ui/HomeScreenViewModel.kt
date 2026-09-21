@@ -4,17 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.map
 import com.example.applicationhome.core.data.local.entity.CategoriesEntity
 import com.example.applicationhome.core.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.core.data.local.entity.OffersEntity
-import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.core.data.remote.NetworkObserver
-import com.example.applicationhome.features.itemscreen.model.StartBottomSheets
 import com.example.applicationhome.core.domain.module.MainDispatcher
 import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.FavoriteUseCase
+import com.example.applicationhome.core.ui.mapper.restaurantDomainClassToRestaurantsUiClass
+import com.example.applicationhome.core.ui.model.RestaurantsUiClass
+import com.example.applicationhome.features.itemscreen.model.StartBottomSheets
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -51,9 +54,13 @@ class HomeScreenViewModel @Inject constructor(
 
     val typ = MutableStateFlow("All")
 
-    val filterRestaurants : Flow<PagingData<RestaurantWithFavoriteStatus>> =
+    val filterRestaurants : Flow<PagingData<RestaurantsUiClass>> =
         typ.flatMapLatest { type ->
-            syncAllDataRepository.getRestaurantsFromDatabase(type)
+            syncAllDataRepository.getRestaurantsFromDatabase(type).map { item ->
+                item.map {
+                    it.restaurantDomainClassToRestaurantsUiClass()
+                }
+            }
         }.cachedIn(viewModelScope)
 
 

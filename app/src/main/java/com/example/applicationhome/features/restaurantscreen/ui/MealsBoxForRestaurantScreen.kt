@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -71,7 +70,7 @@ fun MealsBoxForRestaurantScreen(
             verticalArrangement = Arrangement.SpaceBetween
         ){
             Column(
-                modifier = Modifier.weight(5f),
+                modifier = Modifier.weight(if(details != null) 5f else 2f),
                 horizontalAlignment = Alignment.Start
             ){
                 Text(
@@ -114,6 +113,11 @@ fun MealsBoxForRestaurantScreen(
                             val newPrice = price * (1.0 - (discount.toDouble() / 100.00))
                             val formattedPrice = String.format(Locale.US, "%.2f", newPrice)
 
+                            if(details == null) {
+                                DiscountsOutlookBox(discount)
+                                Spacer(modifier = Modifier.height(5.dp))
+                            }
+
                             Text(
                                 text = "EGP $price",
                                 fontSize = 14.sp,
@@ -133,7 +137,7 @@ fun MealsBoxForRestaurantScreen(
                     }
                 }
 
-                if(discount != null) DiscountsOutlookBox(discount)
+                if(discount != null && details != null) DiscountsOutlookBox(discount)
             }
         }
         Box(
@@ -154,8 +158,7 @@ fun MealsBoxForRestaurantScreen(
                 size(400, 400).
                 precision(Precision.EXACT).
                 build(),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
+                contentDescription = null
             )
             Column(
                 modifier = Modifier.fillMaxSize(),
