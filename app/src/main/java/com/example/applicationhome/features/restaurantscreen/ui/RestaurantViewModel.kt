@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -149,21 +150,21 @@ class RestaurantViewModel @Inject constructor(
         viewModelScope.launch {
             combine(_mealId, _snackId) { meal, snack ->
                 Pair(meal, snack)
-            }.map { (meal, snack) ->
+            }.flatMapLatest { (meal, snack) ->
                 when {
                     meal != null -> {
-                        restaurantRepository.getMealByIdFromDatabase(meal)?.mealDomainToUiModel()
+                        restaurantRepository.getMealByIdFromDatabase(meal)
+                            .map { it?.mealDomainToUiModel() }
                     }
                     snack != null -> {
-                        restaurantRepository.getSnackByIdFromDatabase(snack)?.snackDomainToUiModel()
+                        restaurantRepository.getSnackByIdFromDatabase(snack)
+                            .map { it?.snackDomainToUiModel() }
                     }
-                    else -> null
+                    else -> flowOf(null)
                 }
             }.collect { item ->
                 _uiState.update {
-                    it.copy(
-                        bottomSheetItem = item
-                    )
+                    it.copy(bottomSheetItem = item)
                 }
             }
         }
@@ -172,32 +173,36 @@ class RestaurantViewModel @Inject constructor(
 
     private fun loadRestaurantDetails(restaurantId : Int, mealId : Int?, snackId : Int?){
         viewModelScope.launch {
-            val food : FoodItem? =
-                when{
-                    mealId != null -> {
-                        restaurantRepository.getMealByIdFromDatabase(mealId)?.mealDomainToUiModel()
-                    }
-                    snackId != null -> {
-                        restaurantRepository.getSnackByIdFromDatabase(snackId)?.snackDomainToUiModel()
-                    }
-                    else -> null
+            val foodFlow: Flow<FoodItem?> = when {
+                mealId != null -> {
+                    restaurantRepository.getMealByIdFromDatabase(mealId)
+                        .map { it?.mealDomainToUiModel() }
                 }
-
-            val restaurant = restaurantRepository.getRestaurantByIdFromDatabase(restaurantId)
-                ?.restaurantDomainClassToRestaurantsUiClass() ?: RestaurantsUiClass()
-
-            launch {
-                selectedtype(0, restaurant.typ.minByOrNull { it.index }!!)
+                snackId != null -> {
+                    restaurantRepository.getSnackByIdFromDatabase(snackId)
+                        .map { it?.snackDomainToUiModel() }
+                }
+                else -> flowOf(null)
             }
 
-            _uiState.update {
-                it.copy(
-                    restaurantData = restaurant,
-                    bottomSheetItem = food
-                )
-            }
+            val restaurantFlow = restaurantRepository.getRestaurantByIdFromDatabase(restaurantId)
+            combine(restaurantFlow, foodFlow) { restaurantDomain, foodItem ->
+                Pair(restaurantDomain, foodItem)
+            }.collect { (restaurantDomain, foodItem) ->
 
-            selectSize(food?.sizes?.keys?.last() ?: "")
+                val restaurantUi = restaurantDomain?.restaurantDomainClassToRestaurantsUiClass()
+                    ?: RestaurantsUiClass()
+
+                selectedtype(0, restaurantUi.typ.minByOrNull { it.index } ?: CategoriesInWithTitle())
+                selectSize(foodItem?.sizes?.keys?.last() ?: "")
+
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        restaurantData = restaurantUi,
+                        bottomSheetItem = foodItem
+                    )
+                }
+            }
         }
     }
 

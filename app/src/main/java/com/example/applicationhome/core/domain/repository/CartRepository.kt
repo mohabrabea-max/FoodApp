@@ -4,6 +4,8 @@ import com.example.applicationhome.core.data.local.entity.CartClass
 import com.example.applicationhome.core.data.local.entity.CartItemWithDiscount
 import com.example.applicationhome.core.data.remote.dto.Restaurants
 import com.example.applicationhome.core.domain.model.CartItemsDomainClass
+import com.example.applicationhome.core.domain.model.MealDomain
+import com.example.applicationhome.core.domain.model.SnackDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -63,4 +65,7 @@ interface CartRepository {
     suspend fun deleteParentCart(userId : String): String
 
     suspend fun deleteAllCart(userId : String): String
+
+    suspend fun getMealByIdFromDatabase(mealId : Int): MealDomain?
+    suspend fun getSnackByIdFromDatabase(snackId : Int): SnackDomain?
 }

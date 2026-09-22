@@ -7,9 +7,13 @@ import com.example.applicationhome.core.data.local.entity.CartItemWithDiscount
 import com.example.applicationhome.core.data.local.entity.CartItemsClassEntity
 import com.example.applicationhome.core.data.mapper.cartItemsClassEntityToCartItemsDomainClass
 import com.example.applicationhome.core.data.mapper.cartItemsDomainClassToCartItemsClass
+import com.example.applicationhome.core.data.mapper.mealWithFavoriteStatusToMealDomain
+import com.example.applicationhome.core.data.mapper.snackWithFavoriteStatusToSnackDomain
 import com.example.applicationhome.core.data.remote.FoodAppAPIs
 import com.example.applicationhome.core.data.remote.dto.Restaurants
 import com.example.applicationhome.core.domain.model.CartItemsDomainClass
+import com.example.applicationhome.core.domain.model.MealDomain
+import com.example.applicationhome.core.domain.model.SnackDomain
 import com.example.applicationhome.core.domain.module.ApplicationScope
 import com.example.applicationhome.core.domain.repository.CartRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
@@ -227,4 +231,10 @@ class CartRepositoryImpl @Inject constructor(
             "خطأ في الشبكة: ${e.message}"
         }
     }
+
+    override suspend fun getMealByIdFromDatabase(mealId : Int): MealDomain? =
+        foodAndRestaurantsDao.getOneMealFromDatabase(mealId)?.mealWithFavoriteStatusToMealDomain()
+
+    override suspend fun getSnackByIdFromDatabase(snackId : Int): SnackDomain? =
+        foodAndRestaurantsDao.getOneSnackFromDatabase(snackId)?.snackWithFavoriteStatusToSnackDomain()
 }

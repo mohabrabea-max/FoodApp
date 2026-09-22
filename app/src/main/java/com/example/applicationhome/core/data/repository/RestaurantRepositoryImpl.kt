@@ -20,14 +20,20 @@ import javax.inject.Inject
 class RestaurantRepositoryImpl @Inject constructor(
     private val foodAndRestaurantsDao : FoodAndRestaurantsDao
 ): RestaurantRepository {
-    override suspend fun getRestaurantByIdFromDatabase(resId : Int): RestaurantDomainClass? =
-        foodAndRestaurantsDao.getOneRestaurantFromDatabase(resId)?.restaurantWithFavoriteStatusToRestaurantDomainClass()
+    override fun getRestaurantByIdFromDatabase(resId : Int): Flow<RestaurantDomainClass?> =
+        foodAndRestaurantsDao.getOneRestaurantFromDatabase(resId).map { item ->
+            item?.restaurantWithFavoriteStatusToRestaurantDomainClass()
+        }
 
-    override suspend fun getMealByIdFromDatabase(mealId : Int): MealDomain? =
-        foodAndRestaurantsDao.getOneMealFromDatabase(mealId)?.mealWithFavoriteStatusToMealDomain()
+    override fun getMealByIdFromDatabase(mealId : Int): Flow<MealDomain?> =
+        foodAndRestaurantsDao.getOneMealFromDatabaseFlow(mealId).map { item ->
+            item?.mealWithFavoriteStatusToMealDomain()
+        }
 
-    override suspend fun getSnackByIdFromDatabase(snackId : Int): SnackDomain? =
-        foodAndRestaurantsDao.getOneSnackFromDatabase(snackId)?.snackWithFavoriteStatusToSnackDomain()
+    override fun getSnackByIdFromDatabase(snackId : Int): Flow<SnackDomain?> =
+        foodAndRestaurantsDao.getOneSnackFromDatabaseFlow(snackId).map { item ->
+            item?.snackWithFavoriteStatusToSnackDomain()
+        }
 
     override fun getMealsFromDatabase(resId : Int, type : String): Flow<PagingData<MealDomain>> =
         Pager(

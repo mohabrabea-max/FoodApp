@@ -76,12 +76,18 @@ interface FoodAndRestaurantsDao {
 
     @Transaction
     @Query("SELECT * FROM meals_entity WHERE id = :mealId")
+    fun getOneMealFromDatabaseFlow(mealId : Int) : Flow<MealWithFavoriteStatus?>
+    @Transaction
+    @Query("SELECT * FROM meals_entity WHERE id = :mealId")
     suspend fun getOneMealFromDatabase(mealId : Int) : MealWithFavoriteStatus?
 
     @Transaction
     @Query("SELECT * FROM snacks_entity WHERE restaurantId = :restaurantId")
     fun getSnacksFromDatabase(restaurantId : Int): PagingSource<Int, SnackWithFavoriteStatus>
 
+    @Transaction
+    @Query("SELECT * FROM snacks_entity WHERE id = :snackId")
+    fun getOneSnackFromDatabaseFlow(snackId : Int) : Flow<SnackWithFavoriteStatus?>
     @Transaction
     @Query("SELECT * FROM snacks_entity WHERE id = :snackId")
     suspend fun getOneSnackFromDatabase(snackId : Int) : SnackWithFavoriteStatus?
@@ -103,7 +109,7 @@ interface FoodAndRestaurantsDao {
 
     @Transaction
     @Query("SELECT * FROM restaurants_entity WHERE id = :restaurantId")
-    suspend fun getOneRestaurantFromDatabase(restaurantId : Int): RestaurantWithFavoriteStatus?
+    fun getOneRestaurantFromDatabase(restaurantId : Int): Flow<RestaurantWithFavoriteStatus?>
 
     @Query("SELECT * FROM categories_entity")
     fun getAllCategoriesFromDatabase(): Flow<List<CategoriesEntity>>

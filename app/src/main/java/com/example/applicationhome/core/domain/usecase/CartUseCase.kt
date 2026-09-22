@@ -21,12 +21,12 @@ class CartUseCase @Inject constructor(
 
         val domainFood = when(type){
             CategoryEnum.SNACKS -> {
-                restaurantRepository.getSnackByIdFromDatabase(mealId)
+                cartRepository.getSnackByIdFromDatabase(mealId)
                     ?.snackDomainToCartItemsDomainClass(userId, size, quantityToAdd)
             }
 
             else -> {
-                restaurantRepository.getMealByIdFromDatabase(mealId)
+                cartRepository.getMealByIdFromDatabase(mealId)
                     ?.mealDomainToCartItemsDomainClass(userId, size, quantityToAdd)
             }
         }
