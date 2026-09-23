@@ -37,11 +37,11 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
-import com.example.applicationhome.core.ui.model.RestaurantsUiClass
+import com.example.applicationhome.core.ui.model.RestaurantsUIClass
 
 @Composable
 fun RestaurantsBox(
-    item : RestaurantsUiClass,
+    item : RestaurantsUIClass,
     isRestaurantInFavorite : Boolean,
     view : () -> Unit,
     clickable : () -> Unit,

@@ -4,11 +4,15 @@ import com.example.applicationhome.core.data.local.entity.AddressesEntity
 import com.example.applicationhome.core.data.local.entity.DiscountsEntity
 import com.example.applicationhome.core.data.local.entity.MealsEntity
 import com.example.applicationhome.core.data.local.entity.RestaurantsEntity
+import com.example.applicationhome.core.data.local.entity.ReviewsEntity
+import com.example.applicationhome.core.data.local.entity.ReviewsStarsEntity
 import com.example.applicationhome.core.data.local.entity.SnacksEntity
 import com.example.applicationhome.core.data.local.entity.UserClass
 import com.example.applicationhome.core.data.remote.dto.Discounts
 import com.example.applicationhome.core.data.remote.dto.Meal
 import com.example.applicationhome.core.data.remote.dto.Restaurants
+import com.example.applicationhome.core.data.remote.dto.ReviewsForGet
+import com.example.applicationhome.core.data.remote.dto.ReviewsStars
 import com.example.applicationhome.core.data.remote.dto.Snack
 import com.example.applicationhome.core.domain.model.Address
 import com.example.applicationhome.core.domain.model.UserClassFireBase
@@ -43,7 +47,6 @@ fun Restaurants.restaurantsToRestaurantsEntity(): RestaurantsEntity =
         typ = this.typ.map { it.value },
         image = this.image,
         image2 = this.image2,
-        review = this.review,
         background = this.background,
         searchKeywords = this.searchKeywords,
         topFiveMeals = this.topFiveMeals
@@ -87,4 +90,22 @@ fun Discounts.discountsToDiscountsEntity(): DiscountsEntity =
         restaurantId = this.restaurantId,
         startDiscount = this.startDiscount,
         endDiscount = this.endDiscount
+    )
+
+
+fun ReviewsForGet.reviewsForGetToReviewsEntity(userId : String): ReviewsEntity =
+    ReviewsEntity(
+        userId = userId,
+        userName = this.userName,
+        createdAt = this.createdAt,
+        resId = this.resId,
+        stars = this.stars,
+        comment = this.comment
+    )
+
+fun ReviewsStars.reviewsStarsToReviewsStarsEntity(): ReviewsStarsEntity =
+    ReviewsStarsEntity(
+        resId = this.resId,
+        stars = this.stars,
+        number = this.number
     )

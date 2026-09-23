@@ -7,6 +7,7 @@ import com.example.applicationhome.core.data.local.dao.CartDao
 import com.example.applicationhome.core.data.local.dao.FavoriteDao
 import com.example.applicationhome.core.data.local.dao.FoodAndRestaurantsDao
 import com.example.applicationhome.core.data.local.dao.OrdersDao
+import com.example.applicationhome.core.data.local.dao.ReviewsDao
 import com.example.applicationhome.core.data.local.dao.UsersDao
 import com.example.applicationhome.core.data.local.entity.AddressesEntity
 import com.example.applicationhome.core.data.local.entity.CartClass
@@ -16,11 +17,14 @@ import com.example.applicationhome.core.data.local.entity.DiscountsEntity
 import com.example.applicationhome.core.data.local.entity.FavoriteMealEntity
 import com.example.applicationhome.core.data.local.entity.FavoriteRestaurantEntity
 import com.example.applicationhome.core.data.local.entity.FavoriteSnackEntity
+import com.example.applicationhome.core.data.local.entity.LastUpdateReviewsEntity
 import com.example.applicationhome.core.data.local.entity.MealsEntity
 import com.example.applicationhome.core.data.local.entity.OffersEntity
 import com.example.applicationhome.core.data.local.entity.OrdersDatabaseClass
 import com.example.applicationhome.core.data.local.entity.RestaurantCategoryCrossRef
 import com.example.applicationhome.core.data.local.entity.RestaurantsEntity
+import com.example.applicationhome.core.data.local.entity.ReviewsEntity
+import com.example.applicationhome.core.data.local.entity.ReviewsStarsEntity
 import com.example.applicationhome.core.data.local.entity.SearchFtsEntity
 import com.example.applicationhome.core.data.local.entity.SearchHistory
 import com.example.applicationhome.core.data.local.entity.SnacksEntity
@@ -44,9 +48,12 @@ import com.example.applicationhome.core.data.local.entity.UserClass
         OffersEntity::class,
         RestaurantCategoryCrossRef::class,
         AddressesEntity::class,
-        DiscountsEntity::class
+        DiscountsEntity::class,
+        ReviewsEntity::class,
+        LastUpdateReviewsEntity::class,
+        ReviewsStarsEntity::class,
     ],
-    version = 67,
+    version = 68,
     exportSchema = false
 )
 
@@ -58,4 +65,5 @@ abstract class UsersDatabase : RoomDatabase(){
     abstract val favoriteDao : FavoriteDao
     abstract val ordersDao : OrdersDao
     abstract val foodAndRestaurantsDao : FoodAndRestaurantsDao
+    abstract val reviewsDao : ReviewsDao
 }

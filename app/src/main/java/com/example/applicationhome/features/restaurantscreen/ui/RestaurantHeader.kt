@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -28,18 +27,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.core.ui.model.RestaurantsUiClass
+import com.example.applicationhome.core.ui.model.RestaurantsUIClass
 
 @Composable
 fun RestaurantHeader(
-    item : RestaurantsUiClass?,
+    item : RestaurantsUIClass?,
     view : () -> Unit
 ){
     val interactionSource = remember { MutableInteractionSource() }
@@ -126,7 +124,6 @@ fun RestaurantHeader(
 
                 Row(
                     modifier = Modifier
-                        .width(80.dp)
                         .height(20.dp)
                         .clip(RoundedCornerShape(5.dp))
                         .background(MaterialTheme.colorScheme.background)
@@ -142,17 +139,10 @@ fun RestaurantHeader(
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
-                        text = "${item?.review ?: 0.0}",
+                        text = "${item?.review?.first ?: 0.0}${item?.review?.second?: "0"}",
                         color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 14.sp,
                         style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier
-                    )
-                    Text(
-                        text = "(1k+)",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 14.sp,
-                        style = TextStyle(letterSpacing = (-0.7).sp),
                         modifier = Modifier
                     )
                 }

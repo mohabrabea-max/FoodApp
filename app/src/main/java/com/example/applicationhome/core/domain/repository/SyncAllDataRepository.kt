@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 interface SyncAllDataRepository {
     // *** ---------------------- \\***  Sync Data For Room Database  ***// ---------------------- ***
     suspend fun syncDataParallel()
-    suspend fun syncFavoritesInDatabase(userId : String)
+    suspend fun syncFavoritesInDatabase(userId : String): Result<Unit>
     suspend fun syncAddresses(userId : String): UiStates
 
 

@@ -15,7 +15,29 @@ import com.example.applicationhome.core.domain.model.OrderHistoryClass
 import com.example.applicationhome.core.domain.model.OrderItemsClass
 import com.example.applicationhome.core.domain.model.UserInformationInOrderClass
 import com.example.applicationhome.core.ui.model.FoodItem
-import com.example.applicationhome.core.ui.model.RestaurantsUiClass
+import com.example.applicationhome.core.ui.model.RestaurantsUIClass
+
+@Entity(
+    tableName = "reviews_entity",
+    primaryKeys = ["userId", "resId"]
+)
+data class ReviewsEntity(
+    val userId : String = "",
+    val userName : String = "",
+    val createdAt : Long = 0L,
+    val resId : Int = 0,
+    val stars : Double = 0.0,
+    val comment : String = ""
+)
+
+@Entity(
+    tableName = "last_update_reviews"
+)
+data class LastUpdateReviewsEntity(
+    @PrimaryKey val resId : Int = 0,
+    val lastUpdate : Long = 0L
+)
+
 
 @Entity(
     tableName = "categories_entity",
@@ -109,7 +131,6 @@ data class RestaurantsEntity(
     val typ : List<CategoriesInWithTitle> = listOf(),
     val image : String = "",
     val image2 : String = "",
-    val review : Double = 0.0,
     val background : String = "",
     val searchKeywords: String = "",
     val topFiveMeals : String = ""
@@ -117,7 +138,8 @@ data class RestaurantsEntity(
 
 @Entity(
     tableName = "restaurant_category_cross_ref",
-    primaryKeys = ["restaurantId", "categoryId"]
+    primaryKeys = ["restaurantId", "categoryId"],
+    indices = [Index("categoryId")]
 )
 data class RestaurantCategoryCrossRef(
     val restaurantId : Int = 0,
@@ -125,7 +147,7 @@ data class RestaurantCategoryCrossRef(
 )
 
 data class RestaurantWithFeaturedMeals(
-    val restaurant : RestaurantsUiClass,
+    val restaurant : RestaurantsUIClass,
     val topMeals: List<FoodItem.MealItem>
 )
 
@@ -303,8 +325,31 @@ data class FavoriteRestaurantEntity(
     val isDeletedOffline : Boolean = false
 )
 
+@Entity(
+    tableName = "reviews_stars_entity",
+    foreignKeys = [
+        ForeignKey(
+            entity = RestaurantsEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["resId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
+data class ReviewsStarsEntity(
+    @PrimaryKey val resId : Int = 0,
+    val stars : Double = 0.0,
+    val number : Int = 0
+)
+
 data class RestaurantWithFavoriteStatus(
     @Embedded val restaurant : RestaurantsEntity = RestaurantsEntity(),
+
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "resId"
+    )
+    val stars : ReviewsStarsEntity? = null,
 
     @Relation(
         parentColumn = "id",

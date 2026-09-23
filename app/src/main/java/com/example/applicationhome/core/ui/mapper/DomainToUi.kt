@@ -4,11 +4,13 @@ import com.example.applicationhome.core.domain.model.CartItemsDomainClass
 import com.example.applicationhome.core.domain.model.DiscountsDomainClass
 import com.example.applicationhome.core.domain.model.MealDomain
 import com.example.applicationhome.core.domain.model.RestaurantDomainClass
+import com.example.applicationhome.core.domain.model.ReviewsDomainClass
 import com.example.applicationhome.core.domain.model.SnackDomain
-import com.example.applicationhome.core.ui.model.CartItemsUiClass
-import com.example.applicationhome.core.ui.model.DiscountsUi
+import com.example.applicationhome.core.ui.model.CartItemsUIClass
+import com.example.applicationhome.core.ui.model.DiscountsUI
 import com.example.applicationhome.core.ui.model.FoodItem
-import com.example.applicationhome.core.ui.model.RestaurantsUiClass
+import com.example.applicationhome.core.ui.model.RestaurantsUIClass
+import com.example.applicationhome.core.ui.model.ReviewsUIClass
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -41,8 +43,8 @@ fun SnackDomain.snackDomainToUiModel(): FoodItem.SnackItem =
         isFavorite = this.isFavorite
     )
 
-fun CartItemsDomainClass.cartItemsDomainClassToCartItemsUiClass(): CartItemsUiClass  =
-    CartItemsUiClass(
+fun CartItemsDomainClass.cartItemsDomainClassToCartItemsUiClass(): CartItemsUIClass  =
+    CartItemsUIClass(
         userId = this.userId,
         mealKey = this.mealKey,
         mealId = this.mealId,
@@ -58,27 +60,40 @@ fun CartItemsDomainClass.cartItemsDomainClassToCartItemsUiClass(): CartItemsUiCl
         finalPrice = this.finalPriceOfOne
     )
 
-fun RestaurantDomainClass.restaurantDomainClassToRestaurantsUiClass(): RestaurantsUiClass =
-    RestaurantsUiClass(
+
+private fun Int.toDynamicFormattedString(): String {
+    return when {
+        this >= 1_000_000 -> "(+${this / 1_000_000}M)"
+        this >= 1_000 -> "(+${this / 1_000}k)"
+        else -> "($this)"
+    }
+}
+fun RestaurantDomainClass.restaurantDomainClassToRestaurantsUiClass(): RestaurantsUIClass {
+    val number = this.review.second.toDynamicFormattedString()
+    val finalReview = Pair(this.review.first, number)
+
+    return RestaurantsUIClass(
         id = this.id,
         typ = this.typ,
         categories = this.categories,
         name = this.name,
         image = this.image,
         image2 = this.image2,
-        review = this.review,
+        review = finalReview ,
         background = this.background,
         searchKeywords = this.searchKeywords,
         topFiveMeals = this.topFiveMeals,
         isFavorite = this.isFavorite,
         discounts = this.discounts?.map { it?.discountsDomainClassToDiscountsUi() }
     )
+}
 
-fun DiscountsDomainClass.discountsDomainClassToDiscountsUi(): DiscountsUi? {
+
+fun DiscountsDomainClass.discountsDomainClassToDiscountsUi(): DiscountsUI? {
     val isDiscountExpired = System.currentTimeMillis() < this.endDiscount
 
     return if(isDiscountExpired){
-        DiscountsUi(
+        DiscountsUI(
             discount = this.discount,
             endDiscount = formatDate(this.endDiscount)
         )
@@ -86,6 +101,17 @@ fun DiscountsDomainClass.discountsDomainClassToDiscountsUi(): DiscountsUi? {
         null
     }
 }
+
+
+fun ReviewsDomainClass.reviewsDomainClassToReviewsUIClass(): ReviewsUIClass =
+    ReviewsUIClass(
+        userId = this.userId,
+        userName = this.userName,
+        createdAt = formatDate(this.createdAt),
+        resId = this.resId,
+        stars = this.stars,
+        comment = this.comment
+    )
 
 private fun formatDate(timestamp: Long): String {
     val date = Date(timestamp)

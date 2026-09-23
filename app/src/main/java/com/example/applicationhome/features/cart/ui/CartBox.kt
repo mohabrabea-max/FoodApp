@@ -35,13 +35,13 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.core.ui.model.CartItemsUiClass
+import com.example.applicationhome.core.ui.model.CartItemsUIClass
 import com.example.applicationhome.core.ui.theme.LightOrange
 import java.util.Locale
 
 @Composable
 fun CartBox(
-    food : CartItemsUiClass,
+    food : CartItemsUIClass,
     plus : () -> Unit,
     minus : () -> Unit,
     delete : () -> Unit

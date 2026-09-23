@@ -37,7 +37,7 @@ import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.components.bars.RestaurantScreenTopBar
 import com.example.applicationhome.core.ui.components.designsystem.TopBarButtons
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
-import com.example.applicationhome.core.ui.model.RestaurantsUiClass
+import com.example.applicationhome.core.ui.model.RestaurantsUIClass
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.VeryLightGray
 
@@ -45,7 +45,7 @@ import com.example.applicationhome.core.ui.theme.VeryLightGray
 @Composable
 fun RestaurantTopBar(
     searchSize : Float,
-    item : RestaurantsUiClass,
+    item : RestaurantsUIClass,
     isRestaurantInFavorite : Boolean,
     scrollState : LazyListState,
     addToFavorite : () -> Unit,

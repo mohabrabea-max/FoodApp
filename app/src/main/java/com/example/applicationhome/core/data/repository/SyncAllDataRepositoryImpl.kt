@@ -7,6 +7,7 @@ import androidx.paging.map
 import com.example.applicationhome.core.data.datastore.DataStoreManager
 import com.example.applicationhome.core.data.local.dao.FavoriteDao
 import com.example.applicationhome.core.data.local.dao.FoodAndRestaurantsDao
+import com.example.applicationhome.core.data.local.dao.ReviewsDao
 import com.example.applicationhome.core.data.local.dao.UsersDao
 import com.example.applicationhome.core.data.local.entity.CategoriesEntity
 import com.example.applicationhome.core.data.local.entity.FavoriteMealEntity
@@ -19,8 +20,10 @@ import com.example.applicationhome.core.data.mapper.discountsToDiscountsEntity
 import com.example.applicationhome.core.data.mapper.foodItemToMealsEntity
 import com.example.applicationhome.core.data.mapper.restaurantWithFavoriteStatusToRestaurantDomainClass
 import com.example.applicationhome.core.data.mapper.restaurantsToRestaurantsEntity
+import com.example.applicationhome.core.data.mapper.reviewsStarsToReviewsStarsEntity
 import com.example.applicationhome.core.data.mapper.snackToSnacksEntity
 import com.example.applicationhome.core.data.remote.FoodAppAPIs
+import com.example.applicationhome.core.data.remote.util.retryLocally
 import com.example.applicationhome.core.domain.model.RestaurantDomainClass
 import com.example.applicationhome.core.domain.module.ApplicationScope
 import com.example.applicationhome.core.domain.module.IODispatcher
@@ -30,7 +33,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -46,11 +48,11 @@ import retrofit2.HttpException
 import java.text.SimpleDateFormat
 import java.util.Locale
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.milliseconds
 
 class SyncAllDataRepositoryImpl @Inject constructor(
     private val api : FoodAppAPIs,
     private val foodAndRestaurantsDao : FoodAndRestaurantsDao,
+    private val reviewsDao : ReviewsDao,
     private val favoriteDao : FavoriteDao,
     private val usersDao : UsersDao,
     private val dataStoreManager : DataStoreManager,
@@ -58,26 +60,6 @@ class SyncAllDataRepositoryImpl @Inject constructor(
     @IODispatcher private val dispatcher : CoroutineDispatcher
 ): SyncAllDataRepository {
     // *** ---------------------- \\***  Sync Data For Room Database  ***// ---------------------- ***
-
-    private suspend fun <T> retryLocally(
-        times : Int = 3,
-        initialDelay : Long = 1500,
-        block : suspend  () -> T
-    ): T {
-        var currentDelay = initialDelay
-
-        repeat(times - 1){
-            try {
-                return block()
-            } catch (e: Exception) {
-                if(e is CancellationException) throw e
-                delay(currentDelay.milliseconds)
-                currentDelay *= 2
-            }
-        }
-        return block()
-    }
-
 
     private suspend fun syncAllMealsToDatabase(){
         retryLocally{
@@ -200,6 +182,21 @@ class SyncAllDataRepositoryImpl @Inject constructor(
         }
     }
 
+    private suspend fun syncReviewsStarsToDatabase(): Result<Unit> {
+        return retryLocally{
+            val response = api.getReviewsStars()
+            val stars = response.body()
+            if(response.isSuccessful && stars != null){
+                val starsEntity = stars.values.map { item ->
+                    item.reviewsStarsToReviewsStarsEntity()
+                }
+                reviewsDao.addStars(starsEntity)
+            }else{
+                throw HttpException(response)
+            }
+        }
+    }
+
     private suspend fun syncDiscounts(){
         try {
             val lastSyncTime = dataStoreManager.discountsLastSyncTimeFlow.firstOrNull() ?: 0L
@@ -248,6 +245,7 @@ class SyncAllDataRepositoryImpl @Inject constructor(
             launch { syncAllRestaurantsToDatabase() }
             launch { syncCategoriesToDatabase() }
             launch { syncOffersToDatabase() }
+            launch { syncReviewsStarsToDatabase() }
             launch { syncDiscounts() }
             launch { deleteDiscountsWasEnd() }
         }

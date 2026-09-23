@@ -27,12 +27,12 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
-import com.example.applicationhome.core.ui.model.CartItemsUiClass
+import com.example.applicationhome.core.ui.model.CartItemsUIClass
 import com.example.applicationhome.core.ui.theme.LightOrange
 
 @Composable
 fun ConfirmOrderBox(
-    food : CartItemsUiClass
+    food : CartItemsUIClass
 ){
     val number = food.quantity
     val size = food.size

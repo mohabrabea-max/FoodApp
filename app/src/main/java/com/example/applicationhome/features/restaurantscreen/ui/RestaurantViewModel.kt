@@ -29,7 +29,7 @@ import com.example.applicationhome.core.ui.mapper.mealDomainToUiModel
 import com.example.applicationhome.core.ui.mapper.restaurantDomainClassToRestaurantsUiClass
 import com.example.applicationhome.core.ui.mapper.snackDomainToUiModel
 import com.example.applicationhome.core.ui.model.FoodItem
-import com.example.applicationhome.core.ui.model.RestaurantsUiClass
+import com.example.applicationhome.core.ui.model.RestaurantsUIClass
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -191,7 +191,7 @@ class RestaurantViewModel @Inject constructor(
             }.collect { (restaurantDomain, foodItem) ->
 
                 val restaurantUi = restaurantDomain?.restaurantDomainClassToRestaurantsUiClass()
-                    ?: RestaurantsUiClass()
+                    ?: RestaurantsUIClass()
 
                 selectedtype(0, restaurantUi.typ.minByOrNull { it.index } ?: CategoriesInWithTitle())
                 selectSize(foodItem?.sizes?.keys?.last() ?: "")

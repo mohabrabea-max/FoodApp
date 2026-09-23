@@ -15,7 +15,7 @@ import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.FavoriteUseCase
 import com.example.applicationhome.core.ui.mapper.restaurantDomainClassToRestaurantsUiClass
-import com.example.applicationhome.core.ui.model.RestaurantsUiClass
+import com.example.applicationhome.core.ui.model.RestaurantsUIClass
 import com.example.applicationhome.features.itemscreen.model.StartBottomSheets
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -54,7 +54,7 @@ class HomeScreenViewModel @Inject constructor(
 
     val typ = MutableStateFlow("All")
 
-    val filterRestaurants : Flow<PagingData<RestaurantsUiClass>> =
+    val filterRestaurants : Flow<PagingData<RestaurantsUIClass>> =
         typ.flatMapLatest { type ->
             syncAllDataRepository.getRestaurantsFromDatabase(type).map { item ->
                 item.map {

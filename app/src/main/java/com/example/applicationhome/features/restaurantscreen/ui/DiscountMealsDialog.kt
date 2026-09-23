@@ -49,7 +49,7 @@ fun DiscountMealsDialog(
     dismissButton : () -> Unit
 ){
     Dialog(
-        onDismissRequest = {  },
+        onDismissRequest = { dismissButton() },
         properties = DialogProperties(
             usePlatformDefaultWidth = false
         )

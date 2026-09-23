@@ -28,4 +28,8 @@ sealed class Screens (val screen : String){
     data object Locations : Screens("locations")
     data object NoInternetScreen : Screens("nointernetscreen")
     data object DashboardScreen : Screens("dashboardscreen")
+    data object ReviewsScreen : Screens("reviewsscreen/{restaurantId}") {
+        fun createRoute(restaurantId : Int): String =
+            "reviewsscreen/$restaurantId"
+    }
 }

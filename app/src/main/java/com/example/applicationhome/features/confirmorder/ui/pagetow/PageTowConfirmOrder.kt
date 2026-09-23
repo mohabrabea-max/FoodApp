@@ -39,7 +39,7 @@ import com.example.applicationhome.core.domain.model.PaymentMethod
 import com.example.applicationhome.core.domain.model.PaymentState
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.bottomSnackBar
-import com.example.applicationhome.core.ui.model.CartItemsUiClass
+import com.example.applicationhome.core.ui.model.CartItemsUIClass
 import com.example.applicationhome.core.ui.theme.BrandBlue
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.DeepMatteBlack
@@ -50,7 +50,7 @@ import com.example.applicationhome.core.ui.theme.VeryLightGray
 fun PageTowConfirmOrder(
     uiState : ConfirmOrderUiState,
     snackBarHostState : SnackbarHostState,
-    cart : List<CartItemsUiClass?>,
+    cart : List<CartItemsUIClass?>,
     totalPrice : Double,
     phoneNumber : String,
     onMethodSelected : (PaymentMethod) -> Unit,

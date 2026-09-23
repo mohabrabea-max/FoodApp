@@ -3,7 +3,7 @@ package com.example.applicationhome.core.domain.model
 import androidx.annotation.StringRes
 import com.example.applicationhome.R
 import com.example.applicationhome.core.ui.model.FoodItem
-import com.example.applicationhome.core.ui.model.RestaurantsUiClass
+import com.example.applicationhome.core.ui.model.RestaurantsUIClass
 
 
 data class MealDomain(
@@ -59,7 +59,7 @@ data class RestaurantDomainClass(
     val name : String = "",
     val image : String = "",
     val image2 : String = "",
-    val review : Double = 0.0,
+    val review : Pair<Double, Int> = Pair(0.0, 0),
     val background : String = "",
     val searchKeywords: String = "",
     val topFiveMeals : String = "",
@@ -69,7 +69,7 @@ data class RestaurantDomainClass(
 
 
 data class RestaurantUiState(
-    val restaurantData : RestaurantsUiClass = RestaurantsUiClass(),
+    val restaurantData : RestaurantsUIClass = RestaurantsUIClass(),
     val bottomSheetItem : FoodItem? = null
 
 )

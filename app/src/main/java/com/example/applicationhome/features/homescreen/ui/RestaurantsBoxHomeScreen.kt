@@ -40,12 +40,12 @@ import coil.size.Precision
 import com.example.applicationhome.core.ui.components.designsystem.bounceClick
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.DiscountsOutlookBox
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Favorite
-import com.example.applicationhome.core.ui.model.RestaurantsUiClass
+import com.example.applicationhome.core.ui.model.RestaurantsUIClass
 
 @Composable
 fun RestaurantsBoxHomeScreen(
     discount : Int?,
-    item : RestaurantsUiClass,
+    item : RestaurantsUIClass,
     isRestaurantInFavorite : Boolean,
     view : () -> Unit,
     clickable : () -> Unit,
@@ -163,7 +163,7 @@ fun RestaurantsBoxHomeScreen(
                 )
 
                 Text(
-                    text = item.review.toString(),
+                    text = "${item.review.first}${item.review.second}",
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 15.sp,
                     modifier = Modifier

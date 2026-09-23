@@ -6,6 +6,7 @@ import com.example.applicationhome.core.data.local.dao.CartDao
 import com.example.applicationhome.core.data.local.dao.FavoriteDao
 import com.example.applicationhome.core.data.local.dao.FoodAndRestaurantsDao
 import com.example.applicationhome.core.data.local.dao.OrdersDao
+import com.example.applicationhome.core.data.local.dao.ReviewsDao
 import com.example.applicationhome.core.data.local.dao.UsersDao
 import dagger.Module
 import dagger.Provides
@@ -57,6 +58,12 @@ object DatabaseModule {
     @Singleton
     fun provideFoodAndRestaurantsDao(database: UsersDatabase): FoodAndRestaurantsDao {
         return database.foodAndRestaurantsDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideReviewsDao(database: UsersDatabase): ReviewsDao {
+        return database.reviewsDao
     }
 }
 

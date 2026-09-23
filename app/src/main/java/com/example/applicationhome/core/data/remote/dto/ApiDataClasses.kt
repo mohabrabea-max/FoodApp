@@ -83,8 +83,6 @@ data class Restaurants(
     val image : String = "",
     @SerializedName("main_image")
     val image2 : String = "",
-    @SerializedName("rating")
-    val review : Double = 0.0,
     val background : String = "",
     val searchKeywords: String = "",
     val topFiveMeals : String = "",
@@ -107,4 +105,26 @@ data class Discounts(
     val restaurantId : Int = 0,
     val startDiscount : Long = 0L,
     val endDiscount : Long = 0L
+)
+
+
+data class ReviewsForGet(
+    val userName : String = "",
+    val createdAt : Long = 0L,
+    val resId : Int = 0,
+    val stars : Double = 0.0,
+    val comment : String = ""
+)
+data class ReviewsForPut(
+    val userName : String = "",
+    val createdAt : Map<String, String> = mapOf(".sv" to "timestamp"),
+    val resId : Int = 0,
+    val stars : Double = 0.0,
+    val comment : String = ""
+)
+
+data class ReviewsStars(
+    val resId : Int = 0,
+    val stars : Double = 0.0,
+    val number : Int = 0
 )

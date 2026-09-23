@@ -33,11 +33,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.applicationhome.core.domain.model.Screens
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showNetworkSnackBar
 import com.example.applicationhome.core.ui.components.model.FinalScreenViewModel
 import com.example.applicationhome.core.ui.components.screens.NoInternetScreen
 import com.example.applicationhome.core.ui.theme.MatteBlack
-import com.example.applicationhome.core.domain.model.Screens
 import com.example.applicationhome.features.Notifications.Notifications
 import com.example.applicationhome.features.WelcomeScreen.Ui.WelcomeScreen
 import com.example.applicationhome.features.WelcomeScreen.Ui.WelcomeScreenViewModel
@@ -57,6 +58,9 @@ import com.example.applicationhome.features.profile.ui.Profile
 import com.example.applicationhome.features.profile.ui.ProfileViewModel
 import com.example.applicationhome.features.restaurantscreen.ui.RestaurantScreen
 import com.example.applicationhome.features.restaurantscreen.ui.RestaurantViewModel
+import com.example.applicationhome.features.reviews.model.ReviewsUIActions
+import com.example.applicationhome.features.reviews.ui.ReviewsScreen
+import com.example.applicationhome.features.reviews.ui.ReviewsViewModel
 import com.example.applicationhome.features.search.ui.Search
 import com.example.applicationhome.features.search.ui.SearchViewModel
 import com.example.applicationhome.features.signupscreen.ui.SignUpScreen
@@ -171,6 +175,34 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
                 RestaurantScreen(
                     navigationController,
                     restaurantViewModel
+                )
+            }
+
+            composable(
+                route = Screens.ReviewsScreen.screen,
+                arguments = listOf(
+                    navArgument("restaurantId"){
+                        type = NavType.IntType
+                    }
+                )
+            ){
+                val reviewsViewModel : ReviewsViewModel = hiltViewModel()
+
+                val allReviews = reviewsViewModel.allReviews.collectAsLazyPagingItems()
+                val uiState by reviewsViewModel.uiState.collectAsStateWithLifecycle()
+
+                val reviewsUIActions = ReviewsUIActions(
+                    popBack = { navigationController.popBackStack() },
+                    onReviewClick = reviewsViewModel::onReviewClick,
+                    onCloseReviewBottomSheet = reviewsViewModel::onCloseReviewBottomSheet,
+                    onPostReview = reviewsViewModel::onPostReview,
+                    onDeleteReview = reviewsViewModel::onDeleteReview
+                )
+
+                ReviewsScreen(
+                    uiState = uiState,
+                    allReviews = allReviews,
+                    reviewsUIActions = reviewsUIActions
                 )
             }
 

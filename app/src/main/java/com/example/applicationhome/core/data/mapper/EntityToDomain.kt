@@ -4,11 +4,13 @@ import com.example.applicationhome.core.data.local.entity.CartItemsClassEntity
 import com.example.applicationhome.core.data.local.entity.DiscountsEntity
 import com.example.applicationhome.core.data.local.entity.MealWithFavoriteStatus
 import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
+import com.example.applicationhome.core.data.local.entity.ReviewsEntity
 import com.example.applicationhome.core.data.local.entity.SnackWithFavoriteStatus
 import com.example.applicationhome.core.domain.model.CartItemsDomainClass
 import com.example.applicationhome.core.domain.model.DiscountsDomainClass
 import com.example.applicationhome.core.domain.model.MealDomain
 import com.example.applicationhome.core.domain.model.RestaurantDomainClass
+import com.example.applicationhome.core.domain.model.ReviewsDomainClass
 import com.example.applicationhome.core.domain.model.SnackDomain
 
 fun MealWithFavoriteStatus.mealWithFavoriteStatusToMealDomain(): MealDomain =
@@ -46,7 +48,7 @@ fun RestaurantWithFavoriteStatus.restaurantWithFavoriteStatusToRestaurantDomainC
         name = this.restaurant.name,
         image = this.restaurant.image,
         image2 = this.restaurant.image2,
-        review = this.restaurant.review,
+        review = Pair(this.stars?.stars?: 0.0, this.stars?.number?: 0),
         background = this.restaurant.background,
         searchKeywords = this.restaurant.searchKeywords,
         topFiveMeals = this.restaurant.topFiveMeals,
@@ -77,4 +79,14 @@ fun CartItemsClassEntity.cartItemsClassEntityToCartItemsDomainClass(discounts : 
         image = this.image,
         restaurantId = this.restaurantId,
         discount = discounts?.discountsEntityToDiscountsDomainClass()
+    )
+
+fun ReviewsEntity.reviewsEntityToReviewsDomainClass(): ReviewsDomainClass =
+    ReviewsDomainClass(
+        userId = this.userId,
+        userName = this.userName,
+        createdAt = this.createdAt,
+        resId = this.resId,
+        stars = this.stars,
+        comment = this.comment
     )

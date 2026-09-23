@@ -41,13 +41,13 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.applicationhome.R
+import com.example.applicationhome.core.data.local.entity.AddressesEntity
+import com.example.applicationhome.core.domain.model.ProfileEditResult
+import com.example.applicationhome.core.domain.model.TextFieldClassFromConfirmOrderScreen
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.components.designsystem.TopBarButtons
 import com.example.applicationhome.core.ui.theme.DarkOrange
-import com.example.applicationhome.core.data.local.entity.AddressesEntity
-import com.example.applicationhome.core.domain.model.ProfileEditResult
-import com.example.applicationhome.core.domain.model.TextFieldClassFromConfirmOrderScreen
 import com.example.applicationhome.features.confirmorder.ui.pageone.ConfirmOrderScreenTextField
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -61,7 +61,7 @@ fun AddressDetailsDialog(
     dismissButton : () -> Unit
 ){
     Dialog(
-        onDismissRequest = {  },
+        onDismissRequest = { dismissButton() },
         properties = DialogProperties(
             usePlatformDefaultWidth = false
         )

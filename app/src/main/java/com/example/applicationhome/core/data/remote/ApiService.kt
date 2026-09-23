@@ -6,6 +6,9 @@ import com.example.applicationhome.core.data.remote.dto.FavoriteClass
 import com.example.applicationhome.core.data.remote.dto.Meal
 import com.example.applicationhome.core.data.remote.dto.Offers
 import com.example.applicationhome.core.data.remote.dto.Restaurants
+import com.example.applicationhome.core.data.remote.dto.ReviewsForGet
+import com.example.applicationhome.core.data.remote.dto.ReviewsForPut
+import com.example.applicationhome.core.data.remote.dto.ReviewsStars
 import com.example.applicationhome.core.data.remote.dto.Snack
 import com.example.applicationhome.core.domain.model.Address
 import com.example.applicationhome.core.domain.model.OrdersClass
@@ -161,7 +164,7 @@ interface FoodAppAPIs{
     @GET("discounts.json")
     suspend fun getDiscounts(
         @Query("orderBy") orderBy : String = "\"startDiscount\"",
-        @Query("startAt") lastSyncTimestamp : Long,
+        @Query("startAt") lastSyncTimestamp : Long
     ): Response<Map<String, Discounts>>
 
     @GET("discounts.json")
@@ -169,4 +172,36 @@ interface FoodAppAPIs{
         @Query("orderBy") orderBy : String = "\"endDiscount\"",
         @Query("endAt") lastSyncTimestamp : Long
     ): Response<Map<String, Discounts>>
+
+
+    @GET("reviews/{restaurantId}.json")
+    suspend fun getRestaurantReviews(
+        @Path("restaurantId") restaurantId : Int,
+        @Query("orderBy") orderBy : String = "\"createdAt\"",
+        @Query("startAt") lastSyncTimestamp : Long
+    ): Response<Map<String, ReviewsForGet>>
+
+    @GET("reviews_stars.json")
+    suspend fun getReviewsStars(): Response<Map<String, ReviewsStars>>
+
+    @PUT("reviews/{restaurantId}/{userId}.json")
+    suspend fun putRestaurantReview(
+        @Path("restaurantId") restaurantId : Int,
+        @Path("userId") userId : String,
+        @Body review : ReviewsForPut
+    ): Response<ReviewsForGet>
+
+    @DELETE("reviews/{restaurantId}/{userId}.json")
+    suspend fun deleteReview(
+        @Path("restaurantId") restaurantId : Int,
+        @Path("userId") userId : String,
+    ): Response<Unit>
+
+    @GET("orders/{userId}.json")
+    suspend fun checkUserOrderedFromRestaurant(
+        @Path("userId") userId : String,
+        @Query("orderBy") orderBy : String = "\"restaurantId\"",
+        @Query("equalTo") equalTo : Int,
+        @Query("limitToFirst") limitToFirst : Int = 1
+    ): Response<Map<Long, OrdersClass>?>
 }

@@ -8,6 +8,7 @@ import com.example.applicationhome.core.data.repository.OrderRepositoryImpl
 import com.example.applicationhome.core.data.repository.PaymobRepositoryImpl
 import com.example.applicationhome.core.data.repository.ProfileRepositoryImpl
 import com.example.applicationhome.core.data.repository.RestaurantRepositoryImpl
+import com.example.applicationhome.core.data.repository.ReviewsRepositoryImpl
 import com.example.applicationhome.core.data.repository.SearchRepositoryImpl
 import com.example.applicationhome.core.data.repository.SupabaseUserRemoteDataSource
 import com.example.applicationhome.core.data.repository.SyncAllDataRepositoryImpl
@@ -21,6 +22,7 @@ import com.example.applicationhome.core.domain.repository.OrderRepository
 import com.example.applicationhome.core.domain.repository.PaymobRepository
 import com.example.applicationhome.core.domain.repository.ProfileRepository
 import com.example.applicationhome.core.domain.repository.RestaurantRepository
+import com.example.applicationhome.core.domain.repository.ReviewsRepository
 import com.example.applicationhome.core.domain.repository.SearchRepository
 import com.example.applicationhome.core.domain.repository.SupabaseRepository
 import com.example.applicationhome.core.domain.repository.SyncAllDataRepository
@@ -112,4 +114,10 @@ abstract class RepositoryModule {
     abstract fun bindAddressesRepository(
         addressesRepositoryImpl : AddressesRepositoryImpl
     ): AddressesRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindReviewsRepository(
+        reviewsRepositoryImpl : ReviewsRepositoryImpl
+    ): ReviewsRepository
 }
