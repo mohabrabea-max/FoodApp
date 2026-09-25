@@ -5,10 +5,12 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.example.applicationhome.core.data.local.dao.ReviewsDao
+import com.example.applicationhome.core.data.local.entity.ReviewsStarsEntity
 import com.example.applicationhome.core.data.mapper.reviewsEntityToReviewsDomainClass
 import com.example.applicationhome.core.data.mapper.reviewsForGetToReviewsEntity
 import com.example.applicationhome.core.data.remote.FoodAppAPIs
 import com.example.applicationhome.core.data.remote.dto.ReviewsForPut
+import com.example.applicationhome.core.data.remote.dto.ReviewsStars
 import com.example.applicationhome.core.data.remote.util.retryLocally
 import com.example.applicationhome.core.domain.model.ReviewsDomainClass
 import com.example.applicationhome.core.domain.repository.ReviewsRepository
@@ -89,10 +91,37 @@ class ReviewsRepositoryImpl @Inject constructor(
 
             val userReview = response.body()
 
+
+
+            val stars = reviewsDao.getRestaurantStars(review.resId)?: ReviewsStarsEntity()
+            val newStars = ReviewsStars(
+                resId = review.resId,
+                stars = stars.stars + review.stars,
+                number = stars.number + 1
+            )
+
+            val starsResponse = api.putRestaurantReviewStars(
+                restaurantId = review.resId,
+                review = newStars
+            )
+
+            if(!starsResponse.isSuccessful){
+                throw HttpException(starsResponse)
+            }
+
             if(userReview != null){
                 val entityReview = userReview.reviewsForGetToReviewsEntity(userId)
                 reviewsDao.addReviews(
                     reviews = listOf(entityReview)
+                )
+                reviewsDao.addStars(
+                    listOf(
+                        ReviewsStarsEntity(
+                            resId = newStars.resId,
+                            stars = newStars.stars,
+                            number = newStars.number
+                        )
+                    )
                 )
             }
         }
@@ -110,11 +139,16 @@ class ReviewsRepositoryImpl @Inject constructor(
             if(!response.isSuccessful){
                 throw HttpException(response)
             }
+
+            reviewsDao.deleteReview(
+                userId = userId,
+                resId = resId
+            )
         }
 
     override suspend fun checkIfUserDidOrderedFromRestaurant(
-        resId: Int,
-        userId: String
+        resId : Int,
+        userId : String
     ): Result<Boolean> =
         retryLocally {
             val response = api.checkUserOrderedFromRestaurant(

@@ -174,4 +174,13 @@
     <string name="view_items">View items</string>
     <string name="discount_items">Discount items</string>
     <string name="discounts">Discounts</string>
+    <string name="reviews">Reviews</string>
+    <string name="edit">Edit</string>
+    <string name="your_review">Your review</string>
+    <string name="rate_this_restaurant">Rate this restaurant</string>
+    <string name="tell_others_what_you_think">Tell others what you think</string>
+    <string name="write_a_review">Write a review</string>
+    <string name="there_are_no_ratings">There are no ratings</string>
+    <string name="post">Post</string>
+    <string name="are_you_sure_you_want_to_delete_the_rating">Are you sure you want to delete the rating?</string>
 </resources>

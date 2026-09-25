@@ -86,7 +86,7 @@ data class RestaurantsUIClass(
     val name : String = "",
     val image : String = "",
     val image2 : String = "",
-    val review : Pair<Double, String> = Pair(0.0, "0"),
+    val review : String = "",
     val background : String = "",
     val searchKeywords: String = "",
     val topFiveMeals : String = "",

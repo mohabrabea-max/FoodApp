@@ -24,13 +24,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
 fun EmptyScreen(
     title : String,
-    image : Painter
+    image : Painter,
+    spacerheight : Dp = 200.dp
 ){
     Column(
         modifier = Modifier
@@ -40,7 +42,7 @@ fun EmptyScreen(
         verticalArrangement = Arrangement.Center
     ){
 
-        Spacer(modifier = Modifier.height(200.dp))
+        Spacer(modifier = Modifier.height(spacerheight))
 
         Image(
             modifier = Modifier.size(120.dp),

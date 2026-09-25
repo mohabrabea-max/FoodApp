@@ -175,4 +175,13 @@
     <string name="view_items">عرض العناصر</string>
     <string name="discount_items">السلع المخفضة</string>
     <string name="discounts">التخفيضات</string>
+    <string name="reviews">المراجعات</string>
+    <string name="edit">تعديل</string>
+    <string name="your_review">مراجعتك</string>
+    <string name="rate_this_restaurant">قيّم هذا المطعم</string>
+    <string name="tell_others_what_you_think">أخبر الآخرين برأيك</string>
+    <string name="write_a_review">اكتب مراجعة</string>
+    <string name="there_are_no_ratings">لا توجد اي تقييمات</string>
+    <string name="post">إرسال</string>
+    <string name="are_you_sure_you_want_to_delete_the_rating">هل أنت متأكد من أنك تريد حذف التقييم؟</string>
 </resources>

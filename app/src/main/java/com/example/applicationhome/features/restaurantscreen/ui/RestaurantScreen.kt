@@ -324,11 +324,15 @@ fun RestaurantScreen(
             ){
                 item {
                     RestaurantHeader(
-                        uiState.restaurantData
-                    ){
-                        imageToView = uiState.restaurantData.image
-                        viewImageState = true
-                    }
+                        item = uiState.restaurantData,
+                        view = {
+                            imageToView = uiState.restaurantData.image
+                            viewImageState = true
+                        },
+                        onReviewClick = {
+                            navigationController.navigate(Screens.ReviewsScreen.createRoute(restaurantId = uiState.restaurantData.id))
+                        }
+                    )
                 }
 
                 item {

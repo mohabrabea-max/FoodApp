@@ -31,8 +31,12 @@ interface ReviewsDao {
     @Query("SELECT lastUpdate FROM last_update_reviews WHERE resId = :resId")
     suspend fun getLastSyncTimestamp(resId : Int): Long?
 
+    @Query("SELECT * FROM reviews_stars_entity WHERE resId = :resId")
+    suspend fun getRestaurantStars(resId : Int): ReviewsStarsEntity?
+
 
     //--------------------------------------   Update    -------------------------------------
+
     @Query("UPDATE last_update_reviews SET lastUpdate = :time WHERE resId = :resId")
     suspend fun updateLastSyncTimestamp(resId : Int, time : Long)
 
@@ -46,4 +50,10 @@ interface ReviewsDao {
         addReviews(reviews)
         updateLastSyncTimestamp(resId, newTimestamp)
     }
+
+
+    //--------------------------------------   Delete    -------------------------------------
+
+    @Query("DELETE FROM reviews_entity WHERE userId = :userId AND resId = :resId")
+    suspend fun deleteReview(userId : String, resId : Int)
 }

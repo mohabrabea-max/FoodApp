@@ -8,9 +8,12 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import com.example.applicationhome.core.data.remote.NetworkObserver
 import com.example.applicationhome.core.data.remote.dto.ReviewsForPut
+import com.example.applicationhome.core.domain.repository.RestaurantRepository
 import com.example.applicationhome.core.domain.repository.ReviewsRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
+import com.example.applicationhome.core.ui.mapper.restaurantDomainClassToRestaurantsUiClass
 import com.example.applicationhome.core.ui.mapper.reviewsDomainClassToReviewsUIClass
+import com.example.applicationhome.core.ui.model.RestaurantsUIClass
 import com.example.applicationhome.core.ui.model.ReviewsUIClass
 import com.example.applicationhome.core.ui.model.UiStates
 import com.example.applicationhome.features.reviews.model.PutReviewStates
@@ -23,7 +26,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -33,6 +38,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ReviewsViewModel @Inject constructor(
     private val reviewsRepository : ReviewsRepository,
+    private val restaurantRepository : RestaurantRepository,
     userRepository : UserRepository,
     networkObserver : NetworkObserver,
     savedStateHandle : SavedStateHandle
@@ -45,6 +51,15 @@ class ReviewsViewModel @Inject constructor(
         )
     val userData = userRepository.userData
     private val _resId = MutableStateFlow(0)
+    val restaurant =
+        _resId.flatMapLatest {  id ->
+            restaurantRepository.getRestaurantByIdFromDatabase(id)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
+
 
     private val _uiState = MutableStateFlow(ReviewsUIState())
     val uiState = _uiState.asStateFlow()
@@ -76,8 +91,7 @@ class ReviewsViewModel @Inject constructor(
                 }.collect { domainReview ->
                     _uiState.update { currentState ->
                         currentState.copy(
-                            userReview = domainReview?.reviewsDomainClassToReviewsUIClass(),
-                            loadingState = UiStates.Success
+                            userReview = domainReview?.reviewsDomainClassToReviewsUIClass()
                         )
                     }
                 }
@@ -86,24 +100,53 @@ class ReviewsViewModel @Inject constructor(
 
     private fun checkIfUserCanReview() {
         viewModelScope.launch {
+            _uiState.update { currentState ->
+                currentState.copy(loadingState = UiStates.Loading)
+            }
+
             combine(_resId, userData) { resId, user ->
-                val result = reviewsRepository.checkIfUserDidOrderedFromRestaurant(resId, user.id)
-                _uiState.update { currentState ->
-                    currentState.copy(canUserReview = result.getOrDefault(false))
-                }
-            }.stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = null
-            )
+                resId to user
+            }.onEach { (resId, user) ->
+                reviewsRepository.checkIfUserDidOrderedFromRestaurant(resId, user.id)
+                    .onSuccess { result ->
+                        syncRestaurantReviews(resId)
+                        _uiState.update { currentState ->
+                            currentState.copy(isUserDidOrderFromRestaurant = result)
+                        }
+                    }.onFailure {
+                        _uiState.update { currentState ->
+                            currentState.copy(loadingState = UiStates.Offline)
+                        }
+                    }
+            }.launchIn(viewModelScope)
         }
     }
 
 
-    fun onReviewClick(){
+    fun isReviewsDeferred(review : ReviewsUIClass){
         _uiState.update { currentState ->
-            currentState.copy(showReviewBottomSheet = true)
+            val finalReview = currentState.userReview?.copy(
+                stars = review.stars,
+                comment = review.comment
+            )?: ReviewsUIClass(
+                stars = review.stars,
+                comment = review.comment
+            )
+
+            currentState.copy(
+                isReviewsDeferred = finalReview != _uiState.value.userReview,
+            )
         }
+    }
+
+    fun onReviewClick(review : ReviewsUIClass){
+        _uiState.update { currentState ->
+            currentState.copy(
+                userNewReview = review,
+                showReviewBottomSheet = true
+            )
+        }
+        isReviewsDeferred(review)
     }
     fun onCloseReviewBottomSheet(){
         _uiState.update { currentState ->
@@ -114,6 +157,9 @@ class ReviewsViewModel @Inject constructor(
 
     fun onPostReview(stars : Int, comment : String){
         viewModelScope.launch {
+            _uiState.update { currentState ->
+                currentState.copy(putReviewStates = PutReviewStates.Loading)
+            }
             val review = ReviewsForPut(
                 userName = userData.value.firstname + " " + userData.value.lastname,
                 resId = _resId.value,
@@ -125,6 +171,8 @@ class ReviewsViewModel @Inject constructor(
                 review = review,
                 userId = userData.value.id
             ).onSuccess {
+                syncRestaurantReviews(_resId.value)
+
                 _uiState.update { currentState ->
                     currentState.copy(
                         showReviewBottomSheet = false,
@@ -139,7 +187,17 @@ class ReviewsViewModel @Inject constructor(
         }
     }
 
-    fun onDeleteReview(){
+    fun onShowDeleteReviewDialog(){
+        _uiState.update { currentState ->
+            currentState.copy(showConfirmDeleteDialog = true)
+        }
+    }
+    fun onCloseDeleteReviewDialog(){
+        _uiState.update { currentState ->
+            currentState.copy(showConfirmDeleteDialog = false)
+        }
+    }
+    fun deleteReview(){
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(putReviewStates = PutReviewStates.Loading)
@@ -157,10 +215,43 @@ class ReviewsViewModel @Inject constructor(
                     currentState.copy(putReviewStates = PutReviewStates.Failure)
                 }
             }
-
-
         }
     }
+
+    private fun loadRestaurantDetails(restaurantId : Int){
+        viewModelScope.launch {
+            val restaurantFlow = restaurantRepository.getRestaurantByIdFromDatabase(restaurantId)
+
+            restaurantFlow.collect { restaurantDomain ->
+
+                val restaurantUi = restaurantDomain?.restaurantDomainClassToRestaurantsUiClass()
+                    ?: RestaurantsUIClass()
+
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        restaurant = restaurantUi
+                    )
+                }
+            }
+        }
+    }
+
+    private fun syncRestaurantReviews(resId : Int){
+        viewModelScope.launch {
+            reviewsRepository.syncRestaurantReviewsFromAPI(resId)
+                .onSuccess {
+                    observeUserReview()
+                    _uiState.update { currentState ->
+                        currentState.copy(loadingState = UiStates.Success)
+                    }
+                }.onFailure {
+                    _uiState.update { currentState ->
+                        currentState.copy(loadingState = UiStates.Offline)
+                    }
+                }
+        }
+    }
+
 
     init {
         _resId.value = checkNotNull(savedStateHandle["restaurantId"])
@@ -170,19 +261,12 @@ class ReviewsViewModel @Inject constructor(
                 isNetworkAvailable,
                 _resId
             ){ network, resId ->
-                if(network){
-                    if(_uiState.value != UiStates.Success) reviewsRepository.syncRestaurantReviewsFromAPI(resId)
-                        .onSuccess {
-                            _uiState.update { currentState ->
-                                checkIfUserCanReview()
+                network to resId
+            }.onEach { (network, resId) ->
+                loadRestaurantDetails(resId)
 
-                                currentState.copy(loadingState = UiStates.Success)
-                            }
-                        }.onFailure {
-                            _uiState.update { currentState ->
-                                currentState.copy(loadingState = UiStates.Offline)
-                            }
-                        }
+                if(network){
+                    if(_uiState.value != UiStates.Success) checkIfUserCanReview()
                 }else{
                     if(_uiState.value != UiStates.Success){
                         _uiState.update { currentState ->
@@ -190,13 +274,8 @@ class ReviewsViewModel @Inject constructor(
                         }
                     }
                 }
-            }.stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = null
-            )
+                observeUserReview()
+            }.launchIn(viewModelScope)
         }
-
-        observeUserReview()
     }
 }

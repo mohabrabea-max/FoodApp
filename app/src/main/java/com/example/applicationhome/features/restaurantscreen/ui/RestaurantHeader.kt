@@ -38,7 +38,8 @@ import com.example.applicationhome.core.ui.model.RestaurantsUIClass
 @Composable
 fun RestaurantHeader(
     item : RestaurantsUIClass?,
-    view : () -> Unit
+    view : () -> Unit,
+    onReviewClick : () -> Unit
 ){
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -127,7 +128,13 @@ fun RestaurantHeader(
                         .height(20.dp)
                         .clip(RoundedCornerShape(5.dp))
                         .background(MaterialTheme.colorScheme.background)
-                        .padding(horizontal = 3.dp),
+                        .padding(horizontal = 3.dp)
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = null
+                        ){
+                            onReviewClick()
+                        },
 
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -139,7 +146,7 @@ fun RestaurantHeader(
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
-                        text = "${item?.review?.first ?: 0.0}${item?.review?.second?: "0"}",
+                        text = item?.review?: "",
                         color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 14.sp,
                         style = MaterialTheme.typography.labelLarge,

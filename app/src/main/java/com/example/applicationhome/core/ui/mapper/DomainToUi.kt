@@ -69,8 +69,16 @@ private fun Int.toDynamicFormattedString(): String {
     }
 }
 fun RestaurantDomainClass.restaurantDomainClassToRestaurantsUiClass(): RestaurantsUIClass {
-    val number = this.review.second.toDynamicFormattedString()
-    val finalReview = Pair(this.review.first, number)
+    val dynamicNumber = this.review.second.toDynamicFormattedString()
+    val count = this.review.second
+    val totalSum = this.review.first
+
+    val stars = if (count > 0) {
+        String.format(java.util.Locale.US, "%.1f", totalSum / count).toDouble()
+    } else {
+        0.0
+    }
+    val finalReview = "$stars$dynamicNumber"
 
     return RestaurantsUIClass(
         id = this.id,

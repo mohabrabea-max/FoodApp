@@ -163,7 +163,7 @@ fun RestaurantsBoxHomeScreen(
                 )
 
                 Text(
-                    text = "${item.review.first}${item.review.second}",
+                    text = item.review,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 15.sp,
                     modifier = Modifier

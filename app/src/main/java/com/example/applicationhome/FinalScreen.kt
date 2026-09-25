@@ -188,6 +188,7 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
             ){
                 val reviewsViewModel : ReviewsViewModel = hiltViewModel()
 
+                val user by reviewsViewModel.userData.collectAsStateWithLifecycle()
                 val allReviews = reviewsViewModel.allReviews.collectAsLazyPagingItems()
                 val uiState by reviewsViewModel.uiState.collectAsStateWithLifecycle()
 
@@ -195,11 +196,15 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
                     popBack = { navigationController.popBackStack() },
                     onReviewClick = reviewsViewModel::onReviewClick,
                     onCloseReviewBottomSheet = reviewsViewModel::onCloseReviewBottomSheet,
+                    isReviewsDeferred = reviewsViewModel::isReviewsDeferred,
                     onPostReview = reviewsViewModel::onPostReview,
-                    onDeleteReview = reviewsViewModel::onDeleteReview
+                    onDeleteReview = reviewsViewModel::deleteReview,
+                    onShowDeleteReviewDialog = reviewsViewModel::onShowDeleteReviewDialog,
+                    onCloseDeleteReviewDialog = reviewsViewModel::onCloseDeleteReviewDialog
                 )
 
                 ReviewsScreen(
+                    user = user,
                     uiState = uiState,
                     allReviews = allReviews,
                     reviewsUIActions = reviewsUIActions

@@ -184,6 +184,12 @@ interface FoodAppAPIs{
     @GET("reviews_stars.json")
     suspend fun getReviewsStars(): Response<Map<String, ReviewsStars>>
 
+    @PUT("reviews_stars/{restaurantId}.json")
+    suspend fun putRestaurantReviewStars(
+        @Path("restaurantId") restaurantId : Int,
+        @Body review : ReviewsStars
+    ): Response<ReviewsStars>
+
     @PUT("reviews/{restaurantId}/{userId}.json")
     suspend fun putRestaurantReview(
         @Path("restaurantId") restaurantId : Int,
