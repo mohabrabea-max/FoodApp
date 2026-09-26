@@ -369,13 +369,17 @@ fun DashboardScreen(
                         val restaurants = homeScreenViewModel.filterRestaurants.collectAsLazyPagingItems()
                         val offers by homeScreenViewModel.offers.collectAsStateWithLifecycle()
                         val startBottomSheets by homeScreenViewModel.startBottomSheets.collectAsStateWithLifecycle()
+                        val dialogForNotifications by homeScreenViewModel.dialogForNotifications.collectAsStateWithLifecycle()
 
                         val actions = HomeScreenActions(
                             select = homeScreenViewModel::select,
                             unSelected = homeScreenViewModel::unSelected,
                             addRestaurantsFavorite = homeScreenViewModel::addRestaurantsFavorite,
                             removeRestaurantsFavorite = homeScreenViewModel::removeRestaurantsFavorite,
-                            closeBottomSheet = homeScreenViewModel::closeBottomSheet
+                            closeBottomSheet = homeScreenViewModel::closeBottomSheet,
+                            showDialogForNotifications = homeScreenViewModel::showDialogForNotifications,
+                            showDialogForRequestRejected = homeScreenViewModel::showDialogForRequestRejected,
+                            closeDialogForNotifications = homeScreenViewModel::closeDialogForNotifications
                         )
 
                         val parameters = HomeScreenParameters(
@@ -384,7 +388,8 @@ fun DashboardScreen(
                             categorySelected = categorySelected,
                             userData = userData,
                             restaurants = restaurants,
-                            offers = offers
+                            offers = offers,
+                            showDialogForNotifications = dialogForNotifications,
                         )
 
                         HomeScreen(

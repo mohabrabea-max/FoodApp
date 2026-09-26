@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import com.example.applicationhome.core.data.local.entity.AddressesEntity
+import com.example.applicationhome.core.data.local.entity.NotificationEntity
 import com.example.applicationhome.core.data.local.entity.UserClass
 import kotlinx.coroutines.flow.Flow
 
@@ -14,6 +15,9 @@ interface UsersDao {            // دا الجزء اللي بينفذ عملي�
 
     @Query("SELECT * FROM users WHERE isActive = 1")
     fun getActiveUser(): Flow<UserClass?>
+
+    @Query("SELECT * FROM users WHERE isActive = 1")
+    fun getActiveUserNotFlow(): UserClass?
 
     @Upsert
     suspend fun addUser(user : UserClass)
@@ -37,4 +41,16 @@ interface UsersDao {            // دا الجزء اللي بينفذ عملي�
 
     @Query("DELETE FROM addresses WHERE userId = :userId AND addressId = :addressId")
     suspend fun deleteAddress(userId : String, addressId : Long)
+
+
+
+
+    @Upsert
+    suspend fun insertNotification(notification : NotificationEntity)
+
+    @Query("SELECT * FROM notifications WHERE userId = :userId ORDER BY timestamp DESC")
+    fun getNotificationsForUser(userId : String): Flow<List<NotificationEntity>>
+
+    @Query("DELETE FROM notifications WHERE id = :id")
+    suspend fun deleteNotification(id : Int)
 }

@@ -19,6 +19,7 @@ import com.example.applicationhome.core.data.local.entity.FavoriteRestaurantEnti
 import com.example.applicationhome.core.data.local.entity.FavoriteSnackEntity
 import com.example.applicationhome.core.data.local.entity.LastUpdateReviewsEntity
 import com.example.applicationhome.core.data.local.entity.MealsEntity
+import com.example.applicationhome.core.data.local.entity.NotificationEntity
 import com.example.applicationhome.core.data.local.entity.OffersEntity
 import com.example.applicationhome.core.data.local.entity.OrdersDatabaseClass
 import com.example.applicationhome.core.data.local.entity.RestaurantCategoryCrossRef
@@ -52,8 +53,9 @@ import com.example.applicationhome.core.data.local.entity.UserClass
         ReviewsEntity::class,
         LastUpdateReviewsEntity::class,
         ReviewsStarsEntity::class,
+        NotificationEntity::class
     ],
-    version = 68,
+    version = 69,
     exportSchema = false
 )
 

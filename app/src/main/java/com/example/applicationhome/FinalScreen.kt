@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -39,7 +40,8 @@ import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showNe
 import com.example.applicationhome.core.ui.components.model.FinalScreenViewModel
 import com.example.applicationhome.core.ui.components.screens.NoInternetScreen
 import com.example.applicationhome.core.ui.theme.MatteBlack
-import com.example.applicationhome.features.Notifications.Notifications
+import com.example.applicationhome.features.Notifications.ui.Notifications
+import com.example.applicationhome.features.Notifications.ui.NotificationsViewModel
 import com.example.applicationhome.features.WelcomeScreen.Ui.WelcomeScreen
 import com.example.applicationhome.features.WelcomeScreen.Ui.WelcomeScreenViewModel
 import com.example.applicationhome.features.cart.ui.Cart
@@ -212,7 +214,22 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
             }
 
             composable(Screens.Notifications.screen){
-                Notifications()
+                val currentEntry = navigationController.currentBackStackEntry
+
+                val notificationsViewModel : NotificationsViewModel = hiltViewModel()
+                val notifications by notificationsViewModel.notifications.collectAsStateWithLifecycle()
+
+                Notifications(
+                    notifications = notifications,
+                    onDelete = { id ->
+                        notificationsViewModel.deleteNotification(id)
+                    },
+                    popBack = {
+                        if (currentEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) {
+                            navigationController.popBackStack()
+                        }
+                    }
+                )
             }
 
             composable(Screens.Cart.screen){

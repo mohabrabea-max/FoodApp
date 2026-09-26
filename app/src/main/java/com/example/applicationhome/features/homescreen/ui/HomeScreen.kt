@@ -1,8 +1,14 @@
 package com.example.applicationhome.features.homescreen.ui
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,6 +37,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +53,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
@@ -56,15 +64,18 @@ import com.example.applicationhome.core.data.local.entity.FavoriteRestaurantEnti
 import com.example.applicationhome.core.domain.model.Screens
 import com.example.applicationhome.core.ui.components.StartingBottomSheet
 import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
+import com.example.applicationhome.core.ui.components.forCart.AlertDialogMessage
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.core.ui.model.UiStates
 import com.example.applicationhome.core.ui.theme.LightOrange
 import com.example.applicationhome.features.homescreen.model.HomeScreenActions
 import com.example.applicationhome.features.homescreen.model.HomeScreenParameters
+import com.example.applicationhome.features.homescreen.model.NotificationsDialog
 import com.example.applicationhome.features.itemscreen.model.StartBottomSheets
 import com.example.applicationhome.features.shimmers.screens.HomeScreenShimmer
 import kotlinx.coroutines.CoroutineScope
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -89,9 +100,27 @@ fun HomeScreen(
     var viewImageState by remember { mutableStateOf(false) }
     var imageToView by remember { mutableStateOf("") }
 
-    val context = LocalContext.current as? Activity
-    BackHandler(enabled = true) { context?.finishAffinity() } // ده بيمسح الأبلكيشن من الـ Background ويقفله تماماً
+    val context = LocalContext.current
+    val contextBackHandler = context as? Activity
+    BackHandler(enabled = true) { contextBackHandler?.finishAffinity() }
 
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if(!isGranted){
+                onActions.showDialogForRequestRejected()
+            }
+        }
+    )
+    LaunchedEffect(Unit) {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ){
+            onActions.showDialogForNotifications()
+        }
+    }
 
 
     PullToRefreshBox(
@@ -340,6 +369,40 @@ fun HomeScreen(
                     )
                 }
             }
+        }
+    }
+
+    // --------------------------------------------\\ Alert Dialog Messages //--------------------------------------------
+
+    when(val state = parameters.showDialogForNotifications){
+        NotificationsDialog.Non -> {}
+
+        is NotificationsDialog.DialogForTurnOnNotifications -> {
+            AlertDialogMessage(
+                title = stringResource(R.string.disclaimer),
+                content = stringResource(state.message),
+                confirmButtonText = stringResource(R.string.turn_on),
+                confirmButton = {
+                    launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    onActions.closeDialogForNotifications()
+                },
+                dismissButtonText = stringResource(R.string.cancel),
+                dismissButton = {
+                    onActions.closeDialogForNotifications()
+                    onActions.showDialogForRequestRejected()
+                }
+            )
+        }
+
+        is NotificationsDialog.RequestRejected -> {
+            AlertDialogMessage(
+                title = stringResource(R.string.disclaimer),
+                content = stringResource(state.message),
+                confirmButtonText = stringResource(R.string.close),
+                confirmButton = {
+                    onActions.closeDialogForNotifications()
+                }
+            )
         }
     }
 }

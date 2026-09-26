@@ -16,6 +16,7 @@ import com.example.applicationhome.core.domain.repository.UserRepository
 import com.example.applicationhome.core.domain.usecase.FavoriteUseCase
 import com.example.applicationhome.core.ui.mapper.restaurantDomainClassToRestaurantsUiClass
 import com.example.applicationhome.core.ui.model.RestaurantsUIClass
+import com.example.applicationhome.features.homescreen.model.NotificationsDialog
 import com.example.applicationhome.features.itemscreen.model.StartBottomSheets
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -153,5 +154,21 @@ class HomeScreenViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+
+    //       *** ---------------------------- \\***  Dialogs  ***// ---------------------------- ***
+
+    private val _dialogForNotifications = MutableStateFlow<NotificationsDialog>(NotificationsDialog.Non)
+    val dialogForNotifications = _dialogForNotifications.asStateFlow()
+
+    fun showDialogForNotifications(){
+        _dialogForNotifications.value = NotificationsDialog.DialogForTurnOnNotifications()
+    }
+    fun showDialogForRequestRejected(){
+        _dialogForNotifications.value = NotificationsDialog.RequestRejected()
+    }
+    fun closeDialogForNotifications(){
+        _dialogForNotifications.value = NotificationsDialog.Non
     }
 }

@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
     kotlin("plugin.serialization") version "2.2.10"
+    id("com.google.gms.google-services")
 }
 
 val localProperties = Properties().apply {
@@ -191,6 +192,12 @@ dependencies {
     implementation("dev.chrisbanes.haze:haze:1.0.0")
     // حزمة اختيارية لأنماط الأشكال الجاهزة (Materials)
     implementation("dev.chrisbanes.haze:haze-materials:1.0.0")
+
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+
+    // Firebase Cloud Messaging
+    implementation("com.google.firebase:firebase-messaging")
 }
 configurations.all {
     resolutionStrategy {

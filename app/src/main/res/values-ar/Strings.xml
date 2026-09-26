@@ -183,4 +183,8 @@
     <string name="there_are_no_ratings">لا توجد اي تقييمات</string>
     <string name="post">إرسال</string>
     <string name="are_you_sure_you_want_to_delete_the_rating">هل أنت متأكد من أنك تريد حذف التقييم؟</string>
+    <string name="please_turn_on_notifications_to_receive_the_latest_updates">يرجى تشغيل الاشعارات لتلقي آخر التحديثات</string>
+    <string name="turn_on">تشغيل</string>
+    <string name="the_request_was_rejected_you_will_not_be_able_to_receive_notifications">تم رفض الطلب، لن تستطيع تلقي الاشعارات</string>
+    <string name="no_previous_notifications">لا توجد إشعارات سابقة</string>
 </resources>

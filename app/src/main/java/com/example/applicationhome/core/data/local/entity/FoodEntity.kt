@@ -17,6 +17,17 @@ import com.example.applicationhome.core.domain.model.UserInformationInOrderClass
 import com.example.applicationhome.core.ui.model.FoodItem
 import com.example.applicationhome.core.ui.model.RestaurantsUIClass
 
+@Entity(tableName = "notifications")
+data class NotificationEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id : Int = 0,
+    val userId: String = "",
+    val title : String = "",
+    val body : String = "",
+    val timestamp : Long = 0L
+)
+
+
 @Entity(
     tableName = "reviews_entity",
     primaryKeys = ["userId", "resId"]

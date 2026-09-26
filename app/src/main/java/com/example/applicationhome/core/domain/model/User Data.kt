@@ -7,6 +7,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 
+data class NotificationDomainClass(
+    val id : Int = 0,
+    val title : String = "",
+    val body : String = "",
+    val timestamp : Long = 0L
+)
+
 enum class AccountTextFieldEnum {
     F_NAME,
     L_NAME,

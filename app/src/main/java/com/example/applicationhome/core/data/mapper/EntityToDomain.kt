@@ -3,12 +3,14 @@ package com.example.applicationhome.core.data.mapper
 import com.example.applicationhome.core.data.local.entity.CartItemsClassEntity
 import com.example.applicationhome.core.data.local.entity.DiscountsEntity
 import com.example.applicationhome.core.data.local.entity.MealWithFavoriteStatus
+import com.example.applicationhome.core.data.local.entity.NotificationEntity
 import com.example.applicationhome.core.data.local.entity.RestaurantWithFavoriteStatus
 import com.example.applicationhome.core.data.local.entity.ReviewsEntity
 import com.example.applicationhome.core.data.local.entity.SnackWithFavoriteStatus
 import com.example.applicationhome.core.domain.model.CartItemsDomainClass
 import com.example.applicationhome.core.domain.model.DiscountsDomainClass
 import com.example.applicationhome.core.domain.model.MealDomain
+import com.example.applicationhome.core.domain.model.NotificationDomainClass
 import com.example.applicationhome.core.domain.model.RestaurantDomainClass
 import com.example.applicationhome.core.domain.model.ReviewsDomainClass
 import com.example.applicationhome.core.domain.model.SnackDomain
@@ -89,4 +91,12 @@ fun ReviewsEntity.reviewsEntityToReviewsDomainClass(): ReviewsDomainClass =
         resId = this.resId,
         stars = this.stars,
         comment = this.comment
+    )
+
+fun NotificationEntity.notificationEntityToNotificationDomainClass(): NotificationDomainClass =
+    NotificationDomainClass(
+        id = this.id,
+        title = this.title,
+        body = this.body,
+        timestamp = this.timestamp
     )

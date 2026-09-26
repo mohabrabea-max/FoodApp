@@ -182,4 +182,8 @@
     <string name="there_are_no_ratings">There are no ratings</string>
     <string name="post">Post</string>
     <string name="are_you_sure_you_want_to_delete_the_rating">Are you sure you want to delete the rating?</string>
+    <string name="please_turn_on_notifications_to_receive_the_latest_updates">Please turn on notifications to receive the latest updates</string>
+    <string name="turn_on">Turn on</string>
+    <string name="the_request_was_rejected_you_will_not_be_able_to_receive_notifications">The request was rejected, you will not be able to receive notifications</string>
+    <string name="no_previous_notifications">No previous notifications</string>
 </resources>

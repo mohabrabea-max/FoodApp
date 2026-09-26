@@ -4,6 +4,13 @@ import androidx.annotation.Keep
 import com.example.applicationhome.core.domain.model.CategoriesInWithTitle
 import com.example.applicationhome.core.domain.model.MealSizeDetail
 
+data class NotificationUIClass(
+    val id : Int = 0,
+    val title : String = "",
+    val body : String = "",
+    val timestamp : String = ""
+)
+
 sealed interface UiStates {
     data object Loading : UiStates
     //data object Empty : UiStates

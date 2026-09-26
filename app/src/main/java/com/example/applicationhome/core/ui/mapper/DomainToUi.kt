@@ -3,12 +3,14 @@ package com.example.applicationhome.core.ui.mapper
 import com.example.applicationhome.core.domain.model.CartItemsDomainClass
 import com.example.applicationhome.core.domain.model.DiscountsDomainClass
 import com.example.applicationhome.core.domain.model.MealDomain
+import com.example.applicationhome.core.domain.model.NotificationDomainClass
 import com.example.applicationhome.core.domain.model.RestaurantDomainClass
 import com.example.applicationhome.core.domain.model.ReviewsDomainClass
 import com.example.applicationhome.core.domain.model.SnackDomain
 import com.example.applicationhome.core.ui.model.CartItemsUIClass
 import com.example.applicationhome.core.ui.model.DiscountsUI
 import com.example.applicationhome.core.ui.model.FoodItem
+import com.example.applicationhome.core.ui.model.NotificationUIClass
 import com.example.applicationhome.core.ui.model.RestaurantsUIClass
 import com.example.applicationhome.core.ui.model.ReviewsUIClass
 import java.text.SimpleDateFormat
@@ -74,7 +76,7 @@ fun RestaurantDomainClass.restaurantDomainClassToRestaurantsUiClass(): Restauran
     val totalSum = this.review.first
 
     val stars = if (count > 0) {
-        String.format(java.util.Locale.US, "%.1f", totalSum / count).toDouble()
+        String.format(Locale.US, "%.1f", totalSum / count).toDouble()
     } else {
         0.0
     }
@@ -110,7 +112,6 @@ fun DiscountsDomainClass.discountsDomainClassToDiscountsUi(): DiscountsUI? {
     }
 }
 
-
 fun ReviewsDomainClass.reviewsDomainClassToReviewsUIClass(): ReviewsUIClass =
     ReviewsUIClass(
         userId = this.userId,
@@ -121,8 +122,23 @@ fun ReviewsDomainClass.reviewsDomainClassToReviewsUIClass(): ReviewsUIClass =
         comment = this.comment
     )
 
+fun NotificationDomainClass.notificationDomainClassToNotificationUIClass(): NotificationUIClass =
+    NotificationUIClass(
+        id = this.id,
+        title = this.title,
+        body = this.body,
+        timestamp = formatTimestamp(this.timestamp)
+    )
+
+
 private fun formatDate(timestamp: Long): String {
     val date = Date(timestamp)
     val formatter = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+    return formatter.format(date)
+}
+
+private fun formatTimestamp(timestamp: Long): String {
+    val date = Date(timestamp)
+    val formatter = SimpleDateFormat("hh:mm a - dd MMM yyyy", Locale.getDefault())
     return formatter.format(date)
 }

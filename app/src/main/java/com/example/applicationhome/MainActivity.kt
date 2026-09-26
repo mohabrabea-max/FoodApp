@@ -1,6 +1,7 @@
 package com.example.applicationhome
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.applicationhome.core.ui.components.model.FinalScreenViewModel
 import com.example.applicationhome.core.ui.theme.ApplicationHomeTheme
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,6 +22,13 @@ class MainActivity : AppCompatActivity() {
         installSplashScreen()
 
         super.onCreate(savedInstanceState)
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                Log.d("FCM_TOKEN", "Token: $token")
+            }
+        }
 
         setContent {
             val themeMode by finalScreenViewModel.themeMode.collectAsState()
