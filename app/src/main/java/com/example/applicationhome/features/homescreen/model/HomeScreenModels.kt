@@ -1,5 +1,6 @@
 package com.example.applicationhome.features.homescreen.model
 
+import androidx.annotation.Keep
 import androidx.paging.compose.LazyPagingItems
 import com.example.applicationhome.core.data.local.entity.CategoriesEntity
 import com.example.applicationhome.core.data.local.entity.FavoriteRestaurantEntity
@@ -7,6 +8,7 @@ import com.example.applicationhome.core.data.local.entity.OffersEntity
 import com.example.applicationhome.core.data.local.entity.UserClass
 import com.example.applicationhome.core.ui.model.RestaurantsUIClass
 
+@Keep
 data class HomeScreenActions(
     val select : (CategoriesEntity) -> Unit = {},
     val unSelected : () -> Unit = {},
@@ -15,6 +17,7 @@ data class HomeScreenActions(
     val closeBottomSheet : () -> Unit = {}
 )
 
+@Keep
 data class HomeScreenParameters(
     val isNetworkAvailable : Boolean = false,
     val categories : List<CategoriesEntity> = emptyList(),

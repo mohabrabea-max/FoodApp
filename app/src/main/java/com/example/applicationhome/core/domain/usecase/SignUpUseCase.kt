@@ -40,26 +40,17 @@ class SignUpUseCase @Inject constructor(
         email : String,
         password : String
     ): Result<Unit> {
-        val supabaseResult = supabaseRepository.signUp(email, password)
-
-        val userId = supabaseResult.getOrElse { error ->
+        val userId = supabaseRepository.signUp(email, password).getOrElse { error ->
             return Result.failure(error)
         }
 
-        val firebaseResult = saveToFirebaseAndSync(userId, firstName, lastName, email)
+        return saveToFirebaseAndSync(userId, firstName, lastName, email)
+            .recoverCatching { firebaseError ->
+                runCatching { supabaseRepository.deleteUser() }
+                throw AuthException(
+                        AuthError.UnknownError("Failed to save user data: ${firebaseError.message}")
+                    )
 
-        if(firebaseResult.isFailure){
-            supabaseRepository.deleteUser()
-
-            val firebaseException = firebaseResult.exceptionOrNull()
-
-            return Result.failure(
-                AuthException(
-                    AuthError.UnknownError("Failed to save user data: ${firebaseException?.message}")
-                )
-            )
-        }
-
-        return Result.success(Unit)
+            }
     }
 }

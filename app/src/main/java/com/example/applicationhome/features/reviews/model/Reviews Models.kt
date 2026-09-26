@@ -1,9 +1,11 @@
 package com.example.applicationhome.features.reviews.model
 
+import androidx.annotation.Keep
 import com.example.applicationhome.core.ui.model.RestaurantsUIClass
 import com.example.applicationhome.core.ui.model.ReviewsUIClass
 import com.example.applicationhome.core.ui.model.UiStates
 
+@Keep
 sealed interface PutReviewStates {
     data object Idl : PutReviewStates
     data object Loading : PutReviewStates
@@ -11,6 +13,7 @@ sealed interface PutReviewStates {
     data object Failure : PutReviewStates
 }
 
+@Keep
 data class ReviewsUIState(
     val resId : Int = 0,
     val restaurant : RestaurantsUIClass = RestaurantsUIClass(),
@@ -26,6 +29,7 @@ data class ReviewsUIState(
     val canUserReview = isUserDidOrderFromRestaurant && userReview == null
 }
 
+@Keep
 data class ReviewsUIActions(
     val popBack : () -> Unit,
     val onReviewClick : (review : ReviewsUIClass) -> Unit,

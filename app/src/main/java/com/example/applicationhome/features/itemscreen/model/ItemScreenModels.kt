@@ -1,9 +1,11 @@
 package com.example.applicationhome.features.itemscreen.model
 
+import androidx.annotation.Keep
 import androidx.annotation.StringRes
 import com.example.applicationhome.R
 
 
+@Keep
 sealed interface StartBottomSheets {
     data object None : StartBottomSheets
 

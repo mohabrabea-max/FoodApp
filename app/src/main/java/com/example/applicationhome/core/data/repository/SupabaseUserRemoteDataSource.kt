@@ -59,17 +59,17 @@ class SupabaseUserRemoteDataSource @Inject constructor(
 
     override suspend fun signUp(email: String, pass: String): Result<String> {
         return try {
-            auth.signUpWith(Email){
+            val response = auth.signUpWith(Email){
                 this.email = email
                 this.password = pass
             }
 
-            val userId = auth.currentUserOrNull()?.id
+            val userId = response?.id
 
-            if(userId != null){
+            if(!userId.isNullOrBlank()){
                 Result.success(userId)
             }else{
-                Result.failure(Exception(ErrorsType.DATA.toString()))
+                Result.failure(AuthException(AuthError.UnknownError(ErrorsType.DATA.toString())))
             }
         } catch (e: Exception) {
             val authError = mapExceptionToAuthError(e)
