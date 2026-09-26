@@ -280,12 +280,6 @@ fun ItemsFullBottomSheet(
                                 }
                             }
                         }
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        RatingsAndReviews(
-                            bottomSheetItem.review
-                        )
                     }
                     item{Spacer(modifier = Modifier.height(150.dp))}
                 }

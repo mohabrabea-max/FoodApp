@@ -2,6 +2,7 @@ package com.example.applicationhome.core.domain.model
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
@@ -29,7 +30,7 @@ object ProfileData {
             Screens.Notifications.screen
         ),
         ProfileOptions(
-            R.string.edite_profile,
+            R.string.edit_profile,
             null,
             Icons.Default.Person,
             Screens.Profile.screen
@@ -39,6 +40,21 @@ object ProfileData {
             R.string.your_addresses,
             Icons.Default.LocationOn,
             Screens.Locations.screen
+        )
+    )
+
+    fun notificationsOptions() = listOf(
+        ProfileOptions(
+            R.string.login,
+            null,
+            Icons.AutoMirrored.Filled.Login,
+            Screens.LoginScreen.screen
+        ),
+        ProfileOptions(
+            R.string.notifications,
+            null,
+            Icons.Default.Notifications,
+            Screens.Notifications.screen
         )
     )
 
@@ -61,7 +77,7 @@ object Drawer {
     )
 
     fun optionsData2() = listOf(
-        Options(R.string.edite_profile, Icons.Default.Person, Screens.Profile.screen),
+        Options(R.string.edit_profile, Icons.Default.Person, Screens.Profile.screen),
         Options(R.string.notifications, Icons.Default.Notifications, Screens.Notifications.screen),
     )
 }

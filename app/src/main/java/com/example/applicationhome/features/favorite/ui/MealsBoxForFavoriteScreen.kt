@@ -72,7 +72,7 @@ fun MealsBoxForFavoriteScreen(
                 }.padding(15.dp)
         ){
             Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)){
-                Box(modifier = Modifier.fillMaxWidth().weight(3f), contentAlignment = Alignment.Center){
+                Box(modifier = Modifier.fillMaxWidth().weight(4f), contentAlignment = Alignment.Center){
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(0.9f).clip(RoundedCornerShape(10.dp)),
                         model = ImageRequest.Builder(LocalContext.current).
@@ -109,7 +109,7 @@ fun MealsBoxForFavoriteScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1.5f),
+                        .weight(2f),
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.Bottom
                 ){

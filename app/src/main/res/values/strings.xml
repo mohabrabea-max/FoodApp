@@ -63,7 +63,7 @@
     <string name="manage_track"><![CDATA[Manage & track]]></string>
     <string name="saved_items">saved items</string>
     <string name="cart">Cart</string>
-    <string name="edite_profile">Edite Profile</string>
+    <string name="edit_profile">Edit Profile</string>
     <string name="meals">Meals</string>
     <string name="snacks">Snacks</string>
     <string name="restaurants">Restaurants</string>
@@ -88,7 +88,7 @@
     <string name="city">City</string>
     <string name="search_governorates">Search Governorates</string>
     <string name="search_cities">Search Cities</string>
-    <string name="save_edites">Save edites</string>
+    <string name="save_edits">Save edits</string>
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
     <string name="_01011223344">01011223344</string>
@@ -153,7 +153,6 @@
     <string name="save_this_address">Save this address</string>
     <string name="new_address">New address</string>
     <string name="address_details">Address details</string>
-    <string name="edite_address">Edite address</string>
     <string name="pay_with">Pay with</string>
     <string name="payment_summary">Payment summary</string>
     <string name="subtotal">Subtotal</string>

@@ -50,19 +50,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
+import com.example.applicationhome.core.domain.model.LoginStates
+import com.example.applicationhome.core.domain.model.Screens
+import com.example.applicationhome.core.domain.model.SignUpBasicTextFields
+import com.example.applicationhome.core.domain.model.SignUpErrors
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showNetworkSnackBar
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.MatteBlack
-import com.example.applicationhome.core.domain.model.LoginStates
-import com.example.applicationhome.core.domain.model.Screens
-import com.example.applicationhome.core.domain.model.SignUpBasicTextFields
-import com.example.applicationhome.core.domain.model.SignUpErrors
 import com.example.applicationhome.features.signupscreen.ui.SignupTextField
 import kotlinx.coroutines.launch
 
@@ -70,8 +71,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun LoginScreen(
     navigationController : NavHostController,
-    viewModel: LoginViewModel
+    viewModel : LoginViewModel
 ){
+    val currentEntry = navigationController.currentBackStackEntry
     val interactionSource = remember { MutableInteractionSource() }
 
     val snackBarHostState = remember { SnackbarHostState() }
@@ -93,8 +95,8 @@ fun LoginScreen(
 
 
     BackHandler(enabled = true){
-        navigationController.navigate(Screens.DashboardScreen.screen) {
-            popUpTo(0) { inclusive = true }
+        if (currentEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) {
+            navigationController.popBackStack()
         }
     }
 
@@ -138,8 +140,8 @@ fun LoginScreen(
                 {
                     IconButton(
                         onClick = {
-                            navigationController.navigate(Screens.DashboardScreen.screen) {
-                                popUpTo(0) { inclusive = true }
+                            if (currentEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) {
+                                navigationController.popBackStack()
                             }
                         },
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
@@ -278,7 +280,9 @@ fun LoginScreen(
                             indication = null
                         ){
                             if(isNetworkAvailable){
-                                navigationController.navigate(Screens.ForgetPasswordScreen.screen)
+                                navigationController.navigate(Screens.ForgetPasswordScreen.screen){
+                                    launchSingleTop = true
+                                }
                             }else{
                                 viewModel.snackbarError("Network error")
                             }
@@ -302,6 +306,7 @@ fun LoginScreen(
                             onSuccess = {
                                 navigationController.navigate(Screens.DashboardScreen.screen) {
                                     popUpTo(0) { inclusive = true }
+                                    launchSingleTop = true
                                 }
                             },
 
@@ -394,7 +399,9 @@ fun LoginScreen(
                                 indication = null
                             ) {
                                 if(isNetworkAvailable){
-                                    navigationController.navigate(Screens.SignUpScreen.screen)
+                                    navigationController.navigate(Screens.SignUpScreen.screen){
+                                        launchSingleTop = true
+                                    }
                                 }else{
                                     viewModel.snackbarError("Network error")
                                 }

@@ -188,7 +188,9 @@ fun HomeScreen(
                                 .background(MaterialTheme.colorScheme.primary).align(Alignment.TopCenter)
                         )
                         SearchBox {
-                            navigationController.navigate(Screens.Search.screen)
+                            navigationController.navigate(Screens.Search.screen){
+                                launchSingleTop = true
+                            }
                         }
                     }
                 }
@@ -268,7 +270,9 @@ fun HomeScreen(
                                     clickable = {
                                         navigationController.navigate(
                                             Screens.RestaurantScreen.createRoute(restaurantId = item.id)
-                                        )
+                                        ){
+                                            launchSingleTop = true
+                                        }
                                     },
                                     addRestaurantsFavorite = {
                                         val favoriteRestaurantDatabase = FavoriteRestaurantEntity(

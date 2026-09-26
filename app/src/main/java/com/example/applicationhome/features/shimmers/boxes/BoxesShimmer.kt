@@ -181,3 +181,37 @@ fun OrdersShimmer(
         }
     }
 }
+
+@Composable
+fun MealShimmer(
+    height : Int = 120,
+    StringNumber : Int = 3
+){
+    val SquareShimmerSize = (height / 1.6).dp
+    val Spacer = (height / 9).dp
+
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 15.dp)
+            .height(height.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        Column(
+            modifier = Modifier.fillMaxHeight().padding(vertical = 20.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.End
+        ){
+            var width = 170.dp
+            repeat(StringNumber){
+                TextShimmer(width = width, height = 15.dp)
+                width -= width/3
+            }
+        }
+
+        Spacer(modifier = Modifier.width(Spacer))
+
+        SquareShimmer(size = SquareShimmerSize)
+    }
+}

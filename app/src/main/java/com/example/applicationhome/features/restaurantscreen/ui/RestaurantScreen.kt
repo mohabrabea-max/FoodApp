@@ -58,6 +58,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
@@ -81,11 +82,11 @@ import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.Restau
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.RestaurantImageView
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.bottomSnackBarWithAction
 import com.example.applicationhome.core.ui.components.screens.EmptyScreen
-import com.example.applicationhome.core.ui.components.screens.NoInternetScreen
 import com.example.applicationhome.core.ui.model.FoodItem
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.features.itemscreen.ui.ItemsFullBottomSheet
 import com.example.applicationhome.features.itemscreen.ui.SnaksBottomSheetForItemScreen
+import com.example.applicationhome.features.shimmers.screens.RestaurantScreenShimmer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -97,6 +98,8 @@ fun RestaurantScreen(
     navigationController : NavHostController,
     restaurantViewModel : RestaurantViewModel
 ){
+    val currentEntry = navigationController.currentBackStackEntry
+
     val snackBarHostState = remember { SnackbarHostState() }
     val lifecycleOwner = LocalLifecycleOwner.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -291,7 +294,7 @@ fun RestaurantScreen(
                 },
                 removeFromFavorite = { restaurantViewModel.removeRestaurantsFavorite(uiState.restaurantData.id) },
                 popBackStack = {
-                    if (navigationController.previousBackStackEntry != null) {
+                    if (currentEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) {
                         navigationController.popBackStack()
                     }
                 },
@@ -315,285 +318,314 @@ fun RestaurantScreen(
             }
         }
     ){
-        if(menu.itemCount + snacks.itemCount > 0){
-            LazyColumn (
-                state = scrollState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
-            ){
-                item {
-                    RestaurantHeader(
-                        item = uiState.restaurantData,
-                        view = {
-                            imageToView = uiState.restaurantData.image
-                            viewImageState = true
-                        },
-                        onReviewClick = {
-                            navigationController.navigate(Screens.ReviewsScreen.createRoute(restaurantId = uiState.restaurantData.id))
+        LazyColumn (
+            state = scrollState,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ){
+            item {
+                RestaurantHeader(
+                    item = uiState.restaurantData,
+                    view = {
+                        imageToView = uiState.restaurantData.image
+                        viewImageState = true
+                    },
+                    onReviewClick = {
+                        navigationController.navigate(Screens.ReviewsScreen.createRoute(restaurantId = uiState.restaurantData.id)){
+                            launchSingleTop = true
                         }
-                    )
-                }
-
-                item {
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surface),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ){
-                        item { Spacer(modifier = Modifier.width(15.dp)) }
-
-                        val discount = uiState.restaurantData.discounts?.maxOfOrNull { it?.discount?: 0 }
-                        if(discount != null) item{
-                            DiscountsBoxForRestaurantScreen(
-                                discountText = "${discount}%",
-                                onViewItemsClick = {
-                                    restaurantViewModel.onViewDiscountMealsDialog()
-                                }
-                            )
-                        }
-
-                        items(offers) { item ->
-                            AsyncImage(
-                                modifier = Modifier
-                                    .padding(vertical = 10.dp)
-                                    .width(300.dp)
-                                    .height(100.dp)
-                                    .clip(RoundedCornerShape(15.dp))
-                                    .clickable { },
-                                model = ImageRequest.Builder(LocalContext.current).data(item.image)
-                                    .crossfade(true).size(400, 400).precision(Precision.EXACT).build(),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop
-                            )
-                        }
-
-                        item { Spacer(modifier = Modifier.width(15.dp)) }
                     }
-                }
+                )
+            }
 
-                stickyHeader(key = "categories_header") {
-                    Box(
-                        modifier = Modifier.height(47.dp).fillMaxWidth().graphicsLayer {
-                            val currentInfo = itemInfo
-                            if (currentInfo != null) {
-                                if (currentInfo.offset < topBarHeightPx) {
-                                    translationY = topBarHeightPx - currentInfo.offset
-                                }
+            item {
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surface),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ){
+                    item { Spacer(modifier = Modifier.width(15.dp)) }
+
+                    val discount = uiState.restaurantData.discounts?.maxOfOrNull { it?.discount?: 0 }
+                    if(discount != null) item{
+                        DiscountsBoxForRestaurantScreen(
+                            discountText = "${discount}%",
+                            onViewItemsClick = {
+                                restaurantViewModel.onViewDiscountMealsDialog()
                             }
-                        }.shadow(
-                            elevation =
-                                if (itemInfo != null && itemInfo!!.offset < topBarHeightPx) {
-                                    3.dp
-                                } else {
-                                    0.dp
-                                }
                         )
-                    ) {
-                        CategoriesBarForRestaurantsScreen(
-                            uiState.restaurantData.typ.sortedBy { it.index },
-                            selectedTypeIndex
-                        ) { index, category ->
-                            restaurantViewModel.selectedtype(index, category)
-                        }
-
                     }
+
+                    items(offers) { item ->
+                        AsyncImage(
+                            modifier = Modifier
+                                .padding(vertical = 10.dp)
+                                .width(300.dp)
+                                .height(100.dp)
+                                .clip(RoundedCornerShape(15.dp))
+                                .clickable { },
+                            model = ImageRequest.Builder(LocalContext.current).data(item.image)
+                                .crossfade(true).size(400, 400).precision(Precision.EXACT).build(),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+
+                    item { Spacer(modifier = Modifier.width(15.dp)) }
                 }
+            }
 
-                item {  NetworkErrorTopBar(isNetworkAvailable = isNetworkAvailable) }
-
-                item { Spacer(modifier = Modifier.height(10.dp)) }
-
-                when(typeInRestaurantScreen.category){
-
-                    CategoryEnum.SNACKS.name -> {
-                        items(
-                            count = snacks.itemCount,
-                            key = snacks.itemKey { it.id }
-                        ){ index ->
-                            val item = snacks[index]
-
-                            item?.let {
-                                val isSnackInFavorite = item.isFavorite
-
-                                val size = item.sizes.keys.last()
-                                val price = item.sizes.values.last()
-
-                                val discount = item.discount?.discount
-
-                                MealsBoxForRestaurantScreen(
-                                    price = price,
-                                    discount = discount,
-                                    details = null,
-                                    name = item.name,
-                                    image = item.image,
-                                    aspectRatio = 2.2f,
-                                    cardNavigationClickable = {
-                                        restaurantViewModel.selectSnack(item.id, size)
-                                    },
-                                    actions = {
-                                        Favorite(
-                                            isMealInFavorite = isSnackInFavorite,
-                                            addMealFavorite = {
-                                                val favoriteSnacksDatabase =
-                                                    FavoriteSnackEntity(
-                                                        item.id,
-                                                        userData.id,
-                                                        item.restaurantId,
-                                                        false,
-                                                        false
-                                                    )
-                                                restaurantViewModel.addSnackFavorite(favoriteSnacksDatabase)
-                                            },
-                                            removeMealFavorite = { restaurantViewModel.removeSnackFavorite(item.id) },
-                                            modifier = Modifier.padding(5.dp).size(40.dp),
-                                            color = Color.DarkOrange,
-                                            icon1 = Icons.Default.Favorite,
-                                            icon2 = Icons.Default.FavoriteBorder
-                                        )
-
-                                        AddBox(
-                                            foodId = item.id,
-                                            plus = {
-                                                restaurantViewModel.plus(item.id, size, CategoryEnum.SNACKS){
-                                                    navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
-                                                }
-                                            },
-                                            minus = {
-                                                restaurantViewModel.minus(item.id, size)
-                                            },
-                                            active = { activeId = item.id },
-                                            activeId = activeId,
-                                            count = cartItems.find { it.mealKey == "${item.id}_${size}" }?.quantity
-                                                ?: 0
-                                        )
-                                    }
-                                )
+            stickyHeader(key = "categories_header") {
+                Box(
+                    modifier = Modifier.height(47.dp).fillMaxWidth().graphicsLayer {
+                        val currentInfo = itemInfo
+                        if (currentInfo != null) {
+                            if (currentInfo.offset < topBarHeightPx) {
+                                translationY = topBarHeightPx - currentInfo.offset
                             }
                         }
+                    }.shadow(
+                        elevation =
+                            if (itemInfo != null && itemInfo!!.offset < topBarHeightPx) {
+                                3.dp
+                            } else {
+                                0.dp
+                            }
+                    )
+                ) {
+                    CategoriesBarForRestaurantsScreen(
+                        uiState.restaurantData.typ.sortedBy { it.index },
+                        selectedTypeIndex
+                    ) { index, category ->
+                        restaurantViewModel.selectedtype(index, category)
                     }
 
-                    CategoryEnum.DRINK.name -> {  }
+                }
+            }
 
-                    else -> {
-                        items(
-                            count = menu.itemCount
-                        ){ index ->
-                            val item = menu[index]
+            item {  NetworkErrorTopBar(isNetworkAvailable = isNetworkAvailable) }
 
-                            item?.let {
-                                val isMealInFavorite = item.isFavorite
+            item { Spacer(modifier = Modifier.height(10.dp)) }
 
-                                val size = item.sizes.keys.last()
+            when(typeInRestaurantScreen.category){
 
-                                val sizeOptions = item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }
-                                val details = sizeOptions?.snack?.values?.map { it.size + " " + it.name }
-
-                                val discount = item.discount?.discount
-
-                                MealsBoxForRestaurantScreen(
-                                    price = sizeOptions?.price ?: 0.0,
-                                    discount = discount,
-                                    details = details,
-                                    name = item.name,
-                                    image = item.image,
-                                    aspectRatio = 2.2f,
-                                    cardNavigationClickable = { restaurantViewModel.selectMeal(item.id, size) },
-                                    actions = {
-                                        Favorite(
-                                            isMealInFavorite = isMealInFavorite,
-                                            addMealFavorite = {
-                                                val favoriteFoodDatabase =
-                                                    FavoriteMealEntity(
-                                                        item.id,
-                                                        userData.id,
-                                                        item.restaurantId,
-                                                        false,
-                                                        false
-                                                    )
-                                                restaurantViewModel.addMealFavorite(favoriteFoodDatabase)
-                                            },
-                                            removeMealFavorite = { restaurantViewModel.removeMealFavorite(item.id) },
-                                            modifier = Modifier.padding(5.dp).size(40.dp),
-                                            color = Color.DarkOrange,
-                                            icon1 = Icons.Default.Favorite,
-                                            icon2 = Icons.Default.FavoriteBorder
-                                        )
-
-                                        MealBoxIcon(
-                                            modifier = Modifier.size(50.dp)
-                                        )
-                                    }
-                                )
+                CategoryEnum.SNACKS.name -> {
+                    when (val refreshState = snacks.loadState.refresh) {
+                        is LoadState.Loading -> {
+                            item {
+                                RestaurantScreenShimmer()
                             }
                         }
 
-                        items(
-                            count = menu.itemCount
-                        ){ index ->
-                            val item = menu[index]
+                        else -> {
+                            if (refreshState.endOfPaginationReached && snacks.itemCount == 0) {
+                                item{
+                                    EmptyScreen(
+                                        title = stringResource(R.string.restaurant_is_empty),
+                                        image = painterResource(R.drawable.emptyscreenicon)
+                                    )
+                                }
+                            }else{
+                                items(
+                                    count = snacks.itemCount,
+                                    key = snacks.itemKey { it.id }
+                                ){ index ->
+                                    val item = snacks[index]
 
-                            item?.let {
-                                val isMealInFavorite = item.isFavorite
+                                    item?.let {
+                                        val isSnackInFavorite = item.isFavorite
 
-                                val size = item.sizes.keys.last()
+                                        val size = item.sizes.keys.last()
+                                        val price = item.sizes.values.last()
 
-                                val sizeOptions = item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }
-                                val details = sizeOptions?.snack?.values?.map { it.size + " " + it.name }
+                                        val discount = item.discount?.discount
 
-                                val discount = item.discount?.discount
-
-                                MealsBoxForRestaurantScreen(
-                                    price = sizeOptions?.price ?: 0.0,
-                                    discount = discount,
-                                    details = details,
-                                    name = item.name,
-                                    image = item.image,
-                                    aspectRatio = 2.2f,
-                                    cardNavigationClickable = { restaurantViewModel.selectMeal(item.id, size) },
-                                    actions = {
-                                        Favorite(
-                                            isMealInFavorite = isMealInFavorite,
-                                            addMealFavorite = {
-                                                val favoriteFoodDatabase =
-                                                    FavoriteMealEntity(
-                                                        item.id,
-                                                        userData.id,
-                                                        item.restaurantId,
-                                                        false,
-                                                        false
-                                                    )
-                                                restaurantViewModel.addMealFavorite(favoriteFoodDatabase)
+                                        MealsBoxForRestaurantScreen(
+                                            price = price,
+                                            discount = discount,
+                                            details = null,
+                                            name = item.name,
+                                            image = item.image,
+                                            aspectRatio = 2.2f,
+                                            cardNavigationClickable = {
+                                                restaurantViewModel.selectSnack(item.id, size)
                                             },
-                                            removeMealFavorite = { restaurantViewModel.removeMealFavorite(item.id) },
-                                            modifier = Modifier.padding(5.dp).size(40.dp),
-                                            color = Color.DarkOrange,
-                                            icon1 = Icons.Default.Favorite,
-                                            icon2 = Icons.Default.FavoriteBorder
-                                        )
+                                            actions = {
+                                                Favorite(
+                                                    isMealInFavorite = isSnackInFavorite,
+                                                    addMealFavorite = {
+                                                        val favoriteSnacksDatabase =
+                                                            FavoriteSnackEntity(
+                                                                item.id,
+                                                                userData.id,
+                                                                item.restaurantId,
+                                                                false,
+                                                                false
+                                                            )
+                                                        restaurantViewModel.addSnackFavorite(favoriteSnacksDatabase)
+                                                    },
+                                                    removeMealFavorite = { restaurantViewModel.removeSnackFavorite(item.id) },
+                                                    modifier = Modifier.padding(5.dp).size(40.dp),
+                                                    color = Color.DarkOrange,
+                                                    icon1 = Icons.Default.Favorite,
+                                                    icon2 = Icons.Default.FavoriteBorder
+                                                )
 
-                                        MealBoxIcon(
-                                            modifier = Modifier.size(50.dp)
+                                                AddBox(
+                                                    foodId = item.id,
+                                                    plus = {
+                                                        restaurantViewModel.plus(item.id, size, CategoryEnum.SNACKS){
+                                                            navigationController.navigate(Screens.Cart.screen){ launchSingleTop = true }
+                                                        }
+                                                    },
+                                                    minus = {
+                                                        restaurantViewModel.minus(item.id, size)
+                                                    },
+                                                    active = { activeId = item.id },
+                                                    activeId = activeId,
+                                                    count = cartItems.find { it.mealKey == "${item.id}_${size}" }?.quantity
+                                                        ?: 0
+                                                )
+                                            }
                                         )
                                     }
-                                )
+                                }
                             }
                         }
                     }
                 }
 
-                item { Spacer(modifier = Modifier.height(100.dp)) }
+                CategoryEnum.DRINK.name -> {  }
+
+                else -> {
+                    when (val refreshState = menu.loadState.refresh) {
+                        is LoadState.Loading -> {
+                            item {
+                                RestaurantScreenShimmer()
+                            }
+                        }
+
+                        else -> {
+                            if (refreshState.endOfPaginationReached && menu.itemCount == 0) {
+                                item{
+                                    EmptyScreen(
+                                        title = stringResource(R.string.restaurant_is_empty),
+                                        image = painterResource(R.drawable.emptyscreenicon)
+                                    )
+                                }
+                            }else{
+                                items(
+                                    count = menu.itemCount
+                                ){ index ->
+                                    val item = menu[index]
+
+                                    item?.let {
+                                        val isMealInFavorite = item.isFavorite
+
+                                        val size = item.sizes.keys.last()
+
+                                        val sizeOptions = item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }
+                                        val details = sizeOptions?.snack?.values?.map { it.size + " " + it.name }
+
+                                        val discount = item.discount?.discount
+
+                                        MealsBoxForRestaurantScreen(
+                                            price = sizeOptions?.price ?: 0.0,
+                                            discount = discount,
+                                            details = details,
+                                            name = item.name,
+                                            image = item.image,
+                                            aspectRatio = 2.2f,
+                                            cardNavigationClickable = { restaurantViewModel.selectMeal(item.id, size) },
+                                            actions = {
+                                                Favorite(
+                                                    isMealInFavorite = isMealInFavorite,
+                                                    addMealFavorite = {
+                                                        val favoriteFoodDatabase =
+                                                            FavoriteMealEntity(
+                                                                item.id,
+                                                                userData.id,
+                                                                item.restaurantId,
+                                                                false,
+                                                                false
+                                                            )
+                                                        restaurantViewModel.addMealFavorite(favoriteFoodDatabase)
+                                                    },
+                                                    removeMealFavorite = { restaurantViewModel.removeMealFavorite(item.id) },
+                                                    modifier = Modifier.padding(5.dp).size(40.dp),
+                                                    color = Color.DarkOrange,
+                                                    icon1 = Icons.Default.Favorite,
+                                                    icon2 = Icons.Default.FavoriteBorder
+                                                )
+
+                                                MealBoxIcon(
+                                                    modifier = Modifier.size(50.dp)
+                                                )
+                                            }
+                                        )
+                                    }
+                                }
+
+                                items(
+                                    count = menu.itemCount
+                                ){ index ->
+                                    val item = menu[index]
+
+                                    item?.let {
+                                        val isMealInFavorite = item.isFavorite
+
+                                        val size = item.sizes.keys.last()
+
+                                        val sizeOptions = item.sizeOptions.find { it.size == "Small" || it.size.contains("Pieces") }
+                                        val details = sizeOptions?.snack?.values?.map { it.size + " " + it.name }
+
+                                        val discount = item.discount?.discount
+
+                                        MealsBoxForRestaurantScreen(
+                                            price = sizeOptions?.price ?: 0.0,
+                                            discount = discount,
+                                            details = details,
+                                            name = item.name,
+                                            image = item.image,
+                                            aspectRatio = 2.2f,
+                                            cardNavigationClickable = { restaurantViewModel.selectMeal(item.id, size) },
+                                            actions = {
+                                                Favorite(
+                                                    isMealInFavorite = isMealInFavorite,
+                                                    addMealFavorite = {
+                                                        val favoriteFoodDatabase =
+                                                            FavoriteMealEntity(
+                                                                item.id,
+                                                                userData.id,
+                                                                item.restaurantId,
+                                                                false,
+                                                                false
+                                                            )
+                                                        restaurantViewModel.addMealFavorite(favoriteFoodDatabase)
+                                                    },
+                                                    removeMealFavorite = { restaurantViewModel.removeMealFavorite(item.id) },
+                                                    modifier = Modifier.padding(5.dp).size(40.dp),
+                                                    color = Color.DarkOrange,
+                                                    icon1 = Icons.Default.Favorite,
+                                                    icon2 = Icons.Default.FavoriteBorder
+                                                )
+
+                                                MealBoxIcon(
+                                                    modifier = Modifier.size(50.dp)
+                                                )
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
-        }else if(!isNetworkAvailable){
-            NoInternetScreen{
-                if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
-            }
-        }else{
-            EmptyScreen(
-                title = stringResource(R.string.restaurant_is_empty),
-                image = painterResource(R.drawable.emptyscreenicon)
-            )
+
+            item { Spacer(modifier = Modifier.height(100.dp)) }
         }
 
         when(errorInCart){
@@ -628,7 +660,9 @@ fun RestaurantScreen(
                     content = stringResource((errorInCart as AddToCartStates.ErrorInLoginState).message),
                     confirmButtonText = stringResource(R.string.sign_in),
                     confirmButton = {
-                        navigationController.navigate(Screens.LoginScreen.screen)
+                        navigationController.navigate(Screens.LoginScreen.screen){
+                            launchSingleTop = true
+                        }
                         restaurantViewModel.alertDialogFalse()
                     },
                     dismissButtonText = stringResource(R.string.cancel),

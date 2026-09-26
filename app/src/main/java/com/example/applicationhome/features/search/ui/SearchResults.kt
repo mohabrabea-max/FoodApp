@@ -32,7 +32,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -103,7 +102,7 @@ fun SearchResults(
                     modifier = Modifier
                         .width(70.dp)
                         .height(20.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     Icon(
@@ -113,17 +112,10 @@ fun SearchResults(
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
-                        text = "${item.restaurant.review}",
+                        text = item.restaurant.review,
                         color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 14.sp,
                         style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier
-                    )
-                    Text(
-                        text = "(1k+)",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 14.sp,
-                        style = TextStyle(letterSpacing = (-0.7).sp),
                         modifier = Modifier
                     )
                 }

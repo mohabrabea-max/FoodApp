@@ -187,9 +187,11 @@ class SyncAllDataRepositoryImpl @Inject constructor(
             val response = api.getReviewsStars()
             val stars = response.body()
             if(response.isSuccessful && stars != null){
+                println("isSuccessful")
                 val starsEntity = stars.values.map { item ->
                     item.reviewsStarsToReviewsStarsEntity()
                 }
+                println(starsEntity)
                 reviewsDao.addStars(starsEntity)
             }else{
                 throw HttpException(response)

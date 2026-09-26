@@ -90,7 +90,7 @@ fun Profile(
                 MyTopBar(
                     MaterialTheme.colorScheme.surface,
                     modifier = Modifier.fillMaxWidth().height(100.dp).shadow(elevation = 5.dp),
-                    stringResource(R.string.edite_profile),
+                    stringResource(R.string.edit_profile),
                     MaterialTheme.colorScheme.onSurface,
                     {
                         IconButton(
@@ -243,7 +243,7 @@ fun BottomBarForProfileScreen(
             backgroundcolor = buttonColor,
             fontcolor = Color.White,
             horizontalPadding = 40.dp,
-            title = stringResource(R.string.save_edites)
+            title = stringResource(R.string.save_edits)
         ){
             if (isDataEdited) {
                 action()

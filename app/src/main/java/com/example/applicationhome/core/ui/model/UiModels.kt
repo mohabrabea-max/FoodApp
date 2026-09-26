@@ -6,6 +6,7 @@ import com.example.applicationhome.core.domain.model.MealSizeDetail
 
 sealed interface UiStates {
     data object Loading : UiStates
+    //data object Empty : UiStates
     data object Success : UiStates
     data object Offline : UiStates
 }

@@ -151,6 +151,8 @@ class ReviewsRepositoryImpl @Inject constructor(
         userId : String
     ): Result<Boolean> =
         retryLocally {
+            if(userId.isEmpty()) return@retryLocally false
+
             val response = api.checkUserOrderedFromRestaurant(
                 userId = userId,
                 equalTo = resId

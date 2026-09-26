@@ -111,7 +111,7 @@ fun DiscountsBoxForRestaurantScreen(
 
         Text(
             text = stringResource(R.string.view_items),
-            fontSize = 18.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
             color = textColor,
             textDecoration = TextDecoration.Underline,

@@ -109,7 +109,7 @@ class LocationsViewModel @Inject constructor(
 
                 is LocationsScreens.ViewAddressInformation -> {
                     when(item.state){
-                        EditAddressModeState.Edit -> R.string.edite_address
+                        EditAddressModeState.Edit -> R.string.edit_address
                         EditAddressModeState.ReadOnly -> R.string.address_details
                     }
                 }

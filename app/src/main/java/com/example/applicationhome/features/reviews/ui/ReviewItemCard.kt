@@ -80,7 +80,7 @@ fun ReviewItemCard(
                             .clip(CircleShape)
                             .background(avatarColor),
                         contentAlignment = Alignment.Center
-                    ) {
+                    ){
                         Text(
                             text = firstChar,
                             color = Color.White,

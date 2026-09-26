@@ -53,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
@@ -70,18 +71,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.applicationhome.core.domain.model.Screens
 import com.example.applicationhome.core.ui.components.Options
 import com.example.applicationhome.core.ui.components.bars.MyBottomBar
 import com.example.applicationhome.core.ui.components.model.DashboardScreenViewModel
-import com.example.applicationhome.core.ui.components.profileAndSetting.UserImage
-import com.example.applicationhome.features.homescreen.model.HomeScreenActions
-import com.example.applicationhome.features.homescreen.model.HomeScreenParameters
 import com.example.applicationhome.core.ui.model.UiStates
-import com.example.applicationhome.core.domain.model.Screens
 import com.example.applicationhome.features.favorite.ui.Favorite
 import com.example.applicationhome.features.favorite.ui.FavoriteViewModel
+import com.example.applicationhome.features.homescreen.model.HomeScreenActions
+import com.example.applicationhome.features.homescreen.model.HomeScreenParameters
 import com.example.applicationhome.features.homescreen.ui.HomeScreen
 import com.example.applicationhome.features.homescreen.ui.HomeScreenViewModel
+import com.example.applicationhome.features.reviews.ui.getUserAvatarColor
 import com.example.applicationhome.features.settings.ui.Settings
 import com.example.applicationhome.features.settings.ui.SettingsViewModel
 import dev.chrisbanes.haze.HazeState
@@ -119,6 +120,8 @@ fun DashboardScreen(
     val isLogin by dashboardScreenViewModel.isLogin.collectAsStateWithLifecycle()
 
     val userState by dashboardScreenViewModel.userData.collectAsStateWithLifecycle()
+    val firstChar = userState.firstname.firstOrNull()?.uppercase() ?: "?"
+    val avatarColor = remember(userState.firstname) { getUserAvatarColor(userState.firstname) }
     val density = LocalDensity.current
     val fixedWidth = remember(density) { with(density) { 250.dp.roundToPx()} }
 
@@ -187,21 +190,33 @@ fun DashboardScreen(
                     ){
                         Box(
                             modifier = Modifier.size(50.dp).
-                            clip(CircleShape),
+                            clip(CircleShape)
+                                .background(avatarColor),
                             contentAlignment = Alignment.Center
                         ){
-                            UserImage()
+                            Text(
+                                text = firstChar,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 22.sp
+                            )
                         }
+
                         Spacer(modifier = Modifier.width(10.dp))
+
                         if(stat){
-                            Column(modifier = Modifier.weight(2.5f),horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center){
+                            Column(
+                                modifier = Modifier
+                                    .weight(2.5f),
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.SpaceAround
+                            ){
                                 Text(
                                     text = userState.firstname + " " + userState.lastname.ifEmpty { "" },
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
-                                Spacer(modifier = Modifier.height(5.dp))
                                 Text(
                                     text = userState.email.ifEmpty { stringResource(R.string.login) },
                                     fontSize = 12.sp,
@@ -279,7 +294,7 @@ fun DashboardScreen(
 
                             if(isLogin){
                                 DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.edite_profile)) },
+                                    text = { Text(stringResource(R.string.edit_profile)) },
                                     leadingIcon = {
                                         Icon(
                                             Icons.Outlined.Edit,

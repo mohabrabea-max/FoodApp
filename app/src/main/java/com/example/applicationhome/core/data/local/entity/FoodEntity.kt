@@ -309,14 +309,14 @@ data class SnackWithFavoriteStatus(
 @Entity(
     tableName = "favorite_restaurants",
     primaryKeys = ["resId", "userId"],
-    foreignKeys = [
-        ForeignKey(
-            entity = RestaurantsEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["resId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+//    foreignKeys = [
+//        ForeignKey(
+//            entity = RestaurantsEntity::class,
+//            parentColumns = ["id"],
+//            childColumns = ["resId"],
+//            onDelete = ForeignKey.CASCADE
+//        )
+//    ]
 )
 data class FavoriteRestaurantEntity(
     val resId : Int = 0,
@@ -326,15 +326,7 @@ data class FavoriteRestaurantEntity(
 )
 
 @Entity(
-    tableName = "reviews_stars_entity",
-    foreignKeys = [
-        ForeignKey(
-            entity = RestaurantsEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["resId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+    tableName = "reviews_stars_entity"
 )
 data class ReviewsStarsEntity(
     @PrimaryKey val resId : Int = 0,

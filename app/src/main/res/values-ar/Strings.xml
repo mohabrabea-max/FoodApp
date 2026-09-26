@@ -64,7 +64,7 @@
     <string name="manage_track">إدارة وتتبع</string>
     <string name="saved_items">الأشياء المحفوظة</string>
     <string name="cart">سلة المشتريات</string>
-    <string name="edite_profile">تعديل الحساب</string>
+    <string name="edit_profile">تعديل الحساب</string>
     <string name="meals">الوجبات</string>
     <string name="snacks">المقبلات</string>
     <string name="restaurants">المطاعم</string>
@@ -89,7 +89,7 @@
     <string name="city">المدينة</string>
     <string name="search_governorates">البحث في المحافظات</string>
     <string name="search_cities">البحث في المدن</string>
-    <string name="save_edites">حفظ التعديلات</string>
+    <string name="save_edits">حفظ التعديلات</string>
     <string name="first_name">الاسم الأول</string>
     <string name="last_name">الاسم الأخير</string>
     <string name="_01011223344">01011223344</string>
@@ -154,7 +154,6 @@
     <string name="save_this_address">حفظ هذا العنوان</string>
     <string name="new_address">عنوان جديد</string>
     <string name="address_details">تفاصيل العنوان</string>
-    <string name="edite_address">تعديل العنوان</string>
     <string name="pay_with">ادفع باستخدام</string>
     <string name="payment_summary">ملخص الدفع</string>
     <string name="subtotal">المجموع الفرعي</string>

@@ -102,7 +102,11 @@ fun Search(
                     }
                     searchViewModel.searchFilter("")
                 },
-                cartClick = { navigationController.navigate(Screens.Cart.screen) },
+                cartClick = {
+                    navigationController.navigate(Screens.Cart.screen){
+                        launchSingleTop = true
+                    }
+                },
                 onQueryChange = { searchViewModel.searchFilter(it.text) },
                 clickSearch = { if(it.isNotEmpty()) searchViewModel.clickSearch(it) },
                 unClickSearch = {searchViewModel.unClickSearch()},
@@ -334,10 +338,14 @@ fun Search(
                                     SearchResults(
                                         item,
                                         mealClickable = { item ->
-                                            navigationController.navigate(Screens.RestaurantScreen.createRouteWithMeal(restaurantId = item.restaurantId, mealId = item.id))
+                                            navigationController.navigate(Screens.RestaurantScreen.createRouteWithMeal(restaurantId = item.restaurantId, mealId = item.id)){
+                                                launchSingleTop = true
+                                            }
                                         },
                                         restaurantClickable = {
-                                            navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.restaurant.id))
+                                            navigationController.navigate(Screens.RestaurantScreen.createRoute(restaurantId = item.restaurant.id)){
+                                                launchSingleTop = true
+                                            }
                                         }
                                     )
                                 }

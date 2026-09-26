@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarOutline
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -48,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -125,12 +127,17 @@ fun ReviewsScreen(
                     }
                 )
 
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                )
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(MaterialTheme.colorScheme.surface)
-                        .padding(horizontal = 15.dp)
-                        .padding(bottom = 15.dp),
+                        .padding(horizontal = 15.dp, vertical = 15.dp),
 
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
@@ -295,32 +302,45 @@ fun ReviewsScreen(
 
                     item { Spacer(modifier = Modifier.height(10.dp)) }
 
-                    if(allReviews.itemCount > 0){
-                        item {
-                            Text(
-                                text = stringResource(R.string.reviews),
-                                color = MaterialTheme.colorScheme.onSurface,
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
+                    when (allReviews.loadState.refresh) {
+//                        is LoadState.Loading -> {
+//                            item { LoadingDialog(true) }
+//                        }
 
-                        items(
-                            count = allReviews.itemCount
-                        ){ index ->
-                            val review = allReviews[index]
 
-                            review?.let {
-                                ReviewItemCard(review = review)
+                        //                        allReviews.loadState.refresh is LoadState.Error -> {
+                        //                            val e = allReviews.loadState.refresh as LoadState.Error
+                        //                            ErrorScreen(message = e.error.localizedMessage ?: "حدث خطأ غير متوقع")
+                        //                        }
+                        is LoadState.NotLoading if allReviews.itemCount == 0 -> {
+                            item{
+                                EmptyScreen(
+                                    title = stringResource(R.string.there_are_no_ratings),
+                                    image = painterResource(R.drawable.emptyscreenicon),
+                                    spacerheight = 100.dp
+                                )
                             }
                         }
-                    }else{
-                        item{
-                            EmptyScreen(
-                                title = stringResource(R.string.there_are_no_ratings),
-                                image = painterResource(R.drawable.emptyscreenicon),
-                                spacerheight = 100.dp
-                            )
+
+                        else -> {
+                            item {
+                                Text(
+                                    text = stringResource(R.string.reviews),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            items(
+                                count = allReviews.itemCount
+                            ){ index ->
+                                val review = allReviews[index]
+
+                                review?.let {
+                                    ReviewItemCard(review = review)
+                                }
+                            }
                         }
                     }
                 }
@@ -330,6 +350,7 @@ fun ReviewsScreen(
                 }
             }
 
+            item { Spacer(modifier = Modifier.height(30.dp)) }
         }
     }
 
