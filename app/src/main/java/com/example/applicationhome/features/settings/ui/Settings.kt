@@ -56,6 +56,8 @@ import com.example.applicationhome.core.domain.model.ShowBottomSheets
 import com.example.applicationhome.core.domain.model.ThemeMode
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.forCart.AlertDialogMessage
+import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.LoadingDialog
+import com.example.applicationhome.core.ui.model.UiStates
 import com.example.applicationhome.features.reviews.ui.getUserAvatarColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -70,6 +72,8 @@ fun Settings(
     settingsListState : LazyGridState,
     settingsViewModel : SettingsViewModel
 ){
+    val uiStates by settingsViewModel.uiStates.collectAsStateWithLifecycle()
+
     val userData by settingsViewModel.userData.collectAsStateWithLifecycle()
     val firstChar = userData.firstname.firstOrNull()?.uppercase() ?: "?"
     val avatarColor = remember(userData.firstname) { getUserAvatarColor(userData.firstname) }
@@ -84,6 +88,8 @@ fun Settings(
     val description = userData.phonenumber.ifEmpty { userData.email }
 
     val profileoptions = if(isLogin) ProfileData.profileOptions() else notificationsOptions()
+
+    val incorrectPassword by settingsViewModel.incorrectPassword.collectAsStateWithLifecycle()
 
 
     BackHandler(enabled = true) {
@@ -118,63 +124,67 @@ fun Settings(
                     }
                 )
 
-                HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth(),
-                    thickness = 1.dp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-                )
+                if(isLogin){
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(),
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                    )
 
-                if(isLogin) Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(90.dp)
-                        .background(MaterialTheme.colorScheme.surface)
-                ){
-                    Row(
-                        modifier = Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp),
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(90.dp)
+                            .background(MaterialTheme.colorScheme.surface)
                     ){
-                        Box(
-                            modifier = Modifier.size(50.dp).
-                            clip(CircleShape)
-                                .background(avatarColor),
-                            contentAlignment = Alignment.Center
+                        Row(
+                            modifier = Modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp),
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
                         ){
-                            Text(
-                                text = firstChar,
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 22.sp
-                            )
-                        }
+                            Box(
+                                modifier = Modifier.size(50.dp).
+                                clip(CircleShape)
+                                    .background(avatarColor),
+                                contentAlignment = Alignment.Center
+                            ){
+                                Text(
+                                    text = firstChar,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 22.sp
+                                )
+                            }
 
-                        Spacer(modifier = Modifier.width(15.dp))
+                            Spacer(modifier = Modifier.width(15.dp))
 
-                        Column(
-                            modifier = Modifier
-                                .weight(2.5f),
-                            horizontalAlignment = Alignment.Start,
-                            verticalArrangement = Arrangement.Center
-                        ){
-                            Text(
-                                text = "${userData.firstname} ${userData.lastname}",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Spacer(modifier = Modifier.height(5.dp))
-                            Text(
-                                text = description,
-                                fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .weight(2.5f),
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.Center
+                            ){
+                                Text(
+                                    text = "${userData.firstname} ${userData.lastname}",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Spacer(modifier = Modifier.height(5.dp))
+                                Text(
+                                    text = description,
+                                    fontSize = 15.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
                     }
                 }
             }
         }
     ){ paddingValues ->
+        LoadingDialog(uiStates == UiStates.Loading)
+
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -235,7 +245,9 @@ fun Settings(
                             }
 
                             SettingsScreens.AboutApp -> {
-
+                                navigationController.navigate(Screens.AboutAppScreen.screen){
+                                    launchSingleTop = true
+                                }
                             }
 
                             else -> {}
@@ -318,10 +330,21 @@ fun Settings(
                     confirmButtonText = stringResource(R.string.yes_i_m_sure),
                     confirmButton = {
                         settingsViewModel.closeDialog()
+                        settingsViewModel.confirmPassword()
                         //--------------------------------------------------------
                     },
                     dismissButtonText = stringResource(R.string.cancel),
                     dismissButton = { settingsViewModel.closeDialog() }
+                )
+            }
+
+            is SettingsConfirmDialog.ConfirmPassword -> {
+                ConfirmPasswordDialog(
+                    incorrectPassword = incorrectPassword,
+                    onDismiss = { settingsViewModel.closeDialog() },
+                    onConfirm = { password ->
+                        settingsViewModel.deleteAccount(password)
+                    }
                 )
             }
         }

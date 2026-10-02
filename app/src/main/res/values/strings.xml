@@ -186,4 +186,17 @@
     <string name="turn_on">Turn on</string>
     <string name="the_request_was_rejected_you_will_not_be_able_to_receive_notifications">The request was rejected, you will not be able to receive notifications</string>
     <string name="no_previous_notifications">No previous notifications</string>
+    <string name="order_placed_successfully">Order Placed Successfully</string>
+    <string name="connected">Connected!</string>
+    <string name="disconnected">Disconnected!</string>
+    <string name="login_success">Login success</string>
+    <string name="guest_mode">Guest mode</string>
+    <string name="please_enter_the_password_to_continue">Please enter the password to continue</string>
+    <string name="confirm">Confirm</string>
+    <string name="mohab_rabea">Mohab Rabea</string>
+    <string name="kotlin_software_engineer">Kotlin Software Engineer</string>
+    <string name="_1_year_experience_in_programming">+1 Year Experience In Programming</string>
+    <string name="app_showcase_description">Full-Featured Food Delivery Android Application\n\nExcited to present a comprehensive, end-to-end Android application designed to deliver a seamless food ordering experience!\n\nKey Features &amp; Highlights:\n• Multi-Restaurant Platform: Browse a wide range of restaurants, each with its own detailed menu and information. Includes smart cart validation that ensures orders are placed from one restaurant at a time (prompting to clear the cart before switching).\n• Complete User Authentication: Full account lifecycle management including quick Sign In/Sign Out, profile updates, and secure account deletion.\n• Address Management: Save and manage multiple delivery addresses for a faster, streamlined checkout process.\n• Order Tracking: Real-time tracking system to monitor order statuses through every stage of preparation and delivery.\n• Rich &amp; Scalable Design: Built with nearly 30 fully functional screens packed with advanced features.\n• Smooth UX &amp; Clean UI: Crafted with a consistent, eye-friendly, and highly intuitive user interface for an effortless user journey.\n\nCheck it out, share it with your network, and let me know your feedback—I\'d love to hear your thoughts!</string>
+    <string name="contact_developer_title">Get in touch with me</string>
+    <string name="linkedin_label">LinkedIn Profile</string>
 </resources>

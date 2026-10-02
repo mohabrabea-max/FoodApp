@@ -9,6 +9,8 @@ import com.example.applicationhome.core.domain.model.ShowBottomSheets
 import com.example.applicationhome.core.domain.model.ThemeMode
 import com.example.applicationhome.core.domain.repository.FavoriteRepository
 import com.example.applicationhome.core.domain.repository.UserRepository
+import com.example.applicationhome.core.domain.usecase.DeleteAccountUseCase
+import com.example.applicationhome.core.ui.model.UiStates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,7 +24,8 @@ class SettingsViewModel @Inject constructor(
     private val userRepository : UserRepository,
     private val favoriteRepository : FavoriteRepository,
     private val languageManager : LanguageManager,
-    private val themeModeManager : ThemeModeManager
+    private val themeModeManager : ThemeModeManager,
+    private val deleteAccountUseCase : DeleteAccountUseCase
 ): ViewModel() {
     val userData = userRepository.userData
     val isLogin = userRepository.isLogin
@@ -42,8 +45,13 @@ class SettingsViewModel @Inject constructor(
         _confirmLogoutDialog.value = SettingsConfirmDialog.ConfirmDeleteAccount()
     }
 
+    fun confirmPassword(){
+        _confirmLogoutDialog.value = SettingsConfirmDialog.ConfirmPassword
+    }
+
     fun closeDialog(){
         _confirmLogoutDialog.value = SettingsConfirmDialog.None
+        _incorrectPassword.value = false
     }
 
     fun logout(){
@@ -89,6 +97,33 @@ class SettingsViewModel @Inject constructor(
     fun updateAppTheme(mode: ThemeMode){
         viewModelScope.launch {
             themeModeManager.updateAppTheme(mode)
+        }
+    }
+
+
+    private val _uiStates = MutableStateFlow<UiStates>(UiStates.Success)
+    val uiStates = _uiStates.asStateFlow()
+
+    private val _incorrectPassword = MutableStateFlow(false)
+    val incorrectPassword = _incorrectPassword.asStateFlow()
+    fun deleteAccount(password : String){
+        if(_uiStates.value == UiStates.Loading) return
+
+        viewModelScope.launch {
+            _uiStates.value = UiStates.Loading
+
+            val email = userData.value.email
+
+            deleteAccountUseCase(
+                email = email,
+                password = password
+            ).onSuccess {
+                closeDialog()
+            }.onFailure {
+                _incorrectPassword.value = true
+            }
+
+            _uiStates.value = UiStates.Success
         }
     }
 }

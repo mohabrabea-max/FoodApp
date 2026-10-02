@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,11 +40,13 @@ import com.example.applicationhome.core.domain.model.Screens
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showNetworkSnackBar
 import com.example.applicationhome.core.ui.components.model.FinalScreenViewModel
 import com.example.applicationhome.core.ui.components.screens.NoInternetScreen
+import com.example.applicationhome.core.ui.model.UserUiState
 import com.example.applicationhome.core.ui.theme.MatteBlack
 import com.example.applicationhome.features.Notifications.ui.Notifications
 import com.example.applicationhome.features.Notifications.ui.NotificationsViewModel
 import com.example.applicationhome.features.WelcomeScreen.Ui.WelcomeScreen
 import com.example.applicationhome.features.WelcomeScreen.Ui.WelcomeScreenViewModel
+import com.example.applicationhome.features.aboutappscreen.AboutAppScreen
 import com.example.applicationhome.features.cart.ui.Cart
 import com.example.applicationhome.features.cart.ui.CartViewModel
 import com.example.applicationhome.features.confirmorder.ui.ConfirmOrderScreen
@@ -56,6 +59,7 @@ import com.example.applicationhome.features.login.ui.LoginScreen
 import com.example.applicationhome.features.login.ui.LoginViewModel
 import com.example.applicationhome.features.orders.ui.OrderScreenViewModel
 import com.example.applicationhome.features.orders.ui.lastorders.LastOrdersScreen
+import com.example.applicationhome.features.ordersuccessscreen.OrderSuccess
 import com.example.applicationhome.features.profile.ui.Profile
 import com.example.applicationhome.features.profile.ui.ProfileViewModel
 import com.example.applicationhome.features.restaurantscreen.ui.RestaurantScreen
@@ -70,18 +74,20 @@ import com.example.applicationhome.features.signupscreen.ui.SignUpViewModel
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
     val networkState = finalScreenViewModel.isNetworkAvailable
+
+    val context = LocalContext.current
 
     val snackBarHostState = remember { SnackbarHostState() }
 
     val navigationController = rememberNavController()
 
     val syncDataUiState by finalScreenViewModel.syncDataUiState.collectAsStateWithLifecycle()
-    val syncUserUiState by finalScreenViewModel.syncUserUiState.collectAsStateWithLifecycle()
+    val syncUserUiState = finalScreenViewModel.syncUserUiState
     val isRefreshing by finalScreenViewModel.isRefreshing.collectAsStateWithLifecycle()
 
     Box(
@@ -295,11 +301,51 @@ fun FinalScreen(finalScreenViewModel : FinalScreenViewModel){
                     if (navigationController.previousBackStackEntry != null) { navigationController.popBackStack() }
                 }
             }
+
+            composable(Screens.OrderSuccess.screen){
+                OrderSuccess{
+                    navigationController.navigate(Screens.DashboardScreen.screen) {
+                        popUpTo(Screens.DashboardScreen.screen) {
+                            inclusive = true
+                        }
+                    }
+                }
+            }
+
+            composable(Screens.AboutAppScreen.screen){
+                AboutAppScreen{
+                    if (navigationController.previousBackStackEntry != null) {
+                        navigationController.popBackStack()
+                    }
+                }
+            }
         }
 
         LaunchedEffect(Unit){
             networkState.drop(1).collect { isConnected ->
-                val message = if (isConnected) "Connected!" else "Disconnected!"
+                val message = if (isConnected) R.string.connected else R.string.disconnected
+
+                launch {
+                    snackBarHostState.showNetworkSnackBar(
+                        message = context.getString(message)
+                    )
+                }
+            }
+        }
+
+        LaunchedEffect(syncUserUiState){
+            syncUserUiState.drop(1).collect { isSuccess ->
+                val message = when(isSuccess){
+                    UserUiState.Success -> {
+                        context.getString(R.string.login_success)
+                    }
+
+                    UserUiState.GuestMode -> {
+                        context.getString(R.string.guest_mode)
+                    }
+
+                    else -> {""}
+                }
 
                 launch {
                     snackBarHostState.showNetworkSnackBar(

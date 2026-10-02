@@ -59,4 +59,6 @@ sealed interface SettingsConfirmDialog{
         @StringRes val message : Int =
             R.string.are_you_sure_you_want_to_delete_your_account
     ) : SettingsConfirmDialog
+
+    data object ConfirmPassword : SettingsConfirmDialog
 }

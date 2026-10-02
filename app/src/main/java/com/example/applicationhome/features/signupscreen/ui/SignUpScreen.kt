@@ -3,6 +3,7 @@ package com.example.applicationhome.features.signupscreen.ui
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -63,15 +64,15 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
+import com.example.applicationhome.core.domain.model.Screens
+import com.example.applicationhome.core.domain.model.SignUpErrors
+import com.example.applicationhome.core.domain.model.SignUpScreens
 import com.example.applicationhome.core.ui.components.bars.MyTopBar
 import com.example.applicationhome.core.ui.components.bars.NetworkErrorTopBar
 import com.example.applicationhome.core.ui.components.designsystem.MyButton
 import com.example.applicationhome.core.ui.components.forHomeScreenOrMenu.showNetworkSnackBar
 import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.ui.theme.MatteBlack
-import com.example.applicationhome.core.domain.model.Screens
-import com.example.applicationhome.core.domain.model.SignUpErrors
-import com.example.applicationhome.core.domain.model.SignUpScreens
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -99,6 +100,12 @@ fun SignUpScreen(
     val signUpBasicTextFields by viewModel.signUpBasicTextFields.collectAsStateWithLifecycle()
 
     val textButtonsColor = if(isNetworkAvailable) Color.DarkOrange else Color.Gray
+
+    val buttonColor by animateColorAsState(
+        targetValue = if (state && isNetworkAvailable) Color.DarkOrange else Color.LightGray,
+        animationSpec = tween(durationMillis = 150),
+        label = "ButtonColorAnimation"
+    )
 
     BackHandler(enabled = true) {
         when(signupPages){
@@ -305,7 +312,7 @@ fun SignUpScreen(
                                     ){
                                         MyButton(
                                             loading = loading,
-                                            backgroundcolor = if(state) Color.DarkOrange else Color.LightGray,
+                                            backgroundcolor = buttonColor,
                                             fontcolor = Color.White,
                                             horizontalPadding = 40.dp,
                                             title = stringResource(R.string.create_account)

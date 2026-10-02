@@ -16,6 +16,7 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,10 +34,9 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.applicationhome.R
-import com.example.applicationhome.core.ui.components.model.DashboardScreenViewModel
-import com.example.applicationhome.core.ui.theme.DarkOrange
 import com.example.applicationhome.core.domain.model.Drawer
 import com.example.applicationhome.core.domain.model.Screens
+import com.example.applicationhome.core.ui.components.model.DashboardScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -67,7 +67,7 @@ fun Options(
                     label = {
                         if(state) Text(
                             text = stringResource(item.title),
-                            color = Color.DarkOrange,
+                            color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.layout { measurable, constraints ->
                                 val placeable = measurable.measure(
                                     constraints.copy(
@@ -86,7 +86,7 @@ fun Options(
                         Icon(
                             imageVector = item.icon,
                             contentDescription = stringResource(item.title),
-                            tint = Color.DarkOrange,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier
                                 .padding(start = 5.dp)
                         )
@@ -113,7 +113,7 @@ fun Options(
                     label = {
                         if(state) Text(
                             text = stringResource(item.title),
-                            color = Color.DarkOrange,
+                            color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.layout { measurable, constraints ->
                                 val placeable = measurable.measure(
                                     constraints.copy(
@@ -132,7 +132,7 @@ fun Options(
                         Icon(
                             imageVector = item.icon,
                             contentDescription = stringResource(item.title),
-                            tint = Color.DarkOrange,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier
                                 .padding(start = 5.dp)
                         )
@@ -151,7 +151,7 @@ fun Options(
                     label = {
                         if(state) Text(
                             text = stringResource(R.string.settings),
-                            color = Color.DarkOrange,
+                            color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.layout { measurable, constraints ->
                                 val placeable = measurable.measure(
                                     constraints.copy(
@@ -171,7 +171,7 @@ fun Options(
                             imageVector = Icons.Default.Settings,
                             contentDescription = stringResource(R.string.settings
                             ),
-                            tint = Color.DarkOrange,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier
                                 .padding(start = 5.dp)
                         )

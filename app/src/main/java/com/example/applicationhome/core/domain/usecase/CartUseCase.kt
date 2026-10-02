@@ -6,12 +6,10 @@ import com.example.applicationhome.core.domain.model.AddToCartStates
 import com.example.applicationhome.core.domain.model.CartItemsDomainClass
 import com.example.applicationhome.core.domain.model.CategoryEnum
 import com.example.applicationhome.core.domain.repository.CartRepository
-import com.example.applicationhome.core.domain.repository.RestaurantRepository
 import javax.inject.Inject
 
 class CartUseCase @Inject constructor(
-    private val cartRepository : CartRepository,
-    private val restaurantRepository : RestaurantRepository
+    private val cartRepository : CartRepository
 ){
     suspend fun plus(userId : String, mealId : Int, size : String, type : CategoryEnum, quantityToAdd : Int = 1): AddToCartStates {
         if(userId.isEmpty()) return AddToCartStates.ErrorInLoginState()

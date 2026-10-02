@@ -64,7 +64,7 @@ class SupabaseUserRemoteDataSource @Inject constructor(
                 this.password = pass
             }
 
-            val userId = response?.id
+            val userId = response?.id ?: auth.currentUserOrNull()?.id
 
             if(!userId.isNullOrBlank()){
                 Result.success(userId)
@@ -72,6 +72,8 @@ class SupabaseUserRemoteDataSource @Inject constructor(
                 Result.failure(AuthException(AuthError.UnknownError(ErrorsType.DATA.toString())))
             }
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
+
             val authError = mapExceptionToAuthError(e)
             Result.failure(AuthException(authError))
         }

@@ -294,8 +294,8 @@ fun ConfirmOrderScreen(
                                 clickState.value = false
                                 confirmOrderScreenViewModel.uploadOrder(
                                     onSuccess = {
-                                        navigationController.navigate(Screens.DashboardScreen.screen) {
-                                            popUpTo(Screens.DashboardScreen.screen) {
+                                        navigationController.navigate(Screens.OrderSuccess.screen) {
+                                            popUpTo(0) {
                                                 inclusive = true
                                             }
                                         }

@@ -32,4 +32,6 @@ sealed class Screens (val screen : String){
         fun createRoute(restaurantId : Int): String =
             "reviewsscreen/$restaurantId"
     }
+    data object OrderSuccess : Screens("ordersuccess")
+    data object AboutAppScreen : Screens("aboutappscreen")
 }

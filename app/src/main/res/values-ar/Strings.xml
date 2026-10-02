@@ -187,4 +187,17 @@
     <string name="turn_on">تشغيل</string>
     <string name="the_request_was_rejected_you_will_not_be_able_to_receive_notifications">تم رفض الطلب، لن تستطيع تلقي الاشعارات</string>
     <string name="no_previous_notifications">لا توجد إشعارات سابقة</string>
+    <string name="order_placed_successfully">تم تقديم الطلب بنجاح</string>
+    <string name="connected">متصل!</string>
+    <string name="disconnected">غير متصل!</string>
+    <string name="login_success">تم تسجيل الدخول بنجاح</string>
+    <string name="guest_mode">وضع الزائر</string>
+    <string name="please_enter_the_password_to_continue">يرجى إدخال كلمة المرور للمتابعة</string>
+    <string name="confirm">تأكيد</string>
+    <string name="mohab_rabea">مهاب ربيع</string>
+    <string name="kotlin_software_engineer">مهندس برمجيات Kotlin</string>
+    <string name="_1_year_experience_in_programming">خبرة أكثر من عام 1 في البرمجة</string>
+    <string name="app_showcase_description">تطبيق طلب طعام أندرويد متكامل\n\nيسعدني أشارككم تطبيقي الجديد لطلب الطعام، والمصمم بعناية ليقدم تجربة مستخدم سلسة واحترافية من أول لحظة!\n\nأبرز مميزات التطبيق:\n• منصة مطاعم متكاملة: استعراض عدد متنوع من المطاعم بقوائم وتفاصيل خاصة بكل مطعم، مع نظام إدارة سلة ذكي يضمن الطلب من مطعم واحد فقط في المرة الواحدة (مع التنبيه لتفريغ السلة عند الانتقال لمطعم آخر).\n• إدارة حساب شاملة: تسجيل دخول وخروج سلس، تعديل بيانات الملف الشخصي، وإمكانية حذف الحساب بأمان تام.\n• إدارة العناوين: حفظ وتخصيص عناوين توصيل متعددة لإتمام عملية الطلب والدفع بسرعة ودون الحاجة لإعادة كتابة العنوان كل مرة.\n• تتبع الطلبات: نظام متابعة لحظي لجميع أوردراتك بمختلف حالاتها بدءاً من التجهيز وحتى الوصول.\n• شاشات متكاملة وتصميم مرن: يضم التطبيق ما يقرب من 30 شاشة تفاعلية مليئة بالمميزات التقنية.\n• تجربة مستخدم سلسة وواجهة مريحة: تصميم متناسق ومريح للعين يضمن تنقلاً سهلاً وممتعاً داخل التطبيق.\n\nشاركوني آرائكم وملاحظاتكم، ويسعدني جداً معرفة انطباعاتكم!</string>
+    <string name="contact_developer_title">إتواصل معايا</string>
+    <string name="linkedin_label">حساب LinkedIn</string>
 </resources>

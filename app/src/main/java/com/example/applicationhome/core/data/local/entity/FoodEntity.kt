@@ -3,7 +3,6 @@ package com.example.applicationhome.core.data.local.entity
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.Fts4
 import androidx.room.Index
 import androidx.room.Junction
@@ -91,14 +90,14 @@ data class DiscountsEntity(
     indices = [
         Index(value = ["restaurantId"])
     ],
-    foreignKeys = [
-        ForeignKey(
-            entity = RestaurantsEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["restaurantId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+//    foreignKeys = [
+//        ForeignKey(
+//            entity = RestaurantsEntity::class,
+//            parentColumns = ["id"],
+//            childColumns = ["restaurantId"],
+//            onDelete = ForeignKey.CASCADE
+//        )
+//    ]
 )
 data class MealsEntity(
     @PrimaryKey val id : Int = 0,
@@ -116,14 +115,14 @@ data class MealsEntity(
     indices = [
         Index(value = ["restaurantId"])
     ],
-    foreignKeys = [
-        ForeignKey(
-            entity = RestaurantsEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["restaurantId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+//    foreignKeys = [
+//        ForeignKey(
+//            entity = RestaurantsEntity::class,
+//            parentColumns = ["id"],
+//            childColumns = ["restaurantId"],
+//            onDelete = ForeignKey.CASCADE
+//        )
+//    ]
 )
 data class SnacksEntity(
     @PrimaryKey val id : Int = 0,
@@ -242,14 +241,14 @@ data class CartClass(
 @Entity(
     tableName = "favorite_meals",
     primaryKeys = ["mealId", "userId"],
-    foreignKeys = [
-        ForeignKey(  //                       الجزء دا لحماية الداتا بيز من اضافة حاجة مش موجودة في MealsEntity
-            entity = MealsEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["mealId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+//    foreignKeys = [
+//        ForeignKey(  //                       الجزء دا لحماية الداتا بيز من اضافة حاجة مش موجودة في MealsEntity
+//            entity = MealsEntity::class,
+//            parentColumns = ["id"],
+//            childColumns = ["mealId"],
+//            onDelete = ForeignKey.CASCADE
+//        )
+//    ]
 )
 data class FavoriteMealEntity(
     val mealId : Int = 0,
@@ -281,14 +280,14 @@ data class MealWithFavoriteStatus(
 @Entity(
     tableName = "favorite_snacks",
     primaryKeys = ["snackId", "userId"],
-    foreignKeys = [
-        ForeignKey(
-            entity = SnacksEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["snackId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+//    foreignKeys = [
+//        ForeignKey(
+//            entity = SnacksEntity::class,
+//            parentColumns = ["id"],
+//            childColumns = ["snackId"],
+//            onDelete = ForeignKey.CASCADE
+//        )
+//    ]
 )
 data class FavoriteSnackEntity(
     val snackId : Int = 0,

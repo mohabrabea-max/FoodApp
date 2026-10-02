@@ -2,6 +2,8 @@ package com.example.applicationhome.features.login.ui
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -93,6 +95,11 @@ fun LoginScreen(
 
     val textButtonsColor = if(isNetworkAvailable) Color.DarkOrange else Color.Gray
 
+    val buttonColor by animateColorAsState(
+        targetValue = if (isButtonEnabled && isNetworkAvailable) Color.DarkOrange else Color.LightGray,
+        animationSpec = tween(durationMillis = 150),
+        label = "ButtonColorAnimation"
+    )
 
     BackHandler(enabled = true){
         if (currentEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) {
@@ -155,10 +162,10 @@ fun LoginScreen(
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
-        ) {
+        ){
             Box(
                 modifier = Modifier.align(Alignment.TopCenter)
-            ) {
+            ){
                 Image(
                     painter = painterResource(id = R.drawable.loginimage),
                     contentDescription = null,
@@ -175,7 +182,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
-                ) {
+                ){
                     Text(
                         text = "Food",
                         color = Color.White,
@@ -209,7 +216,7 @@ fun LoginScreen(
                     .clip(shape = RoundedCornerShape(topStart = 100.dp))
                     .background(MaterialTheme.colorScheme.background),
                 horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            ){
                 NetworkErrorTopBar(isNetworkAvailable = isNetworkAvailable, padding = 80.dp)
 
                 Spacer(modifier = Modifier.height(30.dp))
@@ -293,7 +300,7 @@ fun LoginScreen(
 
                 MyButton(
                     loading = loading,
-                    backgroundcolor = if (isButtonEnabled && isNetworkAvailable) Color.DarkOrange else Color.LightGray,
+                    backgroundcolor = buttonColor,
                     fontcolor = Color.White,
                     horizontalPadding = 40.dp,
                     title = stringResource(R.string.login)
@@ -322,7 +329,7 @@ fun LoginScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 46.dp),
                     verticalAlignment = Alignment.CenterVertically
-                ) {
+                ){
                     HorizontalDivider(
                         modifier = Modifier.weight(1f),
                         thickness = 1.dp,

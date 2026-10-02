@@ -21,17 +21,23 @@ class SignUpUseCase @Inject constructor(
         lastName : String,
         email : String
     ): Result<Unit> {
-        return userRepository.signUp(
+        val result = userRepository.signUp(
             userId,
             UserClassFireBase(
                 firstname = firstName,
                 lastname = lastName,
                 email = email
             )
-        ).onSuccess {
+        )
+
+        result.onSuccess {
             favoriteRepository.addGuestFavoriteToUser(userId)
             searchRepository.addGuestSearchHistoryToUser(userId)
+        }.onFailure { error ->
+            return Result.failure(error)
         }
+
+        return Result.success(Unit)
     }
 
     suspend fun performSignUp(
