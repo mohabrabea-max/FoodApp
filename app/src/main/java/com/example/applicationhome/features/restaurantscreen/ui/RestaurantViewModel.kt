@@ -104,7 +104,7 @@ class RestaurantViewModel @Inject constructor(
     val drinkMenuList = combine(
         _drinkMenuMap,
         _resId
-    ) { menuMap, resId ->
+    ){ menuMap, resId ->
         menuMap.filter { it.value.restaurantId == resId }.values
     }.stateIn(
         scope = viewModelScope,

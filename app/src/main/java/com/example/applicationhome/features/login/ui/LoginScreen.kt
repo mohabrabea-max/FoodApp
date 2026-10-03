@@ -52,7 +52,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.applicationhome.R
@@ -75,7 +74,6 @@ fun LoginScreen(
     navigationController : NavHostController,
     viewModel : LoginViewModel
 ){
-    val currentEntry = navigationController.currentBackStackEntry
     val interactionSource = remember { MutableInteractionSource() }
 
     val snackBarHostState = remember { SnackbarHostState() }
@@ -102,8 +100,12 @@ fun LoginScreen(
     )
 
     BackHandler(enabled = true){
-        if (currentEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) {
+        if(navigationController.previousBackStackEntry != null){
             navigationController.popBackStack()
+        }else{
+            navigationController.navigate(Screens.DashboardScreen.screen) {
+                popUpTo(0) { inclusive = true }
+            }
         }
     }
 
@@ -147,8 +149,12 @@ fun LoginScreen(
                 {
                     IconButton(
                         onClick = {
-                            if (currentEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) {
+                            if(navigationController.previousBackStackEntry != null){
                                 navigationController.popBackStack()
+                            }else{
+                                navigationController.navigate(Screens.DashboardScreen.screen) {
+                                    popUpTo(0) { inclusive = true }
+                                }
                             }
                         },
                         modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)

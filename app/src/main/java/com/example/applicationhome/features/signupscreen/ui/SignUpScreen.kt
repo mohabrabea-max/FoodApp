@@ -111,7 +111,7 @@ fun SignUpScreen(
         when(signupPages){
             SignUpScreens.BasicDataScreen -> {
                 viewModel.lastPage{
-                    if(navigationController.previousBackStackEntry != null) {
+                    if(navigationController.previousBackStackEntry != null){
                         navigationController.popBackStack()
                     }else{
                         navigationController.navigate(Screens.DashboardScreen.screen) {
