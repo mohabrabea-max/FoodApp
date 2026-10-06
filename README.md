@@ -13,6 +13,8 @@ A fully-featured, production-ready Android application for food delivery, built 
 
 <img width="1672" height="941" alt="file_00000000bf5081f4b44ac069dd0c89f5" src="https://github.com/user-attachments/assets/b0d51a30-d69b-4698-8633-07fb783c9b16" />
 
+<img width="1280" height="2772" alt="Screenshot_2026-10-06-11-13-29-942_com example applicationhome" src="https://github.com/user-attachments/assets/a7ac79ac-02b8-41cd-b008-4ac46a42fefe" />
+
 ---
 
 ## 🏛️ Architecture & Design Patterns
