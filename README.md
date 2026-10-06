@@ -15,6 +15,12 @@ A fully-featured, production-ready Android application for food delivery, built 
 
 <img width="1672" height="941" alt="file_000000001fe88210b35af2722d7b5e83" src="https://github.com/user-attachments/assets/196011bd-e4bc-4993-8566-1ffc5cf1733f" />
 
+<img width="1672" height="941" alt="file_000000001da08210b3be6a4e332565f7" src="https://github.com/user-attachments/assets/94350074-36fe-49b5-9d65-832d1095af77" />
+
+<img width="1672" height="941" alt="file_00000000b4d48210a0f2fa1408c0f0e7" src="https://github.com/user-attachments/assets/8e9ddf53-963b-45c1-83fa-eb42448f5d6b" />
+
+
+
 ---
 
 ## 🏛️ Architecture & Design Patterns
